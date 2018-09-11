@@ -13,10 +13,10 @@ A full description of the method and approach is available in the paper below.
 
 ## Reference
 
-If you use this code in your project, please cite:
+If you use this code in your project, please cite [this preprint](https://www.biorxiv.org/content/early/2018/04/16/302000):
 
-    [Cole SR & Voytek B (2018) Cycle-by-cycle analysis of neural oscillations. bioRxiv, 302000.
-    doi: https://doi.org/10.1101/302000](https://www.biorxiv.org/content/early/2018/04/16/302000)
+    Cole SR & Voytek B (2018) Cycle-by-cycle analysis of neural oscillations. bioRxiv, 302000.
+    doi: https://doi.org/10.1101/302000
 
 ## Dependencies
 
