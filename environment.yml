@@ -1,0 +1,51 @@
+name: py35
+channels:
+  - defaults
+dependencies:
+  - atomicwrites=1.2.1=py37_0
+  - attrs=18.2.0=py37h28b3542_0
+  - blas=1.0=mkl
+  - ca-certificates=2018.03.07=0
+  - certifi=2018.8.24=py37_1
+  - cycler=0.10.0=py37_0
+  - freetype=2.9.1=hb4e5f40_0
+  - intel-openmp=2018.0.3=0
+  - kiwisolver=1.0.1=py37h0a44026_0
+  - libcxx=4.0.1=h579ed51_0
+  - libcxxabi=4.0.1=hebd6815_0
+  - libedit=3.1.20170329=hb402a30_2
+  - libffi=3.2.1=h475c297_4
+  - libgfortran=3.0.1=h93005f0_2
+  - libpng=1.6.34=he12f830_0
+  - matplotlib=2.2.3=py37h54f8f79_0
+  - mkl=2018.0.3=1
+  - mkl_fft=1.0.4=py37h5d10147_1
+  - mkl_random=1.0.1=py37h5d10147_1
+  - more-itertools=4.3.0=py37_0
+  - ncurses=6.1=h0a44026_0
+  - numpy=1.15.1=py37h6a91979_0
+  - numpy-base=1.15.1=py37h8a80b8c_0
+  - openssl=1.0.2p=h1de35cc_0
+  - pandas=0.23.4=py37h6440ff4_0
+  - pip=10.0.1=py37_0
+  - pluggy=0.7.1=py37h28b3542_0
+  - py=1.6.0=py37_0
+  - pyparsing=2.2.0=py37_1
+  - pytest=3.7.4=py37_0
+  - python=3.7.0=hc167b69_0
+  - python-dateutil=2.7.3=py37_0
+  - pytz=2018.5=py37_0
+  - readline=7.0=h1de35cc_5
+  - scipy=1.1.0=py37h28f7352_1
+  - setuptools=40.2.0=py37_0
+  - six=1.11.0=py37_1
+  - sqlite=3.24.0=ha441bb4_0
+  - tk=8.6.8=ha441bb4_0
+  - tornado=5.1=py37h1de35cc_0
+  - wheel=0.31.1=py37_0
+  - xz=5.2.4=h1de35cc_4
+  - zlib=1.2.11=hf3cbc9b_2
+  - pip:
+    - neurodsp==0.3.1
+prefix: /Users/scott/anaconda/envs/py35
+

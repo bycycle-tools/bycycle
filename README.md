@@ -20,7 +20,7 @@ If you use this code in your project, please cite:
 
 ## Dependencies
 
-bycycle is written in Python, and is tested to work with Python 3.6
+bycycle is written in Python, and is tested to work with Python 3.5
 
 It has the following dependencies:
 - numpy
