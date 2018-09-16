@@ -5,7 +5,7 @@ for individual cycles
 """
 
 import numpy as np
-import neurodsp
+from filt import bandpass_filter
 import warnings
 
 
@@ -29,10 +29,11 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
         if 'peak', then force the output to begin with a peak and end in a trough
         if 'trough', then force the output to begin with a trough and end in peak
         if None, force nothing
-    filter_fn : filter function, `filterfn(x, Fs, pass_type, fc, remove_edge_artifacts=True)
-        Must have the same API as neurodsp.filter
+    filter_fn : filter function, `filterfn(x, Fs, fc, remove_edge_artifacts=True)
+        Must have the same API as filt.bandpass_filter
     filter_kwargs : dict
-        keyword arguments to the filter_fn
+        keyword arguments to the filter_fn, such as 'N_cycles' or 'N_seconds'
+        to control filter length
 
     Returns
     -------
@@ -49,18 +50,18 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
 
     # Set default filtering parameters
     if filter_fn is None:
-        filter_fn = neurodsp.filter
+        filter_fn = filt.bandpass_filter
     if filter_kwargs is None:
         filter_kwargs = {}
 
-    # Default boundary value as 1 cycle length
+    # Default boundary value as 1 cycle length of low cutoff frequency
     if boundary is None:
         boundary = int(np.ceil(Fs / float(f_range[0])))
 
-    # Filter signal
-    x_filt = filter_fn(x, Fs, 'bandpass', fc=f_range, remove_edge_artifacts=False, **filter_kwargs)
+    # Narrowband filter signal
+    x_filt = filter_fn(x, Fs, f_range, remove_edge_artifacts=False, **filter_kwargs)
 
-    # Find rising and falling zerocrossings
+    # Find rising and falling zerocrossings (narrowband)
     zeroriseN = _fzerorise(x_filt)
     zerofallN = _fzerofall(x_filt)
 
@@ -111,7 +112,7 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
     elif first_extrema is None:
         pass
     else:
-        raise ValueError('Parameter forcestart is invalid')
+        raise ValueError('Parameter "first_extrema" is invalid')
 
     return Ps, Ts
 
@@ -158,7 +159,8 @@ def find_zerox(x, Ps, Ts):
     * Sometimes, due to noise in estimating peaks and troughs when the oscillation
     is absent, the estimated peak might be lower than an adjacent trough. If this
     occurs, the rise and decay zerocrossings will be set to be halfway between
-    the peak and trough.
+    the peak and trough. Burst detection should be used in order to ignore these
+    periods of the signal.
     """
 
     # Calculate the number of rises and decays
