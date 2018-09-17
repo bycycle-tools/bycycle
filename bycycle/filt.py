@@ -90,7 +90,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
         raise ValueError(
             '''The designed filter (length: {:d}) is longer than the signal (length: {:d}).
             The filter needs to be shortened by decreasing the N_cycles or N_seconds parameter.
-            However, this will decrease the frequency resolution of the filter.'''.format(N, len(x)))
+            However, this will decrease the frequency resolution of the filter.'''.format(N, len(signal)))
 
     # Compute nyquist frequency
     f_nyq = Fs / 2.
@@ -99,7 +99,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
     kernel = sp.signal.firwin(N, (fc[0], fc[1]), pass_zero=False, nyq=f_nyq)
 
     # Apply filter
-    signal_filt = np.convolve(kernel, x, 'same')
+    signal_filt = np.convolve(kernel, signal, 'same')
 
     # Plot frequency response, if desired
     if plot_frequency_response:
@@ -145,8 +145,8 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
         signal_filt[:N_rmv] = np.nan
         signal_filt[-N_rmv:] = np.nan
 
-    # Add NaN back on the edges of 'x', if there were any at the beginning
-    signal_filt_full = np.ones(len(x_old)) * np.nan
+    # Add NaN back on the edges of 'signal', if there were any at the beginning
+    signal_filt_full = np.ones(len(signal_old)) * np.nan
     signal_filt_full[first_nonan:last_nonan] = signal_filt
     signal_filt = signal_filt_full
 
