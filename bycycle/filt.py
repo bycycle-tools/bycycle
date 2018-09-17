@@ -79,7 +79,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
     if N_seconds is not None:
         N = int(np.ceil(Fs * N_seconds))
     else:
-        N = int(np.ceil(Fs * N_cycles / f_lo))
+        N = int(np.ceil(Fs * N_cycles / fc[0]))
 
     # Force filter length to be odd
     if N % 2 == 0:
@@ -96,7 +96,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
     f_nyq = Fs / 2.
 
     # Design filter
-    kernel = sp.signal.firwin(N, (f_lo, f_hi), pass_zero=False, nyq=f_nyq)
+    kernel = sp.signal.firwin(N, (fc[0], fc[1]), pass_zero=False, nyq=f_nyq)
 
     # Apply filter
     signal_filt = np.convolve(kernel, x, 'same')
@@ -117,7 +117,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
 
         # Compute pass bandwidth and transition bandwidth
         try:
-            pass_bw = f_hi - f_lo
+            pass_bw = fc[1] = fc[0]
             # Identify edges of transition band (-3dB and -20dB)
             cf_20db_1 = next(f_db[i] for i in range(len(db)) if db[i] > -20)
             cf_3db_1 = next(f_db[i] for i in range(len(db)) if db[i] > -3)
