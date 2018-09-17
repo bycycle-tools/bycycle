@@ -117,7 +117,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
 
         # Compute pass bandwidth and transition bandwidth
         try:
-            pass_bw = fc[1] = fc[0]
+            pass_bw = fc[1] - fc[0]
             # Identify edges of transition band (-3dB and -20dB)
             cf_20db_1 = next(f_db[i] for i in range(len(db)) if db[i] > -20)
             cf_3db_1 = next(f_db[i] for i in range(len(db)) if db[i] > -3)
