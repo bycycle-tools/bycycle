@@ -5,7 +5,7 @@ Analyze periods of oscillatory bursting in a neural signal
 
 import numpy as np
 import matplotlib.pyplot as plt
-from filt import amp_by_time
+from filt import amp_by_time, bandpass_filter
 
 
 def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
@@ -20,7 +20,8 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     ----------
     df : pandas DataFrame
         dataframe of waveform features for individual cycles, trough-centered
-    x : trace used to compute monotonicity
+    x : numpy array
+    	trace used to compute monotonicity
     amplitude_fraction_threshold : float (0 to 1)
         the minimum normalized amplitude a cycle must have
         in order to be considered in an oscillation.
@@ -52,9 +53,10 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     Returns
     -------
     df : pandas DataFrame
-        same df as input, with additional columns for
-        amp_fraction: normalized amplitude
-        oscillating: True if that cycle met the criteria for an oscillatory mode
+        same df as input, with an additional column to indicate
+        if the cycle is part of an oscillatory burst.
+        Also additional columns indicating the burst detection
+        parameters.
 
     Notes
     -----
@@ -101,28 +103,28 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     cycle_good_amp_consist = df['amp_consistency'] > amplitude_consistency_threshold
     cycle_good_period_consist = df['period_consistency'] > period_consistency_threshold
     cycle_good_monotonicity = df['monotonicity'] > monotonicity_threshold
-    is_cycle = cycle_good_amp & cycle_good_amp_consist & cycle_good_period_consist & cycle_good_monotonicity
-    is_cycle[0] = False
-    is_cycle[-1] = False
-    df['is_cycle'] = is_cycle
+    is_burst = cycle_good_amp & cycle_good_amp_consist & cycle_good_period_consist & cycle_good_monotonicity
+    is_burst[0] = False
+    is_burst[-1] = False
+    df['is_burst'] = is_burst
     df = _min_consecutive_cycles(df, N_cycles_min=N_cycles_min)
-    df['is_cycle'] = df['is_cycle'].astype(bool)
+    df['is_burst'] = df['is_burst'].astype(bool)
     return df
 
 
 def _min_consecutive_cycles(df_shape, N_cycles_min=3):
     '''Enforce minimum number of consecutive cycles'''
-    is_cycle = np.copy(df_shape['is_cycle'].values)
+    is_burst = np.copy(df_shape['is_burst'].values)
     temp_cycle_count = 0
-    for i, c in enumerate(is_cycle):
+    for i, c in enumerate(is_burst):
         if c:
             temp_cycle_count += 1
         else:
             if temp_cycle_count < N_cycles_min:
                 for c_rm in range(temp_cycle_count):
-                    is_cycle[i - 1 - c_rm] = False
+                    is_burst[i - 1 - c_rm] = False
             temp_cycle_count = 0
-    df_shape['is_cycle'] = is_cycle
+    df_shape['is_burst'] = is_burst
     return df_shape
 
 
@@ -135,7 +137,7 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
 
     Parameters
     ----------
-    x : np.array
+    x : numpy array
         signal analyzed
     Fs : float
         sampling rate
@@ -180,7 +182,7 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
 
     # Determine which samples are defined as bursting
     is_osc = np.zeros(len(x), dtype=bool)
-    df_osc = df_shape[df_shape['is_cycle']]
+    df_osc = df_shape[df_shape['is_burst']]
     for _, cyc in df_osc.iterrows():
         is_osc[cyc['sample_last_' + side_e]:cyc['sample_next_' + side_e] + 1] = True
 
@@ -283,10 +285,64 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
         plt.show()
 
 
-def detect_bursts_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
-                      magnitude_type='amplitude',
-                      return_amplitude=False,
-                      filter_fn=None, filter_kwargs=None):
+def detect_bursts_df_amp(df, x, Fs, f_range,
+                         amp_threshes = (1, 2), N_cycles_min=3,
+                         filter_kwargs=None):
+    """
+
+    Determine which cycles in a signal are part of an oscillatory
+    burst using an amplitude thresholding approach
+
+    Parameters
+    ----------
+    df : pandas DataFrame
+        dataframe of waveform features for individual cycles, trough-centered
+    x : numpy array
+    	trace used to compute monotonicity
+    Fs : float
+        The sampling rate in Hz
+    f_range : tuple (low, high), Hz
+        frequency range for oscillator of interest
+    amp_threshes : tuple (low, high)
+        Threshold values for determining timing of bursts.
+        These values are in units of amplitude
+        (or power, if specified) normalized to the median
+        amplitude (value 1).
+    N_cycles_min : int
+        minimum number of cycles to be identified as truly oscillating
+        needed in a row in order for them to remain identified as
+        truly oscillating
+    filter_kwargs : dict
+        keyword arguments to filt.bandpass_filter
+
+    Returns
+    -------
+    df : pandas DataFrame
+        same df as input, with an additional column to indicate
+        if the cycle is part of an oscillatory burst
+    """
+
+    # Detect bursts using the dual amplitude threshold approach
+    x_burst = twothresh_amp(x, Fs, f_range, amp_threshes,
+                            N_cycles_min=N_cycles_min,
+                            filter_kwargs=filter_kwargs)
+
+    # Compute fraction of each cycle that's bursting
+    burst_fracs = []
+    for i, row in df.iterrows():
+        fraction_bursting = np.mean(x_burst[int(row['sample_last_trough']):
+                                            int(row['sample_next_trough' + 1])])
+        burst_fracs.append(fraction_bursting)
+
+    # Determine cycles that are defined as bursting throughout the whole cycle
+    df['is_burst'] = burst_fracs == 1
+    return df
+
+
+def twothresh_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
+                  magnitude_type='amplitude',
+                  return_amplitude=False,
+                  filter_kwargs=None):
     """
     Detect periods of oscillatory bursting in a neural signal
     by using two amplitude thresholds.
@@ -298,8 +354,7 @@ def detect_bursts_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
     Fs : float
         The sampling rate in Hz
     f_range : tuple (low, high), Hz
-        NOTE: Not relevant in the 'bosc' method
-        frequency range for narrowband signal of interest
+        frequency range for oscillator of interest
     amp_threshes : tuple (low, high)
         Threshold values for determining timing of bursts.
         These values are in units of amplitude
@@ -309,19 +364,22 @@ def detect_bursts_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
         minimum burst duration in terms of number of cycles of f_range[0]
     magnitude_type : string in ('power', 'amplitude')
         metric of magnitude used for thresholding
-    filter_fn : filter function with required inputs (x, f_range, Fs, rmv_edge)
-        function to use to bandpass filter original time series, x
     filter_kwargs : dict
-        keyword arguments to the filter_fn
+        keyword arguments to filt.bandpass_filter
     """
 
     # Set default filtering parameters
     if filter_kwargs is None:
         filter_kwargs = {}
 
+    # Assure the amp_threshes is a tuple of length 2
+    if len(amp_threshes) != 2:
+        raise ValueError(
+            "Invalid number of elements in 'amp_threshes' parameter")
+
     # Compute amplitude time series
     x_amplitude = amp_by_time(
-        x, Fs, f_range, filter_fn=filt.filter, filter_kwargs=filter_kwargs)
+        x, Fs, f_range, filter_fn=bandpass_filter, filter_kwargs=filter_kwargs)
 
     # Set magnitude as power or amplitude
     if magnitude_type == 'power':
@@ -331,21 +389,11 @@ def detect_bursts_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
     else:
         raise ValueError("Invalid 'magnitude' parameter")
 
-    # Rescale magnitude by median or mean
-    # If 'fixed_thresh', x_magnitude is unchanged
-    if algorithm == 'deviation':
-        # Calculate normalized magnitude
-        if deviation_type == 'median':
-            x_magnitude = x_magnitude / np.median(x_magnitude)
-        elif deviation_type == 'mean':
-            x_magnitude = x_magnitude / np.mean(x_magnitude)
-
-    if len(dual_thresh) != 2:
-        raise ValueError(
-            "Invalid number of elements in 'dual_thresh' parameter")
+    # Rescale magnitude by median
+    x_magnitude = x_magnitude / np.median(x_magnitude)
 
     # Identify time periods of oscillation using the 2 thresholds
-    isosc = _2threshold_split(x_magnitude, dual_thresh[1], dual_thresh[0])
+    isosc = _2threshold_split(x_magnitude, amp_threshes[1], amp_threshes[0])
 
     # Remove short time periods of oscillation
     min_period_length = int(np.ceil(min_osc_periods * Fs / f_range[0]))

@@ -83,6 +83,7 @@ def cycle_by_cycle(x, Fs, f_range,
                    transform. Filter length is 3 cycles of the low
                    cutoff frequency. Average taken across all time points
                    in the cycle.
+        is_burst : True if the cycle is part of a detected oscillatory burst
 
     Notes
     -----
