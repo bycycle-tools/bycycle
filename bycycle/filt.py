@@ -7,7 +7,6 @@ import warnings
 import math
 import numpy as np
 import scipy as sp
-from scipy import signal
 import matplotlib.pyplot as plt
 
 
@@ -111,7 +110,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
         # Compute the frequency response in terms of Hz and dB
         b = kernel
         a = 1
-        w, h = signal.freqz(b, a)
+        w, h = sp.signal.freqz(b, a)
         f_db = w * Fs / (2. * np.pi)
         db = 20 * np.log10(abs(h))
 
@@ -159,7 +158,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
 
 def _plot_frequency_response(Fs, b, a=1):
     """Compute frequency response of a filter kernel b with sampling rate Fs"""
-    w, h = signal.freqz(b, a)
+    w, h = sp.signal.freqz(b, a)
     # Plot frequency response
     plt.figure(figsize=(10, 5))
     plt.subplot(1, 2, 1)
@@ -302,9 +301,9 @@ def _hilbert_ignore_nan(x, hilbert_increase_N=False):
     if hilbert_increase_N:
         N = len(x_nonan)
         N2 = 2**(int(math.log(N, 2)) + 1)
-        x_hilb_nonan = signal.hilbert(x_nonan, N2)[:N]
+        x_hilb_nonan = sp.signal.hilbert(x_nonan, N2)[:N]
     else:
-        x_hilb_nonan = signal.hilbert(x_nonan)
+        x_hilb_nonan = sp.signal.hilbert(x_nonan)
 
     # Fill in output hilbert with nans on edges
     x_hilb = np.ones(len(x), dtype=complex) * np.nan
