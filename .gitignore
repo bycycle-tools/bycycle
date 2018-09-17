@@ -2,3 +2,4 @@ dist/
 bycycle.egg-info/
 build/
 .ipynb_checkpoints
+*.pyc
