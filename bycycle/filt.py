@@ -157,6 +157,107 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
         return signal_filt
 
 
+def lowpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
+                    plot_frequency_response=False, return_kernel=False,
+                    compute_transition_band=True,
+                    remove_edge_artifacts=True):
+    """
+    Apply a bandpass filter to a neural signal
+
+    Parameters
+    ----------
+    signal : array-like 1d
+        voltage time series
+    Fs : float
+        The sampling rate
+    fc : float
+        The cutoff frequencies for the filter
+    N_cycles : float, optional (default: 3)
+        Length of filter in terms of number of cycles at the cutoff frequency
+        By default, this is set to 3 cycles of the low cutoff frequency
+        This parameter is overwritten by 'N_seconds'
+    N_seconds : float, optional
+        Length of filter (seconds)
+    plot_frequency_response : bool, optional
+        if True, plot the frequency response of the filter
+    return_kernel : bool, optional
+        if True, return the complex filter kernel
+    remove_edge_artifacts : bool, optional
+        if True, replace the samples that are within half a kernel's length to
+        the signal edge with np.nan
+
+    Returns
+    -------
+    signal_filt : array-like 1d
+        filtered time series
+    kernel : length-2 tuple of arrays
+        filter kernel
+        returned only if 'return_kernel' == True
+    """
+
+    # Set default and throw warning if no filter length provided
+    if N_cycles is None and N_seconds is None:
+        N_cycles = 3
+        warnings.warn('''
+            No filter length provided. Using default of 3 cycles of the
+            cutoff frequency.
+            ''')
+
+    # Remove any NaN on the edges of 'signal'
+    first_nonan = np.where(~np.isnan(signal))[0][0]
+    last_nonan = np.where(~np.isnan(signal))[0][-1] + 1
+    signal_old = np.copy(signal)
+    signal = signal[first_nonan:last_nonan]
+
+
+    # Compute filter length if specified in seconds
+    if N_seconds is not None:
+        N = int(np.ceil(Fs * N_seconds))
+    else:
+        N = int(np.ceil(Fs * N_cycles / fc))
+
+    # Force filter length to be odd
+    if N % 2 == 0:
+        N = int(N + 1)
+
+    # Raise an error if the filter is longer than the signal
+    if N >= len(signal):
+        raise ValueError(
+            '''The designed filter (length: {:d}) is longer than the signal (length: {:d}).
+            The filter needs to be shortened by decreasing the N_cycles or N_seconds parameter.
+            However, this will decrease the frequency resolution of the filter.'''.format(N, len(signal)))
+
+    # Compute nyquist frequency
+    f_nyq = Fs / 2.
+
+    # Design filter
+    kernel = spsignal.firwin(N, fc, nyq=f_nyq)
+
+    # Apply filter
+    signal_filt = np.convolve(kernel, signal, 'same')
+
+    # Plot frequency response, if desired
+    if plot_frequency_response:
+        _plot_frequency_response(Fs, kernel)
+
+    # Remove edge artifacts
+    if remove_edge_artifacts:
+        N_rmv = int(np.ceil(N / 2))
+        signal_filt[:N_rmv] = np.nan
+        signal_filt[-N_rmv:] = np.nan
+
+    # Add NaN back on the edges of 'signal', if there were any at the beginning
+    signal_filt_full = np.ones(len(signal_old)) * np.nan
+    signal_filt_full[first_nonan:last_nonan] = signal_filt
+    signal_filt = signal_filt_full
+
+    # Return kernel if desired
+    if return_kernel:
+        return signal_filt, kernel
+    else:
+        return signal_filt
+
+
 def _plot_frequency_response(Fs, b, a=1):
     """Compute frequency response of a filter kernel b with sampling rate Fs"""
     w, h = spsignal.freqz(b, a)
