@@ -11,12 +11,12 @@ from bycycle.burst import detect_bursts_cycles, detect_bursts_df_amp
 import warnings
 
 
-def cycle_by_cycle(x, Fs, f_range,
-                   center_extrema='P',
-                   burst_detection_method='cycles',
-                   burst_detection_kwargs=None,
-                   find_extrema_kwargs=None,
-                   hilbert_increase_N=False):
+def compute_features(x, Fs, f_range,
+                     center_extrema='P',
+                     burst_detection_method='cycles',
+                     burst_detection_kwargs=None,
+                     find_extrema_kwargs=None,
+                     hilbert_increase_N=False):
     """
     Segment a recording into individual cycles and compute
     simple features for each cycle
