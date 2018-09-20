@@ -6,6 +6,7 @@ Analyze periods of oscillatory bursting in a neural signal
 import numpy as np
 import matplotlib.pyplot as plt
 from bycycle.filt import amp_by_time, bandpass_filter
+from scipy.stats import zscore
 
 
 def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
@@ -74,8 +75,8 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     decays = df['volt_decay'].values
     for p in range(1, C - 1):
         consist_current = np.min([rises[p], decays[p]]) / np.max([rises[p], decays[p]])
-        consist_last = np.min([rises[p - 1], decays[p]]) / np.max([rises[p - 1], decays[p]])
-        consist_next = np.min([rises[p], decays[p + 1]]) / np.max([rises[p], decays[p + 1]])
+        consist_last = np.min([rises[p], decays[p - 1]]) / np.max([rises[p], decays[p - 1]])
+        consist_next = np.min([rises[p + 1], decays[p]]) / np.max([rises[p + 1], decays[p]])
         amp_consists[p] = np.min([consist_current, consist_next, consist_last])
     df['amp_consistency'] = amp_consists
 
@@ -166,6 +167,9 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
     * green: monotonicity_threshold
     """
 
+    # Normalize signal
+    x = zscore(x)
+
     # Determine time array
     t = np.arange(0, len(x) / Fs, 1 / Fs)
 
@@ -193,8 +197,8 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
         plt.plot(t[is_osc], x[is_osc], 'r.')
         plt.xlim(tlims)
         plt.tight_layout()
-        plt.title('Raw signal. Red trace indicates periods of bursting', size=15)
-        plt.ylim((min(x), max(x)))
+        plt.title('Raw z-scored signal. Red trace indicates periods of bursting', size=15)
+        plt.ylim((-3, 3))
         plt.xlabel('Time (s)')
         plt.show()
 
@@ -203,8 +207,8 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
         plt.figure(figsize=figsize)
         plt.plot(t, x, 'k')
         plt.plot(t[is_osc], x[is_osc], 'r', linewidth=2)
-        plt.plot(t[df_shape['sample_' + center_e]], x[df_shape['sample_' + center_e]], 'k.', ms=15)
-        plt.plot(t[df_shape['sample_last_' + side_e]], x[df_shape['sample_last_' + side_e]], 'r.', ms=15)
+        plt.plot(t[df_shape['sample_' + center_e]], x[df_shape['sample_' + center_e]], 'm.', ms=10)
+        plt.plot(t[df_shape['sample_last_' + side_e]], x[df_shape['sample_last_' + side_e]], 'c.', ms=10)
         plt.xlim(tlims)
         plt.tight_layout()
         plt.title('Raw signal with highlights indicating violations of oscillatory burst requirements')
