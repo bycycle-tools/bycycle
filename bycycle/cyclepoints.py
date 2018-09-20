@@ -5,12 +5,12 @@ for individual cycles
 """
 
 import numpy as np
-from filt import bandpass_filter
+from bycycle.filt import bandpass_filter
 import warnings
 
 
 def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
-                 filter_fn=None, filter_kwargs=None):
+                 filter_kwargs=None):
     """
     Identify peaks and troughs in a time series.
 
@@ -29,10 +29,8 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
         if 'peak', then force the output to begin with a peak and end in a trough
         if 'trough', then force the output to begin with a trough and end in peak
         if None, force nothing
-    filter_fn : filter function, `filterfn(x, Fs, fc, remove_edge_artifacts=True)
-        Must have the same API as filt.bandpass_filter
     filter_kwargs : dict
-        keyword arguments to the filter_fn, such as 'N_cycles' or 'N_seconds'
+        keyword arguments to the filt.bandpass_filter(), such as 'N_cycles' or 'N_seconds'
         to control filter length
 
     Returns
@@ -49,8 +47,6 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
     """
 
     # Set default filtering parameters
-    if filter_fn is None:
-        filter_fn = filt.bandpass_filter
     if filter_kwargs is None:
         filter_kwargs = {}
 
@@ -59,7 +55,7 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
         boundary = int(np.ceil(Fs / float(f_range[0])))
 
     # Narrowband filter signal
-    x_filt = filter_fn(x, Fs, f_range, remove_edge_artifacts=False, **filter_kwargs)
+    x_filt = bandpass_filter(x, Fs, f_range, remove_edge_artifacts=False, **filter_kwargs)
 
     # Find rising and falling zerocrossings (narrowband)
     zeroriseN = _fzerorise(x_filt)

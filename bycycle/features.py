@@ -5,17 +5,18 @@ Quantify the shape of oscillatory waveforms on a cycle-by-cycle basis
 
 import numpy as np
 import pandas as pd
-from cyclepoints import find_extrema, find_zerox
-from filt import amp_by_time
-from burst import detect_bursts_cycles, detect_bursts_df_amp
+from bycycle.cyclepoints import find_extrema, find_zerox
+from bycycle.filt import amp_by_time
+from bycycle.burst import detect_bursts_cycles, detect_bursts_df_amp
+import warnings
 
 
-def cycle_by_cycle(x, Fs, f_range,
-                   center_extrema='P',
-                   burst_detection_method='cycles',
-                   burst_detection_kwargs=None,
-                   find_extrema_kwargs=None,
-                   hilbert_increase_N=False):
+def compute_features(x, Fs, f_range,
+                     center_extrema='P',
+                     burst_detection_method='cycles',
+                     burst_detection_kwargs=None,
+                     find_extrema_kwargs=None,
+                     hilbert_increase_N=False):
     """
     Segment a recording into individual cycles and compute
     simple features for each cycle
@@ -74,8 +75,6 @@ def cycle_by_cycle(x, Fs, f_range,
         volt_amp : average of rise and decay voltage
         volt_peak : voltage at the peak
         volt_trough : voltage at the last trough
-        volt_rdsym : voltage difference between rise and decay
-        volt_ptsym : voltage difference between peak and trough
         time_rdsym : fraction of cycle in the rise period
         time_ptsym : fraction of cycle in the peak period
         band_amp : average analytic amplitude of the oscillation
@@ -104,7 +103,7 @@ def cycle_by_cycle(x, Fs, f_range,
             not well suited for your desired application.
             ''')
     if find_extrema_kwargs is None:
-        find_extrema_kwargs = {}
+        find_extrema_kwargs = {'filter_kwargs': {'N_cycles': 3}}
     else:
         # Raise warning if switch from peak start to trough start
         if 'first_extrema' in find_extrema_kwargs.keys():
@@ -158,16 +157,14 @@ def cycle_by_cycle(x, Fs, f_range,
     shape_features['volt_amp'] = (shape_features['volt_decay'] + shape_features['volt_rise']) / 2
 
     # Comptue rise-decay symmetry features
-    shape_features['volt_rdsym'] = shape_features['volt_rise'] - shape_features['volt_decay']
     shape_features['time_rdsym'] = shape_features['time_rise'] / shape_features['period']
 
     # Compute peak-trough symmetry features
-    shape_features['volt_ptsym'] = shape_features['volt_peak'] + shape_features['volt_trough']
     shape_features['time_ptsym'] = shape_features['time_peak'] / (shape_features['time_peak'] + shape_features['time_trough'])
 
     # Compute average oscillatory amplitude estimate during cycle
-    amp = amp_by_time(x, Fs, f_range, hilbert_increase_N=hilbert_increase_N)
-    shape_features['band_amp'] = [np.mean(amp[Ts[i]:Ts[i + 1]]) for i in range(len(shape_features))]
+    amp = amp_by_time(x, Fs, f_range, hilbert_increase_N=hilbert_increase_N, filter_kwargs={'N_cycles': 3})
+    shape_features['band_amp'] = [np.mean(amp[Ts[i]:Ts[i + 1]]) for i in range(len(shape_features['sample_peak']))]
 
     # Convert feature dictionary into a DataFrame
     df = pd.DataFrame.from_dict(shape_features)
@@ -200,8 +197,6 @@ def cycle_by_cycle(x, Fs, f_range,
         # Need to reverse symmetry measures
         df['volt_peak'] = -df['volt_peak']
         df['volt_trough'] = -df['volt_trough']
-        df['volt_rdsym'] = -df['volt_rdsym']
-        df['volt_ptsym'] = -df['volt_ptsym']
         df['time_rdsym'] = 1 - df['time_rdsym']
         df['time_ptsym'] = 1 - df['time_ptsym']
 

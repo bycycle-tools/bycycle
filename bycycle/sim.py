@@ -47,7 +47,7 @@ def sim_filtered_brown_noise(T, Fs, f_range, N):
 
         # High pass filter
         taps = signal.firwin(N, f_range[0] / nyq, pass_zero=False)
-        brownNf = signal.filtfilt(taps, [1], brownN)
+        brownNf = np.convolve(taps, brownN, 'same')
         return brownNf[N:-N]
 
     else:
@@ -57,7 +57,7 @@ def sim_filtered_brown_noise(T, Fs, f_range, N):
         # Filter
         nyq = Fs / 2.
         taps = signal.firwin(N, np.array(f_range) / nyq, pass_zero=False)
-        brownNf = signal.filtfilt(taps, [1], brownN)
+        brownNf = np.convolve(taps, brownN, 'same')
         return brownNf[N:-N]
 
 
