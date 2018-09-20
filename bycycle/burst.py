@@ -212,7 +212,7 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
         plt.xlim(tlims)
         plt.tight_layout()
         plt.title('Raw signal with highlights indicating violations of oscillatory burst requirements')
-        plt.ylim((min(x), max(x)))
+        plt.ylim((-3, 3))
         plt.xlabel('Time (s)')
 
         # Highlight where burst detection parameters were violated
