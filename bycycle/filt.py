@@ -103,7 +103,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
 
     # Plot frequency response, if desired
     if plot_frequency_response:
-        _plot_frequency_response(Fs, kernel)
+        _plot_frequency_response(Fs, kernel, xmax=fc[1]*2)
 
     # Compute transition bandwidth
     if compute_transition_band:
@@ -258,7 +258,7 @@ def lowpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
         return signal_filt
 
 
-def _plot_frequency_response(Fs, b, a=1):
+def _plot_frequency_response(Fs, b, a=1, xmax=None):
     """Compute frequency response of a filter kernel b with sampling rate Fs"""
     w, h = spsignal.freqz(b, a)
     # Plot frequency response
@@ -268,6 +268,9 @@ def _plot_frequency_response(Fs, b, a=1):
     plt.title('Frequency response')
     plt.ylabel('Attenuation (dB)')
     plt.xlabel('Frequency (Hz)')
+    plt.ylim((-100, 1))
+    if xmax is not None:
+        plt.xlim((0, xmax))
     if isinstance(a, int):
         # Plot filter kernel
         plt.subplot(1, 2, 2)
@@ -276,8 +279,7 @@ def _plot_frequency_response(Fs, b, a=1):
     plt.show()
 
 
-def phase_by_time(x, Fs, f_range,
-                  filter_fn=None, filter_kwargs=None,
+def phase_by_time(x, Fs, f_range, filter_kwargs=None,
                   hilbert_increase_N=False):
     """
     Calculate the phase time series of a neural oscillation
@@ -290,11 +292,8 @@ def phase_by_time(x, Fs, f_range,
         Sampling rate
     f_range : (low, high), Hz
         Frequency range
-    filter_fn : function, optional
-        The filtering function, with api:
-        `filterfn(x, Fs, pass_type, fc, remove_edge_artifacts=True)
     filter_kwargs : dict, optional
-        Keyword parameters to pass to `filterfn(.)`
+        Keyword parameters to pass to bandpass_filter()
     hilbert_increase_N : bool, optional
         if True, zeropad the signal to length the next power of 2 when doing the hilbert transform.
         This is because scipy.signal.hilbert can be very slow for some lengths of x
@@ -305,20 +304,16 @@ def phase_by_time(x, Fs, f_range,
         Time series of phase
     """
     # Set default filtering parameters
-    if filter_fn is None:
-        filter_fn = bandpass_filter
     if filter_kwargs is None:
         filter_kwargs = {}
     # Filter signal
-    x_filt = filter_fn(x, Fs, fc=f_range,
-                       remove_edge_artifacts=False, **filter_kwargs)
+    x_filt = bandpass_filter(x, Fs, fc=f_range, remove_edge_artifacts=False, **filter_kwargs)
     # Compute phase time series
     pha = np.angle(_hilbert_ignore_nan(x_filt, hilbert_increase_N=hilbert_increase_N))
     return pha
 
 
-def amp_by_time(x, Fs, f_range,
-                filter_fn=None, filter_kwargs=None,
+def amp_by_time(x, Fs, f_range, filter_kwargs=None,
                 hilbert_increase_N=False):
     """
     Calculate the amplitude time series
@@ -331,11 +326,8 @@ def amp_by_time(x, Fs, f_range,
         Sampling rate
     f_range : (low, high), Hz
         The frequency filtering range
-    filter_fn : function, optional
-        The filtering function, `filterfn(x, f_range, filter_kwargs)`
-        Must have the same API as filt.bandpass
     filter_kwargs : dict, optional
-        Keyword parameters to pass to `filterfn(.)`
+        Keyword parameters to pass to bandpass_filter()
     hilbert_increase_N : bool, optional
         if True, zeropad the signal to length the next power of 2 when doing the hilbert transform.
         This is because scipy.signal.hilbert can be very slow for some lengths of x
@@ -346,13 +338,10 @@ def amp_by_time(x, Fs, f_range,
         Time series of amplitude
     """
     # Set default filtering parameters
-    if filter_fn is None:
-        filter_fn = bandpass_filter
     if filter_kwargs is None:
         filter_kwargs = {}
     # Filter signal
-    x_filt = filter_fn(x, Fs, fc=f_range,
-                       remove_edge_artifacts=False, **filter_kwargs)
+    x_filt = bandpass_filter(x, Fs, fc=f_range, remove_edge_artifacts=False, **filter_kwargs)
     # Compute amplitude time series
     amp = np.abs(_hilbert_ignore_nan(x_filt, hilbert_increase_N=hilbert_increase_N))
     return amp

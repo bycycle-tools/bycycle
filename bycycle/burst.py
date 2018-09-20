@@ -5,7 +5,7 @@ Analyze periods of oscillatory bursting in a neural signal
 
 import numpy as np
 import matplotlib.pyplot as plt
-from filt import amp_by_time, bandpass_filter
+from bycycle.filt import amp_by_time, bandpass_filter
 
 
 def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
@@ -378,8 +378,7 @@ def twothresh_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
             "Invalid number of elements in 'amp_threshes' parameter")
 
     # Compute amplitude time series
-    x_amplitude = amp_by_time(
-        x, Fs, f_range, filter_fn=bandpass_filter, filter_kwargs=filter_kwargs)
+    x_amplitude = amp_by_time(x, Fs, f_range, filter_kwargs=filter_kwargs)
 
     # Set magnitude as power or amplitude
     if magnitude_type == 'power':
