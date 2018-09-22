@@ -26,22 +26,22 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
         The sampling rate
     fc : list or tuple (lo, hi)
         The low and high cutoff frequencies for the filter
-    N_cycles : float, optional (default: 3)
+    N_cycles : float (default: 3)
         Length of filter in terms of number of cycles at the low cutoff frequency
         By default, this is set to 3 cycles of the low cutoff frequency
         This parameter is overwritten by 'N_seconds'
-    N_seconds : float, optional
+    N_seconds : float
         Length of filter (seconds)
-    plot_frequency_response : bool, optional
+    plot_frequency_response : bool
         if True, plot the frequency response of the filter
-    return_kernel : bool, optional
+    return_kernel : bool
         if True, return the complex filter kernel
-    print_transition_band : bool, optional
+    print_transition_band : bool
         if True, the transition bandwidth is printed
         defined as the frequency range between -20dB attenuation
         This is always printed as a warning if this bandwidth is
         wider than twice the passband width
-    remove_edge_artifacts : bool, optional
+    remove_edge_artifacts : bool
         if True, replace the samples that are within half a kernel's length to
         the signal edge with np.nan
 
@@ -175,17 +175,17 @@ def lowpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
         The sampling rate
     fc : float
         The cutoff frequencies for the filter
-    N_cycles : float, optional (default: 3)
+    N_cycles : float (default: 3)
         Length of filter in terms of number of cycles at the cutoff frequency
         By default, this is set to 3 cycles of the low cutoff frequency
         This parameter is overwritten by 'N_seconds'
-    N_seconds : float, optional
+    N_seconds : float
         Length of filter (seconds)
-    plot_frequency_response : bool, optional
+    plot_frequency_response : bool
         if True, plot the frequency response of the filter
-    return_kernel : bool, optional
+    return_kernel : bool
         if True, return the complex filter kernel
-    remove_edge_artifacts : bool, optional
+    remove_edge_artifacts : bool
         if True, replace the samples that are within half a kernel's length to
         the signal edge with np.nan
 
@@ -283,7 +283,8 @@ def _plot_frequency_response(Fs, b, a=1, xmax=None):
 
 
 def phase_by_time(x, Fs, f_range, filter_kwargs=None,
-                  hilbert_increase_N=False):
+                  hilbert_increase_N=False,
+                  remove_edge_artifacts=True):
     """
     Calculate the phase time series of a neural oscillation
 
@@ -300,6 +301,11 @@ def phase_by_time(x, Fs, f_range, filter_kwargs=None,
     hilbert_increase_N : bool, optional
         if True, zeropad the signal to length the next power of 2 when doing the hilbert transform.
         This is because scipy.signal.hilbert can be very slow for some lengths of x
+    remove_edge_artifacts : bool
+        if True, replace the samples that are within half a kernel's length to
+        the signal edge with np.nan.
+        This is done after the Hilbert Transform to minimize edge artifacts from
+        this transform too.
 
     Returns
     -------
@@ -310,14 +316,25 @@ def phase_by_time(x, Fs, f_range, filter_kwargs=None,
     if filter_kwargs is None:
         filter_kwargs = {}
     # Filter signal
-    x_filt = bandpass_filter(x, Fs, fc=f_range, remove_edge_artifacts=False, **filter_kwargs)
+    x_filt, kernel = bandpass_filter(x, Fs, fc=f_range, return_kernel=True,
+                             remove_edge_artifacts=False, **filter_kwargs)
     # Compute phase time series
     pha = np.angle(_hilbert_ignore_nan(x_filt, hilbert_increase_N=hilbert_increase_N))
+
+    # Remove edge artifacts if desired
+    if remove_edge_artifacts:
+        N = len(kernel)
+        N_rmv = int(np.ceil(N / 2))
+        first_nonan = np.where(~np.isnan(x))[0][0]
+        total_nanedge = N_rmv + first_nonan
+        pha[:total_nanedge] = np.nan
+        pha[-total_nanedge:] = np.nan
     return pha
 
 
 def amp_by_time(x, Fs, f_range, filter_kwargs=None,
-                hilbert_increase_N=False):
+                hilbert_increase_N=False,
+                remove_edge_artifacts=True):
     """
     Calculate the amplitude time series
 
@@ -334,6 +351,11 @@ def amp_by_time(x, Fs, f_range, filter_kwargs=None,
     hilbert_increase_N : bool, optional
         if True, zeropad the signal to length the next power of 2 when doing the hilbert transform.
         This is because scipy.signal.hilbert can be very slow for some lengths of x
+    remove_edge_artifacts : bool
+        if True, replace the samples that are within half a kernel's length to
+        the signal edge with np.nan.
+        This is done after the Hilbert Transform to minimize edge artifacts from
+        this transform too.
 
     Returns
     -------
@@ -344,13 +366,25 @@ def amp_by_time(x, Fs, f_range, filter_kwargs=None,
     if filter_kwargs is None:
         filter_kwargs = {}
     # Filter signal
-    x_filt = bandpass_filter(x, Fs, fc=f_range, remove_edge_artifacts=False, **filter_kwargs)
+    x_filt, kernel = bandpass_filter(x, Fs, fc=f_range, return_kernel=True,
+                                     remove_edge_artifacts=False, **filter_kwargs)
     # Compute amplitude time series
     amp = np.abs(_hilbert_ignore_nan(x_filt, hilbert_increase_N=hilbert_increase_N))
+
+    # Remove edge artifacts if desired
+    if remove_edge_artifacts:
+        N = len(kernel)
+        N_rmv = int(np.ceil(N / 2))
+        first_nonan = np.where(~np.isnan(x))[0][0]
+        total_nanedge = N_rmv + first_nonan
+        amp[:total_nanedge] = np.nan
+        amp[-total_nanedge:] = np.nan
     return amp
 
 
-def freq_by_time(x, Fs, f_range):
+def freq_by_time(x, Fs, f_range, filter_kwargs=None,
+                hilbert_increase_N=False,
+                remove_edge_artifacts=True):
     '''
     Estimate the instantaneous frequency at each sample
 
@@ -362,6 +396,16 @@ def freq_by_time(x, Fs, f_range):
         sampling rate
     f_range : (low, high), Hz
         frequency range for filtering
+    filter_kwargs : dict, optional
+        Keyword parameters to pass to bandpass_filter()
+    hilbert_increase_N : bool, optional
+        if True, zeropad the signal to length the next power of 2 when doing the hilbert transform.
+        This is because scipy.signal.hilbert can be very slow for some lengths of x
+    remove_edge_artifacts : bool
+        if True, replace the samples that are within half a kernel's length to
+        the signal edge with np.nan.
+        This is done after the Hilbert Transform to minimize edge artifacts from
+        this transform too.
 
     Returns
     -------
@@ -373,7 +417,9 @@ def freq_by_time(x, Fs, f_range):
     * This function assumes monotonic phase, so
     a phase slip will be processed as a very high frequency
     '''
-    pha = phase_by_time(x, Fs, f_range)
+    pha = phase_by_time(x, Fs, f_range, filter_kwargs=filter_kwargs,
+                        hilbert_increase_N=hilbert_increase_N,
+                        remove_edge_artifacts=remove_edge_artifacts)
     phadiff = np.diff(pha)
     phadiff[phadiff < 0] = phadiff[phadiff < 0] + 2 * np.pi
     i_f = Fs * phadiff / (2 * np.pi)
