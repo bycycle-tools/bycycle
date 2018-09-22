@@ -132,7 +132,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
             print('Filter bandwidth is {:.1f} Hz (i.e. there is less than 20dB attenuation between {:.1f} Hz and {:.1f} Hz).'.format(
                 filter_bw, cf_20db_1, cf_20db_2))
 
-        if filter_bw > pass_bw*2:
+        if filter_bw > pass_bw*3:
             # Raise warning if filter bandwidth is more than twice the defined bandwidth
             warnings.warn('Filter bandwidth is {:.1f} Hz (i.e. there is less than 20dB attenuation between {:.1f} Hz and {:.1f} Hz). This is greater than twice the defined pass/stop bandwidth of {:.1f} Hz'.format(
                 filter_bw, cf_20db_1, cf_20db_2, pass_bw))
