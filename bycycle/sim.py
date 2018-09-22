@@ -273,12 +273,26 @@ def sim_bursty_oscillator(freq, T, Fs, rdsym=None, prob_enter_burst=None,
                     np.random.randn() * cycle_features_use['amp_burst_std']
                 current_burst_rdsym_mean = cycle_features_use['rdsym_mean'] + \
                     np.random.randn() * cycle_features_use['rdsym_burst_std']
-            period = current_burst_period_mean + \
-                np.random.randn() * cycle_features_use['period_std']
-            amp = current_burst_amp_mean + \
-                np.random.randn() * cycle_features_use['amp_std']
-            rdsym = current_burst_rdsym_mean + \
-                np.random.randn() * cycle_features_use['rdsym_std']
+
+            N_iter = 0
+            period, amp, rdsym = 0, 0, 0
+            while np.min([period, amp, rdsym]) <= 0:
+                if N_iter > 0:
+                    if period < 0:
+                        feat0 = 'period'
+                    elif rdsym < 0:
+                        feat0 = 'rise-decay symmetry'
+                    else:
+                        feat0 = 'amp'
+                    warnings.warn('Simulation settings are such that the {:s} is occasionally computed to be negative. You may want to reset your simulation settings'.format(feat0))
+                period = current_burst_period_mean + \
+                    np.random.randn() * cycle_features_use['period_std']
+                amp = current_burst_amp_mean + \
+                    np.random.randn() * cycle_features_use['amp_std']
+                rdsym = current_burst_rdsym_mean + \
+                    np.random.randn() * cycle_features_use['rdsym_std']
+                N_iter +=1
+
             periods.append(int(period))
             amps.append(amp)
             rdsyms.append(rdsym)
@@ -319,6 +333,7 @@ def sim_bursty_oscillator(freq, T, Fs, rdsym=None, prob_enter_burst=None,
             # Add a cycle with rdsym
             rise_samples = int(np.round(row['period'] * row['rdsym']))
             decay_samples = row['period'] - rise_samples
+
             pha_t = np.hstack([np.linspace(0, np.pi, decay_samples + 1)[1:],
                                np.linspace(-np.pi, 0, rise_samples + 1)[1:]])
             cycle_t = np.cos(pha_t)
