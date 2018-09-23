@@ -20,10 +20,8 @@ def test_find_extrema():
     T = 2 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
 
-    N_samples_cycle = int(Fs / cf)
-    N_cycles = int(T * cf)
     rdsym = .3
-    signal = sim.sim_oscillator(N_samples_cycle, N_cycles, rdsym=rdsym)
+    signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
 
     # find local maxima and minima using scipy
     maxima = argrelextrema(signal, np.greater)
@@ -53,10 +51,8 @@ def test_find_zerox():
     T = 2 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
 
-    N_samples_cycle = int(Fs / cf)
-    N_cycles = int(T * cf)
     rdsym = .3
-    signal = sim.sim_oscillator(N_samples_cycle, N_cycles, rdsym=rdsym)
+    signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
 
     # Find peaks and troughs
     f_range = (6, 14)
@@ -82,10 +78,8 @@ def test_extrema_interpolated_phase():
     T = 2 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
 
-    N_samples_cycle = int(Fs / cf)
-    N_cycles = int(T * cf)
     rdsym = .3
-    signal = sim.sim_oscillator(N_samples_cycle, N_cycles, rdsym=rdsym)
+    signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
 
     # Find peaks and troughs
     f_range = (6, 14)

@@ -19,10 +19,8 @@ def test_compute_features():
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
 
-    N_samples_cycle = int(Fs / cf)
-    N_cycles = int(T * cf)
     rdsym = .3
-    signal = sim.sim_oscillator(N_samples_cycle, N_cycles, rdsym=rdsym)
+    signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
 
     # Compute cycle features
     f_range = (6, 14)
