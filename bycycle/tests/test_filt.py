@@ -19,7 +19,7 @@ def test_bandpass():
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
     signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
-                                             prob_leave_burst=.1, SNR=5, rdsym=.2)
+                                             prob_leave_burst=.1, SNR=5)
 
     # Test output same length as input
     N_seconds = 0.5
@@ -76,7 +76,7 @@ def test_lowpass():
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
     signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
-                                             prob_leave_burst=.1, SNR=5, rdsym=.2)
+                                             prob_leave_burst=.1, SNR=5)
 
     # Test output same length as input
     N_seconds = 0.5
@@ -110,7 +110,7 @@ def test_phase():
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
     signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
-                                             prob_leave_burst=.1, SNR=5, rdsym=.3)
+                                             prob_leave_burst=.1, SNR=5)
 
     # Test output same length as input
     f_range = (6, 14)
@@ -151,7 +151,7 @@ def test_amp():
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
     signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
-                                             prob_leave_burst=.1, SNR=5, rdsym=.3)
+                                             prob_leave_burst=.1, SNR=5)
 
     # Test output same length as input
     f_range = (6, 14)
@@ -192,7 +192,7 @@ def test_freq():
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
     signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
-                                             prob_leave_burst=.1, SNR=5, rdsym=.3)
+                                             prob_leave_burst=.1, SNR=5)
 
     # Test output same length as input
     f_range = (6, 14)
