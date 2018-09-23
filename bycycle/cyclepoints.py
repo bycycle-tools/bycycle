@@ -6,7 +6,6 @@ for individual cycles
 
 import numpy as np
 from bycycle.filt import bandpass_filter
-import warnings
 
 
 def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
