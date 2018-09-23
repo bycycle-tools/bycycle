@@ -22,7 +22,7 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     df : pandas DataFrame
         dataframe of waveform features for individual cycles, trough-centered
     x : numpy array
-    	trace used to compute monotonicity
+        trace used to compute monotonicity
     amplitude_fraction_threshold : float (0 to 1)
         the minimum normalized amplitude a cycle must have
         in order to be considered in an oscillation.
@@ -290,7 +290,7 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
 
 
 def detect_bursts_df_amp(df, x, Fs, f_range,
-                         amp_threshes = (1, 2), N_cycles_min=3,
+                         amp_threshes=(1, 2), N_cycles_min=3,
                          filter_kwargs=None):
     """
 
@@ -335,15 +335,19 @@ def detect_bursts_df_amp(df, x, Fs, f_range,
     burst_fracs = []
     for i, row in df.iterrows():
         fraction_bursting = np.mean(x_burst[int(row['sample_last_trough']):
-                                            int(row['sample_next_trough' + 1])])
+                                            int(row['sample_next_trough'] + 1)])
         burst_fracs.append(fraction_bursting)
 
     # Determine cycles that are defined as bursting throughout the whole cycle
-    df['is_burst'] = burst_fracs == 1
+    df['is_burst'] = [x == 1 for x in burst_fracs]
+
+    df = _min_consecutive_cycles(df, N_cycles_min=N_cycles_min)
+    df['is_burst'] = df['is_burst'].astype(bool)
+
     return df
 
 
-def twothresh_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
+def twothresh_amp(x, Fs, f_range, amp_threshes, N_cycles_min=3,
                   magnitude_type='amplitude',
                   return_amplitude=False,
                   filter_kwargs=None):
@@ -364,7 +368,7 @@ def twothresh_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
         These values are in units of amplitude
         (or power, if specified) normalized to the median
         amplitude (value 1).
-    min_osc_periods : float
+    N_cycles_min : float
         minimum burst duration in terms of number of cycles of f_range[0]
     magnitude_type : string in ('power', 'amplitude')
         metric of magnitude used for thresholding
@@ -382,7 +386,8 @@ def twothresh_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
             "Invalid number of elements in 'amp_threshes' parameter")
 
     # Compute amplitude time series
-    x_amplitude = amp_by_time(x, Fs, f_range, filter_kwargs=filter_kwargs)
+    x_amplitude = amp_by_time(x, Fs, f_range, filter_kwargs=filter_kwargs,
+                              remove_edge_artifacts=False)
 
     # Set magnitude as power or amplitude
     if magnitude_type == 'power':
@@ -399,7 +404,7 @@ def twothresh_amp(x, Fs, f_range, amp_threshes, min_osc_periods=3,
     isosc = _2threshold_split(x_magnitude, amp_threshes[1], amp_threshes[0])
 
     # Remove short time periods of oscillation
-    min_period_length = int(np.ceil(min_osc_periods * Fs / f_range[0]))
+    min_period_length = int(np.ceil(N_cycles_min * Fs / f_range[0]))
     isosc_noshort = _rmv_short_periods(isosc, min_period_length)
 
     if return_amplitude:
