@@ -1,7 +1,10 @@
 # bycycle - cycle-by-cycle analysis of neural oscillations
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![License](https://img.shields.io/pypi/l/fooof.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Latest Version](https://img.shields.io/pypi/v/bycycle.svg)](https://pypi.python.org/pypi/bycycle/)
+[![Build Status](https://travis-ci.org/voytekresearch/bycycle.svg)](https://travis-ci.org/voytekresearch/bycycle)
+[![License](https://img.shields.io/pypi/l/bycycle.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Supported Python Versions](https://img.shields.io/pypi/pyversions/bycycle.svg)](https://pypi.python.org/pypi/bycycle/)
 
 bycycle is an approach to analyzing features of neural oscillations in the time domain as opposed to the frequency domain.
 
