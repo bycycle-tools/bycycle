@@ -147,7 +147,7 @@ def sim_noisy_oscillator(T, Fs, freq, rdsym=.5, f_hipass_brown=2, SNR=1):
     # Generate oscillator
     N_samples_cycle = int(Fs / freq)
     N_cycles = int(np.ceil(N_samples / N_samples_cycle))
-    oscillator = sim_oscillator(N_samples_cycle, N_cycles, rdsym=rdsym)
+    oscillator = sim_oscillator(T, Fs, freq, rdsym=rdsym)
     oscillator = oscillator[:N_samples]
 
     # Normalize brown noise power
@@ -160,8 +160,8 @@ def sim_noisy_oscillator(T, Fs, freq, rdsym=.5, f_hipass_brown=2, SNR=1):
     return signal
 
 
-def sim_bursty_oscillator(freq, T, Fs, rdsym=None, prob_enter_burst=None,
-                          prob_leave_burst=None, cycle_features=None,
+def sim_bursty_oscillator(T, Fs, freq, prob_enter_burst=.1,
+                          prob_leave_burst=.1, cycle_features=None,
                           return_cycle_df=False):
     """Simulate a band-pass filtered signal with 1/f^2
     Input suggestions: f_range=(2,None), Fs=1000, N=1001
@@ -174,12 +174,6 @@ def sim_bursty_oscillator(freq, T, Fs, rdsym=None, prob_enter_burst=None,
         signal duration (seconds)
     Fs : float
         signal sampling rate
-    rdsym : float
-        rise-decay symmetry of the oscillator;
-        fraction of the period in the rise time;
-        =0.5 - symmetric (sine wave)
-        <0.5 - shorter rise, longer decay
-        >0.5 - longer rise, shorter decay
     prob_enter_burst : float
         probability of a cycle being oscillating given
         the last cycle is not oscillating
@@ -216,23 +210,13 @@ def sim_bursty_oscillator(freq, T, Fs, rdsym=None, prob_enter_burst=None,
         cycle-by-cycle properties of the simulated oscillator
     """
 
-    # Set default prob_enter_burst and prob_leave_burst and rdsym
-    if prob_enter_burst is None:
-        prob_enter_burst = .2
-
-    if prob_leave_burst is None:
-        prob_leave_burst = .2
-
-    if rdsym is None:
-        rdsym = .5
-
     # Define default parameters for cycle features
     mean_period_samples = int(Fs / freq)
     cycle_features_use = {'amp_mean': 1, 'amp_burst_std': .1, 'amp_std': .2,
                           'period_mean': mean_period_samples,
                           'period_burst_std': .1 * mean_period_samples,
                           'period_std': .1 * mean_period_samples,
-                          'rdsym_mean': rdsym, 'rdsym_burst_std': .05, 'rdsym_std': .05}
+                          'rdsym_mean': .5, 'rdsym_burst_std': .05, 'rdsym_std': .05}
 
     # Overwrite default cycle features with those specified
     if cycle_features is not None:
@@ -295,7 +279,7 @@ def sim_bursty_oscillator(freq, T, Fs, rdsym=None, prob_enter_burst=None,
                     np.random.randn() * cycle_features_use['amp_std']
                 rdsym = current_burst_rdsym_mean + \
                     np.random.randn() * cycle_features_use['rdsym_std']
-                N_iter +=1
+                N_iter += 1
 
             periods.append(int(period))
             amps.append(amp)
@@ -361,8 +345,8 @@ def sim_bursty_oscillator(freq, T, Fs, rdsym=None, prob_enter_burst=None,
         return x
 
 
-def sim_noisy_bursty_oscillator(freq, T, Fs, rdsym=None, f_hipass_brown=2, SNR=1,
-                                prob_enter_burst=None, prob_leave_burst=None,
+def sim_noisy_bursty_oscillator(T, Fs, freq, f_hipass_brown=2, SNR=1,
+                                prob_enter_burst=.1, prob_leave_burst=.1,
                                 cycle_features=None, return_components=False,
                                 return_cycle_df=False):
     """Simulate a band-pass filtered signal with 1/f^2
@@ -370,18 +354,12 @@ def sim_noisy_bursty_oscillator(freq, T, Fs, rdsym=None, f_hipass_brown=2, SNR=1
 
     Parameters
     ----------
-    freq : float
-        oscillator frequency
     T : float
         signal duration (seconds)
     Fs : float
         signal sampling rate
-    rdsym : float
-        rise-decay symmetry of the oscillator;
-        fraction of the period in the rise time;
-        =0.5 - symmetric (sine wave)
-        <0.5 - shorter rise, longer decay
-        >0.5 - longer rise, shorter decay
+    freq : float
+        oscillator frequency
     f_hipass_brown : float
         frequency (Hz) at which to high-pass-filter
         brown noise
@@ -437,14 +415,11 @@ def sim_noisy_bursty_oscillator(freq, T, Fs, rdsym=None, f_hipass_brown=2, SNR=1
     if N % 2 == 0:
         N += 1
 
-    # Determine length of signal in samples
-    N_samples = int(T * Fs)
-
     # Generate filtered brown noise
     brown = sim_filtered_brown_noise(T, Fs, (f_hipass_brown, None), N)
 
     # Generate oscillator
-    oscillator, df = sim_bursty_oscillator(freq, T, Fs, rdsym=rdsym,
+    oscillator, df = sim_bursty_oscillator(T, Fs, freq,
                                            prob_enter_burst=prob_enter_burst,
                                            prob_leave_burst=prob_leave_burst,
                                            cycle_features=cycle_features,

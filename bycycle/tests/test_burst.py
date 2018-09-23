@@ -20,7 +20,7 @@ def test_detect_bursts_cycles():
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
 
-    signal = sim.sim_noisy_bursty_oscillator(cf, T, Fs, prob_enter_burst=.1,
+    signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
                                              prob_leave_burst=.1, SNR=5, rdsym=.4)
     signal = filt.lowpass_filter(signal, Fs, 30, N_seconds=.3,
                                  remove_edge_artifacts=False)
@@ -52,7 +52,7 @@ def test_detect_bursts_df_amp():
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
 
-    signal = sim.sim_noisy_bursty_oscillator(cf, T, Fs, prob_enter_burst=.1,
+    signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
                                              prob_leave_burst=.1, SNR=5, rdsym=.4)
     signal = filt.lowpass_filter(signal, Fs, 30, N_seconds=.3,
                                  remove_edge_artifacts=False)

@@ -18,7 +18,7 @@ def test_bandpass():
     cf = 10 # Oscillation center frequency
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
-    signal = sim.sim_noisy_bursty_oscillator(cf, T, Fs, prob_enter_burst=.1,
+    signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
                                              prob_leave_burst=.1, SNR=5, rdsym=.2)
 
     # Test output same length as input
@@ -75,7 +75,7 @@ def test_lowpass():
     cf = 10 # Oscillation center frequency
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
-    signal = sim.sim_noisy_bursty_oscillator(cf, T, Fs, prob_enter_burst=.1,
+    signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
                                              prob_leave_burst=.1, SNR=5, rdsym=.2)
 
     # Test output same length as input
@@ -109,7 +109,7 @@ def test_phase():
     cf = 10 # Oscillation center frequency
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
-    signal = sim.sim_noisy_bursty_oscillator(cf, T, Fs, prob_enter_burst=.1,
+    signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
                                              prob_leave_burst=.1, SNR=5, rdsym=.3)
 
     # Test output same length as input
@@ -150,7 +150,7 @@ def test_amp():
     cf = 10 # Oscillation center frequency
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
-    signal = sim.sim_noisy_bursty_oscillator(cf, T, Fs, prob_enter_burst=.1,
+    signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
                                              prob_leave_burst=.1, SNR=5, rdsym=.3)
 
     # Test output same length as input
@@ -191,7 +191,7 @@ def test_freq():
     cf = 10 # Oscillation center frequency
     T = 10 # Recording duration (seconds)
     Fs = 1000 # Sampling rate
-    signal = sim.sim_noisy_bursty_oscillator(cf, T, Fs, prob_enter_burst=.1,
+    signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
                                              prob_leave_burst=.1, SNR=5, rdsym=.3)
 
     # Test output same length as input
