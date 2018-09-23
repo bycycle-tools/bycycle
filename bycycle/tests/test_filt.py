@@ -43,17 +43,6 @@ def test_bandpass():
                                        remove_edge_artifacts=False)
     assert np.all(np.logical_not(np.isnan(signal_filt)))
 
-    # Test to get warning if transition band is too wide
-    with warnings.catch_warnings(record=True) as w:
-        # Cause all warnings to always be triggered.
-        warnings.simplefilter("always")
-        # Trigger a warning.
-        signal_filt = filt.bandpass_filter(signal, Fs, (8, 12),
-                                           N_seconds=.1)
-        # Verify some things
-        assert len(w) == 1
-        assert "Filter bandwidth" in str(w[-1].message)
-
     # Test returns kernel and signal
     out = filt.bandpass_filter(signal, Fs, (8, 12), N_seconds=N_seconds,
                                return_kernel=True)
