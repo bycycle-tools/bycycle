@@ -16,7 +16,18 @@ long_description = \
 bycycle: cycle-by-cycle analysis of neural oscillations
 =======================================================
 
-bycycle description coming soon
+bycycle is a python implementation of a cycle-by-cycle approach to analyzing
+neural oscillations (see Cole & Voytek, 2018, biorxiv). This approach
+quantifies features of neural oscillations in the time domain as opposed
+to the frequency domain. Rather than applying narrowband filters and other
+methods that utilize a sinusoidal basis, this characterization segments a
+recording into individual cycles and directly measures each of their properties
+including amplitude, period, and symmetry. This is most advantageous for
+analyzing the waveform shape properties of neural oscillations, but it may also
+provide advantages for studying traditional amplitude and frequency effects, as
+well. It also implements burst detection, which has been gaining traction
+recently (see e.g. Jones, 2016, COiN) so that we only analyze oscillatory
+properties when there is indeed an oscillation.
 
 If you use this code in your project, please cite:
 
@@ -37,7 +48,7 @@ setup(
     packages = find_packages(),
     license = 'Apache License, 2.0',
     classifiers = [
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering',
         'License :: OSI Approved :: Apache Software License',
