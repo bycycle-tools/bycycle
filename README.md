@@ -40,8 +40,6 @@ To install the latest stable release of bycycle, you can use pip:
 
 `$ pip install bycycle`
 
-## Development Branch
-
 To get the lastest, development version, you can get the code using git:
 
 `$ git clone https://github.com/voytekresearch/bycycle`
