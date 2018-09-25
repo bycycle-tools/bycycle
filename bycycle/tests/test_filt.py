@@ -8,13 +8,17 @@ The tests here are not strong tests for accuracy.
 
 from bycycle import filt
 import numpy as np
+import os
+
+# Set data path
+data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
 
 
 def test_bandpass():
     """Test bandpass filter functionality"""
 
     # Load signal
-    signal = np.load('data/sim_bursting.npy')
+    signal = np.load(data_path + 'sim_bursting.npy')
     Fs = 1000  # Sampling rate
 
     # Test output same length as input
@@ -56,7 +60,7 @@ def test_lowpass():
     """Test lowpass filter functionality"""
 
     # Load signal
-    signal = np.load('data/sim_bursting.npy')
+    signal = np.load(data_path + 'sim_bursting.npy')
     Fs = 1000  # Sampling rate
 
     # Test output same length as input
@@ -86,7 +90,7 @@ def test_amp():
     """Test phase time series functionality"""
 
     # Load signal
-    signal = np.load('data/sim_bursting.npy')
+    signal = np.load(data_path + 'sim_bursting.npy')
     Fs = 1000  # Sampling rate
     f_range = (6, 14)  # Frequency range
 
@@ -123,7 +127,7 @@ def test_phase():
     """Test phase time series functionality"""
 
     # Load signal
-    signal = np.load('data/sim_bursting.npy')
+    signal = np.load(data_path + 'sim_bursting.npy')
     Fs = 1000  # Sampling rate
     f_range = (6, 14)  # Frequency range
 

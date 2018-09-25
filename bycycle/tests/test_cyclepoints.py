@@ -9,13 +9,17 @@ The tests here are not strong tests for accuracy.
 from bycycle import cyclepoints
 import numpy as np
 from scipy.signal import argrelextrema
+import os
+
+# Set data path
+data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
 
 
 def test_find_extrema():
     """Test ability to find peaks and troughs"""
 
     # Load signal
-    signal = np.load('data/sim_stationary.npy')
+    signal = np.load(data_path + 'sim_stationary.npy')
     Fs = 1000  # Sampling rate
     f_range = (6, 14)  # Frequency range
 
@@ -42,7 +46,7 @@ def test_find_zerox():
     """Test ability to find peaks and troughs"""
 
     # Load signal
-    signal = np.load('data/sim_stationary.npy')
+    signal = np.load(data_path + 'sim_stationary.npy')
     Fs = 1000  # Sampling rate
     f_range = (6, 14)  # Frequency range
 
@@ -64,7 +68,7 @@ def test_extrema_interpolated_phase():
     """Test waveform phase estimate"""
 
     # Load signal
-    signal = np.load('data/sim_stationary.npy')
+    signal = np.load(data_path + 'sim_stationary.npy')
     Fs = 1000  # Sampling rate
     f_range = (6, 14)  # Frequency range
 

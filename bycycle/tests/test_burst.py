@@ -9,13 +9,17 @@ The tests here are not strong tests for accuracy.
 import numpy as np
 from bycycle import burst, filt, features
 import itertools
+import os
+
+# Set data path
+data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
 
 
 def test_detect_bursts_cycles():
     """Test amplitude and period consistency burst detection"""
 
     # Load signal
-    signal = np.load('data/sim_bursting.npy')
+    signal = np.load(data_path + 'sim_bursting.npy')
     Fs = 1000  # Sampling rate
     f_range = (6, 14)  # Frequency range
 
@@ -43,7 +47,7 @@ def test_detect_bursts_df_amp():
     """Test amplitde-threshold burst detection"""
 
     # Load signal
-    signal = np.load('data/sim_bursting.npy')
+    signal = np.load(data_path + 'sim_bursting.npy')
     Fs = 1000  # Sampling rate
     f_range = (6, 14)  # Frequency range
     signal = filt.lowpass_filter(signal, Fs, 30, N_seconds=.3,
