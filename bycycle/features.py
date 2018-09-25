@@ -44,7 +44,9 @@ def compute_features(x, Fs, f_range,
     find_extrema_kwargs : dict or None
         Keyword arguments for function to find peaks and
         troughs (cyclepoints.find_extrema) to change filter
-        parameters or boundary
+        parameters or boundary.
+        By default, it sets the filter length to three cycles
+        of the low cutoff frequency (`f_range[0]`)
     hilbert_increase_N : bool
         corresponding kwarg for filt.amp_by_time
         If true, this zeropads the signal when computing the
