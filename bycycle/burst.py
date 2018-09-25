@@ -198,7 +198,7 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
         plt.xlim(tlims)
         plt.tight_layout()
         plt.title('Raw z-scored signal. Red trace indicates periods of bursting', size=15)
-        plt.ylim((-3, 3))
+        plt.ylim((-4, 4))
         plt.xlabel('Time (s)')
         plt.show()
 
@@ -212,21 +212,21 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
         plt.xlim(tlims)
         plt.tight_layout()
         plt.title('Raw signal with highlights indicating violations of oscillatory burst requirements')
-        plt.ylim((-3, 3))
+        plt.ylim((-4, 4))
         plt.xlabel('Time (s)')
 
         # Highlight where burst detection parameters were violated
         # Use a different color for each burst detection parameter
-        plt.fill_between(t[df_shape['sample_last_' + side_e]], min(x), max(x) + (max(x) - min(x)) * 100,
+        plt.fill_between(t[df_shape['sample_last_' + side_e]], -4, 400,
                          where=df_shape['amp_fraction'] < osc_kwargs['amplitude_fraction_threshold'],
                          interpolate=True, facecolor='blue', alpha=0.5, )
-        plt.fill_between(t[df_shape['sample_last_' + side_e]], min(x), max(x) + (max(x) - min(x)) * 100,
+        plt.fill_between(t[df_shape['sample_last_' + side_e]], -4, 400,
                          where=df_shape['amp_consistency'] < osc_kwargs['amplitude_consistency_threshold'],
                          interpolate=True, facecolor='red', alpha=0.5)
-        plt.fill_between(t[df_shape['sample_last_' + side_e]], min(x), max(x) + (max(x) - min(x)) * 100,
+        plt.fill_between(t[df_shape['sample_last_' + side_e]], -4, 400,
                          where=df_shape['period_consistency'] < osc_kwargs['period_consistency_threshold'],
                          interpolate=True, facecolor='yellow', alpha=0.5)
-        plt.fill_between(t[df_shape['sample_last_' + side_e]], min(x), max(x) + (max(x) - min(x)) * 100,
+        plt.fill_between(t[df_shape['sample_last_' + side_e]], -4, 400,
                          where=df_shape['monotonicity'] < osc_kwargs['monotonicity_threshold'],
                          interpolate=True, facecolor='green', alpha=0.5)
         plt.tight_layout()
