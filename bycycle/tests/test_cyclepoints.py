@@ -6,7 +6,7 @@ The tests here are not strong tests for accuracy.
     They serve rather as 'smoke tests', for if anything fails completely.
 """
 
-from bycycle import sim, cyclepoints
+from bycycle import cyclepoints
 import numpy as np
 from scipy.signal import argrelextrema
 
@@ -14,14 +14,10 @@ from scipy.signal import argrelextrema
 def test_find_extrema():
     """Test ability to find peaks and troughs"""
 
-    # Simulate fake data
-    np.random.seed(0)
-    cf = 10 # Oscillation center frequency
-    T = 2 # Recording duration (seconds)
-    Fs = 1000 # Sampling rate
-
-    rdsym = .3
-    signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
+    # Load signal
+    signal = np.load('data/sim_stationary.npy')
+    Fs = 1000  # Sampling rate
+    f_range = (6, 14)  # Frequency range
 
     # find local maxima and minima using scipy
     maxima = argrelextrema(signal, np.greater)
@@ -45,17 +41,12 @@ def test_find_extrema():
 def test_find_zerox():
     """Test ability to find peaks and troughs"""
 
-    # Simulate fake data
-    np.random.seed(0)
-    cf = 10 # Oscillation center frequency
-    T = 2 # Recording duration (seconds)
-    Fs = 1000 # Sampling rate
-
-    rdsym = .3
-    signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
+    # Load signal
+    signal = np.load('data/sim_stationary.npy')
+    Fs = 1000  # Sampling rate
+    f_range = (6, 14)  # Frequency range
 
     # Find peaks and troughs
-    f_range = (6, 14)
     Ps, Ts = cyclepoints.find_extrema(signal, Fs, f_range, boundary=1,
                                       first_extrema='peak')
 
@@ -72,17 +63,12 @@ def test_find_zerox():
 def test_extrema_interpolated_phase():
     """Test waveform phase estimate"""
 
-    # Simulate signal
-    np.random.seed(0)
-    cf = 10 # Oscillation center frequency
-    T = 2 # Recording duration (seconds)
-    Fs = 1000 # Sampling rate
-
-    rdsym = .3
-    signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
+    # Load signal
+    signal = np.load('data/sim_stationary.npy')
+    Fs = 1000  # Sampling rate
+    f_range = (6, 14)  # Frequency range
 
     # Find peaks and troughs
-    f_range = (6, 14)
     Ps, Ts = cyclepoints.find_extrema(signal, Fs, f_range, boundary=1,
                                       first_extrema='peak')
 

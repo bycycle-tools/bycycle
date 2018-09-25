@@ -4,26 +4,46 @@ NOTES
 -----
 The tests here are not strong tests for accuracy.
     They serve rather as 'smoke tests', for if anything fails completely.
+
+Code to generate data from bycycle v.0.1.0 before sim module was removed:
+
+from bycycle import sim
+import numpy as np
+
+# Stationary oscillator
+np.random.seed(0)
+cf = 10 # Oscillation center frequency
+T = 10 # Recording duration (seconds)
+Fs = 1000 # Sampling rate
+
+rdsym = .3
+signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
+np.save('sim_stationary.npy', signal)
+
+# Bursting oscillator
+np.random.seed(0)
+cf = 10 # Oscillation center frequency
+T = 10 # Recording duration (seconds)
+Fs = 1000 # Sampling rate
+
+signal = sim.sim_noisy_bursty_oscillator(T, Fs, cf, prob_enter_burst=.1,
+                                         prob_leave_burst=.1, SNR=5)
+np.save('sim_bursting.npy', signal)
 """
 
 import numpy as np
-from bycycle import sim, features
+from bycycle import features
 
 
 def test_compute_features():
     """Test cycle-by-cycle feature computation"""
 
-    # Simulate fake data
-    np.random.seed(0)
-    cf = 10 # Oscillation center frequency
-    T = 10 # Recording duration (seconds)
-    Fs = 1000 # Sampling rate
-
-    rdsym = .3
-    signal = sim.sim_oscillator(T, Fs, cf, rdsym=rdsym)
+    # Load signal
+    signal = np.load('data/sim_stationary.npy')
+    Fs = 1000  # Sampling rate
+    f_range = (6, 14)  # Frequency range
 
     # Compute cycle features
-    f_range = (6, 14)
     df = features.compute_features(signal, Fs, f_range)
 
     # Check inverted signal gives appropriately opposite data
