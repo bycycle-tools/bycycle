@@ -6,6 +6,7 @@ The tests here are not strong tests for accuracy.
     They serve rather as 'smoke tests', for if anything fails completely.
 """
 
+import bycycle
 import numpy as np
 from bycycle import burst, filt, features
 import itertools

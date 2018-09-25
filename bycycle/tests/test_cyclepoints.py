@@ -6,6 +6,7 @@ The tests here are not strong tests for accuracy.
     They serve rather as 'smoke tests', for if anything fails completely.
 """
 
+import bycycle
 from bycycle import cyclepoints
 import numpy as np
 from scipy.signal import argrelextrema
