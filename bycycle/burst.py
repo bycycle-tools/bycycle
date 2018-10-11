@@ -75,8 +75,12 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     decays = df['volt_decay'].values
     for p in range(1, C - 1):
         consist_current = np.min([rises[p], decays[p]]) / np.max([rises[p], decays[p]])
-        consist_last = np.min([rises[p], decays[p - 1]]) / np.max([rises[p], decays[p - 1]])
-        consist_next = np.min([rises[p + 1], decays[p]]) / np.max([rises[p + 1], decays[p]])
+        if 'sample_peak' in df.columns:
+            consist_last = np.min([rises[p], decays[p - 1]]) / np.max([rises[p], decays[p - 1]])
+            consist_next = np.min([rises[p + 1], decays[p]]) / np.max([rises[p + 1], decays[p]])
+        else:
+            consist_last = np.min([rises[p - 1], decays[p]]) / np.max([rises[p - 1], decays[p]])
+            consist_next = np.min([rises[p], decays[p + 1]]) / np.max([rises[p], decays[p + 1]])
         amp_consists[p] = np.min([consist_current, consist_next, consist_last])
     df['amp_consistency'] = amp_consists
 
@@ -92,8 +96,13 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     # Compute monotonicity
     monotonicity = np.ones(C) * np.nan
     for i, row in df.iterrows():
-        rise_period = x[int(row['sample_last_trough']):int(row['sample_peak'])]
-        decay_period = x[int(row['sample_peak']):int(row['sample_next_trough'])]
+        if 'sample_peak' in df.columns:
+            rise_period = x[int(row['sample_last_trough']):int(row['sample_peak'])]
+            decay_period = x[int(row['sample_peak']):int(row['sample_next_trough'])]
+        else:
+            decay_period = x[int(row['sample_last_peak']):int(row['sample_trough'])]
+            rise_period = x[int(row['sample_trough']):int(row['sample_next_peak'])]
+
         decay_mono = np.mean(np.diff(decay_period) < 0)
         rise_mono = np.mean(np.diff(rise_period) > 0)
         monotonicity[i] = np.mean([decay_mono, rise_mono])
