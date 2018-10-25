@@ -3,3 +3,4 @@ bycycle.egg-info/
 build/
 .ipynb_checkpoints/
 *.pyc
+doc/_build
