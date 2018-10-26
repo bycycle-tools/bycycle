@@ -105,6 +105,114 @@
       
   <div class="section" id="readme">
 <h1>README<a class="headerlink" href="#readme" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="bycycle-cycle-by-cycle-analysis-of-neural-oscillations">
+<h2>bycycle - cycle-by-cycle analysis of neural oscillations<a class="headerlink" href="#bycycle-cycle-by-cycle-analysis-of-neural-oscillations" title="Permalink to this headline">¶</a></h2>
+<a class="reference external image-reference" href="http://www.repostatus.org/#active"><img alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed." src="http://www.repostatus.org/badges/latest/active.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/bycycle/"><img alt="Latest Version" src="https://img.shields.io/pypi/v/bycycle.svg" /></a>
+<a class="reference external image-reference" href="https://travis-ci.org/voytekresearch/bycycle"><img alt="Build Status" src="https://travis-ci.org/voytekresearch/bycycle.svg" /></a>
+<a class="reference external image-reference" href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/pypi/l/bycycle.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/bycycle/"><img alt="Supported Python Versions" src="https://img.shields.io/pypi/pyversions/bycycle.svg" /></a>
+<div class="section" id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h3>
+<p>bycycle is a python implementation of a cycle-by-cycle approach to analyzing neural oscillations (<a class="reference external" href="https://www.biorxiv.org/content/early/2018/04/16/302000">Cole &amp; Voytek, 2018</a>). This approach quantifies features of neural oscillations in the time domain as opposed to the frequency domain. Rather than applying narrowband filters and other methods that utilize a sinusoidal basis, this characterization segments a recording into individual cycles and directly measures each of their properties including amplitude, period, and symmetry. This is most advantageous for analyzing the waveform shape properties of neural oscillations, but it may also provide advantages for studying traditional amplitude and frequency effects, as well. It also implements burst detection, which has been gaining traction recently (see e.g. <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0959438816300769?via%3Dihub">Jones, 2016</a>) so that we only analyze oscillatory properties when there is indeed an oscillation.</p>
+<p>A full description of the method and approach is available in the paper below.</p>
+</div>
+<div class="section" id="reference">
+<h3>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h3>
+<p>If you use this code in your project, please cite <a class="reference external" href="https://www.biorxiv.org/content/early/2018/04/16/302000">this preprint</a>:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span>Cole SR &amp; Voytek B (2018) Cycle-by-cycle analysis of neural oscillations. bioRxiv, 302000.
+doi: https://doi.org/10.1101/302000
+</pre></div>
+</div>
+</div>
+<div class="section" id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
+<p>bycycle is written in Python, and is tested to work with Python 3.5</p>
+<p>It has the following dependencies:</p>
+<ul class="simple">
+<li>numpy</li>
+<li>scipy</li>
+<li>pandas</li>
+<li>matplotlib (optional)</li>
+<li>pytest (optional)</li>
+</ul>
+</div>
+<div class="section" id="matlab-support">
+<h3>Matlab Support<a class="headerlink" href="#matlab-support" title="Permalink to this headline">¶</a></h3>
+<p>Coming soon.</p>
+</div>
+<div class="section" id="install">
+<h3>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h3>
+<p>To install the latest stable release of bycycle, you can use pip:</p>
+<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">bycycle</span></code></p>
+<p>To get the lastest, development version, you can get the code using git:</p>
+<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/voytekresearch/bycycle</span></code></p>
+<p>To then install the development version (without making changes to it), move into the directory you cloned and run:</p>
+<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code></p>
+<p>Otherwise, if you want to install an editable, development version, move into the directory you cloned and install with:</p>
+<p>$ pip install -e .</p>
+</div>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>The main function in <code class="docutils literal"><span class="pre">bycycle</span></code> is <code class="docutils literal"><span class="pre">compute_features()</span></code>, which takes a time series and some parameters as inputs and returns a table of features for each cycle. Consider having a 1-dimensional numpy array, <code class="docutils literal"><span class="pre">signal</span></code>, which is a neural signal time series sampled at 1000 Hz (<code class="docutils literal"><span class="pre">Fs</span></code>) that contains an alpha (8-12 Hz, <code class="docutils literal"><span class="pre">f_range</span></code>) oscillation. We can compute the table of cycle features with the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bycyle.filt</span> <span class="kn">import</span> <span class="n">lowpass_filter</span>
+<span class="kn">from</span> <span class="nn">bycycle.features</span> <span class="kn">import</span> <span class="n">compute_features</span>
+
+<span class="n">signal</span> <span class="o">=</span> <span class="n">lowpass_filter</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">f_lowpass</span><span class="p">,</span> <span class="n">N_seconds</span><span class="o">=</span><span class="n">N_seconds</span><span class="p">,</span> <span class="n">remove_edge_artifacts</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">Fs</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that a lowpass filter is applied in order to remove high-frequency power that may interfere with extrema localization. (see section 0 of the <a class="reference external" href="https://github.com/voytekresearch/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb">algorithm tutorial</a> for more details).</p>
+<p>It&#8217;s necessary to note that the above <code class="docutils literal"><span class="pre">compute_features()</span></code> command used default parameters to localize extrema and detect bursts of oscillations. However, it is important to knowledgeably select these parameters, as described in the <a class="reference external" href="https://github.com/voytekresearch/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb">algorithm tutorial</a>. The following example and text go over the different potential parameter changes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">burst_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;amplitude_fraction_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span>
+                <span class="s1">&#39;amplitude_consistency_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+                <span class="s1">&#39;period_consistency_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+                <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span>
+                <span class="s1">&#39;N_cycles_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+
+<span class="n">narrowband_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;N_seconds&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">}</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span>
+                      <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span>
+                      <span class="n">burst_detection_method</span><span class="o">=</span><span class="s1">&#39;cycles&#39;</span><span class="p">,</span>
+                      <span class="n">burst_detection_kwargs</span><span class="o">=</span><span class="n">burst_kwargs</span><span class="p">,</span>
+                      <span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;filter_kwargs&#39;</span><span class="p">:</span> <span class="n">narrowband_kwargs</span><span class="p">},</span>
+                      <span class="n">hilbert_increase_N</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><strong>center_extrema</strong> determines how the cycles are segmented. &#8216;T&#8217; indicates the center extrema is a trough, so cycles are segmented peak-to-peak.</li>
+<li><strong>burst_detection_method</strong> selects which method for burst detection is used. The &#8216;cycles&#8217; option uses features of adjacent cycles in order to detect bursts (e.g. period consistency, see next item). The &#8216;amp&#8217; option uses an amplitude threshold to determine the cycles that are part of an oscillatory burst.</li>
+<li><strong>burst_detection_kwargs</strong> set the keyword arguments for the burst detection function. For the &#8216;cycles&#8217; method, there are 5 keyword arguments (see <a class="reference external" href="https://github.com/voytekresearch/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb">the end of the algorithm tutorial</a> for advice on choosing these parameters).</li>
+<li><strong>find_extrema_kwargs</strong> set the keyword arguments for the function used to localize peaks and troughs. Most notably, you can change the duration of the bandpass filter (<code class="docutils literal"><span class="pre">N_seconds</span></code>) used during extrema localization (see section 1 of the <a class="reference external" href="https://github.com/voytekresearch/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb">algorithm tutorial</a>).</li>
+<li><strong>hilbert_increase_N</strong> is a boolean indicator of whether or not to zeropad the signal to bypass complications that <code class="docutils literal"><span class="pre">scipy.signal.hilbert()</span></code> has with some long signal durations. Try setting this parameter to <code class="docutils literal"><span class="pre">True</span></code> if this function is taking a long time to run. Note the Hilbert Transform is used to compute the <code class="docutils literal"><span class="pre">band_amp</span></code> feature of each cycle, which is the average analytic amplitude of the frequency of interest in that cycle. This is complementary to the <code class="docutils literal"><span class="pre">volt_amp</span></code> measure, and may be desired for some burst detection applications.</li>
+</ul>
+</div>
+<div class="section" id="output">
+<h3>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h3>
+<p>The output of <code class="docutils literal"><span class="pre">bycycle</span></code> is a pandas.DataFrame, a table like the one shown below (with many columns, so it is split into two images). Each row of this table corresponds to an individual segment of the signal, or a putative cycle of the rhythm of interest.</p>
+<a class="reference external image-reference" href="img/cycledf_1.png"><img alt="&quot;cycle dataframe part1&quot;" src="img/cycledf_1.png" /></a>
+<a class="reference external image-reference" href="img/cycledf_2.png"><img alt="&quot;cycle dataframe part2&quot;" src="img/cycledf_2.png" /></a>
+<p>Some of the columns include:</p>
+<ul class="simple">
+<li><strong>sample_peak</strong> - the sample of the signal at which the peak of this cycle occurs</li>
+<li><strong>period</strong> - period of the cycle</li>
+<li><strong>time_peak</strong> - duration of the peak period</li>
+<li><strong>volt_amp</strong> - amplitude of this cycle, average of the rise and decay voltage</li>
+<li><strong>time_rdsym</strong> - rise-decay symmetry, the fraction of the cycle in the rise period (0.5 is symmetric)</li>
+<li><strong>time_ptsym</strong> - peak-trough symmetry, the fraction of the cycle in the peak period (0.5 is symmetric)</li>
+<li><strong>period_consistency</strong> - consistency between the periods of the adjacent cycles, used in burst detection</li>
+<li><strong>is_burst</strong> - indicator if the cycle is part of an oscillatory burst</li>
+</ul>
+<p>The features in this table can then go on to be analyzed, as demonstrated in the <a class="reference external" href="https://github.com/voytekresearch/bycycle/blob/master/tutorials/2_Resting%20state%20cycle-by-cycle%20analysis.ipynb">resting-state data tutorial</a> and the <a class="reference external" href="https://github.com/voytekresearch/bycycle/blob/master/tutorials/3_Trial%20structure%20cycle-by-cycle%20analysis.ipynb">trial data tutorial</a>. For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording, shown below.</p>
+<a class="reference external image-reference" href="img/rdsym_distribution.png"><img alt="&quot;rdsym distribution&quot;" src="img/rdsym_distribution.png" /></a>
+<p>The plot below indicates in red the cycles of the signal that were identified as part of an oscillatory burst.</p>
+<a class="reference external image-reference" href="img/bursts_detected.png"><img alt="&quot;burst detection results&quot;" src="img/bursts_detected.png" /></a>
+</div>
+</div>
 </div>
 
 
