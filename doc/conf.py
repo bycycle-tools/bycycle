@@ -54,8 +54,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'm2r']
 
-# # generate autosummary even if no references
-# autosummary_generate = True
+# generate autosummary even if no references
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -104,6 +104,7 @@ html_theme_options = {
 
     # A list of tuples containing pages or urls to link to.
     'navbar_links': [
+        ("API", "api"),
         ("FAQ", "faq"),
         # ("Tutorial", "auto_tutorials/index"),
         # ("Examples", "auto_examples/index"),
