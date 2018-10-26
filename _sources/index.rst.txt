@@ -1,20 +1,6 @@
 Welcome to bycycle's documentation!
 ===================================
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-
-
-Cycle-by-cycle analysis of oscillations
-=======================================
-
-
 bycycle is a python implementation of a cycle-by-cycle approach to analyzing neural oscillations `(Cole & Voytek, 2018) <https://www.biorxiv.org/content/early/2018/10/25/452987>`_.
 
 If you're just getting started, you might want to start with the Readme_, which also contains installation instructions.
@@ -26,19 +12,11 @@ Site Contents
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
 
+   api.rst
    readme_link.rst
    faq.rst
    contents.rst
-
-
-Indices and Tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 
 .. _Readme: readme_link.html
