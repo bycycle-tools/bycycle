@@ -51,7 +51,8 @@ extensions = [
     'sphinx.ext.mathjax',
     # 'sphinx_gallery.gen_gallery',
     'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx']
+    'sphinx.ext.intersphinx',
+    'm2r']
 
 # # generate autosummary even if no references
 # autosummary_generate = True
@@ -108,7 +109,7 @@ html_theme_options = {
         # ("Examples", "auto_examples/index"),
         ("GitHub", "https://github.com/voytekresearch/bycycle", True)
     ],
-    
+
     # Bootswatch (http://bootswatch.com/) theme.
     #
     # Options are nothing (default) or the name of a valid theme

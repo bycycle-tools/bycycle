@@ -11,11 +11,11 @@ Indices and tables
 
 
 
-Fitting Oscillations & One-Over F
-=================================
+Cycle-by-cycle analysis of oscillations
+=======================================
 
 
-bycycle is a python implementation of a cycle-by-cycle approach to analyzing neural oscillations (Cole & Voytek, 2018).
+bycycle is a python implementation of a cycle-by-cycle approach to analyzing neural oscillations `(Cole & Voytek, 2018) <https://www.biorxiv.org/content/early/2018/10/25/452987>`_.
 
 If you're just getting started, you might want to start with the Readme_, which also contains installation instructions.
 

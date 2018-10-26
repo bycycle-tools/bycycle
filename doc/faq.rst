@@ -10,7 +10,7 @@ Table of Contents
 
 
 Why should I use bycycle?
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Because it's super-duper fun.
 
@@ -23,6 +23,6 @@ Point to Gao et al, 2017. Then laugh.
 
 
 What colour is bycycle?
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 bycycle is orange.
