@@ -5,5 +5,5 @@ Table of Contents
    :maxdepth: 3
 
    api.rst
-   readme_link.rst
-   faq.rst
+   auto_tutorials/index.rst
+   auto_examples/index.rst

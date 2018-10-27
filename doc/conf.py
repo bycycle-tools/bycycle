@@ -105,7 +105,6 @@ html_theme_options = {
     # A list of tuples containing pages or urls to link to.
     'navbar_links': [
         ("API", "api"),
-        ("FAQ", "faq"),
         ("Tutorial", "auto_tutorials/index"),
         ("Examples", "auto_examples/index"),
         ("GitHub", "https://github.com/voytekresearch/bycycle", True)
@@ -215,6 +214,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': ['auto_examples', 'auto_tutorials'],
     'within_subsection_order': FileNameSortKey,
     'backreferences_dir': 'generated',
+    'thumbnail_size': (250, 250),
     'reference_url': {
         'bycycle': None,
         'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',

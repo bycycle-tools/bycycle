@@ -1,9 +1,6 @@
 """
-Cycle-by-cycle philosophy
-=========================
-
-Introduction
-------------
+1. Cycle-by-cycle philosophy
+===========================
 
 Neural signals, like the example shown below, are analyzed in order to extract information about brain activity. Basically, we process these signals in order to extract features that will hopefully correlate with a behavior, pathology, or something else.
 

@@ -7,25 +7,13 @@
 .. _sphx_glr_auto_tutorials_plot_bycycle_resting_state.py:
 
 
-Cycle-by-cycle algorithm
-========================
+3. Cycle-by-cycle analysis of resting state data
+================================================
 
-Introduction
-------------
+Say we ran an experiment and want to compare subjects' resting state data for some reason. Maybe we want to study age, gender, disease state, or something. This has often been done to study differences in oscillatory power or coupling between groups of people. In this notebook, we will run through how to use bycycle to analyze resting state data.
 
-In the last tutorial notebook, I described the conventional approach for analyzing time-varying properties of neural oscillations, and in this notebook, we will go over our alternative approach. The fundamental goal of this approach is to characterize neural oscillations directly in the time domain. However, this is not straightforward because it attempts to extract the properties of the oscillatory component, despite the large amount of noise. Specifically, there are two very difficult problems:
+In this example, we have 20 subjects (10 patients, 10 control), and we for some reason hypothesized that their alpha oscillations may be systematically different. For example, (excessive hand waving) we think the patient group should have more top-down input that increases the synchrony in the oscillatory input (measured by its symmetry).
 
-1. What are the features of the oscillation? How do they vary over time?
-2. During what times is the oscillation present?
-
-The cycle-by-cycle approach deploys a few strategies to approach these questions. As its name indicates, this algorithm segments the signal into individual cycles and then analyzes their features separately from one another. Normally, some preprocessing is recommended to aid in localizing peaks and troughs (eliminating high frequency power that mostly do not comprise the oscillator of interest). Additionally, a burst detection approach is applied to define the segments of the signal to be analyzed for their oscillatory properties.
-
-During this process (as with all data analyses), it is important to be aware if the data is being processed appropriately. As signal processing is complicated, it is very beneficial to visualize the measured features along with the raw data to assure they make sense.
-
-
-0. Preprocess signal
---------------------
-A crucial part of the cycle-by-cycle approach is the ability to localize the peaks and troughs of the oscillation. Therefore, some preprocessing of the signal is often useful in order to make these extrema more apparent, i.e. isolate the oscillation component and minimize the nonoscillatory components. One effective way of doing this is by applying a lowpass filter. The choice of cutoff frequency is very important. The cutoff frequency should not be low enough in order to remove high frequency "noise" that interferes with extrema localization but not so low that it deforms the shape of the oscillation of interest. In order to assess this, the user should plot the filtered signal in comparison to the original signal.
 
 
 
@@ -34,11 +22,35 @@ A crucial part of the cycle-by-cycle approach is the ability to localize the pea
 
     import numpy as np
     import scipy as sp
+    from scipy import stats
     import matplotlib.pyplot as plt
     from bycycle.filt import lowpass_filter
-
+    from bycycle.features import compute_features
     import pandas as pd
-    pd.options.display.max_columns = 30
+    import seaborn as sns
+    pd.options.display.max_columns=50
+
+
+
+
+
+
+
+Load simulated experiment of 10 patients and 10 controls
+--------------------------------------------------------
+
+
+
+.. code-block:: python
+
+
+    # Load experimental data
+    signals = np.load('data/sim_experiment.npy')
+    Fs = 1000  # Sampling rate
+
+    # Apply lowpass filter to each signal
+    for i in range(len(signals)):
+        signals[i] = lowpass_filter(signals[i], Fs, 30, N_seconds=.2, remove_edge_artifacts=False)
 
 
 
@@ -50,28 +62,14 @@ A crucial part of the cycle-by-cycle approach is the ability to localize the pea
 .. code-block:: python
 
 
-    # Load data
-    signal = np.load('data/ca1.npy') / 1000
-    signal = signal[:125000]
-    Fs = 1250
-    f_theta = (4, 10)
-    f_lowpass = 30
-    N_seconds = .1
+    # Plot an example signal
+    N = len(signals)
+    T = len(signals[0])/Fs
+    t = np.arange(0, T, 1/Fs)
 
-    # Lowpass filter
-    signal_low = lowpass_filter(signal, Fs, f_lowpass,
-                                N_seconds=N_seconds, remove_edge_artifacts=False)
-
-    # Plot signal
-    t = np.arange(0, len(signal)/Fs, 1/Fs)
-    tlim = (2, 5)
-    tidx = np.logical_and(t>=tlim[0], t<tlim[1])
-
-    plt.figure(figsize=(12, 2))
-    plt.plot(t[tidx], signal[tidx], '.5')
-    plt.plot(t[tidx], signal_low[tidx], 'k')
-    plt.xlim(tlim)
-    plt.tight_layout()
+    plt.figure(figsize=(16,3))
+    plt.plot(t, signals[0], 'k')
+    plt.xlim((0, T))
     plt.show()
 
 
@@ -83,98 +81,33 @@ A crucial part of the cycle-by-cycle approach is the ability to localize the pea
 
 
 
-1. Localize peaks and troughs
------------------------------
-
-In order to characterize the oscillation, it is useful to know the precise times of peaks and troughs. For one, this will allow us to compute the periods and rise-decay symmetries of the individual cycles. To do this, the signal is first narrow-bandpass filtered in order to estimate "zero-crossings." Then, in between these zerocrossings, the absolute maxima and minima are found and labeled as the peaks and troughs, respectively.
+Compute cycle-by-cycle features
+-------------------------------
 
 
 
 .. code-block:: python
 
 
-    from bycycle.filt import bandpass_filter
-    from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema
+    f_alpha = (7, 13) # Frequency band of interest
+    burst_kwargs = {'amplitude_fraction_threshold': .2,
+                    'amplitude_consistency_threshold': .5,
+                    'period_consistency_threshold': .5,
+                    'monotonicity_threshold': .8,
+                    'N_cycles_min': 3} # Tuned burst detection parameters
 
-    # Narrowband filter signal
-    N_seconds_theta = .75
-    signal_narrow = bandpass_filter(signal, Fs, f_theta,
-                                    remove_edge_artifacts=False,
-                                    N_seconds=N_seconds_theta)
-
-    # Find rising and falling zerocrossings (narrowband)
-    zeroriseN = _fzerorise(signal_narrow)
-    zerofallN = _fzerofall(signal_narrow)
-
-
-
-
-
-
-
-
-.. code-block:: python
-
-
-    # Find peaks and troughs (this function also does the above)
-    Ps, Ts = find_extrema(signal_low, Fs, f_theta,
-                          filter_kwargs={'N_seconds':N_seconds_theta})
-
-    tlim = (12, 15)
-    tidx = np.logical_and(t>=tlim[0], t<tlim[1])
-    tidxPs = Ps[np.logical_and(Ps>tlim[0]*Fs, Ps<tlim[1]*Fs)]
-    tidxTs = Ts[np.logical_and(Ts>tlim[0]*Fs, Ts<tlim[1]*Fs)]
-
-    plt.figure(figsize=(12, 2))
-    plt.plot(t[tidx], signal_low[tidx], 'k')
-    plt.plot(t[tidxPs], signal_low[tidxPs], 'b.', ms=10)
-    plt.plot(t[tidxTs], signal_low[tidxTs], 'r.', ms=10)
-    plt.xlim(tlim)
-    plt.tight_layout()
-    plt.show()
-
-
-
-
-.. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_002.png
-    :class: sphx-glr-single-img
-
-
-
-
-Note the filter characteristics used in the process of finding peaks and troughs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-.. code-block:: python
-
-
-    # Plot frequency response of bandpass filter
-    from bycycle.filt import bandpass_filter
-    bandpass_filter(signal, Fs, (4, 10), N_seconds=.75, plot_frequency_response=True)
-
-
-
-
-.. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_003.png
-    :class: sphx-glr-single-img
-
-
-
-
-2. Localize rise and decay midpoints
-------------------------------------
-
-In addition to localizing the peaks and troughs of a cycle, we also want to get more information about the rise and decay periods. For instance, these flanks may have deflections if the peaks or troughs are particularly sharp. In order to gauge a dimension of this, we localize midpoints for each of the rise and decay segments. These midpoints are defined as the times at which the voltage crosses halfway between the adjacent peak and trough voltages. If this threshold is crossed multiple times, then the median time is chosen as the flank midpoint. This is not perfect; however, this is rare, and most of these cycles should be removed by burst detection.
-
-
-
-.. code-block:: python
-
-
-    from bycycle.cyclepoints import find_zerox
-    zeroxR, zeroxD = find_zerox(signal_low, Ps, Ts)
+    # Compute features for each signal and concatenate into single dataframe
+    dfs = []
+    for i in range(N):
+        df = compute_features(signals[i], Fs, f_alpha,
+                              burst_detection_kwargs=burst_kwargs)
+        if i >= int(N/2):
+            df['group'] = 'patient'
+        else:
+            df['group'] = 'control'
+        df['subject_id'] = i
+        dfs.append(df)
+    df_cycles = pd.concat(dfs)
 
 
 
@@ -186,52 +119,7 @@ In addition to localizing the peaks and troughs of a cycle, we also want to get 
 .. code-block:: python
 
 
-    tlim = (13, 14)
-    tidx = np.logical_and(t>=tlim[0], t<tlim[1])
-    tidxPs = Ps[np.logical_and(Ps>tlim[0]*Fs, Ps<tlim[1]*Fs)]
-    tidxTs = Ts[np.logical_and(Ts>tlim[0]*Fs, Ts<tlim[1]*Fs)]
-    tidxDs = zeroxD[np.logical_and(zeroxD>tlim[0]*Fs, zeroxD<tlim[1]*Fs)]
-    tidxRs = zeroxR[np.logical_and(zeroxR>tlim[0]*Fs, zeroxR<tlim[1]*Fs)]
-
-    plt.figure(figsize=(12, 2))
-    plt.plot(t[tidx], signal_low[tidx], 'k')
-    plt.plot(t[tidxPs], signal_low[tidxPs], 'b.', ms=10)
-    plt.plot(t[tidxTs], signal_low[tidxTs], 'r.', ms=10)
-    plt.plot(t[tidxDs], signal_low[tidxDs], 'm.', ms=10)
-    plt.plot(t[tidxRs], signal_low[tidxRs], 'g.', ms=10)
-    plt.xlim(tlim)
-    plt.xlabel('Time (seconds)')
-    plt.tight_layout()
-    plt.show()
-
-
-
-
-.. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_004.png
-    :class: sphx-glr-single-img
-
-
-
-
-3. Compute features of each cycle
----------------------------------
-After these 4 points of each cycle are localized, we compute some simple statistics for each cycle. The main cycle-by-cycle function,  compute_features(), returns a table (pandas.DataFrame) in which each entry is a cycle and each column is a property of that cycle (see table below). There are columns to indicate where in the signal the cycle is located, but the four main features are:
-
-- amplitude (volt_amp) - average voltage change of the rise and decay
-- period (period) - time between consecutive troughs (or peaks, if default is changed)
-- rise-decay symmetry (time_rdsym) - fraction of the period in the rise period
-- peak-trough symmetry (time_ptsym) - fraction of the period in the peak period
-
-Note that a warning appears here because no burst detection parameters are provided. This is addressed in section #4
-
-
-
-.. code-block:: python
-
-
-    from bycycle.features import compute_features
-    df = compute_features(signal, Fs, f_theta)
-    print(df.head())
+    print(df_cycles.head())
 
 
 
@@ -244,122 +132,80 @@ Note that a warning appears here because no burst detection parameters are provi
  .. code-block:: none
 
     sample_peak  sample_zerox_decay  sample_zerox_rise  sample_last_trough  \
-    0          615                 663                575                 519   
-    1          819                 882                771                 743   
-    2         1002                1026                937                 914   
-    3         1131                1174               1101                1056   
-    4         1273                1331               1229                1214   
+    0          278                 320                248                 220   
+    1          400                 412                388                 367   
+    2          472                 494                457                 438   
+    3          567                 584                537                 519   
+    4          633                 652                616                 599   
 
        sample_next_trough  period  time_peak  time_trough  volt_peak  volt_trough  \
-    0                 743     224         88          111      1.195       -1.258   
-    1                 914     171        111          108      0.521       -1.071   
-    2                1056     142         89           55      1.093       -0.483   
-    3                1214     158         73           75      1.791       -1.104   
-    4                1392     178        102           55      1.758       -0.503   
+    0                 367     147         72           40   0.884764     0.170348   
+    1                 438      71         24           68   0.156665    -0.793393   
+    2                 519      81         37           45   1.180135    -0.744982   
+    3                 599      80         47           43   1.342554    -2.054365   
+    4                 680      81         36           32   2.034217     0.109209   
 
        time_decay  time_rise  volt_decay  volt_rise  volt_amp  time_rdsym  \
-    0         128         96       2.266      2.453    2.3595    0.428571   
-    1          95         76       1.004      1.592    1.2980    0.444444   
-    2          54         88       2.197      1.576    1.8865    0.619718   
-    3          83         75       2.294      2.895    2.5945    0.474684   
-    4         119         59       2.684      2.261    2.4725    0.331461   
+    0          89         58    1.678157   0.714416  1.196286    0.394558   
+    1          38         33    0.901646   0.950058  0.925852    0.464789   
+    2          47         34    3.234500   1.925117  2.579808    0.419753   
+    3          32         48    1.233344   3.396919  2.315132    0.600000   
+    4          47         34    3.314661   1.925008  2.619834    0.419753   
 
        time_ptsym  band_amp  amp_fraction  amp_consistency  period_consistency  \
-    0    0.442211  0.570788      0.423620              NaN                 NaN   
-    1    0.506849  0.355844      0.002567         0.630653            0.763393   
-    2    0.618056  0.686511      0.077022         0.637056            0.830409   
-    3    0.493243  0.680391      0.643132         0.758895            0.887640   
-    4    0.649682  0.654177      0.537869         0.762668            0.691011   
+    0    0.642857  0.246439      0.602151              NaN                 NaN   
+    1    0.260870  0.368649      0.376344         0.468359            0.482993   
+    2    0.451220  0.955674      0.946237         0.468359            0.876543   
+    3    0.522222  0.767799      0.881720         0.363077            0.987654   
+    4    0.529412  0.798461      0.956989         0.580756            0.801980   
 
-       monotonicity  is_burst  
-    0      0.633444     False  
-    1      0.584539     False  
-    2      0.647907     False  
-    3      0.604812     False  
-    4      0.607101     False
+       monotonicity  is_burst    group  subject_id  
+    0      0.802831     False  control           0  
+    1      0.890625     False  control           0  
+    2      1.000000     False  control           0  
+    3      1.000000     False  control           0  
+    4      1.000000      True  control           0
 
 
-4. Determine parts of signal in oscillatory burst
--------------------------------------------------
-Note above that the signal is segmented into cycles and the dataframe provides properties for each segment of the signal. However, if no oscillation is apparent in the signal at a given time, the properties for these "cycles" are meaningless. Therefore, it is useful to have a binary indicator for each cycle that indicates whether the cycle being analyzed is truly part of an oscillatory burst or not. Recently, significant interest has emerged in detecting bursts in signals and analyzing their properties (see e.g. Feingold et al., PNAS, 2015). Nearly all efforts toward burst detection relies on amplitude thresholds, but this can be disadvantageous because these algorithms will behave very differently on signals where oscillations are common versus rare.
+Confirm appropriateness of burst detection parameters
+-----------------------------------------------------
 
-In our approach, we employ an alternative technique for burst detection. There are 3 thresholds that need to be met in order for a cycle to be classified as part of an oscillatory burst.
-
-1. amplitude consistency - consecutive rises and decays should be comparable in magnitude.
-
-- The amplitude consistency of a cycle is equal to the maximum relative difference between rises and decay amplitudes across all pairs of adjacent rises and decays that include one of the flanks in the cycle (3 pairs)
-- e.g. if a rise is 10mV and a decay is 7mV, then its amplitude consistency is 0.7.
-
-2. period consistency - consecutive cycles should be comparable in duration
-
-- The period consistency is equal to the maximu relative difference between all pairs of adjacent periods that include the cycle of interest (2 pairs: current + previous cycles and current + next cycles)
-- e.g. if the previous, current, and next cycles have periods 60ms, 100ms, and 120ms, respectively, then the period consistency is min(60/100, 100/120) = 0.6.
-
-3. monotonicity - the rise and decay flanks of the cycle should be mostly monotonic
-
-- The monotonicity is the fraction of samples that the instantaneous derivative (numpy.diff) is consistent with the direction of the flank.
-- e.g. if in the rise, the instantaneous derivative is 90% positive, and in the decay, the instantaneous derivative is 80% negative, then the monotonicity of the cycle would be 0.85 ((0.9+0.8)/2)
-
-Below, we load a simulated signal and then define 3 sets of thresholds ranging from liberal to conservative.
-
-Load a simulated signal and apply a lowpass filter
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+These burst detection parameters seem appropriate because they mostly restrict the analysis to periods of the signal that appear to be bursting. This was confirmed by looking at a few different signal segments from a few subjects.
 
 
 
 .. code-block:: python
 
 
-    # Load the signal
-    signal = np.load('data/sim_bursting.npy')
-    Fs = 1000  # Sampling rate
-    f_alpha = (8, 12)
-
-    # Apply a lowpass filter to remove high frequency power that interferes with extrema localization
-    signal = lowpass_filter(signal, Fs, 30, N_seconds=.2, remove_edge_artifacts=False)
-
-
-
-
-
-
-
-Visualizing burst detection settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Below, we visualize how the burst detector determined which cycles were part of an oscillatory burst. The top plot shows a markup of the time series. The portions of the signal in red were determined to be parts of bursts. Signals in black were not part of bursts. Magenta and cyan dots denote detected peaks and troughs, respectively. Highlights indicate cycles marked as not part of a burst because they did not meet certain thresholds:
-
-- red highlight: amplitude consistency threshold violation
-- yellow highlight: period consistency threshold violation
-- green highlight: monotonicity threshold violation The plots below show the relevant features for each cycle as well as the threshold (dotted lines), where we can see the highlights appear if the features went below the threshold.
-
-Note there is an optional "band amplitude fraction" threshold. This is currently unused (set to 0), but is present in case users want to add an amplitude threshold to this algorithm.
-
-Burst detection settings: too liberal
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The following burst detection thresholds (defined in burst_kwargs) are too low, so some portions of the signal that do not have much apparent oscillatory burst are still labeled as if they do.
-
-
-
-.. code-block:: python
-
+    subj = 1
+    signal_df = df_cycles[df_cycles['subject_id']==subj]
     from bycycle.burst import plot_burst_detect_params
+    plot_burst_detect_params(signals[subj], Fs, signal_df,
+                             burst_kwargs, tlims=(0, 5), figsize=(16, 3), plot_only_result=True)
 
-    burst_kwargs = {'amplitude_fraction_threshold': 0,
-                    'amplitude_consistency_threshold': .2,
-                    'period_consistency_threshold': .45,
-                    'monotonicity_threshold': .7,
-                    'N_cycles_min': 3}
-
-    df = compute_features(signal, Fs, f_alpha, burst_detection_kwargs=burst_kwargs)
-
-    plot_burst_detect_params(signal, Fs, df, burst_kwargs,
-                             tlims=None, figsize=(12, 3))
+    plot_burst_detect_params(signals[subj], Fs, signal_df,
+                             burst_kwargs, tlims=(0, 5), figsize=(16, 3))
 
 
 
 
 .. rst-class:: sphx-glr-horizontal
 
+
+    *
+
+      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_002.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_003.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_004.png
+            :class: sphx-glr-multi-img
 
     *
 
@@ -376,6 +222,83 @@ The following burst detection thresholds (defined in burst_kwargs) are too low, 
       .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_007.png
             :class: sphx-glr-multi-img
 
+
+
+
+Analyze cycle-by-cycle features
+-------------------------------
+
+Note the significant difference between the treatment and control groups for rise-decay symmetry but not the other features
+
+
+
+.. code-block:: python
+
+
+    # Only consider cycles that were identified to be in bursting regimes
+    df_cycles_burst = df_cycles[df_cycles['is_burst']]
+
+    # Compute average features across subjects in a recording
+    features_keep = ['volt_amp', 'period', 'time_rdsym', 'time_ptsym']
+    df_subjects = df_cycles_burst.groupby(['group', 'subject_id']).mean()[features_keep].reset_index()
+    print(df_subjects)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    group  subject_id  volt_amp      period  time_rdsym  time_ptsym
+    0   control           0  1.871982   96.500000    0.508455    0.469066
+    1   control           1  2.343590   98.111111    0.464854    0.504368
+    2   control           2  2.172529  101.973684    0.521036    0.471492
+    3   control           3  1.753950  106.000000    0.497005    0.446969
+    4   control           4  2.058854  100.333333    0.467409    0.518759
+    5   control           5  1.741433  110.428571    0.537834    0.488439
+    6   control           6  2.189450  104.161290    0.516436    0.478931
+    7   control           7  1.931018  102.560000    0.518496    0.489314
+    8   control           8  1.909371   81.733333    0.513970    0.453671
+    9   control           9  1.955515   89.888889    0.538089    0.525733
+    10  patient          10  1.486308  103.611111    0.463785    0.513887
+    11  patient          11  2.597686  100.000000    0.475644    0.519132
+    12  patient          12  2.538330  103.433333    0.408422    0.497035
+    13  patient          13  1.796994   94.823529    0.448065    0.472926
+    14  patient          14  2.100274  106.652174    0.433408    0.501938
+    15  patient          15  2.667704  103.047619    0.420237    0.476750
+    16  patient          16  2.283500  103.063830    0.409155    0.503237
+    17  patient          17  2.406743  103.444444    0.427119    0.489671
+    18  patient          18  1.968918  100.761905    0.422755    0.525897
+    19  patient          19  1.994269   79.666667    0.392150    0.481034
+
+
+
+.. code-block:: python
+
+
+    feature_names = {'volt_amp': 'Amplitude',
+                     'period': 'Period (ms)',
+                     'time_rdsym': 'Rise-decay symmetry',
+                     'time_ptsym': 'Peak-trough symmetry'}
+    for feat, feat_name in feature_names.items():
+        g = sns.catplot(x='group', y=feat, data=df_subjects)
+        plt.xlabel('')
+        plt.xticks(size=20)
+        plt.ylabel(feat_name, size=20)
+        plt.yticks(size=15)
+        plt.tight_layout()
+        plt.show()
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
     *
 
       .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_008.png
@@ -385,35 +308,6 @@ The following burst detection thresholds (defined in burst_kwargs) are too low, 
 
       .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_009.png
             :class: sphx-glr-multi-img
-
-
-
-
-Burst detection settings: too conservative
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-These new burst detection thresholds seem to be set too high (too strict) as the algorithm is not able to detect the bursts that are present.
-
-
-
-.. code-block:: python
-
-
-    burst_kwargs = {'amplitude_fraction_threshold': 0,
-                    'amplitude_consistency_threshold': .75,
-                    'period_consistency_threshold': .7,
-                    'monotonicity_threshold': .9,
-                    'N_cycles_min': 3}
-
-    df = compute_features(signal, Fs, f_alpha, burst_detection_kwargs=burst_kwargs)
-
-    plot_burst_detect_params(signal, Fs, df, burst_kwargs,
-                             tlims=None, figsize=(12, 3))
-
-
-
-
-.. rst-class:: sphx-glr-horizontal
-
 
     *
 
@@ -425,80 +319,39 @@ These new burst detection thresholds seem to be set too high (too strict) as the
       .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_011.png
             :class: sphx-glr-multi-img
 
-    *
-
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_012.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_013.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_014.png
-            :class: sphx-glr-multi-img
 
 
 
-
-More appropriate burst detection thresholds
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The conservative thresholds were then lowered, and we can see now that the algorithms correctly identifies parts of the 3 bursting periods. Therefore, for a signal with this level of noise, we expect these parameters to be pretty good.
-
-Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove some false positives that may occur, like that around 1.5 seconds.
+Statistical differences in cycle features
+-----------------------------------------
 
 
 
 .. code-block:: python
 
 
-    burst_kwargs = {'amplitude_fraction_threshold': .3,
-                    'amplitude_consistency_threshold': .4,
-                    'period_consistency_threshold': .5,
-                    'monotonicity_threshold': .8,
-                    'N_cycles_min': 3}
-
-    df = compute_features(signal, Fs, f_alpha, burst_detection_kwargs=burst_kwargs)
-
-    plot_burst_detect_params(signal, Fs, df, burst_kwargs,
-                             tlims=None, figsize=(12, 3))
-
-
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_015.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_016.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_017.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_018.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_019.png
-            :class: sphx-glr-multi-img
+    for feat, feat_name in feature_names.items():
+        x_treatment = df_subjects[df_subjects['group']=='patient'][feat]
+        x_control = df_subjects[df_subjects['group']=='control'][feat]
+        U, p = stats.mannwhitneyu(x_treatment, x_control)
+        print('{:20s} difference between groups, U= {:3.0f}, p={:.5f}'.format(feat_name, U, p))
 
 
 
 
-**Total running time of the script:** ( 0 minutes  2.136 seconds)
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Amplitude            difference between groups, U=  30, p=0.07023
+    Period (ms)          difference between groups, U=  45, p=0.36686
+    Rise-decay symmetry  difference between groups, U=   2, p=0.00016
+    Peak-trough symmetry difference between groups, U=  32, p=0.09294
+
+
+**Total running time of the script:** ( 0 minutes  1.979 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_plot_bycycle_resting_state.py:

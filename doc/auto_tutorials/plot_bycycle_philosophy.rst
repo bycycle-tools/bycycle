@@ -7,11 +7,8 @@
 .. _sphx_glr_auto_tutorials_plot_bycycle_philosophy.py:
 
 
-Cycle-by-cycle philosophy
-=========================
-
-Introduction
-------------
+1. Cycle-by-cycle philosophy
+===========================
 
 Neural signals, like the example shown below, are analyzed in order to extract information about brain activity. Basically, we process these signals in order to extract features that will hopefully correlate with a behavior, pathology, or something else.
 
@@ -172,7 +169,7 @@ The benefits of this alternative approach may include:
 - It is important to note that this approach also has some key disadvantages. First, it is not widely adopted like the conventional techniques. Second, it requires more hyperparameter choosing and potentialyy more quality control compared to conventional techniques. I emphasize how important it is to visualize the cycle-by-cycle characterization and burst detection to assure that the metrics match the intuition. However, this is not commonly expected or performed using conventional techniques.
 
 
-**Total running time of the script:** ( 0 minutes  0.405 seconds)
+**Total running time of the script:** ( 0 minutes  0.350 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_plot_bycycle_philosophy.py:

@@ -7,11 +7,8 @@
 .. _sphx_glr_auto_tutorials_plot_bycycle_algorithm.py:
 
 
-Cycle-by-cycle algorithm
-========================
-
-Introduction
-------------
+2. Cycle-by-cycle algorithm
+===========================
 
 In the last tutorial notebook, I described the conventional approach for analyzing time-varying properties of neural oscillations, and in this notebook, we will go over our alternative approach. The fundamental goal of this approach is to characterize neural oscillations directly in the time domain. However, this is not straightforward because it attempts to extract the properties of the oscillatory component, despite the large amount of noise. Specifically, there are two very difficult problems:
 
@@ -498,7 +495,7 @@ Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove 
 
 
 
-**Total running time of the script:** ( 0 minutes  2.202 seconds)
+**Total running time of the script:** ( 0 minutes  1.960 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_plot_bycycle_algorithm.py:
