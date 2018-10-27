@@ -5,9 +5,9 @@
 import os
 from os.path import dirname as up
 
-# import sphinx_gallery
+import sphinx_gallery
 import sphinx_bootstrap_theme
-# from sphinx_gallery.sorting import FileNameSortKey
+from sphinx_gallery.sorting import FileNameSortKey
 
 # -- Path setup --------------------------------------------------------------
 
@@ -49,7 +49,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.githubpages',
     'sphinx.ext.mathjax',
-    # 'sphinx_gallery.gen_gallery',
+    'sphinx_gallery.gen_gallery',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'm2r']
@@ -106,8 +106,8 @@ html_theme_options = {
     'navbar_links': [
         ("API", "api"),
         ("FAQ", "faq"),
-        # ("Tutorial", "auto_tutorials/index"),
-        # ("Examples", "auto_examples/index"),
+        ("Tutorial", "auto_tutorials/index"),
+        ("Examples", "auto_examples/index"),
         ("GitHub", "https://github.com/voytekresearch/bycycle", True)
     ],
 
@@ -132,7 +132,7 @@ html_theme_options = {
 
     # Location of link to source.
     # Options are "nav" (default), "footer" or anything else to exclude.
-    'source_link_position': False,
+    'source_link_position': False
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -198,6 +198,8 @@ texinfo_documents = [
 ]
 
 
+# Add logo
+html_logo = 'logo.png'
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
@@ -206,14 +208,16 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # -- Extension configuration -------------------------------------------------
 
-# sphinx_gallery_conf = {
-#     # 'examples_dirs': ['../examples', '../tutorials'],
-#     # 'gallery_dirs': ['auto_examples', 'auto_tutorials'],
-#     'within_subsection_order': FileNameSortKey,
-#     'backreferences_dir': 'generated',
-#     'reference_url': {
-#         'bycycle': None,
-#         'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
-#         'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference'
-#         }
-# }
+sphinx_gallery_conf = {
+     # path to your examples scripts
+    'examples_dirs': ['../examples', '../tutorials'],
+     # path where to save gallery generated examples
+    'gallery_dirs': ['auto_examples', 'auto_tutorials'],
+    'within_subsection_order': FileNameSortKey,
+    'backreferences_dir': 'generated',
+    'reference_url': {
+        'bycycle': None,
+        'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
+        'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference'
+        }
+}
