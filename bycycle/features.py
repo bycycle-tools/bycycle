@@ -19,29 +19,28 @@ def compute_features(x, Fs, f_range,
                      hilbert_increase_N=False):
     """
     Segment a recording into individual cycles and compute
-    simple features for each cycle
+    features for each cycle
 
     Parameters
     ----------
-    x : array-like 1d
+    x : 1d array
         voltage time series
     Fs : float
         sampling rate (Hz)
-    f_range : (low, high), Hz
-        frequency range for narrowband signal of interest
-    center_extrema : str
+    f_range : tuple of (float, float)
+        frequency range for narrowband signal of interest (Hz)
+    center_extrema : {'P', 'T'}
         The center extrema in the cycle
         'P' : cycles are defined trough-to-trough
         'T' : cycles are defined peak-to-peak
-    burst_detection_method: str in ('consistency', 'amplitude')
+    burst_detection_method: {'consistency', 'amplitude'}
         Method for detecting bursts
-        'cycles': detect bursts based on the consistency
-            of consecutive periods and amplitudes
+        'cycles': detect bursts based on the consistency of consecutive periods and amplitudes
         'amp': detect bursts using an amplitude threshold
-    burst_detection_kwargs : dict or None
+    burst_detection_kwargs : dict | None
         Keyword arguments for function to find label cycles
         as in or not in an oscillation
-    find_extrema_kwargs : dict or None
+    find_extrema_kwargs : dict | None
         Keyword arguments for function to find peaks and
         troughs (cyclepoints.find_extrema) to change filter
         parameters or boundary.
@@ -55,42 +54,42 @@ def compute_features(x, Fs, f_range,
 
     Returns
     -------
-    df : pandas DataFrame
+    df : pandas.DataFrame
         dataframe containing several features and identifiers
         for each cycle. Each row is one cycle.
-        Note that columns are slightly different depending on if
-        'center_extrema' is set to 'P' or 'T'.
-        Each column is described below for peak-centered cycles,
-        but are similar for trough-centered cycles:
-        sample_peak : sample of 'x' at which the peak occurs
-        sample_zerox_decay : sample of the decaying zerocrossing
-        sample_zerox_rise : sample of the rising zerocrossing
-        sample_last_trough : sample of the last trough
-        sample_next_trough : sample of the next trough
-        period : period of the cycle
-        time_decay : time between peak and next trough
-        time_rise : time between peak and previous trough
-        time_peak : time between rise and decay zerocrosses
-        time_trough : duration of previous trough estimated by zerocrossings
-        volt_decay : voltage change between peak and next trough
-        volt_rise : voltage change between peak and previous trough
-        volt_amp : average of rise and decay voltage
-        volt_peak : voltage at the peak
-        volt_trough : voltage at the last trough
-        time_rdsym : fraction of cycle in the rise period
-        time_ptsym : fraction of cycle in the peak period
-        band_amp : average analytic amplitude of the oscillation
-                   computed using narrowband filtering and the Hilbert
-                   transform. Filter length is 3 cycles of the low
-                   cutoff frequency. Average taken across all time points
-                   in the cycle.
-        is_burst : True if the cycle is part of a detected oscillatory burst
+        Columns (listed for peak-centered cycles):
+            - sample_peak : sample of 'x' at which the peak occurs
+            - sample_zerox_decay : sample of the decaying zerocrossing
+            - sample_zerox_rise : sample of the rising zerocrossing
+            - sample_last_trough : sample of the last trough
+            - sample_next_trough : sample of the next trough
+            - period : period of the cycle
+            - time_decay : time between peak and next trough
+            - time_rise : time between peak and previous trough
+            - time_peak : time between rise and decay zerocrosses
+            - time_trough : duration of previous trough estimated by zerocrossings
+            - volt_decay : voltage change between peak and next trough
+            - volt_rise : voltage change between peak and previous trough
+            - volt_amp : average of rise and decay voltage
+            - volt_peak : voltage at the peak
+            - volt_trough : voltage at the last trough
+            - time_rdsym : fraction of cycle in the rise period
+            - time_ptsym : fraction of cycle in the peak period
+            - band_amp : average analytic amplitude of the oscillation
+              computed using narrowband filtering and the Hilbert
+              transform. Filter length is 3 cycles of the low
+              cutoff frequency. Average taken across all time points
+              in the cycle.
+            - is_burst : True if the cycle is part of a detected oscillatory burst
 
     Notes
     -----
-    * By default, the first extrema analyzed will be a peak,
-    and the final one a trough. In order to switch the preference,
-    the signal is simply inverted and columns are renamed.
+    Peak vs trough centering
+        - By default, the first extrema analyzed will be a peak,
+          and the final one a trough. In order to switch the preference,
+          the signal is simply inverted and columns are renamed.
+        - Columns are slightly different depending on if 'center_extrema'
+          is set to 'P' or 'T'.
     """
 
     # Set defaults if user input is None

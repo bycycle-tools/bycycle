@@ -97,11 +97,7 @@ df = compute_features(signal, Fs, f_range,
 
 ## Output
 
-The output of `bycycle` is a pandas.DataFrame, a table like the one shown below (with many columns, so it is split into two images). Each row of this table corresponds to an individual segment of the signal, or a putative cycle of the rhythm of interest.
-
-!["cycle dataframe part1"](img/cycledf_1.png)
-
-!["cycle dataframe part2"](img/cycledf_2.png)
+The output of `bycycle` is a pandas.DataFrame. Each row of this table corresponds to an individual segment of the signal, or a putative cycle of the rhythm of interest.
 
 Some of the columns include:
 * __sample_peak__ - the sample of the signal at which the peak of this cycle occurs
@@ -113,10 +109,4 @@ Some of the columns include:
 * __period_consistency__ - consistency between the periods of the adjacent cycles, used in burst detection
 * __is_burst__ - indicator if the cycle is part of an oscillatory burst
 
-The features in this table can then go on to be analyzed, as demonstrated in the [resting-state data tutorial](https://github.com/voytekresearch/bycycle/blob/master/tutorials/2_Resting%20state%20cycle-by-cycle%20analysis.ipynb) and the [trial data tutorial](https://github.com/voytekresearch/bycycle/blob/master/tutorials/3_Trial%20structure%20cycle-by-cycle%20analysis.ipynb). For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording, shown below.
-
-!["rdsym distribution"](img/rdsym_distribution.png)
-
-The plot below indicates in red the cycles of the signal that were identified as part of an oscillatory burst.
-
-!["burst detection results"](img/bursts_detected.png)
+The features in this table can then go on to be analyzed. For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording. See the tutorials for more applications!

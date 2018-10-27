@@ -21,7 +21,7 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     ----------
     df : pandas DataFrame
         dataframe of waveform features for individual cycles, trough-centered
-    x : numpy array
+    x : 1d array
         trace used to compute monotonicity
     amplitude_fraction_threshold : float (0 to 1)
         the minimum normalized amplitude a cycle must have
@@ -42,10 +42,10 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     monotonicity_threshold : float (0 to 1)
         the minimum fraction of time segments between samples that must be
         going in the same direction.
-        1 = rise and decay are perfectly monotonic
-        .5 = both rise and decay are rising half of the time
-             and decay half the time
-        0 = rise period is all decaying and decay period is all rising
+        - 1 = rise and decay are perfectly monotonic
+        - .5 = both rise and decay are rising half of the time
+          and decay half the time
+        - 0 = rise period is all decaying and decay period is all rising
     N_cycles_min : int
         minimum number of cycles to be identified as truly oscillating
         needed in a row in order for them to remain identified as
@@ -54,7 +54,7 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     Returns
     -------
     df : pandas DataFrame
-        same df as input, with an additional column to indicate
+        same df as input, with an additional column (`is_burst`) to indicate
         if the cycle is part of an oscillatory burst.
         Also additional columns indicating the burst detection
         parameters.
@@ -62,7 +62,7 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     Notes
     -----
     * The first and last period cannot be considered oscillating
-    if the consistency measures are used.
+      if the consistency measures are used.
     """
 
     # Compute normalized amplitude for all cycles
@@ -147,33 +147,35 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
 
     Parameters
     ----------
-    x : numpy array
-        signal analyzed
+    x : 1d array
+        time series analyzed to compute `df_shape`
     Fs : float
-        sampling rate
-    df_shape : pd.DataFrame
-        dataframe output of `features_by_cycle`
+        sampling rate (Hz)
+    df_shape : pandas DataFrame
+        dataframe output of `features.compute_features()`
     osc_kwargs : dict
         dictionary of thresholds for burst detection
-        used in the function `features_by_cycle` using
-        the kward `burst_detection_kwargs`
-    tlims : tuple, length 2
+        used in the function `features.compute_features()` using
+        the kwarg `burst_detection_kwargs`
+    tlims : tuple of (float, float)
         start and stop times for plot
-    figsize : tuple, length 2
+    figsize : tuple of (float, float)
         size of figure
+    plot_only_result : bool
+        if True, do not plot the subplots showing the parameters
 
     Returns
     -------
-    A figure with 5 subplots.
-    In the top plot, the raw signal is plotted in black, and the
-    red line indicates periods defined as oscillatory bursts.
-    The highlighted regions indicate when each burst requirement
-    was violated, color-coded consistently with the plots below.
+    Figure with 5 subplots.
+        In the top plot, the raw signal is plotted in black, and the
+        red line indicates periods defined as oscillatory bursts.
+        The highlighted regions indicate when each burst requirement
+        was violated, color-coded consistently with the plots below.
 
-    * blue: amplitude_fraction_threshold,
-    * red: amplitude_consistency_threshold
-    * yellow: period_consistency_threshold
-    * green: monotonicity_threshold
+        - blue: amplitude_fraction_threshold,
+        - red: amplitude_consistency_threshold
+        - yellow: period_consistency_threshold
+        - green: monotonicity_threshold
     """
 
     # Normalize signal
@@ -310,12 +312,12 @@ def detect_bursts_df_amp(df, x, Fs, f_range,
     ----------
     df : pandas DataFrame
         dataframe of waveform features for individual cycles, trough-centered
-    x : numpy array
-    	trace used to compute monotonicity
+    x : 1d array
+    	time series
     Fs : float
-        The sampling rate in Hz
-    f_range : tuple (low, high), Hz
-        frequency range for oscillator of interest
+        sampling rate, Hz
+    f_range : tuple of (float, float)
+        frequency range (Hz) for oscillator of interest
     amp_threshes : tuple (low, high)
         Threshold values for determining timing of bursts.
         These values are in units of amplitude
@@ -366,23 +368,31 @@ def twothresh_amp(x, Fs, f_range, amp_threshes, N_cycles_min=3,
 
     Parameters
     ----------
-    x : array-like 1d
+    x : 1d array
         voltage time series
     Fs : float
-        The sampling rate in Hz
-    f_range : tuple (low, high), Hz
-        frequency range for oscillator of interest
-    amp_threshes : tuple (low, high)
+        sampling rate, Hz
+    f_range : tuple of (float float)
+        frequency range (Hz) for oscillator of interest
+    amp_threshes : tuple of (float float)
         Threshold values for determining timing of bursts.
         These values are in units of amplitude
         (or power, if specified) normalized to the median
         amplitude (value 1).
     N_cycles_min : float
         minimum burst duration in terms of number of cycles of f_range[0]
-    magnitude_type : string in ('power', 'amplitude')
+    magnitude_type : {'power', 'amplitude'}
         metric of magnitude used for thresholding
+    return_amplitude : bool
+        if True, return the amplitude time series as an additional output
     filter_kwargs : dict
         keyword arguments to filt.bandpass_filter
+
+    Returns
+    -------
+    isosc_noshort : 1d array, type=bool
+        array of same length as `x` indicating the parts of the signal
+        for which the oscillation was detected
     """
 
     # Set default filtering parameters
