@@ -57,7 +57,6 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../api.html">API</a></li>
-                <li><a href="../faq.html">FAQ</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorial</a></li>
                 <li><a href="../auto_examples/index.html">Examples</a></li>
                 <li><a href="https://github.com/voytekresearch/bycycle">GitHub</a></li>
@@ -105,27 +104,24 @@
 <dt id="bycycle.features.compute_features">
 <code class="descclassname">bycycle.features.</code><code class="descname">compute_features</code><span class="sig-paren">(</span><em>x</em>, <em>Fs</em>, <em>f_range</em>, <em>center_extrema='P'</em>, <em>burst_detection_method='cycles'</em>, <em>burst_detection_kwargs=None</em>, <em>find_extrema_kwargs=None</em>, <em>hilbert_increase_N=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bycycle.features.compute_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segment a recording into individual cycles and compute
-simple features for each cycle</p>
+features for each cycle</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>array-like 1d</em>) &#8211; voltage time series</li>
+<li><strong>x</strong> (<em>1d array</em>) &#8211; voltage time series</li>
 <li><strong>Fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) &#8211; sampling rate (Hz)</li>
-<li><strong>f_range</strong> (<em></em><em>(</em><em>low</em><em>, </em><em>high</em><em>)</em><em></em><em>, </em><em>Hz</em>) &#8211; frequency range for narrowband signal of interest</li>
-<li><strong>center_extrema</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) &#8211; The center extrema in the cycle
+<li><strong>f_range</strong> (<em>tuple of</em><em> (</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>)</em><em></em>) &#8211; frequency range for narrowband signal of interest (Hz)</li>
+<li><strong>center_extrema</strong> (<em>{'P'</em><em>, </em><em>'T'}</em>) &#8211; The center extrema in the cycle
 &#8216;P&#8217; : cycles are defined trough-to-trough
 &#8216;T&#8217; : cycles are defined peak-to-peak</li>
-<li><strong>burst_detection_method</strong> (<em>str in</em><em> (</em><em>'consistency'</em><em>, </em><em>'amplitude'</em><em>)</em><em></em>) &#8211; <p>Method for detecting bursts
-&#8216;cycles&#8217;: detect bursts based on the consistency</p>
-<blockquote>
-<div>of consecutive periods and amplitudes</div></blockquote>
-<p>&#8216;amp&#8217;: detect bursts using an amplitude threshold</p>
-</li>
-<li><strong>burst_detection_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) &#8211; Keyword arguments for function to find label cycles
+<li><strong>burst_detection_method</strong> (<em>{'consistency'</em><em>, </em><em>'amplitude'}</em>) &#8211; Method for detecting bursts
+&#8216;cycles&#8217;: detect bursts based on the consistency of consecutive periods and amplitudes
+&#8216;amp&#8217;: detect bursts using an amplitude threshold</li>
+<li><strong>burst_detection_kwargs</strong> (<em>dict | None</em>) &#8211; Keyword arguments for function to find label cycles
 as in or not in an oscillation</li>
-<li><strong>find_extrema_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) &#8211; Keyword arguments for function to find peaks and
+<li><strong>find_extrema_kwargs</strong> (<em>dict | None</em>) &#8211; Keyword arguments for function to find peaks and
 troughs (cyclepoints.find_extrema) to change filter
 parameters or boundary.
 By default, it sets the filter length to three cycles
@@ -139,49 +135,54 @@ computing it in a reasonable amount of time.</li>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p><strong>df</strong> &#8211; dataframe containing several features and identifiers
 for each cycle. Each row is one cycle.
-Note that columns are slightly different depending on if
-&#8216;center_extrema&#8217; is set to &#8216;P&#8217; or &#8216;T&#8217;.
-Each column is described below for peak-centered cycles,
-but are similar for trough-centered cycles:
-sample_peak : sample of &#8216;x&#8217; at which the peak occurs
-sample_zerox_decay : sample of the decaying zerocrossing
-sample_zerox_rise : sample of the rising zerocrossing
-sample_last_trough : sample of the last trough
-sample_next_trough : sample of the next trough
-period : period of the cycle
-time_decay : time between peak and next trough
-time_rise : time between peak and previous trough
-time_peak : time between rise and decay zerocrosses
-time_trough : duration of previous trough estimated by zerocrossings
-volt_decay : voltage change between peak and next trough
-volt_rise : voltage change between peak and previous trough
-volt_amp : average of rise and decay voltage
-volt_peak : voltage at the peak
-volt_trough : voltage at the last trough
-time_rdsym : fraction of cycle in the rise period
-time_ptsym : fraction of cycle in the peak period
-band_amp : average analytic amplitude of the oscillation</p>
+Columns (listed for peak-centered cycles):</p>
 <blockquote>
-<div><p>computed using narrowband filtering and the Hilbert
+<div><ul class="simple">
+<li>sample_peak : sample of &#8216;x&#8217; at which the peak occurs</li>
+<li>sample_zerox_decay : sample of the decaying zerocrossing</li>
+<li>sample_zerox_rise : sample of the rising zerocrossing</li>
+<li>sample_last_trough : sample of the last trough</li>
+<li>sample_next_trough : sample of the next trough</li>
+<li>period : period of the cycle</li>
+<li>time_decay : time between peak and next trough</li>
+<li>time_rise : time between peak and previous trough</li>
+<li>time_peak : time between rise and decay zerocrosses</li>
+<li>time_trough : duration of previous trough estimated by zerocrossings</li>
+<li>volt_decay : voltage change between peak and next trough</li>
+<li>volt_rise : voltage change between peak and previous trough</li>
+<li>volt_amp : average of rise and decay voltage</li>
+<li>volt_peak : voltage at the peak</li>
+<li>volt_trough : voltage at the last trough</li>
+<li>time_rdsym : fraction of cycle in the rise period</li>
+<li>time_ptsym : fraction of cycle in the peak period</li>
+<li>band_amp : average analytic amplitude of the oscillation
+computed using narrowband filtering and the Hilbert
 transform. Filter length is 3 cycles of the low
 cutoff frequency. Average taken across all time points
-in the cycle.</p>
+in the cycle.</li>
+<li>is_burst : True if the cycle is part of a detected oscillatory burst</li>
+</ul>
 </div></blockquote>
-<p>is_burst : True if the cycle is part of a detected oscillatory burst</p>
 </p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas DataFrame</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.DataFrame</p>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<ul class="simple">
-<li>By default, the first extrema analyzed will be a peak,</li>
+<dl class="docutils">
+<dt>Peak vs trough centering</dt>
+<dd><ul class="first last simple">
+<li>By default, the first extrema analyzed will be a peak,
+and the final one a trough. In order to switch the preference,
+the signal is simply inverted and columns are renamed.</li>
+<li>Columns are slightly different depending on if &#8216;center_extrema&#8217;
+is set to &#8216;P&#8217; or &#8216;T&#8217;.</li>
 </ul>
-<p>and the final one a trough. In order to switch the preference,
-the signal is simply inverted and columns are renamed.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

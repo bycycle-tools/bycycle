@@ -57,7 +57,6 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../api.html">API</a></li>
-                <li><a href="../faq.html">FAQ</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorial</a></li>
                 <li><a href="../auto_examples/index.html">Examples</a></li>
                 <li><a href="https://github.com/voytekresearch/bycycle">GitHub</a></li>
@@ -111,7 +110,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>df</strong> (<em>pandas DataFrame</em>) &#8211; dataframe of waveform features for individual cycles, trough-centered</li>
-<li><strong>x</strong> (<em>numpy array</em>) &#8211; trace used to compute monotonicity</li>
+<li><strong>x</strong> (<em>1d array</em>) &#8211; trace used to compute monotonicity</li>
 <li><strong>amplitude_fraction_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> (</em><em>0 to 1</em><em>)</em><em></em>) &#8211; the minimum normalized amplitude a cycle must have
 in order to be considered in an oscillation.
 0 = the minimum amplitude across all cycles
@@ -127,11 +126,13 @@ to be considered as in an oscillatory mode
 .5 = one cycle is half the duration of another cycle</li>
 <li><strong>monotonicity_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> (</em><em>0 to 1</em><em>)</em><em></em>) &#8211; <p>the minimum fraction of time segments between samples that must be
 going in the same direction.
-1 = rise and decay are perfectly monotonic
-.5 = both rise and decay are rising half of the time</p>
+- 1 = rise and decay are perfectly monotonic
+- .5 = both rise and decay are rising half of the time</p>
 <blockquote>
 <div>and decay half the time</div></blockquote>
-<p>0 = rise period is all decaying and decay period is all rising</p>
+<ul>
+<li>0 = rise period is all decaying and decay period is all rising</li>
+</ul>
 </li>
 <li><strong>N_cycles_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) &#8211; minimum number of cycles to be identified as truly oscillating
 needed in a row in order for them to remain identified as
@@ -139,7 +140,7 @@ truly oscillating</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>df</strong> &#8211; same df as input, with an additional column to indicate
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>df</strong> &#8211; same df as input, with an additional column (<cite>is_burst</cite>) to indicate
 if the cycle is part of an oscillatory burst.
 Also additional columns indicating the burst detection
 parameters.</p>
@@ -152,9 +153,9 @@ parameters.</p>
 </table>
 <p class="rubric">Notes</p>
 <ul class="simple">
-<li>The first and last period cannot be considered oscillating</li>
+<li>The first and last period cannot be considered oscillating
+if the consistency measures are used.</li>
 </ul>
-<p>if the consistency measures are used.</p>
 </dd></dl>
 
 </div>

@@ -57,7 +57,6 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../api.html">API</a></li>
-                <li><a href="../faq.html">FAQ</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorial</a></li>
                 <li><a href="../auto_examples/index.html">Examples</a></li>
                 <li><a href="https://github.com/voytekresearch/bycycle">GitHub</a></li>
@@ -112,9 +111,9 @@ burst using an amplitude thresholding approach</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>df</strong> (<em>pandas DataFrame</em>) &#8211; dataframe of waveform features for individual cycles, trough-centered</li>
-<li><strong>x</strong> (<em>numpy array</em>) &#8211; trace used to compute monotonicity</li>
-<li><strong>Fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) &#8211; The sampling rate in Hz</li>
-<li><strong>f_range</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> (</em><em>low</em><em>, </em><em>high</em><em>)</em><em></em><em>, </em><em>Hz</em>) &#8211; frequency range for oscillator of interest</li>
+<li><strong>x</strong> (<em>1d array</em>) &#8211; time series</li>
+<li><strong>Fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) &#8211; sampling rate, Hz</li>
+<li><strong>f_range</strong> (<em>tuple of</em><em> (</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>)</em><em></em>) &#8211; frequency range (Hz) for oscillator of interest</li>
 <li><strong>amp_threshes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> (</em><em>low</em><em>, </em><em>high</em><em>)</em><em></em>) &#8211; Threshold values for determining timing of bursts.
 These values are in units of amplitude
 (or power, if specified) normalized to the median

@@ -1,10 +1,10 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_tutorials_plot_bycycle_resting_state.py>` to download the full example code
+    Click :ref:`here <sphx_glr_download_auto_tutorials_plot_3_bycycle_resting_state.py>` to download the full example code
 .. rst-class:: sphx-glr-example-title
 
-.. _sphx_glr_auto_tutorials_plot_bycycle_resting_state.py:
+.. _sphx_glr_auto_tutorials_plot_3_bycycle_resting_state.py:
 
 
 3. Cycle-by-cycle analysis of resting state data
@@ -75,7 +75,7 @@ Load simulated experiment of 10 patients and 10 controls
 
 
 
-.. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_001.png
+.. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_001.png
     :class: sphx-glr-single-img
 
 
@@ -194,32 +194,32 @@ These burst detection parameters seem appropriate because they mostly restrict t
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_002.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_002.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_003.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_003.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_004.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_004.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_005.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_005.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_006.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_006.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_007.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_007.png
             :class: sphx-glr-multi-img
 
 
@@ -301,22 +301,22 @@ Note the significant difference between the treatment and control groups for ris
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_008.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_008.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_009.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_009.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_010.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_010.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_resting_state_011.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_3_bycycle_resting_state_011.png
             :class: sphx-glr-multi-img
 
 
@@ -351,10 +351,10 @@ Statistical differences in cycle features
     Peak-trough symmetry difference between groups, U=  32, p=0.09294
 
 
-**Total running time of the script:** ( 0 minutes  1.979 seconds)
+**Total running time of the script:** ( 0 minutes  1.975 seconds)
 
 
-.. _sphx_glr_download_auto_tutorials_plot_bycycle_resting_state.py:
+.. _sphx_glr_download_auto_tutorials_plot_3_bycycle_resting_state.py:
 
 
 .. only :: html
@@ -366,13 +366,13 @@ Statistical differences in cycle features
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: plot_bycycle_resting_state.py <plot_bycycle_resting_state.py>`
+     :download:`Download Python source code: plot_3_bycycle_resting_state.py <plot_3_bycycle_resting_state.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: plot_bycycle_resting_state.ipynb <plot_bycycle_resting_state.ipynb>`
+     :download:`Download Jupyter notebook: plot_3_bycycle_resting_state.ipynb <plot_3_bycycle_resting_state.ipynb>`
 
 
 .. only:: html

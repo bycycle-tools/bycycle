@@ -57,7 +57,6 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../api.html">API</a></li>
-                <li><a href="../faq.html">FAQ</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorial</a></li>
                 <li><a href="../auto_examples/index.html">Examples</a></li>
                 <li><a href="https://github.com/voytekresearch/bycycle">GitHub</a></li>
@@ -110,12 +109,12 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>array-like 1d</em>) &#8211; voltage time series</li>
-<li><strong>Fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) &#8211; sampling rate</li>
-<li><strong>f_range</strong> (<em></em><em>(</em><em>low</em><em>, </em><em>high</em><em>)</em><em></em><em>, </em><em>Hz</em>) &#8211; frequency range for narrowband signal of interest,
+<li><strong>x</strong> (<em>1d array</em>) &#8211; voltage time series</li>
+<li><strong>Fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) &#8211; sampling rate, Hz</li>
+<li><strong>f_range</strong> (<em>tuple of</em><em> (</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>)</em><em></em>) &#8211; frequency range (Hz) for narrowband signal of interest,
 used to find zerocrossings of the oscillation</li>
 <li><strong>boundary</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) &#8211; number of samples from edge of recording to ignore</li>
-<li><strong>first_extrema</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) &#8211; if &#8216;peak&#8217;, then force the output to begin with a peak and end in a trough
+<li><strong>first_extrema</strong> (<em>{'peak'</em><em>, </em><em>'trough'</em><em>, </em><em>None}</em>) &#8211; if &#8216;peak&#8217;, then force the output to begin with a peak and end in a trough
 if &#8216;trough&#8217;, then force the output to begin with a trough and end in peak
 if None, force nothing</li>
 <li><strong>filter_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) &#8211; keyword arguments to the filt.bandpass_filter(), such as &#8216;N_cycles&#8217; or &#8216;N_seconds&#8217;
@@ -124,8 +123,8 @@ to control filter length</li>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>Ps</strong> (<em>array-like 1d</em>) &#8211; indices at which oscillatory peaks occur in the input signal x</li>
-<li><strong>Ts</strong> (<em>array-like 1d</em>) &#8211; indices at which oscillatory troughs occur in the input signal x</li>
+<li><strong>Ps</strong> (<em>1d array</em>) &#8211; indices at which oscillatory peaks occur in the input signal x</li>
+<li><strong>Ts</strong> (<em>1d array</em>) &#8211; indices at which oscillatory troughs occur in the input signal x</li>
 </ul>
 </p>
 </td>

@@ -1,4 +1,4 @@
 Welcome to bycycle's documentation!
 ===================================
 
-.. mdinclude:: ../README.md
+.. mdinclude:: README_nofigs.md

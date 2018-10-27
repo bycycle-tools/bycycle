@@ -57,7 +57,6 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../api.html">API</a></li>
-                <li><a href="../faq.html">FAQ</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorial</a></li>
                 <li><a href="../auto_examples/index.html">Examples</a></li>
                 <li><a href="https://github.com/voytekresearch/bycycle">GitHub</a></li>
@@ -112,18 +111,18 @@ instantaneous phase. Also use rise and decay zerocrossings
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>array-like 1d</em>) &#8211; voltage time series</li>
-<li><strong>Ps</strong> (<em>array-like 1d</em>) &#8211; time points of oscillatory peaks</li>
-<li><strong>Ts</strong> (<em>array-like 1d</em>) &#8211; time points of oscillatory troughs</li>
-<li><strong>zeroxR</strong> (<em>array-like 1d</em>) &#8211; indices at which oscillatory rising zerocrossings occur</li>
-<li><strong>zeroxD</strong> (<em>array-like 1d</em>) &#8211; indices at which oscillatory decaying zerocrossings occur</li>
+<li><strong>x</strong> (<em>1d array</em>) &#8211; voltage time series</li>
+<li><strong>Ps</strong> (<em>1d array</em>) &#8211; samples of oscillatory peaks</li>
+<li><strong>Ts</strong> (<em>1d array</em>) &#8211; samples of oscillatory troughs</li>
+<li><strong>zeroxR</strong> (<em>1d array</em>) &#8211; samples of oscillatory rising zerocrossings</li>
+<li><strong>zeroxD</strong> (<em>1d array</em>) &#8211; samples of oscillatory decaying zerocrossings</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pha</strong> &#8211; instantaneous phase</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pha</strong> &#8211; instantaneous phase time series</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">array-like 1d</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">1d array</p>
 </td>
 </tr>
 </tbody>

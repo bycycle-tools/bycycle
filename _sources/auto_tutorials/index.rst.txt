@@ -17,13 +17,13 @@ Below is a series of notebooks that provide an introduction to cycle-by-cycle an
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Introduction ------------">
+    <div class="sphx-glr-thumbcontainer" tooltip="Neural signals, like the example shown below, are analyzed in order to extract information abou...">
 
 .. only:: html
 
-    .. figure:: /auto_tutorials/images/thumb/sphx_glr_plot_bycycle_algorithm_thumb.png
+    .. figure:: /auto_tutorials/images/thumb/sphx_glr_plot_1_bycycle_philosophy_thumb.png
 
-        :ref:`sphx_glr_auto_tutorials_plot_bycycle_algorithm.py`
+        :ref:`sphx_glr_auto_tutorials_plot_1_bycycle_philosophy.py`
 
 .. raw:: html
 
@@ -33,17 +33,17 @@ Below is a series of notebooks that provide an introduction to cycle-by-cycle an
 .. toctree::
    :hidden:
 
-   /auto_tutorials/plot_bycycle_algorithm
+   /auto_tutorials/plot_1_bycycle_philosophy
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Introduction ------------">
+    <div class="sphx-glr-thumbcontainer" tooltip="In the last tutorial notebook, I described the conventional approach for analyzing time-varying...">
 
 .. only:: html
 
-    .. figure:: /auto_tutorials/images/thumb/sphx_glr_plot_bycycle_philosophy_thumb.png
+    .. figure:: /auto_tutorials/images/thumb/sphx_glr_plot_2_bycycle_algorithm_thumb.png
 
-        :ref:`sphx_glr_auto_tutorials_plot_bycycle_philosophy.py`
+        :ref:`sphx_glr_auto_tutorials_plot_2_bycycle_algorithm.py`
 
 .. raw:: html
 
@@ -53,17 +53,17 @@ Below is a series of notebooks that provide an introduction to cycle-by-cycle an
 .. toctree::
    :hidden:
 
-   /auto_tutorials/plot_bycycle_philosophy
+   /auto_tutorials/plot_2_bycycle_algorithm
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Introduction ------------">
+    <div class="sphx-glr-thumbcontainer" tooltip="Say we ran an experiment and want to compare subjects&#x27; resting state data for some reason. Mayb...">
 
 .. only:: html
 
-    .. figure:: /auto_tutorials/images/thumb/sphx_glr_plot_bycycle_resting_state_thumb.png
+    .. figure:: /auto_tutorials/images/thumb/sphx_glr_plot_3_bycycle_resting_state_thumb.png
 
-        :ref:`sphx_glr_auto_tutorials_plot_bycycle_resting_state.py`
+        :ref:`sphx_glr_auto_tutorials_plot_3_bycycle_resting_state.py`
 
 .. raw:: html
 
@@ -73,7 +73,7 @@ Below is a series of notebooks that provide an introduction to cycle-by-cycle an
 .. toctree::
    :hidden:
 
-   /auto_tutorials/plot_bycycle_resting_state
+   /auto_tutorials/plot_3_bycycle_resting_state
 .. raw:: html
 
     <div style='clear:both'></div>

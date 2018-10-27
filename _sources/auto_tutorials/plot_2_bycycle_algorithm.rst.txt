@@ -1,10 +1,10 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_tutorials_plot_bycycle_algorithm.py>` to download the full example code
+    Click :ref:`here <sphx_glr_download_auto_tutorials_plot_2_bycycle_algorithm.py>` to download the full example code
 .. rst-class:: sphx-glr-example-title
 
-.. _sphx_glr_auto_tutorials_plot_bycycle_algorithm.py:
+.. _sphx_glr_auto_tutorials_plot_2_bycycle_algorithm.py:
 
 
 2. Cycle-by-cycle algorithm
@@ -74,7 +74,7 @@ A crucial part of the cycle-by-cycle approach is the ability to localize the pea
 
 
 
-.. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_001.png
+.. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_001.png
     :class: sphx-glr-single-img
 
 
@@ -133,7 +133,7 @@ In order to characterize the oscillation, it is useful to know the precise times
 
 
 
-.. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_002.png
+.. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_002.png
     :class: sphx-glr-single-img
 
 
@@ -154,7 +154,7 @@ Note the filter characteristics used in the process of finding peaks and troughs
 
 
 
-.. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_003.png
+.. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_003.png
     :class: sphx-glr-single-img
 
 
@@ -204,7 +204,7 @@ In addition to localizing the peaks and troughs of a cycle, we also want to get 
 
 
 
-.. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_004.png
+.. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_004.png
     :class: sphx-glr-single-img
 
 
@@ -360,27 +360,27 @@ The following burst detection thresholds (defined in burst_kwargs) are too low, 
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_005.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_005.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_006.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_006.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_007.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_007.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_008.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_008.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_009.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_009.png
             :class: sphx-glr-multi-img
 
 
@@ -414,27 +414,27 @@ These new burst detection thresholds seem to be set too high (too strict) as the
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_010.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_010.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_011.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_011.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_012.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_012.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_013.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_013.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_014.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_014.png
             :class: sphx-glr-multi-img
 
 
@@ -469,36 +469,36 @@ Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove 
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_015.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_015.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_016.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_016.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_017.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_017.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_018.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_018.png
             :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /auto_tutorials/images/sphx_glr_plot_bycycle_algorithm_019.png
+      .. image:: /auto_tutorials/images/sphx_glr_plot_2_bycycle_algorithm_019.png
             :class: sphx-glr-multi-img
 
 
 
 
-**Total running time of the script:** ( 0 minutes  1.960 seconds)
+**Total running time of the script:** ( 0 minutes  1.811 seconds)
 
 
-.. _sphx_glr_download_auto_tutorials_plot_bycycle_algorithm.py:
+.. _sphx_glr_download_auto_tutorials_plot_2_bycycle_algorithm.py:
 
 
 .. only :: html
@@ -510,13 +510,13 @@ Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: plot_bycycle_algorithm.py <plot_bycycle_algorithm.py>`
+     :download:`Download Python source code: plot_2_bycycle_algorithm.py <plot_2_bycycle_algorithm.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: plot_bycycle_algorithm.ipynb <plot_bycycle_algorithm.ipynb>`
+     :download:`Download Jupyter notebook: plot_2_bycycle_algorithm.ipynb <plot_2_bycycle_algorithm.ipynb>`
 
 
 .. only:: html
