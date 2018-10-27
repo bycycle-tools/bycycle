@@ -4,3 +4,6 @@ build/
 .ipynb_checkpoints/
 *.pyc
 doc/_build
+doc/auto_examples
+doc/auto_tutorials
+doc/generated
