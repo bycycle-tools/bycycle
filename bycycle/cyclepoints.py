@@ -15,16 +15,16 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
 
     Parameters
     ----------
-    x : array-like 1d
+    x : 1d array
         voltage time series
     Fs : float
-        sampling rate
-    f_range : (low, high), Hz
-        frequency range for narrowband signal of interest,
+        sampling rate, Hz
+    f_range : tuple of (float, float)
+        frequency range (Hz) for narrowband signal of interest,
         used to find zerocrossings of the oscillation
     boundary : int
         number of samples from edge of recording to ignore
-    first_extrema: str or None
+    first_extrema: {'peak', 'trough', None}
         if 'peak', then force the output to begin with a peak and end in a trough
         if 'trough', then force the output to begin with a trough and end in peak
         if None, force nothing
@@ -34,9 +34,9 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
 
     Returns
     -------
-    Ps : array-like 1d
+    Ps : 1d array
         indices at which oscillatory peaks occur in the input signal x
-    Ts : array-like 1d
+    Ts : 1d array
         indices at which oscillatory troughs occur in the input signal x
 
     Notes
@@ -135,27 +135,27 @@ def find_zerox(x, Ps, Ts):
 
     Parameters
     ----------
-    x : array-like 1d
+    x : 1d array
         voltage time series
-    Ps : numpy arrays 1d
-        time points of oscillatory peaks
-    Ts : numpy arrays 1d
-        time points of osillatory troughs
+    Ps : 1d array
+        samples of oscillatory peaks
+    Ts : 1d array
+        samples of osillatory troughs
 
     Returns
     -------
     zeroxR : array-like 1d
-        indices at which oscillatory rising zerocrossings occur
+        samples at which oscillatory rising zerocrossings occur
     zeroxD : array-like 1d
-        indices at which oscillatory decaying zerocrossings occur
+        samples at which oscillatory decaying zerocrossings occur
 
     Notes
     -----
-    * Sometimes, due to noise in estimating peaks and troughs when the oscillation
-    is absent, the estimated peak might be lower than an adjacent trough. If this
-    occurs, the rise and decay zerocrossings will be set to be halfway between
-    the peak and trough. Burst detection should be used in order to ignore these
-    periods of the signal.
+    - Sometimes, due to noise in estimating peaks and troughs when the oscillation
+      is absent, the estimated peak might be lower than an adjacent trough. If this
+      occurs, the rise and decay zerocrossings will be set to be halfway between
+      the peak and trough. Burst detection should be used in order to ignore these
+      periods of the signal.
     """
 
     # Calculate the number of rises and decays
@@ -212,21 +212,21 @@ def extrema_interpolated_phase(x, Ps, Ts, zeroxR=None, zeroxD=None):
 
     Parameters
     ----------
-    x : array-like 1d
+    x : 1d array
         voltage time series
-    Ps : array-like 1d
-        time points of oscillatory peaks
-    Ts : array-like 1d
-        time points of oscillatory troughs
-    zeroxR : array-like 1d
-        indices at which oscillatory rising zerocrossings occur
-    zeroxD : array-like 1d
-        indices at which oscillatory decaying zerocrossings occur
+    Ps : 1d array
+        samples of oscillatory peaks
+    Ts : 1d array
+        samples of oscillatory troughs
+    zeroxR : 1d array
+        samples of oscillatory rising zerocrossings
+    zeroxD : 1d array
+        samples of oscillatory decaying zerocrossings
 
     Returns
     -------
-    pha : array-like 1d
-        instantaneous phase
+    pha : 1d array
+        instantaneous phase time series
 
     Notes
     -----
