@@ -121,7 +121,7 @@ html_theme_options = {
     # Currently, the supported themes are:
     # - Bootstrap 2: https://bootswatch.com/2
     # - Bootstrap 3: https://bootswatch.com/3
-    'bootswatch_theme': "united",
+    'bootswatch_theme': "flatly",
 
     # Render the current pages TOC in the navbar. (Default: true)
     'navbar_pagenav': False,
@@ -198,7 +198,7 @@ texinfo_documents = [
 
 
 # Add logo
-html_logo = 'logo.png'
+html_logo = 'logo.jpg'
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
