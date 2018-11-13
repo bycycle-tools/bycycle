@@ -33,7 +33,7 @@ def compute_features(x, Fs, f_range,
         The center extrema in the cycle
         'P' : cycles are defined trough-to-trough
         'T' : cycles are defined peak-to-peak
-    burst_detection_method: {'consistency', 'amplitude'}
+    burst_detection_method: {'consistency', 'amp'}
         Method for detecting bursts
         'cycles': detect bursts based on the consistency of consecutive periods and amplitudes
         'amp': detect bursts using an amplitude threshold
