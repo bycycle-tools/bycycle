@@ -173,7 +173,8 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
         if `plot_only_result` = True: return a plot of the burst
         detection in which periods with bursts are denoted in red
 
-        if `plot_only_result` = False: return a list of 5 axes.
+        if `plot_only_result` = False: return a list of the fig
+        handle followed by the 5 axes.
         In the top plot, the raw signal is plotted in black, and the
         red line indicates periods defined as oscillatory bursts.
         The highlighted regions indicate when each burst requirement
@@ -233,14 +234,15 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
 
     else:
         # Plot the time series and indicate peaks and troughs
-        f, ax1 = plt.subplots(figsize=figsize)
+        fig = plt.figure(figsize=(figsize[0], 5*figsize[1]))
+        ax1 = fig.add_subplot(5, 1, 1)
         ax1.plot(t, x, 'k')
         ax1.plot(t[is_osc], x[is_osc], 'r', linewidth=2)
         ax1.plot(t[df_shape['sample_' + center_e]], x[df_shape['sample_' + center_e]], 'm.', ms=10)
         ax1.plot(t[df_shape['sample_last_' + side_e]], x[df_shape['sample_last_' + side_e]], 'c.', ms=10)
         ax1.set_xlim(tlims)
-        ax1.set_title('Raw signal with highlights indicating violations of oscillatory burst requirements')
-        ax1.set_xlabel('Time (s)')
+        ax1.set_xticks([])
+        ax1.set_ylabel('Black: Raw signal\nRed: oscillatory periods')
         ax1.set_ylim((-4, 4))
 
         # Highlight where burst detection parameters were violated
@@ -258,55 +260,55 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
                          where=df_shape['monotonicity'] < osc_kwargs['monotonicity_threshold'],
                          interpolate=True, facecolor='green', alpha=0.5)
 
-        f, ax2 = plt.subplots(figsize=figsize)
+        ax2 = fig.add_subplot(5, 1, 2)
         ax2.plot(t[df_shape['sample_' + center_e]], df_shape['amp_fraction'], 'k.-')
         ax2.plot(tlims, [osc_kwargs['amplitude_fraction_threshold'],
                          osc_kwargs['amplitude_fraction_threshold']], 'k--')
         ax2.set_xlim(tlims)
+        ax2.set_xticks([])
         ax2.set_ylim((-.02, 1.02))
-        ax2.set_title('Band amplitude fraction, threshold={:.02f}'.format(osc_kwargs['amplitude_fraction_threshold']))
-        ax2.set_xlabel('Time (s)')
+        ax2.set_ylabel('Band amplitude fraction\nthreshold={:.02f}'.format(osc_kwargs['amplitude_fraction_threshold']))
         ax2.fill_between(t[df_shape['sample_last_' + side_e]], 0, 100,
                          where=df_shape['amp_fraction'] < osc_kwargs['amplitude_fraction_threshold'],
                          interpolate=True, facecolor='blue', alpha=0.5)
 
-        f, ax3 = plt.subplots(figsize=figsize)
+        ax3 = fig.add_subplot(5, 1, 3)
         ax3.plot(t[df_shape['sample_' + center_e]], df_shape['amp_consistency'], 'k.-')
         ax3.plot(tlims, [osc_kwargs['amplitude_consistency_threshold'],
                          osc_kwargs['amplitude_consistency_threshold']], 'k--')
         ax3.set_xlim(tlims)
+        ax3.set_xticks([])
         ax3.set_ylim((-.02, 1.02))
-        ax3.set_title('Amplitude consistency, threshold={:.02f}'.format(osc_kwargs['amplitude_consistency_threshold']))
-        ax3.set_xlabel('Time (s)')
+        ax3.set_ylabel('Amplitude consistency\nthreshold={:.02f}'.format(osc_kwargs['amplitude_consistency_threshold']))
         ax3.fill_between(t[df_shape['sample_last_' + side_e]], 0, 100,
                          where=df_shape['amp_consistency'] < osc_kwargs['amplitude_consistency_threshold'],
                          interpolate=True, facecolor='red', alpha=0.5)
 
-        f, ax4 = plt.subplots(figsize=figsize)
+        ax4 = fig.add_subplot(5, 1, 4)
         ax4.plot(t[df_shape['sample_' + center_e]], df_shape['period_consistency'], 'k.-')
         ax4.plot(tlims, [osc_kwargs['period_consistency_threshold'],
                          osc_kwargs['period_consistency_threshold']], 'k--')
         ax4.set_xlim(tlims)
-        ax4.set_title('Period consistency, threshold={:.02f}'.format(osc_kwargs['period_consistency_threshold']))
+        ax4.set_xticks([])
+        ax4.set_ylabel('Period consistency\nthreshold={:.02f}'.format(osc_kwargs['period_consistency_threshold']))
         ax4.set_ylim((-.02, 1.02))
-        ax4.set_xlabel('Time (s)')
         ax4.fill_between(t[df_shape['sample_last_' + side_e]], 0, 100,
                          where=df_shape['period_consistency'] < osc_kwargs['period_consistency_threshold'],
                          interpolate=True, facecolor='yellow', alpha=0.5)
 
-        f, ax5 = plt.subplots(figsize=figsize)
+        ax5 = fig.add_subplot(5, 1, 5)
         ax5.plot(t[df_shape['sample_' + center_e]], df_shape['monotonicity'], 'k.-')
         ax5.plot(tlims, [osc_kwargs['monotonicity_threshold'],
                          osc_kwargs['monotonicity_threshold']], 'k--')
         ax5.set_xlim(tlims)
-        ax5.set_title('Monotonicity, threshold={:.02f}'.format(osc_kwargs['monotonicity_threshold']))
+        ax5.set_ylabel('Monotonicity\nthreshold={:.02f}'.format(osc_kwargs['monotonicity_threshold']))
         ax5.set_ylim((-.02, 1.02))
-        ax5.set_xlabel('Time (s)')
+        ax5.set_xlabel('Time (s)', size=20)
         ax5.fill_between(t[df_shape['sample_last_' + side_e]], 0, 100,
                          where=df_shape['monotonicity'] < osc_kwargs['monotonicity_threshold'],
                          interpolate=True, facecolor='green', alpha=0.5)
 
-        return [ax1, ax2, ax3, ax4, ax5]
+        return [fig, ax1, ax2, ax3, ax4, ax5]
 
 
 def detect_bursts_df_amp(df, x, Fs, f_range,
