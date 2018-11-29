@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/voytekresearch/bycycle.svg)](https://travis-ci.org/voytekresearch/bycycle)
 [![License](https://img.shields.io/pypi/l/bycycle.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Supported Python Versions](https://img.shields.io/pypi/pyversions/bycycle.svg)](https://pypi.python.org/pypi/bycycle/)
+[![codecov](https://codecov.io/gh/voytekresearch/bycycle/branch/addcodecov/graph/badge.svg)](https://codecov.io/gh/voytekresearch/bycycle)
 
 ## Overview
 
