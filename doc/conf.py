@@ -107,7 +107,7 @@ html_theme_options = {
         ("API", "api"),
         ("Tutorial", "auto_tutorials/index"),
         ("Examples", "auto_examples/index"),
-        ("GitHub", "https://github.com/voytekresearch/bycycle", True)
+        ("GitHub", "https://github.com/bycycle-tools/bycycle", True)
     ],
 
     # Bootswatch (http://bootswatch.com/) theme.

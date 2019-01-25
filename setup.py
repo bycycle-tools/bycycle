@@ -44,7 +44,7 @@ setup(
     long_description = long_description,
     author = 'The Voytek Lab',
     author_email = 'voyteklab@gmail.com',
-    url = 'https://github.com/voytekresearch/bycycle',
+    url = 'https://github.com/bycycle-tools/bycycle',
     packages = find_packages(),
     license = 'Apache License, 2.0',
     classifiers = [
@@ -58,7 +58,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
-    download_url = 'https://github.com/voytekresearch/bycycle/releases',
+    download_url = 'https://github.com/bycycle-tools/bycycle/releases',
     keywords = ['neuroscience', 'neural oscillations', 'waveform', 'shape', 'electrophysiology'],
     install_requires = ['numpy', 'scipy', 'pandas'],
     tests_require = ['pytest'],

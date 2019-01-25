@@ -2,10 +2,10 @@
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Latest Version](https://img.shields.io/pypi/v/bycycle.svg)](https://pypi.python.org/pypi/bycycle/)
-[![Build Status](https://travis-ci.org/voytekresearch/bycycle.svg)](https://travis-ci.org/voytekresearch/bycycle)
+[![Build Status](https://travis-ci.org/bycycle-tools/bycycle.svg)](https://travis-ci.org/bycycle-tools/bycycle)
 [![License](https://img.shields.io/pypi/l/bycycle.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Supported Python Versions](https://img.shields.io/pypi/pyversions/bycycle.svg)](https://pypi.python.org/pypi/bycycle/)
-[![codecov](https://codecov.io/gh/voytekresearch/bycycle/branch/master/graph/badge.svg)](https://codecov.io/gh/voytekresearch/bycycle)
+[![codecov](https://codecov.io/gh/bycycle-tools/bycycle/branch/master/graph/badge.svg)](https://codecov.io/gh/bycycle-tools/bycycle)
 
 ## Overview
 
@@ -43,7 +43,7 @@ To install the latest stable release of bycycle, you can use pip:
 
 To get the lastest, development version, you can get the code using git:
 
-`$ git clone https://github.com/voytekresearch/bycycle`
+`$ git clone https://github.com/bycycle-tools/bycycle`
 
 To then install the development version (without making changes to it), move into the directory you cloned and run:
 
@@ -68,9 +68,9 @@ f_range = (8, 12)
 df = compute_features(signal, Fs, f_range)
 ```
 
-Note that a lowpass filter is applied in order to remove high-frequency power that may interfere with extrema localization. (see section 0 of the [algorithm tutorial](https://github.com/voytekresearch/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb) for more details).
+Note that a lowpass filter is applied in order to remove high-frequency power that may interfere with extrema localization. (see section 0 of the [algorithm tutorial](https://github.com/bycycle-tools/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb) for more details).
 
-It's necessary to note that the above `compute_features()` command used default parameters to localize extrema and detect bursts of oscillations. However, it is important to knowledgeably select these parameters, as described in the [algorithm tutorial](https://github.com/voytekresearch/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb). The following example and text go over the different potential parameter changes:
+It's necessary to note that the above `compute_features()` command used default parameters to localize extrema and detect bursts of oscillations. However, it is important to knowledgeably select these parameters, as described in the [algorithm tutorial](https://github.com/bycycle-tools/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb). The following example and text go over the different potential parameter changes:
 
 ```python
 
@@ -92,8 +92,8 @@ df = compute_features(signal, Fs, f_range,
 
 * __center_extrema__ determines how the cycles are segmented. 'T' indicates the center extrema is a trough, so cycles are segmented peak-to-peak.
 * __burst_detection_method__ selects which method for burst detection is used. The 'cycles' option uses features of adjacent cycles in order to detect bursts (e.g. period consistency, see next item). The 'amp' option uses an amplitude threshold to determine the cycles that are part of an oscillatory burst.
-* __burst_detection_kwargs__ set the keyword arguments for the burst detection function. For the 'cycles' method, there are 5 keyword arguments (see [the end of the algorithm tutorial](https://github.com/voytekresearch/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb) for advice on choosing these parameters).
-* __find_extrema_kwargs__ set the keyword arguments for the function used to localize peaks and troughs. Most notably, you can change the duration of the bandpass filter (`N_seconds`) used during extrema localization (see section 1 of the [algorithm tutorial](https://github.com/voytekresearch/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb)).
+* __burst_detection_kwargs__ set the keyword arguments for the burst detection function. For the 'cycles' method, there are 5 keyword arguments (see [the end of the algorithm tutorial](https://github.com/bycycle-tools/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb) for advice on choosing these parameters).
+* __find_extrema_kwargs__ set the keyword arguments for the function used to localize peaks and troughs. Most notably, you can change the duration of the bandpass filter (`N_seconds`) used during extrema localization (see section 1 of the [algorithm tutorial](https://github.com/bycycle-tools/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb)).
 * __hilbert_increase_N__ is a boolean indicator of whether or not to zeropad the signal to bypass complications that `scipy.signal.hilbert()` has with some long signal durations. Try setting this parameter to `True` if this function is taking a long time to run. Note the Hilbert Transform is used to compute the `band_amp` feature of each cycle, which is the average analytic amplitude of the frequency of interest in that cycle. This is complementary to the `volt_amp` measure, and may be desired for some burst detection applications.
 
 ## Output
@@ -114,7 +114,7 @@ Some of the columns include:
 * __period_consistency__ - consistency between the periods of the adjacent cycles, used in burst detection
 * __is_burst__ - indicator if the cycle is part of an oscillatory burst
 
-The features in this table can then go on to be analyzed, as demonstrated in the [resting-state data tutorial](https://github.com/voytekresearch/bycycle/blob/master/tutorials/2_Resting%20state%20cycle-by-cycle%20analysis.ipynb) and the [trial data tutorial](https://github.com/voytekresearch/bycycle/blob/master/tutorials/3_Trial%20structure%20cycle-by-cycle%20analysis.ipynb). For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording, shown below.
+The features in this table can then go on to be analyzed, as demonstrated in the [resting-state data tutorial](https://github.com/bycycle-tools/bycycle/blob/master/tutorials/2_Resting%20state%20cycle-by-cycle%20analysis.ipynb) and the [trial data tutorial](https://github.com/bycycle-tools/bycycle/blob/master/tutorials/3_Trial%20structure%20cycle-by-cycle%20analysis.ipynb). For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording, shown below.
 
 !["rdsym distribution"](img/rdsym_distribution.png)
 
