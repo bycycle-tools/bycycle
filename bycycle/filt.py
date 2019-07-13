@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
                     plot_frequency_response=False, return_kernel=False,
                     print_transition_band=False,
-                    remove_edge_artifacts=True):
+                    remove_edge_artifacts=True,
+                    compute_transition_bandwidth=True):
     """
     Apply a bandpass filter to a neural signal
 
@@ -43,6 +44,9 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
     remove_edge_artifacts : bool
         if True, replace the samples that are within half a kernel's length to
         the signal edge with np.nan
+    compute_transition_bandwidth : bool
+        if True, computes the transition bandwidth and raises an exception if
+        the bandwidth is more than 3x the passband
 
     Returns
     -------
@@ -108,34 +112,36 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
     # Compute the frequency response in terms of Hz and dB
     b = kernel
     a = 1
-    w, h = spsignal.freqz(b, a)
+    w, h = spsignal.freqz(b, a, worN=Fs * 2)
     f_db = w * Fs / (2. * np.pi)
     db = 20 * np.log10(abs(h))
 
     # Compute pass bandwidth and transition bandwidth
-    try:
-        pass_bw = fc[1] - fc[0]
-        # Identify edges of transition band (-3dB and -20dB)
-        cf_20db_1 = next(f_db[i] for i in range(len(db)) if db[i] > -20)
-        cf_20db_2 = next(f_db[i] for i in range(len(db))[::-1] if db[i] > -20)
+    if compute_transition_bandwidth:
+        try:
+            pass_bw = fc[1] - fc[0]
+            # Identify edges of transition band (-3dB and -20dB)
+            cf_20db_1 = next(f_db[i] for i in range(len(db)) if db[i] > -20)
+            cf_20db_2 = next(f_db[i] for i in range(len(db))[::-1] if db[i] > -20)
 
-        # Compute transition bandwidth
-        filter_bw = cf_20db_2 - cf_20db_1
+            # Compute transition bandwidth
+            filter_bw = cf_20db_2 - cf_20db_1
 
-        if print_transition_band:
-            print('Filter bandwidth is {:.1f} Hz (i.e. there is less than 20dB attenuation between {:.1f} Hz and {:.1f} Hz).'.format(
-                filter_bw, cf_20db_1, cf_20db_2))
+            if print_transition_band:
+                print('Filter bandwidth is {:.1f} Hz (i.e. there is less than 20dB attenuation between {:.1f} Hz and {:.1f} Hz).'.format(
+                    filter_bw, cf_20db_1, cf_20db_2))
 
-        if filter_bw > pass_bw * 3:
-            # Raise warning if filter bandwidth is more than twice the defined bandwidth
-            warnings.warn('Filter bandwidth is {:.1f} Hz (i.e. there is less than 20dB attenuation between {:.1f} Hz and {:.1f} Hz). This is greater than twice the defined pass/stop bandwidth of {:.1f} Hz'.format(
-                filter_bw, cf_20db_1, cf_20db_2, pass_bw))
-        elif cf_20db_1 == f_db[0]:
-            warnings.warn('The low frequency stopband never gets attenuated by more than 20dB. Increase filter length.')
-        elif cf_20db_2 == f_db[-1]:
-            warnings.warn('The high frequency stopband never gets attenuated by more than 20dB. Increase filter length.')
-    except StopIteration:
-        raise warnings.warn('Error computing transition bandwidth of the filter. Defined filter length may be too short.')
+            if filter_bw > pass_bw * 3:
+                # Raise warning if filter bandwidth is more than twice the defined bandwidth
+                warnings.warn('Filter bandwidth is {:.1f} Hz (i.e. there is less than 20dB attenuation between {:.1f} Hz and {:.1f} Hz). This is greater than twice the defined pass/stop bandwidth of {:.1f} Hz'.format(
+                    filter_bw, cf_20db_1, cf_20db_2, pass_bw))
+            elif cf_20db_1 == f_db[0]:
+                warnings.warn('The low frequency stopband never gets attenuated by more than 20dB. Increase filter length.')
+            elif cf_20db_2 == f_db[-1]:
+                warnings.warn('The high frequency stopband never gets attenuated by more than 20dB. Increase filter length.')
+
+        except StopIteration:
+                raise warnings.warn('Error computing transition bandwidth of the filter. Defined filter length may be too short.')
 
     # Remove edge artifacts
     if remove_edge_artifacts:
