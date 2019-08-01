@@ -112,6 +112,7 @@ def bandpass_filter(signal, Fs, fc, N_cycles=None, N_seconds=None,
     # Compute the frequency response in terms of Hz and dB
     b = kernel
     a = 1
+    Fs = int(Fs)
     w, h = spsignal.freqz(b, a, worN=Fs * 2)
     f_db = w * Fs / (2. * np.pi)
     db = 20 * np.log10(abs(h))
