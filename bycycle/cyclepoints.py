@@ -115,13 +115,23 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
 def _fzerofall(data):
     """Find zerocrossings on falling edge of a filtered signal"""
     pos = data > 0
-    return (pos[:-1] & ~pos[1:]).nonzero()[0]
+    zerofalls = (pos[:-1] & ~pos[1:]).nonzero()[0]
+
+    # In the rare case where no zerocrossing is found (peak and trough are same voltage), output dummy value
+    if len(zerofalls) == 0:
+        zerofalls = [int(len(data) / 2)]
+    return zerofalls
 
 
 def _fzerorise(data):
     """Find zerocrossings on rising edge of a filtered signal"""
     pos = data < 0
-    return (pos[:-1] & ~pos[1:]).nonzero()[0]
+    zerorises = (pos[:-1] & ~pos[1:]).nonzero()[0]
+
+    # In the rare case where no zerocrossing is found (peak and trough are same voltage), output dummy value
+    if len(zerorises) == 0:
+        zerorises = [int(len(data) / 2)]
+    return zerorises
 
 
 def find_zerox(x, Ps, Ts):
