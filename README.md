@@ -9,16 +9,18 @@
 
 ## Overview
 
-bycycle is a python implementation of a cycle-by-cycle approach to analyzing neural oscillations ([Cole & Voytek, 2018](https://www.biorxiv.org/content/early/2018/04/16/302000)). This approach quantifies features of neural oscillations in the time domain as opposed to the frequency domain. Rather than applying narrowband filters and other methods that utilize a sinusoidal basis, this characterization segments a recording into individual cycles and directly measures each of their properties including amplitude, period, and symmetry. This is most advantageous for analyzing the waveform shape properties of neural oscillations, but it may also provide advantages for studying traditional amplitude and frequency effects, as well. It also implements burst detection, which has been gaining traction recently (see e.g. [Jones, 2016](https://www.sciencedirect.com/science/article/pii/S0959438816300769?via%3Dihub)) so that we only analyze oscillatory properties when there is indeed an oscillation.
+bycycle is a python implementation of a cycle-by-cycle approach to analyzing neural oscillations ([Cole & Voytek, J Neurophysiol 2019](https://www.physiology.org/doi/abs/10.1152/jn.00273.2019)). This approach quantifies features of neural oscillations in the time domain as opposed to the frequency domain. Rather than applying narrowband filters and other methods that utilize a sinusoidal basis, this characterization segments a recording into individual cycles and directly measures each of their properties including amplitude, period, and symmetry. This is most advantageous for analyzing the waveform shape properties of neural oscillations, but it may also provide advantages for studying traditional amplitude and frequency effects, as well. It also implements burst detection, which has been gaining traction recently (see e.g. [Jones, 2016](https://www.sciencedirect.com/science/article/pii/S0959438816300769?via%3Dihub)) so that we only analyze oscillatory properties when there is indeed an oscillation.
 
 A full description of the method and approach is available in the paper below.
 
 ## Reference
 
-If you use this code in your project, please cite [this preprint](https://www.biorxiv.org/content/early/2018/04/16/302000):
+If you use this code in your project, please cite [our paper](https://www.physiology.org/doi/abs/10.1152/jn.00273.2019):
 
-    Cole SR & Voytek B (2018) Cycle-by-cycle analysis of neural oscillations. bioRxiv, 302000.
-    doi: https://doi.org/10.1101/302000
+    Cole SR & Voytek B (2019) Cycle-by-cycle analysis of neural oscillations. J Neurophysiol 122:2, 849-861.
+    doi: https://doi.org/10.1152/jn.00273.2019
+	
+The preprint of the paper is also available at: https://www.biorxiv.org/content/early/2018/04/16/302000
 
 ## Dependencies
 

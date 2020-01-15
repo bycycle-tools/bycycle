@@ -17,7 +17,7 @@ bycycle: cycle-by-cycle analysis of neural oscillations
 =======================================================
 
 bycycle is a python implementation of a cycle-by-cycle approach to analyzing
-neural oscillations (see Cole & Voytek, 2018, biorxiv). This approach
+neural oscillations (see Cole & Voytek, 2019, J Neurophysiol). This approach
 quantifies features of neural oscillations in the time domain as opposed
 to the frequency domain. Rather than applying narrowband filters and other
 methods that utilize a sinusoidal basis, this characterization segments a
@@ -31,10 +31,10 @@ properties when there is indeed an oscillation.
 
 If you use this code in your project, please cite:
 
-Cole SR & Voytek B (2018) Cycle-by-cycle analysis of neural oscillations. bioRxiv, 302000.
-doi: https://doi.org/10.1101/302000
+Cole SR & Voytek B (2019) Cycle-by-cycle analysis of neural oscillations. J Neurophysiol 122:2, 849-861.
+doi: https://doi.org/10.1152/jn.00273.2019
 
-Paper Link: https://www.biorxiv.org/content/early/2018/04/16/302000
+The preprint of the paper is also available at: https://www.biorxiv.org/content/early/2018/04/16/302000
 """
 
 setup(
