@@ -1,6 +1,6 @@
 """
 1. Cycle-by-cycle philosophy
-===========================
+============================
 
 Neural signals, like the example shown below, are analyzed in order to extract information about brain activity. Basically, we process these signals in order to extract features that will hopefully correlate with a behavior, pathology, or something else.
 
@@ -20,7 +20,6 @@ import scipy as sp
 from scipy import signal as spsignal
 import matplotlib.pyplot as plt
 from bycycle.filt import amp_by_time, phase_by_time, bandpass_filter
-from bycycle.sim import sim_noisy_bursty_oscillator
 
 signal = np.load('data/sim_bursting_more_noise.npy')
 Fs = 1000  # Sampling rate
@@ -60,8 +59,8 @@ plt.tight_layout()
 plt.show()
 
 
-###############################################################################
-# 
+###################################################################################################
+#
 # This conventional analysis has some advantages and disadvantages. As for advantages:
 #
 # - Quick calculation
@@ -96,7 +95,7 @@ for f_alpha in f_alphas:
                               filter_kwargs={'N_seconds': N_seconds_filter})
         amps.append(amp)
         phases.append(phase)
-        
+
 plt.figure(figsize=(12,2))
 for amp in amps:
     plt.plot(t[tidx], amp[tidx])
@@ -104,7 +103,7 @@ plt.xlim(tlim)
 plt.tight_layout()
 plt.show()
 
-###############################################################################
+###################################################################################################
 
 plt.figure(figsize=(12,2))
 for phase in phases:
@@ -113,7 +112,7 @@ plt.xlim(tlim)
 plt.tight_layout()
 plt.show()
 
-###############################################################################
+###################################################################################################
 #
 # Cycle-by-cycle approach
 # =======================

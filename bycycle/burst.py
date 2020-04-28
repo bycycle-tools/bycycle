@@ -5,60 +5,72 @@ Analyze periods of oscillatory bursting in a neural signal
 
 import numpy as np
 import matplotlib.pyplot as plt
-from bycycle.filt import amp_by_time
 from scipy.stats import zscore
 import pandas as pd
+from bycycle.filt import amp_by_time
+
 
 pd.options.mode.chained_assignment = None
-
 
 def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
                          amplitude_consistency_threshold=.5,
                          period_consistency_threshold=.5,
                          monotonicity_threshold=.8,
                          N_cycles_min=3):
-    """
-    Compute consistency between cycles and determine which are truly oscillating
+    """Compute consistency between cycles and determine which are truly oscillating.
 
     Parameters
     ----------
     df : pandas DataFrame
-        dataframe of waveform features for individual cycles, trough-centered
+        Dataframe of waveform features for individual cycles, trough-centered.
     x : 1d array
-        trace used to compute monotonicity
+        Trace used to compute monotonicity.
     amplitude_fraction_threshold : float (0 to 1)
-        the minimum normalized amplitude a cycle must have
-        in order to be considered in an oscillation.
-        0 = the minimum amplitude across all cycles
-        .5 = the median amplitude across all cycles
-        1 = the maximum amplitude across all cycles
+        The minimum normalized amplitude a cycle must have in order to be considered in an
+        oscillation.
+        ..
+
+            - 0 = the minimum amplitude across all cycles
+            - .5 = the median amplitude across all cycles
+            - 1 = the maximum amplitude across all cycles
+
     amplitude_consistency_threshold : float (0 to 1)
-        the minimum normalized difference in rise and decay magnitude
-        to be considered as in an oscillatory mode
-        1 = the same amplitude for the rise and decay
-        .5 = the rise (or decay) is half the amplitude of the decay (rise)
+        The minimum normalized difference in rise and decay magnitude to be considered as in an
+        oscillatory mode.
+
+        ..
+
+            - 1 = the same amplitude for the rise and decay
+            - .5 = the rise (or decay) is half the amplitude of the decay (rise)
+
     period_consistency_threshold : float (0 to 1)
-        the minimum normalized difference in period between two adjacent cycles
-        to be considered as in an oscillatory mode
-        1 = the same period for both cycles
-        .5 = one cycle is half the duration of another cycle
+        The minimum normalized difference in period between two adjacent cycles to be considered as
+        in an oscillatory mode.
+
+        ..
+
+            - 1 = the same period for both cycles
+            - .5 = one cycle is half the duration of another cycle
+
     monotonicity_threshold : float (0 to 1)
-        the minimum fraction of time segments between samples that must be
-        going in the same direction.
-        - 1 = rise and decay are perfectly monotonic
-        - .5 = both rise and decay are rising half of the time
-          and decay half the time
-        - 0 = rise period is all decaying and decay period is all rising
+        The minimum fraction of time segments between samples that must be going in the same
+        direction.
+
+        ..
+            1 = rise and decay are perfectly monotonic
+            .5 = both rise and decay are rising half of the time and decay half the time
+            0 = rise period is all decaying and decay period is all rising
+
     N_cycles_min : int
-        minimum number of cycles to be identified as truly oscillating
-        needed in a row in order for them to remain identified as
-        truly oscillating
+        Minimum number of cycles to be identified as truly oscillating needed in a row in order for
+        them to remain identified as truly oscillating.
 
     Returns
     -------
     df : pandas DataFrame
-        same df as input, with an additional column (`is_burst`) to indicate
-        if the cycle is part of an oscillatory burst.
+        Same df as input, with an additional column (`is_burst`) to indicate if the cycle is part of
+        an oscillatory burst.
+
         Also additional columns indicating the burst detection
         parameters.
 
@@ -66,6 +78,7 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     -----
     * The first and last period cannot be considered oscillating
       if the consistency measures are used.
+
     """
 
     # Compute normalized amplitude for all cycles
@@ -324,7 +337,7 @@ def detect_bursts_df_amp(df, x, Fs, f_range,
     df : pandas DataFrame
         dataframe of waveform features for individual cycles, trough-centered
     x : 1d array
-    	time series
+        time series
     Fs : float
         sampling rate, Hz
     f_range : tuple of (float, float)

@@ -1,6 +1,6 @@
 """
 filt.py
-Filter a neural signal or calculate amplitude
+Filter a neural signal or calculate amplitude.
 """
 
 import warnings
@@ -312,6 +312,7 @@ def amp_by_time(x, Fs, f_range, filter_kwargs=None,
     amp : array-like, 1d
         Time series of amplitude
     """
+
     # Set default filtering parameters
     if filter_kwargs is None:
         filter_kwargs = {}
@@ -337,6 +338,7 @@ def phase_by_time(x, Fs, f_range, filter_kwargs=None,
                   remove_edge_artifacts=True):
     """
     Calculate the phase time series of a neural oscillation
+
     Parameters
     ----------
     x : array-like, 1d
@@ -348,18 +350,19 @@ def phase_by_time(x, Fs, f_range, filter_kwargs=None,
     filter_kwargs : dict, optional
         Keyword parameters to pass to bandpass_filter()
     hilbert_increase_N : bool, optional
-        if True, zeropad the signal to length the next power of 2 when doing the hilbert transform.
-        This is because scipy.signal.hilbert can be very slow for some lengths of x
+        If True, zeropad the signal to length the next power of 2 when doing the hilbert transform.
+        This is because scipy.signal.hilbert can be very slow for some lengths of x.
     remove_edge_artifacts : bool
-        if True, replace the samples that are within half a kernel's length to
+        Ff True, replace the samples that are within half a kernel's length to.
         the signal edge with np.nan.
         This is done after the Hilbert Transform to minimize edge artifacts from
         this transform too.
     Returns
     -------
     pha : array-like, 1d
-        Time series of phase
+        Time series of phase.
     """
+
     # Set default filtering parameters
     if filter_kwargs is None:
         filter_kwargs = {}
