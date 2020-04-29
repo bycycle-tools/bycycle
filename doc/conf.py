@@ -20,20 +20,15 @@ from sphinx_gallery.sorting import FileNameSortKey
 
 # -- Project information -----------------------------------------------------
 
-# General information about the project.
+# General information about the project
 project = 'bycycle'
 copyright = '2018-{}, VoytekLab'.format(date.today().year)
 author = 'Scott Cole'
 
-# Get the current version number from inside the module
-with open(os.path.join(up(up(__file__)), 'bycycle', 'version.py')) as vf:
-    exec(vf.read())
-
-# The short X.Y version
+# Get and set the current version number
+from bycycle import __version__
 version = __version__
-# The full version, including alpha/beta/rc tags
 release = version
-
 
 # -- General configuration ------------------------------------------------
 
