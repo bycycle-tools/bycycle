@@ -184,11 +184,11 @@ columns, so it is split into two images).
 Each row of this table corresponds to an individuals segment of the signal, or a putative cycle of
 the rhythm of interest.
 
-.. image:: https://github.com/bycycle-tools/bycycle/raw/master/img/cycledf_1.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/cycledf_1.png
 
 |
 
-.. image:: https://github.com/bycycle-tools/bycycle/raw/master/img/cycledf_2.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/cycledf_2.png
 
 Some of the columns include:
 
@@ -209,7 +209,7 @@ For example, we may be interested in the distribution of rise-decay symmetry val
 Rdsym Distribution:
 ~~~~~~~~~~~~~~~~~~~
 
-.. image:: https://github.com/bycycle-tools/bycycle/raw/master/img/rdsym_distribution.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/rdsym_distribution.png
 
 |
 
@@ -219,6 +219,6 @@ oscillatory burst.
 Burst Detection Results
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: https://github.com/bycycle-tools/bycycle/raw/master/img/bursts_detected.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/bursts_detected.png
 
 |

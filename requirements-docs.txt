@@ -4,7 +4,6 @@ sphinx-gallery
 sphinx_bootstrap_theme
 numpydoc
 sphinx-copybutton
-matplotlib
 
 # Requirements for running tutorials
 neurodsp >= 2.0.0

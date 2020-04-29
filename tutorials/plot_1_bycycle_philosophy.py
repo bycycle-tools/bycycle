@@ -93,9 +93,8 @@ plt.show()
 # tools for extracting nonsinusoidal properties using conventional techniques.
 #
 #
-# Note that different hyperparameter choices for filters can lead to significant differences in
-# results
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Note that different hyperparameter choices for filters can lead to significant differences in results
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 # When effect sizes are small, these hyperparameter choices may make a crucial difference.
 #
