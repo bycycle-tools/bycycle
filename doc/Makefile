@@ -19,10 +19,16 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # # Custom cleaner that also removes the generated files from sphinx-gallery
-# clean:
-# 	rm -rf $(BUILDDIR)/*
-# 	rm -rf auto_examples
-# 	rm -rf auto_tutorials
+clean:
+	rm -rf $(BUILDDIR)/*
+	rm -rf auto_examples
+	rm -rf auto_tutorials
+	rm -rf generated
+
+# Check that builds site with nitpicky checking, and also does post-hoc link check
+check:
+	make SPHINXOPTS="-n" html
+	make linkcheck
 
 ## make install:
 # Build the html site, and push it to gh-pages branch of repo to deploy
@@ -35,6 +41,7 @@ install:
 	#   -b gh-pages fetches only the branch for the gh-pages
 	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/bycycle-tools/bycycle _build/tmp_html
 	touch _build/tmp_html/.nojekyll
+	make clean
 	make html
 	cd _build/ && \
 	cp -r html/* tmp_html && \
