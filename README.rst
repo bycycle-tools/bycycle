@@ -4,7 +4,7 @@ bycycle - cycle-by-cycle analysis of neural oscillations
 
 |ProjectStatus|_ |Version|_ |BuildStatus|_ |codecov|_ |License|_ |PythonVersions|_ |Publication|_
 
-.. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
+.. |ProjectStatus| image:: https://www.repostatus.org/badges/latest/active.svg
 .. _ProjectStatus: https://www.repostatus.org/#active
 
 .. |Version| image:: https://img.shields.io/pypi/v/bycycle.svg
@@ -49,12 +49,12 @@ Reference
 
 If you use this code in your project, please cite:
 ::
-    Cole SR & Voytek B (2019) Cycle-by-cycle analysis of neural oscillations. J Neurophysiol 122:2,
-    849-861. doi: https://doi.org/10.1152/jn.00273.2019
+
+    Cole SR & Voytek B (2019) Cycle-by-cycle analysis of neural oscillations. J Neurophysiol
+    122:2, 849-861. doi: https://doi.org/10.1152/jn.00273.2019
 
 Direct Link: https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019
 
-The preprint of the paper is also available at: https://www.biorxiv.org/content/early/2018/04/16/302000
 
 Dependencies
 ------------
@@ -65,13 +65,10 @@ It has the following dependencies:
 
 - `numpy <https://github.com/numpy/numpy>`_
 - `scipy <https://github.com/scipy/scipy>`_ >= 0.19
+- `pandas <https://github.com/pandas-dev/pandas>`_
 - `matplotlib <https://github.com/matplotlib/matplotlib>`_
 - `pytest <https://github.com/pytest-dev/pytest>`_ (optional)
 
-Matlab Support
---------------
-
-Coming soon.
 
 Install
 -------
@@ -110,11 +107,11 @@ To install an editable, development version, move into the directory you cloned 
 Usage
 -----
 
-The main function in ``bycycle`` is :func:`~.compute_features`, which takes a time series
-and some parameters as inputs and returns a table of features for each cycle. Consider having a
-1-dimensional numpy array, ``signal``, which is a neural signal time series sampled at 1000 Hz
-(``Fs``) that contains an alpha (8-12 Hz, ``f_range``) oscillation. We can compute the table of
-cycle features with the following:
+The main function in ``bycycle`` is ``compute_features``, which takes a time series and some
+parameters as inputs and returns a table of features for each cycle. Consider having a 1-dimensional
+numpy array, ``signal``, which is a neural signal time series sampled at 1000 Hz (``Fs``) that
+contains an alpha (8-12 Hz, ``f_range``) oscillation. We can compute the table of cycle features
+with the following:
 
 .. code-block:: python
 
@@ -130,13 +127,13 @@ cycle features with the following:
 
 Note that a lowpass filter is applied in order to remove high-frequency power that may interfere
 with extrema localization. (see section 0 of the
-`algorithm tutorial <https://github.com/bycycle-tools/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb>`_
+`algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_
 for more details).
 
-It's necessary to note that the above :func:`~.compute_features` command used default parameters to
+It's necessary to note that the above ``compute_features`` command used default parameters to
 localize extrema and detect bursts of oscillations. However, it is important to knowledgeably select
 these parameters, as described in the
-`algorithm tutorial <https://github.com/bycycle-tools/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb>`_.
+`algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_.
 The following example and text go over the different potential parameter changes:
 
 .. code-block:: python
@@ -157,11 +154,26 @@ The following example and text go over the different potential parameter changes
                           hilbert_increase_N=True)
 
 
-- **center_extrema** determines how the cycles are segmented. 'T' indicates the center extrema is a trough, so cycles are segmented peak-to-peak.
-- **burst_detection_method** selects which method for burst detection is used. The 'cycles' option uses features of adjacent cycles in order to detect bursts (e.g. period consistency, see next item). The 'amp' option uses an amplitude threshold to determine the cycles that are part of an oscillatory burst.
-- **burst_detection_kwargs** set the keyword arguments for the burst detection function. For the ``cycles`` method, there are 5 keyword arguments (see the end of the `algorithm tutorial <https://github.com/bycycle-tools/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb>`_ for advice on choosing these parameters).
-- **find_extrema_kwargs** set the keyword arguments for the function used to localize peaks and troughs. Most notably, you can change the duration of the bandpass filter (``N_seconds``) used during extrema localization (see section 1 of the `algorithm tutorial <https://github.com/bycycle-tools/bycycle/blob/master/tutorials/1_Cycle-by-cycle%20algorithm.ipynb>`_).
-- **hilbert_increase_N** is a boolean indicator of whether or not to zeropad the signal to bypass complications that ``scipy.signal.hilbert()`` has with some long signal durations. Try setting this parameter to `True` if this function is taking a long time to run. Note the Hilbert Transform is used to compute the `band_amp` feature of each cycle, which is the average analytic amplitude of the frequency of interest in that cycle. This is complementary to the `volt_amp` measure, and may be desired for some burst detection applications.
+- **center_extrema** determines how the cycles are segmented. 'T' indicates the center extrema is \
+  a trough, so cycles are segmented peak-to-peak.
+- **burst_detection_method** selects which method for burst detection is used. The 'cycles' option \
+  uses features of adjacent cycles in order to detect bursts (e.g. period consistency, see next \
+  item). The 'amp' option uses an amplitude threshold to determine the cycles that are part of an \
+  oscillatory burst.
+- **burst_detection_kwargs** set the keyword arguments for the burst detection function. For the \
+  ``cycles`` method, there are 5 keyword arguments (see the end of the \
+  `algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_ \
+  for advice on choosing these parameters).
+- **find_extrema_kwargs** set the keyword arguments for the function used to localize peaks and \
+  troughs. Most notably, you can change the duration of the bandpass filter (``N_seconds``) used \
+  during extrema localization (see section 1 of the \
+  `algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_).
+- **hilbert_increase_N** is a boolean indicator of whether or not to zeropad the signal to bypass \
+  complications that ``scipy.signal.hilbert()`` has with some long signal durations. Try setting \
+  this parameter to `True` if this function is taking a long time to run. Note the Hilbert \
+  Transform is used to compute the `band_amp` feature of each cycle, which is the average analytic \
+  amplitude of the frequency of interest in that cycle. This is complementary to the `volt_amp` \
+  measure, and may be desired for some burst detection applications.
 
 Output
 ------
@@ -169,13 +181,14 @@ Output
 The output of ``bycycle`` is a ``pandas.DataFrame``, a table like the one shown below (with many
 columns, so it is split into two images).
 
-Each row of this table corresponds to an individuals segment of the signal, or a putative cycle of the rhythm of interest.
+Each row of this table corresponds to an individuals segment of the signal, or a putative cycle of
+the rhythm of interest.
 
-.. image:: ../img/cycledf_1.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/master/img/cycledf_1.png
 
 |
 
-.. image:: ../img/cycledf_2.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/master/img/cycledf_2.png
 
 Some of the columns include:
 
@@ -189,22 +202,23 @@ Some of the columns include:
 - **is_burst**: indicator if the cycle is part of an oscillatory burst
 
 The features in this table can then go on to be analyzed, as demonstrated in the
-`resting-state data tutorial <https://github.com/bycycle-tools/bycycle/blob/master/tutorials/2_Resting%20state%20cycle-by-cycle%20analysis.ipynb>`_
-and the `trial data tutorial <https://github.com/bycycle-tools/bycycle/blob/master/tutorials/3_Trial%20structure%20cycle-by-cycle%20analysis.ipynb>`_.
+`resting-state data tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_
+and the `data example <https://bycycle-tools.github.io/bycycle/auto_examples/plot_theta_feature_distributions.html#sphx-glr-auto-examples-plot-theta-feature-distributions-py>`_.
 For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording, shown below.
 
 Rdsym Distribution:
 ~~~~~~~~~~~~~~~~~~~
 
-.. image:: ../img/rdsym_distribution.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/master/img/rdsym_distribution.png
 
 |
 
-The plot below indicates in red the cycles of the signal that were identified as part of an oscillatory burst.
+The plot below indicates in red the cycles of the signal that were identified as part of an
+oscillatory burst.
 
 Burst Detection Results
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: ../img/bursts_detected.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/master/img/bursts_detected.png
 
 |

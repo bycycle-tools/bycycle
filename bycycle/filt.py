@@ -353,10 +353,11 @@ def phase_by_time(x, Fs, f_range, filter_kwargs=None,
         If True, zeropad the signal to length the next power of 2 when doing the hilbert transform.
         This is because scipy.signal.hilbert can be very slow for some lengths of x.
     remove_edge_artifacts : bool
-        Ff True, replace the samples that are within half a kernel's length to.
+        If True, replace the samples that are within half a kernel's length to.
         the signal edge with np.nan.
         This is done after the Hilbert Transform to minimize edge artifacts from
         this transform too.
+
     Returns
     -------
     pha : array-like, 1d
