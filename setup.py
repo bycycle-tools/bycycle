@@ -56,7 +56,8 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7'
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
     ],
     download_url = 'https://github.com/bycycle-tools/bycycle/releases',
     keywords = ['neuroscience', 'neural oscillations', 'waveform', 'shape', 'electrophysiology'],
