@@ -28,38 +28,32 @@ def detect_bursts_cycles(df, x, amplitude_fraction_threshold=0,
     amplitude_fraction_threshold : float (0 to 1)
         The minimum normalized amplitude a cycle must have in order to be considered in an
         oscillation.
-        ..
 
-            - 0 = the minimum amplitude across all cycles
-            - .5 = the median amplitude across all cycles
-            - 1 = the maximum amplitude across all cycles
+        - 0 = the minimum amplitude across all cycles
+        - .5 = the median amplitude across all cycles
+        - 1 = the maximum amplitude across all cycles
 
     amplitude_consistency_threshold : float (0 to 1)
         The minimum normalized difference in rise and decay magnitude to be considered as in an
         oscillatory mode.
 
-        ..
-
-            - 1 = the same amplitude for the rise and decay
-            - .5 = the rise (or decay) is half the amplitude of the decay (rise)
+        - 1 = the same amplitude for the rise and decay
+        - .5 = the rise (or decay) is half the amplitude of the decay (rise)
 
     period_consistency_threshold : float (0 to 1)
         The minimum normalized difference in period between two adjacent cycles to be considered as
         in an oscillatory mode.
 
-        ..
-
-            - 1 = the same period for both cycles
-            - .5 = one cycle is half the duration of another cycle
+        - 1 = the same period for both cycles
+        - .5 = one cycle is half the duration of another cycle
 
     monotonicity_threshold : float (0 to 1)
         The minimum fraction of time segments between samples that must be going in the same
         direction.
 
-        ..
-            1 = rise and decay are perfectly monotonic
-            .5 = both rise and decay are rising half of the time and decay half the time
-            0 = rise period is all decaying and decay period is all rising
+        - 1 = rise and decay are perfectly monotonic
+        - .5 = both rise and decay are rising half of the time and decay half the time
+        - 0 = rise period is all decaying and decay period is all rising
 
     N_cycles_min : int
         Minimum number of cycles to be identified as truly oscillating needed in a row in order for
@@ -188,6 +182,7 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
 
         if `plot_only_result` = False: return a list of the fig
         handle followed by the 5 axes.
+
         In the top plot, the raw signal is plotted in black, and the
         red line indicates periods defined as oscillatory bursts.
         The highlighted regions indicate when each burst requirement
