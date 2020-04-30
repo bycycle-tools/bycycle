@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>bycycle - cycle-by-cycle analysis of neural oscillations &#8212; bycycle 0.1.3 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><span><img src="_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.3</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="api.html">API</a></li>
+                <li><a href="auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="bycycle-cycle-by-cycle-analysis-of-neural-oscillations">
+<h1>bycycle - cycle-by-cycle analysis of neural oscillations<a class="headerlink" href="#bycycle-cycle-by-cycle-analysis-of-neural-oscillations" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://www.repostatus.org/#active"><img alt="ProjectStatus" src="https://www.repostatus.org/badges/latest/active.svg" /></a> <a class="reference external" href="https://pypi.python.org/pypi/bycycle/"><img alt="Version" src="https://img.shields.io/pypi/v/bycycle.svg" /></a> <a class="reference external" href="https://travis-ci.org/bycycle-tools/bycycle"><img alt="BuildStatus" src="https://travis-ci.org/bycycle-tools/bycycle.svg" /></a> <a class="reference external" href="https://codecov.io/gh/bycycle-tools/bycycle"><img alt="codecov" src="https://codecov.io/gh/bycycle-tools/bycycle/branch/master/graph/badge.svg" /></a> <a class="reference external" href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/pypi/l/bycycle.svg" /></a> <a class="reference external" href="https://pypi.python.org/pypi/bycycle/"><img alt="PythonVersions" src="https://img.shields.io/pypi/pyversions/bycycle.svg" /></a> <a class="reference external" href="https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019"><img alt="Publication" src="https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue" /></a></p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is a python implementation of a cycle-by-cycle approach to analyzing neural oscillations
+(<a class="reference external" href="https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019">Cole &amp; Voytek, J Neurophysiol 2019</a>).
+This approach quantifies features of neural oscillations in the time domain as opposed to the
+frequency domain. Rather than applying narrowband filters and other methods that utilize a
+sinusoidal basis, this characterization segments a recording into individual cycles and directly
+measures each of their properties including amplitude, period, and symmetry. This is most
+advantageous for analyzing the waveform shape properties of neural oscillations, but it may also
+provide advantages for studying traditional amplitude and frequency effects, as well. It also
+implements burst detection, which has gained traction recently (
+<a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0959438816300769?via%3Dihub">Jones, 2016</a>).
+Therefore, we only analyze oscillatory properties when there is indeed an oscillation.</p>
+<p>A full description of the method and approach is available in the paper below.</p>
+</div>
+<div class="section" id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
+<p>If you use this code in your project, please cite:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Cole</span> <span class="n">SR</span> <span class="o">&amp;</span> <span class="n">Voytek</span> <span class="n">B</span> <span class="p">(</span><span class="mi">2019</span><span class="p">)</span> <span class="n">Cycle</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="n">cycle</span> <span class="n">analysis</span> <span class="n">of</span> <span class="n">neural</span> <span class="n">oscillations</span><span class="o">.</span> <span class="n">J</span> <span class="n">Neurophysiol</span>
+<span class="mi">122</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">849</span><span class="o">-</span><span class="mf">861.</span> <span class="n">doi</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.1152</span><span class="o">/</span><span class="n">jn</span><span class="o">.</span><span class="mf">00273.2019</span>
+</pre></div>
+</div>
+<p>Direct Link: <a class="reference external" href="https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019">https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019</a></p>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is written in Python, and is tested to work with Python 3.5.</p>
+<p>It has the following dependencies:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/numpy/numpy">numpy</a></p></li>
+<li><p><a class="reference external" href="https://github.com/scipy/scipy">scipy</a> &gt;= 0.19</p></li>
+<li><p><a class="reference external" href="https://github.com/pandas-dev/pandas">pandas</a></p></li>
+<li><p><a class="reference external" href="https://github.com/matplotlib/matplotlib">matplotlib</a></p></li>
+<li><p><a class="reference external" href="https://github.com/pytest-dev/pytest">pytest</a> (optional)</p></li>
+</ul>
+</div>
+<div class="section" id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<p><strong>Stable Version</strong></p>
+<p>To install the latest stable release of <code class="docutils literal notranslate"><span class="pre">bycycle</span></code>, you can use pip:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install bycycle
+</pre></div>
+</div>
+<p><strong>Development Version</strong></p>
+<p>To get the lastest, development version, you can get the code using git:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/bycycle-tools/bycycle
+</pre></div>
+</div>
+<p>To install this cloned copy, move into the directory you just cloned, and run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install .
+</pre></div>
+</div>
+<p><strong>Editable Version</strong></p>
+<p>To install an editable, development version, move into the directory you cloned and install with:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The main function in <code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is <code class="docutils literal notranslate"><span class="pre">compute_features</span></code>, which takes a time series and some
+parameters as inputs and returns a table of features for each cycle. Consider having a 1-dimensional
+numpy array, <code class="docutils literal notranslate"><span class="pre">signal</span></code>, which is a neural signal time series sampled at 1000 Hz (<code class="docutils literal notranslate"><span class="pre">Fs</span></code>) that
+contains an alpha (8-12 Hz, <code class="docutils literal notranslate"><span class="pre">f_range</span></code>) oscillation. We can compute the table of cycle features
+with the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bycycle.filt</span> <span class="kn">import</span> <span class="n">lowpass_filter</span>
+<span class="kn">from</span> <span class="nn">bycycle.features</span> <span class="kn">import</span> <span class="n">compute_features</span>
+
+<span class="n">signal</span> <span class="o">=</span> <span class="n">lowpass_filter</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">f_lowpass</span><span class="p">,</span> <span class="n">N_seconds</span><span class="o">=</span><span class="n">N_seconds</span><span class="p">,</span> <span class="n">remove_edge_artifacts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">Fs</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that a lowpass filter is applied in order to remove high-frequency power that may interfere
+with extrema localization. (see section 0 of the
+<a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py">algorithm tutorial</a>
+for more details).</p>
+<p>It’s necessary to note that the above <code class="docutils literal notranslate"><span class="pre">compute_features</span></code> command used default parameters to
+localize extrema and detect bursts of oscillations. However, it is important to knowledgeably select
+these parameters, as described in the
+<a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py">algorithm tutorial</a>.
+The following example and text go over the different potential parameter changes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">burst_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;amplitude_fraction_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span>
+                <span class="s1">&#39;amplitude_consistency_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+                <span class="s1">&#39;period_consistency_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+                <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span>
+                <span class="s1">&#39;N_cycles_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+
+<span class="n">narrowband_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;N_seconds&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">}</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span>
+                      <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span>
+                      <span class="n">burst_detection_method</span><span class="o">=</span><span class="s1">&#39;cycles&#39;</span><span class="p">,</span>
+                      <span class="n">burst_detection_kwargs</span><span class="o">=</span><span class="n">burst_kwargs</span><span class="p">,</span>
+                      <span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;filter_kwargs&#39;</span><span class="p">:</span> <span class="n">narrowband_kwargs</span><span class="p">},</span>
+                      <span class="n">hilbert_increase_N</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>center_extrema</strong> determines how the cycles are segmented. ‘T’ indicates the center extrema is a trough, so cycles are segmented peak-to-peak.</p></li>
+<li><p><strong>burst_detection_method</strong> selects which method for burst detection is used. The ‘cycles’ option uses features of adjacent cycles in order to detect bursts (e.g. period consistency, see next item). The ‘amp’ option uses an amplitude threshold to determine the cycles that are part of an oscillatory burst.</p></li>
+<li><p><strong>burst_detection_kwargs</strong> set the keyword arguments for the burst detection function. For the <code class="docutils literal notranslate"><span class="pre">cycles</span></code> method, there are 5 keyword arguments (see the end of the <a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py">algorithm tutorial</a> for advice on choosing these parameters).</p></li>
+<li><p><strong>find_extrema_kwargs</strong> set the keyword arguments for the function used to localize peaks and troughs. Most notably, you can change the duration of the bandpass filter (<code class="docutils literal notranslate"><span class="pre">N_seconds</span></code>) used during extrema localization (see section 1 of the <a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py">algorithm tutorial</a>).</p></li>
+<li><p><strong>hilbert_increase_N</strong> is a boolean indicator of whether or not to zeropad the signal to bypass complications that <code class="docutils literal notranslate"><span class="pre">scipy.signal.hilbert()</span></code> has with some long signal durations. Try setting this parameter to <cite>True</cite> if this function is taking a long time to run. Note the Hilbert Transform is used to compute the <cite>band_amp</cite> feature of each cycle, which is the average analytic amplitude of the frequency of interest in that cycle. This is complementary to the <cite>volt_amp</cite> measure, and may be desired for some burst detection applications.</p></li>
+</ul>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p>The output of <code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, a table like the one shown below (with many
+columns, so it is split into two images).</p>
+<p>Each row of this table corresponds to an individuals segment of the signal, or a putative cycle of
+the rhythm of interest.</p>
+<img alt="https://github.com/bycycle-tools/bycycle/raw/master/doc/img/cycledf_1.png" src="https://github.com/bycycle-tools/bycycle/raw/master/doc/img/cycledf_1.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<img alt="https://github.com/bycycle-tools/bycycle/raw/master/doc/img/cycledf_2.png" src="https://github.com/bycycle-tools/bycycle/raw/master/doc/img/cycledf_2.png" />
+<p>Some of the columns include:</p>
+<ul class="simple">
+<li><p><strong>sample_peak</strong>: the sample of the signal at which the peak of this cycle occurs</p></li>
+<li><p><strong>period</strong>: period of the cycle</p></li>
+<li><p><strong>time_peak</strong>: duration of the peak period</p></li>
+<li><p><strong>volt_amp</strong>: amplitude of this cycle, average of the rise and decay voltage</p></li>
+<li><p><strong>time_rdsym</strong>: rise-decay symmetry, the fraction of the cycle in the rise period (0.5 is symmetric)</p></li>
+<li><p><strong>time_ptsym</strong>: peak-trough symmetry, the fraction of the cycle in the peak period (0.5 is symmetric)</p></li>
+<li><p><strong>period_consistency</strong>: consistency between the periods of the adjacent cycles, used in burst detection</p></li>
+<li><p><strong>is_burst</strong>: indicator if the cycle is part of an oscillatory burst</p></li>
+</ul>
+<p>The features in this table can then go on to be analyzed, as demonstrated in the
+<a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py">resting-state data tutorial</a>
+and the <a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_examples/plot_theta_feature_distributions.html#sphx-glr-auto-examples-plot-theta-feature-distributions-py">data example</a>.
+For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording, shown below.</p>
+<div class="section" id="rdsym-distribution">
+<h3>Rdsym Distribution:<a class="headerlink" href="#rdsym-distribution" title="Permalink to this headline">¶</a></h3>
+<img alt="https://github.com/bycycle-tools/bycycle/raw/master/doc/img/rdsym_distribution.png" src="https://github.com/bycycle-tools/bycycle/raw/master/doc/img/rdsym_distribution.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The plot below indicates in red the cycles of the signal that were identified as part of an
+oscillatory burst.</p>
+</div>
+<div class="section" id="burst-detection-results">
+<h3>Burst Detection Results<a class="headerlink" href="#burst-detection-results" title="Permalink to this headline">¶</a></h3>
+<img alt="https://github.com/bycycle-tools/bycycle/raw/master/doc/img/bursts_detected.png" src="https://github.com/bycycle-tools/bycycle/raw/master/doc/img/bursts_detected.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

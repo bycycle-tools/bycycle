@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>bycycle.sim &#8212; bycycle 0.1.3 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html"><span><img src="../../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.3</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for bycycle.sim</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">sim.py</span>
+<span class="sd">Simulating oscillators and brown noise</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+
+<div class="viewcode-block" id="sim_filtered_brown_noise"><a class="viewcode-back" href="../../generated/bycycle.sim.sim_filtered_brown_noise.html#bycycle.sim.sim_filtered_brown_noise">[docs]</a><span class="k">def</span> <span class="nf">sim_filtered_brown_noise</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">filter_f_range</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simulate a band-pass filtered signal with brown noise</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        length of time of simulated oscillation</span>
+<span class="sd">    Fs : float</span>
+<span class="sd">        oscillation sampling rate</span>
+<span class="sd">    filter_f_range : 2-element array (lo,hi)</span>
+<span class="sd">        frequency range of simulated data</span>
+<span class="sd">        if None: do not filter</span>
+<span class="sd">        if (x, None): only do a highpass filter</span>
+<span class="sd">    N : int</span>
+<span class="sd">        order of filter</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    brownNf : np.array</span>
+<span class="sd">        filtered brown noise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">filter_f_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Do not filter</span>
+        <span class="c1"># Generate 1/f^2 noise</span>
+        <span class="n">brownN</span> <span class="o">=</span> <span class="n">sim_brown_noise</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">Fs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">brownN</span>
+    <span class="k">elif</span> <span class="n">filter_f_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Make filter order odd if necessary</span>
+        <span class="n">nyq</span> <span class="o">=</span> <span class="n">Fs</span> <span class="o">/</span> <span class="mf">2.</span>
+        <span class="k">if</span> <span class="n">N</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;NOTE: Increased high-pass filter order by 1 in order to be odd&#39;</span><span class="p">)</span>
+            <span class="n">N</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Generate 1/f^2 noise</span>
+        <span class="n">brownN</span> <span class="o">=</span> <span class="n">sim_brown_noise</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">Fs</span> <span class="o">+</span> <span class="n">N</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="c1"># High pass filter</span>
+        <span class="n">taps</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">firwin</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">filter_f_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">nyq</span><span class="p">,</span> <span class="n">pass_zero</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">brownNf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">taps</span><span class="p">,</span> <span class="n">brownN</span><span class="p">,</span> <span class="s1">&#39;same&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">brownNf</span><span class="p">[</span><span class="n">N</span><span class="p">:</span><span class="o">-</span><span class="n">N</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Bandpass filter</span>
+        <span class="c1"># Generate 1/f^2 noise</span>
+        <span class="n">brownN</span> <span class="o">=</span> <span class="n">sim_brown_noise</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">Fs</span> <span class="o">+</span> <span class="n">N</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="c1"># Filter</span>
+        <span class="n">nyq</span> <span class="o">=</span> <span class="n">Fs</span> <span class="o">/</span> <span class="mf">2.</span>
+        <span class="n">taps</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">firwin</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">filter_f_range</span><span class="p">)</span> <span class="o">/</span> <span class="n">nyq</span><span class="p">,</span> <span class="n">pass_zero</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">brownNf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">taps</span><span class="p">,</span> <span class="n">brownN</span><span class="p">,</span> <span class="s1">&#39;same&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">brownNf</span><span class="p">[</span><span class="n">N</span><span class="p">:</span><span class="o">-</span><span class="n">N</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="sim_brown_noise"><a class="viewcode-back" href="../../generated/bycycle.sim.sim_brown_noise.html#bycycle.sim.sim_brown_noise">[docs]</a><span class="k">def</span> <span class="nf">sim_brown_noise</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simulate a brown noise signal (power law distribution 1/f^2)</span>
+<span class="sd">    with N samples by cumulative sum of white noise&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">sim_oscillator</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">rdsym</span><span class="o">=.</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simulate a stationary oscillator with a certain risedecay symmetry</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        signal duration (seconds)</span>
+<span class="sd">    Fs : float</span>
+<span class="sd">        signal sampling rate</span>
+<span class="sd">    freq : float</span>
+<span class="sd">        oscillator frequency</span>
+<span class="sd">    rdsym : float</span>
+<span class="sd">        rise-decay symmetry of the oscillator;</span>
+<span class="sd">        fraction of the period in the rise time;</span>
+<span class="sd">        =0.5 - symmetric (sine wave)</span>
+<span class="sd">        &lt;0.5 - shorter rise, longer decay</span>
+<span class="sd">        &gt;0.5 - longer rise, shorter decay</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    oscillator : np.array</span>
+<span class="sd">        oscillating time series</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Determine number of samples in rise and decay periods</span>
+    <span class="n">N_samples_cycle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Fs</span> <span class="o">/</span> <span class="n">freq</span><span class="p">))</span>
+    <span class="n">N_cycles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">freq</span><span class="p">))</span>
+    <span class="n">rise_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">N_samples_cycle</span> <span class="o">*</span> <span class="n">rdsym</span><span class="p">))</span>
+    <span class="n">decay_samples</span> <span class="o">=</span> <span class="n">N_samples_cycle</span> <span class="o">-</span> <span class="n">rise_samples</span>
+
+    <span class="c1"># Make phase array for a single cycle, then repeat it</span>
+    <span class="n">pha_one_cycle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">decay_samples</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rise_samples</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">phase_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">pha_one_cycle</span><span class="p">,</span> <span class="n">N_cycles</span><span class="p">)</span>
+    <span class="n">phase_t</span> <span class="o">=</span> <span class="n">phase_t</span><span class="p">[:(</span><span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">Fs</span><span class="p">))]</span>
+
+    <span class="c1"># Transform phase into an oscillator</span>
+    <span class="n">oscillator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phase_t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">oscillator</span>
+
+
+<div class="viewcode-block" id="sim_noisy_oscillator"><a class="viewcode-back" href="../../generated/bycycle.sim.sim_noisy_oscillator.html#bycycle.sim.sim_noisy_oscillator">[docs]</a><span class="k">def</span> <span class="nf">sim_noisy_oscillator</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">rdsym</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">f_hipass_brown</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">SNR</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simulate an oscillator with brown noise</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        signal duration (seconds)</span>
+<span class="sd">    Fs : float</span>
+<span class="sd">        signal sampling rate</span>
+<span class="sd">    freq : float</span>
+<span class="sd">        oscillator frequency</span>
+<span class="sd">    f_hipass_brown : float</span>
+<span class="sd">        frequency (Hz) at which to high-pass-filter</span>
+<span class="sd">        brown noise</span>
+<span class="sd">    SNR : float</span>
+<span class="sd">        ratio of oscillator power to brown noise power</span>
+<span class="sd">        &gt;1 - oscillator is stronger</span>
+<span class="sd">        &lt;1 - noise is stronger</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    signal : np.array</span>
+<span class="sd">        oscillator with brown noise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Determine order of highpass filter (3 cycles of f_hipass_brown)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Fs</span> <span class="o">/</span> <span class="n">f_hipass_brown</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Determine length of signal in samples</span>
+    <span class="n">N_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">Fs</span><span class="p">)</span>
+
+    <span class="c1"># Generate filtered brown noise</span>
+    <span class="n">brown</span> <span class="o">=</span> <span class="n">sim_filtered_brown_noise</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="p">(</span><span class="n">f_hipass_brown</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># Generate oscillator</span>
+    <span class="n">N_samples_cycle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Fs</span> <span class="o">/</span> <span class="n">freq</span><span class="p">)</span>
+    <span class="n">N_cycles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">N_samples</span> <span class="o">/</span> <span class="n">N_samples_cycle</span><span class="p">))</span>
+    <span class="n">oscillator</span> <span class="o">=</span> <span class="n">sim_oscillator</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">rdsym</span><span class="o">=</span><span class="n">rdsym</span><span class="p">)</span>
+    <span class="n">oscillator</span> <span class="o">=</span> <span class="n">oscillator</span><span class="p">[:</span><span class="n">N_samples</span><span class="p">]</span>
+
+    <span class="c1"># Normalize brown noise power</span>
+    <span class="n">oscillator_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">oscillator</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">brown_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">brown</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">brown</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">brown</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">oscillator_power</span> <span class="o">/</span>
+                    <span class="p">(</span><span class="n">brown_power</span> <span class="o">*</span> <span class="n">SNR</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">brown</span><span class="p">)</span>
+    <span class="c1"># Combine oscillator and noise</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">oscillator</span> <span class="o">+</span> <span class="n">brown</span>
+    <span class="k">return</span> <span class="n">signal</span></div>
+
+
+<div class="viewcode-block" id="sim_bursty_oscillator"><a class="viewcode-back" href="../../generated/bycycle.sim.sim_bursty_oscillator.html#bycycle.sim.sim_bursty_oscillator">[docs]</a><span class="k">def</span> <span class="nf">sim_bursty_oscillator</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">prob_enter_burst</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">prob_leave_burst</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">cycle_features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">return_cycle_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simulate a band-pass filtered signal with 1/f^2</span>
+<span class="sd">    Input suggestions: f_range=(2,None), Fs=1000, N=1001</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freq : float</span>
+<span class="sd">        oscillator frequency</span>
+<span class="sd">    T : float</span>
+<span class="sd">        signal duration (seconds)</span>
+<span class="sd">    Fs : float</span>
+<span class="sd">        signal sampling rate</span>
+<span class="sd">    prob_enter_burst : float</span>
+<span class="sd">        probability of a cycle being oscillating given</span>
+<span class="sd">        the last cycle is not oscillating</span>
+<span class="sd">    prob_leave_burst : float</span>
+<span class="sd">        probability of a cycle not being oscillating</span>
+<span class="sd">        given the last cycle is oscillating</span>
+<span class="sd">    cycle_features : dict</span>
+<span class="sd">        specify the mean and standard deviations</span>
+<span class="sd">        (within and across bursts) of each cycle&#39;s</span>
+<span class="sd">        amplitude, period, and rise-decay symmetry.</span>
+<span class="sd">        This can include a complete or incomplete set</span>
+<span class="sd">        (using defaults) of the following keys:</span>
+<span class="sd">        amp_mean - mean cycle amplitude</span>
+<span class="sd">        amp_std - standard deviation of cycle amplitude</span>
+<span class="sd">        amp_burst_std - std. of mean amplitude for each burst</span>
+<span class="sd">        period_mean - mean period (computed from `freq`)</span>
+<span class="sd">        period_std - standard deviation of period (samples)</span>
+<span class="sd">        period_burst_std - std. of mean period for each burst</span>
+<span class="sd">        rdsym_mean - mean rise-decay symmetry</span>
+<span class="sd">        rdsym_std - standard deviation of rdsym</span>
+<span class="sd">        rdsym_burst_std - std. of mean rdsym for each burst</span>
+<span class="sd">    return_cycle_df : bool</span>
+<span class="sd">        if True, return the dataframe that contains the simulation</span>
+<span class="sd">        parameters for each cycle. This may be useful for computing</span>
+<span class="sd">        power, for example. Because the power of the oscillator</span>
+<span class="sd">        should only be considered over the times where there&#39;s</span>
+<span class="sd">        bursts, not when there&#39;s nothing.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    signal : np.array</span>
+<span class="sd">        bursty oscillator</span>
+<span class="sd">    df : pd.DataFrame</span>
+<span class="sd">        cycle-by-cycle properties of the simulated oscillator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define default parameters for cycle features</span>
+    <span class="n">mean_period_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Fs</span> <span class="o">/</span> <span class="n">freq</span><span class="p">)</span>
+    <span class="n">cycle_features_use</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;amp_mean&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;amp_burst_std&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;amp_std&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span>
+                          <span class="s1">&#39;period_mean&#39;</span><span class="p">:</span> <span class="n">mean_period_samples</span><span class="p">,</span>
+                          <span class="s1">&#39;period_burst_std&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">1</span> <span class="o">*</span> <span class="n">mean_period_samples</span><span class="p">,</span>
+                          <span class="s1">&#39;period_std&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">1</span> <span class="o">*</span> <span class="n">mean_period_samples</span><span class="p">,</span>
+                          <span class="s1">&#39;rdsym_mean&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;rdsym_burst_std&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">05</span><span class="p">,</span> <span class="s1">&#39;rdsym_std&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">05</span><span class="p">}</span>
+
+    <span class="c1"># Overwrite default cycle features with those specified</span>
+    <span class="k">if</span> <span class="n">cycle_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cycle_features</span><span class="p">:</span>
+            <span class="n">cycle_features_use</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle_features</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="c1"># Determine number of cycles to generate</span>
+    <span class="n">N_samples</span> <span class="o">=</span> <span class="n">T</span> <span class="o">*</span> <span class="n">Fs</span>
+    <span class="n">N_cycles_overestimate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">N_samples</span> <span class="o">/</span> <span class="n">mean_period_samples</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># Simulate if a series of cycles are oscillating or not oscillating</span>
+    <span class="n">is_oscillating</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+    <span class="n">N_cycles_current</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">N_cycles_current</span> <span class="o">&lt;</span> <span class="n">N_cycles_overestimate</span><span class="p">:</span>
+        <span class="n">rand_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">is_oscillating</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">is_oscillating</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rand_num</span> <span class="o">&gt;</span> <span class="n">prob_leave_burst</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_oscillating</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rand_num</span> <span class="o">&lt;</span> <span class="n">prob_enter_burst</span><span class="p">)</span>
+        <span class="n">N_cycles_current</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Determine period, amp, and rdsym for each cycle</span>
+    <span class="n">periods</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">amps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rdsyms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">is_osc</span> <span class="ow">in</span> <span class="n">is_oscillating</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_osc</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">period</span> <span class="o">=</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;period_mean&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;period_std&#39;</span><span class="p">]</span>
+            <span class="n">periods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">))</span>
+            <span class="n">amps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="n">rdsyms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+            <span class="n">current_burst_period_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">current_burst_amp_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">current_burst_rdsym_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">current_burst_period_mean</span><span class="p">):</span>
+                <span class="n">current_burst_period_mean</span> <span class="o">=</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;period_mean&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;period_burst_std&#39;</span><span class="p">]</span>
+                <span class="n">current_burst_amp_mean</span> <span class="o">=</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;amp_mean&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;amp_burst_std&#39;</span><span class="p">]</span>
+                <span class="n">current_burst_rdsym_mean</span> <span class="o">=</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;rdsym_mean&#39;</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;rdsym_burst_std&#39;</span><span class="p">]</span>
+
+            <span class="n">N_iter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">period</span><span class="p">,</span> <span class="n">amp</span><span class="p">,</span> <span class="n">rdsym</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">period</span><span class="p">,</span> <span class="n">amp</span><span class="p">,</span> <span class="n">rdsym</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">N_iter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">period</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">feat0</span> <span class="o">=</span> <span class="s1">&#39;period&#39;</span>
+                    <span class="k">elif</span> <span class="n">rdsym</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">feat0</span> <span class="o">=</span> <span class="s1">&#39;rise-decay symmetry&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">feat0</span> <span class="o">=</span> <span class="s1">&#39;amp&#39;</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Simulation settings are such that the </span><span class="si">{:s}</span><span class="s1"> is occasionally computed to be negative. You may want to reset your simulation settings&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">feat0</span><span class="p">))</span>
+                <span class="n">period</span> <span class="o">=</span> <span class="n">current_burst_period_mean</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;period_std&#39;</span><span class="p">]</span>
+                <span class="n">amp</span> <span class="o">=</span> <span class="n">current_burst_amp_mean</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;amp_std&#39;</span><span class="p">]</span>
+                <span class="n">rdsym</span> <span class="o">=</span> <span class="n">current_burst_rdsym_mean</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">cycle_features_use</span><span class="p">[</span><span class="s1">&#39;rdsym_std&#39;</span><span class="p">]</span>
+                <span class="n">N_iter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">periods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">))</span>
+            <span class="n">amps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span>
+            <span class="n">rdsyms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rdsym</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;is_cycle&#39;</span><span class="p">:</span> <span class="n">is_oscillating</span><span class="p">,</span> <span class="s1">&#39;period&#39;</span><span class="p">:</span> <span class="n">periods</span><span class="p">,</span>
+                       <span class="s1">&#39;amp&#39;</span><span class="p">:</span> <span class="n">amps</span><span class="p">,</span> <span class="s1">&#39;rdsym&#39;</span><span class="p">:</span> <span class="n">rdsyms</span><span class="p">})</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;start_sample&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;start_sample&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">N_samples</span><span class="p">]</span>
+
+    <span class="c1"># Shorten df to only cycles that are included in the data</span>
+
+    <span class="c1"># Simulate time series for each cycle</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+    <span class="n">last_cycle_oscillating</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;is_cycle&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="c1"># If last cycle was oscillating, add a decay to 0 then 0s</span>
+            <span class="k">if</span> <span class="n">last_cycle_oscillating</span><span class="p">:</span>
+                <span class="n">decay_pha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">4</span><span class="p">))</span>
+                <span class="n">decay_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">decay_pha</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decay_t</span><span class="p">)</span>
+
+                <span class="n">cycle_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">4</span><span class="p">))</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">cycle_t</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Add a blank cycle</span>
+                <span class="n">cycle_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">])</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">cycle_t</span><span class="p">)</span>
+            <span class="n">last_cycle_oscillating</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If last cycle was oscillating, add a decay to 0</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">last_cycle_oscillating</span><span class="p">:</span>
+                <span class="n">rise_pha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                                       <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">4</span><span class="p">))[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">rise_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rise_pha</span><span class="p">)</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span>
+                <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">rise_t</span><span class="p">):]</span> <span class="o">=</span> <span class="n">rise_t</span>
+
+            <span class="c1"># Add a cycle with rdsym</span>
+            <span class="n">rise_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;rdsym&#39;</span><span class="p">]))</span>
+            <span class="n">decay_samples</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">rise_samples</span>
+
+            <span class="n">pha_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">decay_samples</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:],</span>
+                               <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rise_samples</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]])</span>
+            <span class="n">cycle_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pha_t</span><span class="p">)</span>
+
+            <span class="c1"># Adjust decay if the last cycle was oscillating</span>
+            <span class="k">if</span> <span class="n">last_cycle_oscillating</span><span class="p">:</span>
+                <span class="n">scaling</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">cycle_t</span><span class="p">[:</span><span class="n">decay_samples</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle_t</span><span class="p">[:</span><span class="n">decay_samples</span><span class="p">]</span> <span class="o">*</span> \
+                    <span class="n">scaling</span> <span class="o">+</span> <span class="n">offset</span>
+                <span class="n">cycle_t</span><span class="p">[</span><span class="n">decay_samples</span><span class="p">:]</span> <span class="o">=</span> <span class="n">cycle_t</span><span class="p">[</span><span class="n">decay_samples</span><span class="p">:]</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cycle_t</span> <span class="o">=</span> <span class="n">cycle_t</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">cycle_t</span><span class="p">)</span>
+            <span class="n">last_cycle_oscillating</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">N_samples</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">return_cycle_df</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">df</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="sim_noisy_bursty_oscillator"><a class="viewcode-back" href="../../generated/bycycle.sim.sim_noisy_bursty_oscillator.html#bycycle.sim.sim_noisy_bursty_oscillator">[docs]</a><span class="k">def</span> <span class="nf">sim_noisy_bursty_oscillator</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">f_hipass_brown</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">SNR</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">prob_enter_burst</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">prob_leave_burst</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">cycle_features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_components</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">return_cycle_df</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simulate a band-pass filtered signal with 1/f^2</span>
+<span class="sd">    Input suggestions: f_range=(2,None), Fs=1000, N=1001</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        signal duration (seconds)</span>
+<span class="sd">    Fs : float</span>
+<span class="sd">        signal sampling rate</span>
+<span class="sd">    freq : float</span>
+<span class="sd">        oscillator frequency</span>
+<span class="sd">    f_hipass_brown : float</span>
+<span class="sd">        frequency (Hz) at which to high-pass-filter</span>
+<span class="sd">        brown noise</span>
+<span class="sd">    SNR : float</span>
+<span class="sd">        ratio of oscillator power to brown noise power</span>
+<span class="sd">        &gt;1 - oscillator is stronger</span>
+<span class="sd">        &lt;1 - noise is stronger</span>
+<span class="sd">    prob_enter_burst : float</span>
+<span class="sd">        probability of a cycle being oscillating given</span>
+<span class="sd">        the last cycle is not oscillating</span>
+<span class="sd">    prob_leave_burst : float</span>
+<span class="sd">        probability of a cycle not being oscillating</span>
+<span class="sd">        given the last cycle is oscillating</span>
+<span class="sd">    cycle_features : dict</span>
+<span class="sd">        specify the mean and standard deviations</span>
+<span class="sd">        (within and across bursts) of each cycle&#39;s</span>
+<span class="sd">        amplitude, period, and rise-decay symmetry.</span>
+<span class="sd">        This can include a complete or incomplete set</span>
+<span class="sd">        (using defaults) of the following keys:</span>
+<span class="sd">        amp_mean - mean cycle amplitude</span>
+<span class="sd">        amp_std - standard deviation of cycle amplitude</span>
+<span class="sd">        amp_burst_std - std. of mean amplitude for each burst</span>
+<span class="sd">        period_mean - mean period (computed from `freq`)</span>
+<span class="sd">        period_std - standard deviation of period (samples)</span>
+<span class="sd">        period_burst_std - std. of mean period for each burst</span>
+<span class="sd">        rdsym_mean - mean rise-decay symmetry</span>
+<span class="sd">        rdsym_std - standard deviation of rdsym</span>
+<span class="sd">        rdsym_burst_std - std. of mean rdsym for each burst</span>
+<span class="sd">    return_components: bool</span>
+<span class="sd">        if True, return the oscillator and noise separate,</span>
+<span class="sd">        in addition to the signal</span>
+<span class="sd">    return_cycle_df : bool</span>
+<span class="sd">        if True, return the dataframe that contains the simulation</span>
+<span class="sd">        parameters for each cycle. This may be useful for computing</span>
+<span class="sd">        power, for example. Because the power of the oscillator</span>
+<span class="sd">        should only be considered over the times where there&#39;s</span>
+<span class="sd">        bursts, not when there&#39;s nothing.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    signal : np.array</span>
+<span class="sd">        bursty oscillator with brown noise time series</span>
+<span class="sd">    oscillator : np.array</span>
+<span class="sd">        bursty oscillator component of signal</span>
+<span class="sd">    brown : np.array</span>
+<span class="sd">        brown noise component of signal</span>
+<span class="sd">    df : pd.DataFrame</span>
+<span class="sd">        cycle-by-cycle properties of the simulated oscillator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Determine order of highpass filter (3 cycles of f_hipass_brown)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Fs</span> <span class="o">/</span> <span class="n">f_hipass_brown</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Generate filtered brown noise</span>
+    <span class="n">brown</span> <span class="o">=</span> <span class="n">sim_filtered_brown_noise</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="p">(</span><span class="n">f_hipass_brown</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># Generate oscillator</span>
+    <span class="n">oscillator</span><span class="p">,</span> <span class="n">df</span> <span class="o">=</span> <span class="n">sim_bursty_oscillator</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span>
+                                           <span class="n">prob_enter_burst</span><span class="o">=</span><span class="n">prob_enter_burst</span><span class="p">,</span>
+                                           <span class="n">prob_leave_burst</span><span class="o">=</span><span class="n">prob_leave_burst</span><span class="p">,</span>
+                                           <span class="n">cycle_features</span><span class="o">=</span><span class="n">cycle_features</span><span class="p">,</span>
+                                           <span class="n">return_cycle_df</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Determine samples of burst so that can compute signal power over only those times</span>
+    <span class="n">is_osc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">oscillator</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;is_cycle&#39;</span><span class="p">]:</span>
+            <span class="n">is_osc</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start_sample&#39;</span><span class="p">]:</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start_sample&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Normalize brown noise power</span>
+    <span class="n">oscillator_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">oscillator</span><span class="p">[</span><span class="n">is_osc</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">brown_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">brown</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">brown</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">brown</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">oscillator_power</span> <span class="o">/</span>
+                    <span class="p">(</span><span class="n">brown_power</span> <span class="o">*</span> <span class="n">SNR</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">brown</span><span class="p">)</span>
+    <span class="c1"># Combine oscillator and noise</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">oscillator</span> <span class="o">+</span> <span class="n">brown</span>
+
+    <span class="k">if</span> <span class="n">return_components</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">return_cycle_df</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">signal</span><span class="p">,</span> <span class="n">oscillator</span><span class="p">,</span> <span class="n">brown</span><span class="p">,</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="p">,</span> <span class="n">oscillator</span><span class="p">,</span> <span class="n">brown</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">return_cycle_df</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">signal</span><span class="p">,</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">signal</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

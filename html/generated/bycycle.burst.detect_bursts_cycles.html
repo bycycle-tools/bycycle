@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>bycycle.burst.detect_bursts_cycles &#8212; bycycle 0.1.3 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.3</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="bycycle-burst-detect-bursts-cycles">
+<h1>bycycle.burst.detect_bursts_cycles<a class="headerlink" href="#bycycle-burst-detect-bursts-cycles" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="bycycle.burst.detect_bursts_cycles">
+<code class="sig-prename descclassname">bycycle.burst.</code><code class="sig-name descname">detect_bursts_cycles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">amplitude_fraction_threshold</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">amplitude_consistency_threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">period_consistency_threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">monotonicity_threshold</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">N_cycles_min</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/burst.html#detect_bursts_cycles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.burst.detect_bursts_cycles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute consistency between cycles and determine which are truly oscillating.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df</strong><span class="classifier">pandas DataFrame</span></dt><dd><p>Dataframe of waveform features for individual cycles, trough-centered.</p>
+</dd>
+<dt><strong>x</strong><span class="classifier">1d array</span></dt><dd><p>Trace used to compute monotonicity.</p>
+</dd>
+<dt><strong>amplitude_fraction_threshold</strong><span class="classifier">float (0 to 1)</span></dt><dd><p>The minimum normalized amplitude a cycle must have in order to be considered in an
+oscillation.</p>
+<ul class="simple">
+<li><p>0 = the minimum amplitude across all cycles</p></li>
+<li><p>.5 = the median amplitude across all cycles</p></li>
+<li><p>1 = the maximum amplitude across all cycles</p></li>
+</ul>
+</dd>
+<dt><strong>amplitude_consistency_threshold</strong><span class="classifier">float (0 to 1)</span></dt><dd><p>The minimum normalized difference in rise and decay magnitude to be considered as in an
+oscillatory mode.</p>
+<ul class="simple">
+<li><p>1 = the same amplitude for the rise and decay</p></li>
+<li><p>.5 = the rise (or decay) is half the amplitude of the decay (rise)</p></li>
+</ul>
+</dd>
+<dt><strong>period_consistency_threshold</strong><span class="classifier">float (0 to 1)</span></dt><dd><p>The minimum normalized difference in period between two adjacent cycles to be considered as
+in an oscillatory mode.</p>
+<ul class="simple">
+<li><p>1 = the same period for both cycles</p></li>
+<li><p>.5 = one cycle is half the duration of another cycle</p></li>
+</ul>
+</dd>
+<dt><strong>monotonicity_threshold</strong><span class="classifier">float (0 to 1)</span></dt><dd><p>The minimum fraction of time segments between samples that must be going in the same
+direction.</p>
+<ul class="simple">
+<li><p>1 = rise and decay are perfectly monotonic</p></li>
+<li><p>.5 = both rise and decay are rising half of the time and decay half the time</p></li>
+<li><p>0 = rise period is all decaying and decay period is all rising</p></li>
+</ul>
+</dd>
+<dt><strong>N_cycles_min</strong><span class="classifier">int</span></dt><dd><p>Minimum number of cycles to be identified as truly oscillating needed in a row in order for
+them to remain identified as truly oscillating.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>df</strong><span class="classifier">pandas DataFrame</span></dt><dd><p>Same df as input, with an additional column (<cite>is_burst</cite>) to indicate if the cycle is part of
+an oscillatory burst.</p>
+<p>Also additional columns indicating the burst detection
+parameters.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The first and last period cannot be considered oscillating
+if the consistency measures are used.</p></li>
+</ul>
+</dd></dl>
+
+<div style='clear:both'></div></div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
