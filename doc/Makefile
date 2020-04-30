@@ -33,17 +33,17 @@ check:
 # Build the html site, and push it to gh-pages branch of repo to deploy
 install:
 	# Clean out existing build
-	rm -rf _build/doctrees _build/tmp_html
+	make clean
 	# Clone, specifically, the gh-pages branch, putting it into '_build/gh_pages/'
 	#   --no-checkout just fetches the root folder without content
 	#   --depth 1 is a speed optimization since we don't need the history prior to the last commit
-	#     history prior to the last commit
 	#   -b gh-pages fetches only the branch for the gh-pages
 	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/bycycle-tools/bycycle _build/gh_pages
 	# A .nojekyll file tells Github pages to bypass Jekyll processing
 	touch _build/gh_pages/.nojekyll
 	# Build the sphinx site
 	make html
+	# Copy site into the gh-pages branch folder, then push to Github to deploy
 	cd _build/ && \
 	cp -r html/ gh_pages && \
 	cd gh_pages && \
