@@ -1,28 +1,33 @@
-"""Tests the functions to identify points in cycles work
-
-NOTES
------
-The tests here are not strong tests for accuracy.
-    They serve rather as 'smoke tests', for if anything fails completely.
-"""
+"""Tests the functions to identify points in cycles work."""
 
 import bycycle
 from bycycle import cyclepoints
 import numpy as np
 from scipy.signal import argrelextrema
 import os
+import pytest
 
 # Set data path
-data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
+DATA_PATH = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
 
+###################################################################################################
+###################################################################################################
 
-def test_find_extrema():
-    """Test ability to find peaks and troughs"""
+@pytest.mark.parametrize("first_extrema",
+    [
+        'peak',
+        'trough',
+        None,
+        pytest.param('fail', marks=pytest.mark.xfail(raises=ValueError))
+    ]
+)
+def test_find_extrema(first_extrema):
+    """Test ability to find peaks and troughs."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_stationary.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_stationary.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # find local maxima and minima using scipy
     maxima = argrelextrema(signal, np.greater)
@@ -31,25 +36,23 @@ def test_find_extrema():
     # Find peaks and troughs using bycycle and make sure match scipy
     f_range = (6, 14)
     Ps, Ts = cyclepoints.find_extrema(signal, Fs, f_range, boundary=1,
-                                      first_extrema='trough')
-    assert len(Ps) == len(Ts)
-    assert Ts[0] < Ps[0]
-    np.testing.assert_allclose(Ps, maxima[0])
-    np.testing.assert_allclose(Ts[:len(Ps)], minima[0][:len(Ps)])
-
-    # Test first extrema again
-    Ps, Ts = cyclepoints.find_extrema(signal, Fs, f_range, boundary=1,
-                                      first_extrema='peak')
-    assert Ps[0] < Ts[0]
+                                      first_extrema=first_extrema)
+    if first_extrema == 'trough':
+        assert len(Ps) == len(Ts)
+        assert Ts[0] < Ps[0]
+        np.testing.assert_allclose(Ps, maxima[0])
+        np.testing.assert_allclose(Ts[:len(Ps)], minima[0][:len(Ps)])
+    elif first_extrema == 'peak':
+        assert Ps[0] < Ts[0]
 
 
 def test_find_zerox():
-    """Test ability to find peaks and troughs"""
+    """Test ability to find peaks and troughs."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_stationary.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_stationary.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # Find peaks and troughs
     Ps, Ts = cyclepoints.find_extrema(signal, Fs, f_range, boundary=1,
@@ -66,12 +69,12 @@ def test_find_zerox():
 
 
 def test_extrema_interpolated_phase():
-    """Test waveform phase estimate"""
+    """Test waveform phase estimate."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_stationary.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_stationary.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # Find peaks and troughs
     Ps, Ts = cyclepoints.find_extrema(signal, Fs, f_range, boundary=1,
