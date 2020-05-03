@@ -1,10 +1,4 @@
-"""Tests the functions to identify points in cycles work
-
-NOTES
------
-The tests here are not strong tests for accuracy.
-    They serve rather as 'smoke tests', for if anything fails completely.
-"""
+"""Tests the functions to identify points in cycles work."""
 
 import bycycle
 from bycycle import cyclepoints
@@ -14,8 +8,10 @@ import os
 import pytest
 
 # Set data path
-data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
+DATA_PATH = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
 
+###################################################################################################
+###################################################################################################
 
 @pytest.mark.parametrize("first_extrema",
     [
@@ -26,12 +22,12 @@ data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tuto
     ]
 )
 def test_find_extrema(first_extrema):
-    """Test ability to find peaks and troughs"""
+    """Test ability to find peaks and troughs."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_stationary.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_stationary.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # find local maxima and minima using scipy
     maxima = argrelextrema(signal, np.greater)
@@ -51,12 +47,12 @@ def test_find_extrema(first_extrema):
 
 
 def test_find_zerox():
-    """Test ability to find peaks and troughs"""
+    """Test ability to find peaks and troughs."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_stationary.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_stationary.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # Find peaks and troughs
     Ps, Ts = cyclepoints.find_extrema(signal, Fs, f_range, boundary=1,
@@ -73,12 +69,12 @@ def test_find_zerox():
 
 
 def test_extrema_interpolated_phase():
-    """Test waveform phase estimate"""
+    """Test waveform phase estimate."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_stationary.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_stationary.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # Find peaks and troughs
     Ps, Ts = cyclepoints.find_extrema(signal, Fs, f_range, boundary=1,

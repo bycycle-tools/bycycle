@@ -1,10 +1,4 @@
-"""Tests the filtering methods work
-
-NOTES
------
-The tests here are not strong tests for accuracy.
-    They serve rather as 'smoke tests', for if anything fails completely.
-"""
+"""Test filtering."""
 
 import bycycle
 from bycycle import filt
@@ -13,8 +7,10 @@ import os
 import pytest
 
 # Set data path
-data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
+DATA_PATH = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
 
+###################################################################################################
+###################################################################################################
 
 @pytest.mark.parametrize("fc_sigerr",
     [
@@ -28,16 +24,16 @@ data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tuto
     ]
 )
 def test_bandpass(fc_sigerr):
-    """Test bandpass filter functionality"""
+    """Test bandpass filter."""
     fc = fc_sigerr[0]
     sig_err = fc_sigerr[1]
 
     # Load signal
-    signal = np.load(data_path + 'sim_bursting.npy')
+    signal = np.load(DATA_PATH + 'sim_bursting.npy')
     if sig_err:
       signal = signal[:5]
 
-    Fs = 1000  # Sampling rate
+    Fs = 1000
 
     # Test output same length as input
     N_seconds = 0.5
@@ -77,11 +73,11 @@ def test_bandpass(fc_sigerr):
 
 
 def test_lowpass():
-    """Test lowpass filter functionality"""
+    """Test lowpass filter."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_bursting.npy')
-    Fs = 1000  # Sampling rate
+    signal = np.load(DATA_PATH + 'sim_bursting.npy')
+    Fs = 1000
 
     # Test output same length as input
     N_seconds = 0.5
@@ -109,12 +105,12 @@ def test_lowpass():
 
 
 def test_amp():
-    """Test phase time series functionality"""
+    """Test phase time series."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_bursting.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_bursting.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # Test output same length as input
     amp = filt.amp_by_time(signal, Fs, f_range)
@@ -147,12 +143,12 @@ def test_amp():
 
 
 def test_phase():
-    """Test phase time series functionality"""
+    """Test phase time series."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_bursting.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_bursting.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # Test output same length as input
     pha = filt.phase_by_time(signal, Fs, f_range, hilbert_increase_N=True)

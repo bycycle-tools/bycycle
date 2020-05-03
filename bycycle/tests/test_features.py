@@ -1,10 +1,4 @@
-"""Tests the main cycle-by-cycle feature computation function
-
-NOTES
------
-The tests here are not strong tests for accuracy.
-    They serve rather as 'smoke tests', for if anything fails completely.
-"""
+"""Tests the main cycle-by-cycle feature computation function."""
 
 import bycycle
 import numpy as np
@@ -12,16 +6,18 @@ from bycycle import features
 import os
 
 # Set data path
-data_path = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
+DATA_PATH = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
 
+###################################################################################################
+###################################################################################################
 
 def test_compute_features():
-    """Test cycle-by-cycle feature computation"""
+    """Test cycle-by-cycle feature computation."""
 
     # Load signal
-    signal = np.load(data_path + 'sim_stationary.npy')
-    Fs = 1000  # Sampling rate
-    f_range = (6, 14)  # Frequency range
+    signal = np.load(DATA_PATH + 'sim_stationary.npy')
+    Fs = 1000
+    f_range = (6, 14)
 
     # Compute cycle features
     df = features.compute_features(signal, Fs, f_range)

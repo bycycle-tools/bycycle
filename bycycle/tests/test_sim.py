@@ -1,14 +1,15 @@
-"""Tests simulating oscillators and brown noise
-"""
+"""Tests simulating oscillations and 1/f noise."""
 
 from bycycle import sim
 import pytest
 
+###################################################################################################
+###################################################################################################
 
 @pytest.mark.parametrize("filter_f_range", [None, (6, 14), (6, None)])
 @pytest.mark.parametrize("N", [2, 3])
 def test_sim_filtered_brown_noise(filter_f_range, N):
-    """Test simulating brown noise"""
+    """Test simulating brown noise."""
     Fs = 1000
     T = 25
     brownNf = sim.sim_filtered_brown_noise(T, Fs, filter_f_range, N)
@@ -16,7 +17,7 @@ def test_sim_filtered_brown_noise(filter_f_range, N):
 
 
 def test_sim_oscillator():
-    """Test simulating a stationary oscillator"""
+    """Test simulating a stationary oscillation."""
     T = 25
     Fs = 1000
     freq = 5
@@ -25,7 +26,7 @@ def test_sim_oscillator():
 
 
 def test_sim_noisy_oscillator():
-    """Test simulating oscillator with brown noise"""
+    """Test simulating an oscillation with brown noise."""
     T = 25
     Fs = 1000
     freq = 5
@@ -35,8 +36,7 @@ def test_sim_noisy_oscillator():
 
 @pytest.mark.parametrize("return_cyc_df", [True, False])
 def test_sim_bursty_oscillator(return_cyc_df):
-    """Test bursty oscillator
-    """
+    """Test bursty oscillation."""
     T = 25
     Fs = 1000
     freq = 4
@@ -65,8 +65,7 @@ def test_sim_bursty_oscillator(return_cyc_df):
 @pytest.mark.parametrize("return_comps", [True, False])
 def test_sim_noisy_bursty_oscillator(f_hipass_brown, return_cycle_df,
                                      return_comps):
-    """Test bursty oscillatory with noise
-    """
+    """Test bursty oscillation with noise."""
     T = 25
     Fs = 1000
     freq = 4
