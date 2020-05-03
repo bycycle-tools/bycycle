@@ -279,7 +279,6 @@ def _plot_frequency_response(Fs, b, a=1, xmax=None):
         plt.subplot(1, 2, 2)
         plt.plot(b, 'k')
         plt.title('Kernel')
-    plt.show()
 
 
 def amp_by_time(x, Fs, f_range, filter_kwargs=None,
