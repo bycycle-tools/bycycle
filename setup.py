@@ -16,6 +16,7 @@ setup(
     version = __version__,
     description = 'cycle-by-cycle analysis of neural oscillations',
     long_description = long_description,
+    python_requires = '>=3.5',
     author = 'The Voytek Lab',
     author_email = 'voyteklab@gmail.com',
     url = 'https://github.com/bycycle-tools/bycycle',
@@ -33,6 +34,12 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8'
     ],
+    platforms = 'any',
+    project_urls = {
+        'Documentation' : 'https://bycycle-tools.github.io/bycycle/',
+        'Bug Reports' : 'https://github.com/bycycle-tools/bycycle/issues',
+        'Source' : 'https://github.com/bycycle-tools/bycycle'
+    },
     download_url = 'https://github.com/bycycle-tools/bycycle/releases',
     keywords = ['neuroscience', 'neural oscillations', 'waveform', 'shape', 'electrophysiology'],
     install_requires = ['numpy', 'scipy', 'pandas'],
