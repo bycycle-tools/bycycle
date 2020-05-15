@@ -56,6 +56,22 @@ If you use this code in your project, please cite:
 Direct Link: https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019
 
 
+Documentation
+-------------
+
+Documentation for ``bycycle`` is available on the
+`documentation site <https://bycycle-tools.github.io/bycycle/index.html>`_.
+
+This documentation includes:
+
+- `Tutorials <https://bycycle-tools.github.io/bycycle/auto_tutorials/index.html>`_:
+  with a step-by-step guide through the approach and how to apply it
+- `Examples <https://bycycle-tools.github.io/bycycle/auto_examples/index.html>`_:
+  demonstrating an example analysis and use case
+- `API list <https://bycycle-tools.github.io/bycycle/api.html>`_:
+  which lists and describes all the code and functionality available in the module
+
+
 Dependencies
 ------------
 
