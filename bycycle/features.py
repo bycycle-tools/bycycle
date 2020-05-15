@@ -81,6 +81,12 @@ def compute_features(x, Fs, f_range,
           cutoff frequency. Average taken across all time points
           in the cycle.
         - ``is_burst`` : True if the cycle is part of a detected oscillatory burst
+        - ``amp_fraction`` : normalized amplitude
+        - ``amp_consistency`` : difference in the rise and decay voltage within a cycle
+        - ``period_consistency`` : difference between a cycle’s period and the period of the
+          adjacent cycles
+        - ``monotonicity`` : fraction of instantaneous voltage changes between consecutive
+          samples that are positive during the rise phase and negative during the decay phase
 
     Notes
     -----
