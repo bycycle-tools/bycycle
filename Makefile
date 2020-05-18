@@ -68,8 +68,9 @@ coverage:
 
 # Run doctests
 doctests:
-	@printf "\n\nCHECK DOCTEST EXAMPLES: \n"
-	@pytest --doctest-modules --ignore=$(MODULE)/tests $(MODULE)
+	#@printf "\n\nCHECK DOCTEST EXAMPLES: \n"
+	#@pytest --doctest-modules --ignore=$(MODULE)/tests $(MODULE)
+	@printf "\n\nSKIPPING DOCTESTS - NONE IMPLEMENTED \n"
 
 ##########################################################################
 ## CODE LINTING
