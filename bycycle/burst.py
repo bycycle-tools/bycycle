@@ -347,7 +347,7 @@ def detect_bursts_df_amp(df, x, Fs, f_range,
         needed in a row in order for them to remain identified as
         truly oscillating
     filter_kwargs : dict
-        keyword arguments to ``neurodsp.filt.filter_signal``
+        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`
 
     Returns
     -------
@@ -405,7 +405,7 @@ def twothresh_amp(x, Fs, f_range, amp_threshes, N_cycles_min=3,
     return_amplitude : bool
         if True, return the amplitude time series as an additional output
     filter_kwargs : dict
-        keyword arguments to ``neurodsp.filt.filter_signal``
+        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`
 
     Returns
     -------

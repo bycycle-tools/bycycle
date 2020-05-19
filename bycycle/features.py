@@ -45,9 +45,9 @@ def compute_features(x, Fs, f_range,
     find_extrema_kwargs : dict | None
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
         to change filter Parameters or boundary.By default, it sets the filter length to three
-        cycles of the low cutoff frequency (`f_range[0]`).
+        cycles of the low cutoff frequency (``f_range[0]``).
     hilbert_increase_n : bool
-        Corresponding kwarg for ``neurodsp.timefrequency.amp_by_time``
+        Corresponding kwarg for :func:`~neurodsp.timefrequency.hilbert.amp_by_time`.
         If true, this zeropads the signal when computing the Fourier transform, which can be
         necessary for computing it in a reasonable amount of time.
 

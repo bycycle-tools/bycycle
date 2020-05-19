@@ -29,8 +29,8 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
         if 'trough', then force the output to begin with a trough and end in peak
         if None, force nothing
     filter_kwargs : dict
-        keyword arguments to ``neurodsp.filt.filter_signal``, such as 'n_cycles' or 'n_seconds'
-        to control filter length
+        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`, such as 'n_cycles' or
+        'n_seconds' to control filter length
 
     Returns
     -------
