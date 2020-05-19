@@ -5,8 +5,8 @@ Quantify the shape of oscillatory waveforms on a cycle-by-cycle basis
 
 import numpy as np
 import pandas as pd
+from neurodsp.timefrequency import amp_by_time
 from bycycle.cyclepoints import find_extrema, find_zerox
-from bycycle.filt import amp_by_time
 from bycycle.burst import detect_bursts_cycles, detect_bursts_df_amp
 import warnings
 
@@ -16,7 +16,7 @@ def compute_features(x, Fs, f_range,
                      burst_detection_method='cycles',
                      burst_detection_kwargs=None,
                      find_extrema_kwargs=None,
-                     hilbert_increase_N=False):
+                     hilbert_increase_n=False):
     """
     Segment a recording into individual cycles and compute
     features for each cycle
@@ -46,8 +46,8 @@ def compute_features(x, Fs, f_range,
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
         to change filter Parameters or boundary.By default, it sets the filter length to three
         cycles of the low cutoff frequency (`f_range[0]`).
-    hilbert_increase_N : bool
-        Corresponding kwarg for :func:`~.amp_by_time`
+    hilbert_increase_n : bool
+        Corresponding kwarg for ``neurodsp.timefrequency.amp_by_time``
         If true, this zeropads the signal when computing the Fourier transform, which can be
         necessary for computing it in a reasonable amount of time.
 
@@ -110,7 +110,7 @@ def compute_features(x, Fs, f_range,
             not well suited for your desired application.
             ''')
     if find_extrema_kwargs is None:
-        find_extrema_kwargs = {'filter_kwargs': {'N_cycles': 3}}
+        find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
     else:
         # Raise warning if switch from peak start to trough start
         if 'first_extrema' in find_extrema_kwargs.keys():
@@ -170,7 +170,7 @@ def compute_features(x, Fs, f_range,
     shape_features['time_ptsym'] = shape_features['time_peak'] / (shape_features['time_peak'] + shape_features['time_trough'])
 
     # Compute average oscillatory amplitude estimate during cycle
-    amp = amp_by_time(x, Fs, f_range, hilbert_increase_N=hilbert_increase_N, filter_kwargs={'N_cycles': 3})
+    amp = amp_by_time(x, Fs, f_range, hilbert_increase_n=hilbert_increase_n, n_cycles=3)
     shape_features['band_amp'] = [np.mean(amp[Ts[i]:Ts[i + 1]]) for i in range(len(shape_features['sample_peak']))]
 
     # Convert feature dictionary into a DataFrame
