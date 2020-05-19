@@ -20,7 +20,7 @@ import numpy as np
 import scipy as sp
 from scipy import stats
 import matplotlib.pyplot as plt
-from bycycle.filt import lowpass_filter
+from neurodsp.filt import filter_signal
 from bycycle.features import compute_features
 import pandas as pd
 import seaborn as sns
@@ -39,7 +39,7 @@ Fs = 1000  # Sampling rate
 
 # Apply lowpass filter to each signal
 for i in range(len(signals)):
-    signals[i] = lowpass_filter(signals[i], Fs, 30, N_seconds=.2, remove_edge_artifacts=False)
+    signals[i] = filter_signal(signals[i], Fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 
 ####################################################################################################
 

@@ -40,7 +40,7 @@ the measured features along with the raw data to assure they make sense.
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
-from bycycle.filt import lowpass_filter
+from neurodsp.filt import filter_signal
 
 import pandas as pd
 pd.options.display.max_columns = 30
@@ -56,8 +56,8 @@ f_lowpass = 30
 N_seconds = .1
 
 # Lowpass filter
-signal_low = lowpass_filter(signal, Fs, f_lowpass,
-                            N_seconds=N_seconds, remove_edge_artifacts=False)
+signal_low = filter_signal(signal, Fs, 'lowpass', f_lowpass,
+                           n_seconds=N_seconds, remove_edges=False)
 
 # Plot signal
 t = np.arange(0, len(signal)/Fs, 1/Fs)
@@ -82,14 +82,12 @@ plt.show()
 # "zero-crossings." Then, in between these zerocrossings, the absolute maxima and minima are found
 # and labeled as the peaks and troughs, respectively.
 
-from bycycle.filt import bandpass_filter
 from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema
 
 # Narrowband filter signal
 N_seconds_theta = .75
-signal_narrow = bandpass_filter(signal, Fs, f_theta,
-                                remove_edge_artifacts=False,
-                                N_seconds=N_seconds_theta)
+signal_narrow = filter_signal(signal, Fs, 'bandpass', f_theta,
+                              n_seconds=N_seconds_theta, remove_edges=False)
 
 # Find rising and falling zerocrossings (narrowband)
 zeroriseN = _fzerorise(signal_narrow)
@@ -99,7 +97,7 @@ zerofallN = _fzerofall(signal_narrow)
 
 # Find peaks and troughs (this function also does the above)
 Ps, Ts = find_extrema(signal_low, Fs, f_theta,
-                      filter_kwargs={'N_seconds':N_seconds_theta})
+                      filter_kwargs={'n_seconds':N_seconds_theta})
 
 tlim = (12, 15)
 tidx = np.logical_and(t>=tlim[0], t<tlim[1])
@@ -120,8 +118,7 @@ plt.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Plot frequency response of bandpass filter
-from bycycle.filt import bandpass_filter
-bandpass_filter(signal, Fs, (4, 10), N_seconds=.75, plot_frequency_response=True)
+filter_signal(signal, Fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
 
 ####################################################################################################
 #
@@ -234,7 +231,7 @@ Fs = 1000  # Sampling rate
 f_alpha = (8, 12)
 
 # Apply a lowpass filter to remove high frequency power that interferes with extrema localization
-signal = lowpass_filter(signal, Fs, 30, N_seconds=.2, remove_edge_artifacts=False)
+signal = filter_signal(signal, Fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 
 ####################################################################################################
 #
