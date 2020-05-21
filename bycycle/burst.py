@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import zscore
 import pandas as pd
 from neurodsp.timefrequency import amp_by_time
+from neurodsp.burst import detect_bursts_dual_threshold
 
 
 pd.options.mode.chained_assignment = None
@@ -321,7 +322,7 @@ def plot_burst_detect_params(x, Fs, df_shape, osc_kwargs,
 
 def detect_bursts_df_amp(df, x, Fs, f_range,
                          amp_threshes=(1, 2), N_cycles_min=3,
-                         filter_kwargs=None):
+                         filter_kwargs={}):
     """
 
     Determine which cycles in a signal are part of an oscillatory
@@ -357,9 +358,8 @@ def detect_bursts_df_amp(df, x, Fs, f_range,
     """
 
     # Detect bursts using the dual amplitude threshold approach
-    x_burst = twothresh_amp(x, Fs, f_range, amp_threshes,
-                            N_cycles_min=N_cycles_min,
-                            filter_kwargs=filter_kwargs)
+    x_burst = detect_bursts_dual_threshold(x, Fs, amp_threshes, f_range,
+                                           min_n_cycles=N_cycles_min, **filter_kwargs)
 
     # Compute fraction of each cycle that's bursting
     burst_fracs = []
@@ -375,153 +375,3 @@ def detect_bursts_df_amp(df, x, Fs, f_range,
     df['is_burst'] = df['is_burst'].astype(bool)
 
     return df
-
-
-def twothresh_amp(x, Fs, f_range, amp_threshes, N_cycles_min=3,
-                  magnitude_type='amplitude',
-                  return_amplitude=False,
-                  filter_kwargs=None):
-    """
-    Detect periods of oscillatory bursting in a neural signal
-    by using two amplitude thresholds.
-
-    Parameters
-    ----------
-    x : 1d array
-        voltage time series
-    Fs : float
-        sampling rate, Hz
-    f_range : tuple of (float float)
-        frequency range (Hz) for oscillator of interest
-    amp_threshes : tuple of (float float)
-        Threshold values for determining timing of bursts.
-        These values are in units of amplitude
-        (or power, if specified) normalized to the median
-        amplitude (value 1).
-    N_cycles_min : float
-        minimum burst duration in terms of number of cycles of f_range[0]
-    magnitude_type : {'power', 'amplitude'}
-        metric of magnitude used for thresholding
-    return_amplitude : bool
-        if True, return the amplitude time series as an additional output
-    filter_kwargs : dict
-        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`
-
-    Returns
-    -------
-    isosc_noshort : 1d array, type=bool
-        array of same length as `x` indicating the parts of the signal
-        for which the oscillation was detected
-    """
-
-    # Set default filtering parameters
-    if filter_kwargs is None:
-        filter_kwargs = {}
-
-    # Assure the amp_threshes is a tuple of length 2
-    if len(amp_threshes) != 2:
-        raise ValueError(
-            "Invalid number of elements in 'amp_threshes' parameter")
-
-    # Compute amplitude time series
-    x_amplitude = amp_by_time(x, Fs, f_range, remove_edges=False, **filter_kwargs)
-
-    # Set magnitude as power or amplitude
-    if magnitude_type == 'power':
-        x_magnitude = x_amplitude**2
-    elif magnitude_type == 'amplitude':
-        x_magnitude = x_amplitude
-    else:
-        raise ValueError("Invalid 'magnitude' parameter")
-
-    # Rescale magnitude by median
-    x_magnitude = x_magnitude / np.median(x_magnitude)
-
-    # Identify time periods of oscillation using the 2 thresholds
-    isosc = _2threshold_split(x_magnitude, amp_threshes[1], amp_threshes[0])
-
-    # Remove short time periods of oscillation
-    min_period_length = int(np.ceil(N_cycles_min * Fs / f_range[0]))
-    isosc_noshort = _rmv_short_periods(isosc, min_period_length)
-
-    if return_amplitude:
-        return isosc_noshort, x_magnitude
-    else:
-        return isosc_noshort
-
-
-def _2threshold_split(x, thresh_hi, thresh_lo):
-    """
-    Identify periods of a time series that are above thresh_lo and have at
-    least one value above thresh_hi
-    """
-
-    # Find all values above thresh_hi
-    # To avoid bug in later loop, do not allow first or last index to start
-    # off as 1
-    x[[0, -1]] = 0
-    idx_over_hi = np.where(x >= thresh_hi)[0]
-
-    # Initialize values in identified period
-    positive = np.zeros(len(x))
-    positive[idx_over_hi] = 1
-
-    # Iteratively test if a value is above thresh_lo if it is not currently in
-    # an identified period
-    lenx = len(x)
-    for i in idx_over_hi:
-        j_down = i - 1
-        if positive[j_down] == 0:
-            j_down_done = False
-            while j_down_done is False:
-                if x[j_down] >= thresh_lo:
-                    positive[j_down] = 1
-                    j_down -= 1
-                    if j_down < 0:
-                        j_down_done = True
-                else:
-                    j_down_done = True
-
-        j_up = i + 1
-        if positive[j_up] == 0:
-            j_up_done = False
-            while j_up_done is False:
-                if x[j_up] >= thresh_lo:
-                    positive[j_up] = 1
-                    j_up += 1
-                    if j_up >= lenx:
-                        j_up_done = True
-                else:
-                    j_up_done = True
-
-    return positive
-
-
-def _rmv_short_periods(x, N):
-    """Remove periods that ==1 for less than N samples"""
-
-    if np.sum(x) == 0:
-        return x
-
-    osc_changes = np.diff(1 * x)
-    osc_starts = np.where(osc_changes == 1)[0]
-    osc_ends = np.where(osc_changes == -1)[0]
-
-    if len(osc_starts) == 0:
-        osc_starts = [0]
-    if len(osc_ends) == 0:
-        osc_ends = [len(osc_changes)]
-
-    if osc_ends[0] < osc_starts[0]:
-        osc_starts = np.insert(osc_starts, 0, 0)
-    if osc_ends[-1] < osc_starts[-1]:
-        osc_ends = np.append(osc_ends, len(osc_changes))
-
-    osc_length = osc_ends - osc_starts
-    osc_starts_long = osc_starts[osc_length >= N]
-    osc_ends_long = osc_ends[osc_length >= N]
-
-    is_osc = np.zeros(len(x))
-    for osc in range(len(osc_starts_long)):
-        is_osc[osc_starts_long[osc]:osc_ends_long[osc]] = 1
-    return is_osc
