@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
 import pandas as pd
-from bycycle.filt import amp_by_time
+from neurodsp.timefrequency import amp_by_time
 
 
 pd.options.mode.chained_assignment = None
@@ -347,7 +347,7 @@ def detect_bursts_df_amp(df, x, Fs, f_range,
         needed in a row in order for them to remain identified as
         truly oscillating
     filter_kwargs : dict
-        keyword arguments to filt.bandpass_filter
+        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`
 
     Returns
     -------
@@ -405,7 +405,7 @@ def twothresh_amp(x, Fs, f_range, amp_threshes, N_cycles_min=3,
     return_amplitude : bool
         if True, return the amplitude time series as an additional output
     filter_kwargs : dict
-        keyword arguments to filt.bandpass_filter
+        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`
 
     Returns
     -------
@@ -424,8 +424,7 @@ def twothresh_amp(x, Fs, f_range, amp_threshes, N_cycles_min=3,
             "Invalid number of elements in 'amp_threshes' parameter")
 
     # Compute amplitude time series
-    x_amplitude = amp_by_time(x, Fs, f_range, filter_kwargs=filter_kwargs,
-                              remove_edge_artifacts=False)
+    x_amplitude = amp_by_time(x, Fs, f_range, remove_edges=False, **filter_kwargs)
 
     # Set magnitude as power or amplitude
     if magnitude_type == 'power':

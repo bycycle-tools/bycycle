@@ -5,7 +5,7 @@ for individual cycles
 """
 
 import numpy as np
-from bycycle.filt import bandpass_filter
+from neurodsp.filt import filter_signal
 
 
 def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
@@ -29,8 +29,8 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
         if 'trough', then force the output to begin with a trough and end in peak
         if None, force nothing
     filter_kwargs : dict
-        keyword arguments to the filt.bandpass_filter(), such as 'N_cycles' or 'N_seconds'
-        to control filter length
+        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`, such as 'n_cycles' or
+        'n_seconds' to control filter length
 
     Returns
     -------
@@ -54,7 +54,7 @@ def find_extrema(x, Fs, f_range, boundary=None, first_extrema='peak',
         boundary = int(np.ceil(Fs / float(f_range[0])))
 
     # Narrowband filter signal
-    x_filt = bandpass_filter(x, Fs, f_range, remove_edge_artifacts=False, **filter_kwargs)
+    x_filt = filter_signal(x, Fs, 'bandpass', f_range, remove_edges=False, **filter_kwargs)
 
     # Find rising and falling zerocrossings (narrowband)
     zeroriseN = _fzerorise(x_filt)

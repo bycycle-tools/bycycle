@@ -25,7 +25,8 @@ import numpy as np
 import scipy as sp
 from scipy import signal as spsignal
 import matplotlib.pyplot as plt
-from bycycle.filt import amp_by_time, phase_by_time, bandpass_filter
+from neurodsp.filt import filter_signal
+from neurodsp.timefrequency import amp_by_time, phase_by_time
 
 signal = np.load('data/sim_bursting_more_noise.npy')
 Fs = 1000  # Sampling rate
@@ -33,11 +34,9 @@ f_alpha = (8, 12)
 N_seconds_filter = .5
 
 # Compute amplitude and phase
-signal_filt = bandpass_filter(signal, Fs, f_alpha, N_seconds=N_seconds_filter)
-theta_amp = amp_by_time(signal, Fs, f_alpha,
-                        filter_kwargs={'N_seconds': N_seconds_filter})
-theta_phase = phase_by_time(signal, Fs, f_alpha,
-                            filter_kwargs={'N_seconds': N_seconds_filter})
+signal_filt = filter_signal(signal, Fs, 'bandpass', f_alpha, n_seconds=N_seconds_filter)
+theta_amp = amp_by_time(signal, Fs, f_alpha, n_seconds=N_seconds_filter)
+theta_phase = phase_by_time(signal, Fs, f_alpha, n_seconds=N_seconds_filter)
 
 # Plots signal
 t = np.arange(0, len(signal)/Fs, 1/Fs)
@@ -107,10 +106,8 @@ amps = []
 phases = []
 for f_alpha in f_alphas:
     for N_seconds_filter in N_secondss:
-        amp = amp_by_time(signal, Fs, f_alpha,
-                          filter_kwargs={'N_seconds': N_seconds_filter})
-        phase = phase_by_time(signal, Fs, f_alpha,
-                              filter_kwargs={'N_seconds': N_seconds_filter})
+        amp = amp_by_time(signal, Fs, f_alpha, n_seconds=N_seconds_filter)
+        phase = phase_by_time(signal, Fs, f_alpha, n_seconds=N_seconds_filter)
         amps.append(amp)
         phases.append(phase)
 

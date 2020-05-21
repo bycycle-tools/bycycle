@@ -2,7 +2,8 @@
 
 import bycycle
 import numpy as np
-from bycycle import burst, filt, features, sim
+from bycycle import burst, features
+from neurodsp import sim, filt
 import itertools
 import os
 import pytest
@@ -21,14 +22,13 @@ def test_detect_bursts_cycles():
     Fs = 1000
     f_range = (6, 14)
 
-    signal = filt.lowpass_filter(signal, Fs, 30, N_seconds=.3,
-                                 remove_edge_artifacts=False)
+    signal = filt.filter_signal(signal, Fs, 'lowpass', 30, n_seconds=.3, remove_edges=False)
 
     # Compute cycle-by-cycle df without burst detection column
     df = features.compute_features(signal, Fs, f_range,
                                    burst_detection_method='amp',
                                    burst_detection_kwargs={'amp_threshes': (1, 2),
-                                                           'filter_kwargs': {'N_seconds': .5}})
+                                                           'filter_kwargs': {'n_seconds': .5}})
     df.drop('is_burst', axis=1, inplace=True)
 
     # Apply consistency burst detection
@@ -49,20 +49,19 @@ def test_detect_bursts_df_amp():
     signal = np.load(DATA_PATH + 'sim_bursting.npy')
     Fs = 1000
     f_range = (6, 14)
-    signal = filt.lowpass_filter(signal, Fs, 30, N_seconds=.3,
-                                 remove_edge_artifacts=False)
+    signal = filt.filter_signal(signal, Fs, 'lowpass', 30, n_seconds=.3, remove_edges=False)
 
     # Compute cycle-by-cycle df without burst detection column
     df = features.compute_features(signal, Fs, f_range,
                                    burst_detection_method='amp',
                                    burst_detection_kwargs={'amp_threshes': (1, 2),
-                                                           'filter_kwargs': {'N_seconds': .5}})
+                                                           'filter_kwargs': {'n_seconds': .5}})
     df.drop('is_burst', axis=1, inplace=True)
 
     # Apply consistency burst detection
     df_burst_amp = burst.detect_bursts_df_amp(df, signal, Fs, f_range,
                                               amp_threshes=(.5, 1),
-                                              N_cycles_min=4, filter_kwargs={'N_seconds': .5})
+                                              N_cycles_min=4, filter_kwargs={'n_seconds': .5})
 
     # Make sure that burst detection is only boolean
     assert df_burst_amp.dtypes['is_burst'] == 'bool'
@@ -86,7 +85,7 @@ def test_plot_burst_detect_params(only_result):
                   'period_consistency_threshold': .5,
                   'monotonicity_threshold': .8,
                   'N_cycles_min': 3}
-    x = sim.sim_oscillator(T, Fs, freq)
+    x = sim.sim_oscillation(T, Fs, freq)
 
     df = features.compute_features(x, Fs, f_range)
     fig = burst.plot_burst_detect_params(x, Fs, df, osc_kwargs,
@@ -123,7 +122,7 @@ def test_twothresh_amp(amp_threshes, magnitude_type, return_amplitude):
     if magnitude_type == 'power':
         amp_threshes = tuple((thr**(1/2) for thr in amp_threshes))
 
-    x = sim.sim_oscillator(T, Fs, freq)
+    x = sim.sim_oscillation(T, Fs, freq)
 
     if return_amplitude:
         isosc_noshort, x_magnitude = \
