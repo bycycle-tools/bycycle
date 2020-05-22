@@ -2,7 +2,7 @@
 bycycle - cycle-by-cycle analysis of neural oscillations
 ========================================================
 
-|ProjectStatus|_ |Version|_ |BuildStatus|_ |codecov|_ |License|_ |PythonVersions|_ |Publication|_
+|ProjectStatus|_ |Version|_ |BuildStatus|_ |Coverage|_ |License|_ |PythonVersions|_ |Publication|_
 
 .. |ProjectStatus| image:: https://www.repostatus.org/badges/latest/active.svg
 .. _ProjectStatus: https://www.repostatus.org/#active
@@ -10,11 +10,11 @@ bycycle - cycle-by-cycle analysis of neural oscillations
 .. |Version| image:: https://img.shields.io/pypi/v/bycycle.svg
 .. _Version: https://pypi.python.org/pypi/bycycle/
 
-.. |BuildStatus| image:: https://travis-ci.org/bycycle-tools/bycycle.svg
-.. _BuildStatus: https://travis-ci.org/bycycle-tools/bycycle
+.. |BuildStatus| image:: https://travis-ci.com/bycycle-tools/bycycle.svg
+.. _BuildStatus: https://travis-ci.com/bycycle-tools/bycycle
 
-.. |codecov| image:: https://codecov.io/gh/bycycle-tools/bycycle/branch/master/graph/badge.svg
-.. _codecov : https://codecov.io/gh/bycycle-tools/bycycle
+.. |Coverage| image:: https://codecov.io/gh/bycycle-tools/bycycle/branch/master/graph/badge.svg
+.. _Coverage: https://codecov.io/gh/bycycle-tools/bycycle
 
 .. |License| image:: https://img.shields.io/pypi/l/bycycle.svg
 .. _License: https://opensource.org/licenses/Apache-2.0
