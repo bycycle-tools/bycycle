@@ -15,15 +15,15 @@ def test_compute_features():
     """Test cycle-by-cycle feature computation."""
 
     # Load signal
-    signal = np.load(DATA_PATH + 'sim_stationary.npy')
-    Fs = 1000
+    sig = np.load(DATA_PATH + 'sim_stationary.npy')
+    fs = 1000
     f_range = (6, 14)
 
     # Compute cycle features
-    df = features.compute_features(signal, Fs, f_range)
+    df = features.compute_features(sig, fs, f_range)
 
     # Check inverted signal gives appropriately opposite data
-    df_opp = features.compute_features(-signal, Fs, f_range,
+    df_opp = features.compute_features(-sig, fs, f_range,
                                        center_extrema='T')
 
     np.testing.assert_allclose(df['sample_peak'], df_opp['sample_trough'])
