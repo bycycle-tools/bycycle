@@ -3,19 +3,16 @@ features.py
 Quantify the shape of oscillatory waveforms on a cycle-by-cycle basis
 """
 
+import warnings
 import numpy as np
 import pandas as pd
 from neurodsp.timefrequency import amp_by_time
 from bycycle.cyclepoints import find_extrema, find_zerox
 from bycycle.burst import detect_bursts_cycles, detect_bursts_df_amp
-import warnings
 
 
-def compute_features(x, Fs, f_range,
-                     center_extrema='P',
-                     burst_detection_method='cycles',
-                     burst_detection_kwargs=None,
-                     find_extrema_kwargs=None,
+def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_method='cycles',
+                     burst_detection_kwargs=None, find_extrema_kwargs=None,
                      hilbert_increase_n=False):
     """
     Segment a recording into individual cycles and compute
@@ -23,9 +20,9 @@ def compute_features(x, Fs, f_range,
 
     Parameters
     ----------
-    x : 1d array
+    sig : 1d array
         Voltage time series.
-    Fs : float
+    fs : float
         Sampling rate (Hz).
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest (Hz).
@@ -58,7 +55,7 @@ def compute_features(x, Fs, f_range,
         for each cycle. Each row is one cycle.
         Columns (listed for peak-centered cycles):
 
-        - ``sample_peak`` : sample of 'x' at which the peak occurs
+        - ``sample_peak`` : sample of 'sig' at which the peak occurs
         - ``sample_zerox_decay`` : sample of the decaying zerocrossing
         - ``sample_zerox_rise`` : sample of the rising zerocrossing
         - ``sample_last_trough`` : sample of the last trough
@@ -122,23 +119,23 @@ def compute_features(x, Fs, f_range,
     if center_extrema == 'P':
         pass
     elif center_extrema == 'T':
-        x = -x
+        sig = -sig
     else:
         raise ValueError('Parameter "center_extrema" must be either "P" or "T"')
 
     # Find peak and trough locations in the signal
-    Ps, Ts = find_extrema(x, Fs, f_range, **find_extrema_kwargs)
+    ps, ts = find_extrema(sig, fs, f_range, **find_extrema_kwargs)
 
     # Find zero-crossings
-    zeroxR, zeroxD = find_zerox(x, Ps, Ts)
+    zerox_rise, zerox_decay = find_zerox(sig, ps, ts)
 
     # For each cycle, identify the sample of each extrema and zerocrossing
     shape_features = {}
-    shape_features['sample_peak'] = Ps[1:]
-    shape_features['sample_zerox_decay'] = zeroxD[1:]
-    shape_features['sample_zerox_rise'] = zeroxR
-    shape_features['sample_last_trough'] = Ts[:-1]
-    shape_features['sample_next_trough'] = Ts[1:]
+    shape_features['sample_peak'] = ps[1:]
+    shape_features['sample_zerox_decay'] = zerox_decay[1:]
+    shape_features['sample_zerox_rise'] = zerox_rise
+    shape_features['sample_last_trough'] = ts[:-1]
+    shape_features['sample_next_trough'] = ts[1:]
 
     # Compute duration of period
     shape_features['period'] = shape_features['sample_next_trough'] - \
@@ -149,38 +146,40 @@ def compute_features(x, Fs, f_range,
         shape_features['sample_zerox_rise']
 
     # Compute duration of last trough
-    shape_features['time_trough'] = zeroxR - zeroxD[:-1]
+    shape_features['time_trough'] = zerox_rise - zerox_decay[:-1]
 
     # Determine extrema voltage
-    shape_features['volt_peak'] = x[Ps[1:]]
-    shape_features['volt_trough'] = x[Ts[:-1]]
+    shape_features['volt_peak'] = sig[ps[1:]]
+    shape_features['volt_trough'] = sig[ts[:-1]]
 
     # Determine rise and decay characteristics
-    shape_features['time_decay'] = (Ts[1:] - Ps[1:])
-    shape_features['time_rise'] = (Ps[1:] - Ts[:-1])
+    shape_features['time_decay'] = (ts[1:] - ps[1:])
+    shape_features['time_rise'] = (ps[1:] - ts[:-1])
 
-    shape_features['volt_decay'] = x[Ps[1:]] - x[Ts[1:]]
-    shape_features['volt_rise'] = x[Ps[1:]] - x[Ts[:-1]]
+    shape_features['volt_decay'] = sig[ps[1:]] - sig[ts[1:]]
+    shape_features['volt_rise'] = sig[ps[1:]] - sig[ts[:-1]]
     shape_features['volt_amp'] = (shape_features['volt_decay'] + shape_features['volt_rise']) / 2
 
     # Comptue rise-decay symmetry features
     shape_features['time_rdsym'] = shape_features['time_rise'] / shape_features['period']
 
     # Compute peak-trough symmetry features
-    shape_features['time_ptsym'] = shape_features['time_peak'] / (shape_features['time_peak'] + shape_features['time_trough'])
+    shape_features['time_ptsym'] = shape_features['time_peak'] / \
+        (shape_features['time_peak'] + shape_features['time_trough'])
 
     # Compute average oscillatory amplitude estimate during cycle
-    amp = amp_by_time(x, Fs, f_range, hilbert_increase_n=hilbert_increase_n, n_cycles=3)
-    shape_features['band_amp'] = [np.mean(amp[Ts[i]:Ts[i + 1]]) for i in range(len(shape_features['sample_peak']))]
+    amp = amp_by_time(sig, fs, f_range, hilbert_increase_n=hilbert_increase_n, n_cycles=3)
+    shape_features['band_amp'] = [np.mean(amp[ts[sig_idx]:ts[sig_idx + 1]]) for sig_idx in
+                                  range(len(shape_features['sample_peak']))]
 
     # Convert feature dictionary into a DataFrame
     df = pd.DataFrame.from_dict(shape_features)
 
     # Define whether or not each cycle is part of a burst
     if burst_detection_method == 'cycles':
-        df = detect_bursts_cycles(df, x, **burst_detection_kwargs)
+        df = detect_bursts_cycles(df, sig, **burst_detection_kwargs)
     elif burst_detection_method == 'amp':
-        df = detect_bursts_df_amp(df, x, Fs, f_range, **burst_detection_kwargs)
+        df = detect_bursts_df_amp(df, sig, fs, f_range, **burst_detection_kwargs)
     else:
         raise ValueError('Invalid entry for "burst_detection_method"')
 
