@@ -34,23 +34,23 @@ pd.options.display.max_columns=50
 ####################################################################################################
 
 # Load experimental data
-signals = np.load('data/sim_experiment.npy')
-Fs = 1000  # Sampling rate
+sigs = np.load('data/sim_experiment.npy')
+fs = 1000  # Sampling rate
 
 # Apply lowpass filter to each signal
-for i in range(len(signals)):
-    signals[i] = filter_signal(signals[i], Fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
+for idx in range(len(sigs)):
+    sigs[idx] = filter_signal(sigs[idx], fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 
 ####################################################################################################
 
 # Plot an example signal
-N = len(signals)
-T = len(signals[0])/Fs
-t = np.arange(0, T, 1/Fs)
+n_signals = len(sigs)
+n_seconds = len(sigs[0])/fs
+times = np.arange(0, n_seconds, 1/fs)
 
 plt.figure(figsize=(16,3))
-plt.plot(t, signals[0], 'k')
-plt.xlim((0, T))
+plt.plot(times, sigs[0], 'k')
+plt.xlim((0, n_seconds))
 plt.show()
 
 ####################################################################################################
@@ -65,18 +65,18 @@ burst_kwargs = {'amplitude_fraction_threshold': .2,
                 'amplitude_consistency_threshold': .5,
                 'period_consistency_threshold': .5,
                 'monotonicity_threshold': .8,
-                'N_cycles_min': 3} # Tuned burst detection parameters
+                'n_cycles_min': 3} # Tuned burst detection parameters
 
 # Compute features for each signal and concatenate into single dataframe
 dfs = []
-for i in range(N):
-    df = compute_features(signals[i], Fs, f_alpha,
+for idx in range(n_signals):
+    df = compute_features(sigs[idx], fs, f_alpha,
                           burst_detection_kwargs=burst_kwargs)
-    if i >= int(N/2):
+    if idx >= int(n_signals/2):
         df['group'] = 'patient'
     else:
         df['group'] = 'control'
-    df['subject_id'] = i
+    df['subject_id'] = idx
     dfs.append(df)
 df_cycles = pd.concat(dfs)
 
@@ -94,12 +94,12 @@ print(df_cycles.head())
 # signal segments from a few subjects.
 
 subj = 1
-signal_df = df_cycles[df_cycles['subject_id']==subj]
+sig_df = df_cycles[df_cycles['subject_id']==subj]
 from bycycle.burst import plot_burst_detect_params
-plot_burst_detect_params(signals[subj], Fs, signal_df,
+plot_burst_detect_params(sigs[subj], fs, sig_df,
                          burst_kwargs, tlims=(0, 5), figsize=(16, 3), plot_only_result=True)
 
-plot_burst_detect_params(signals[subj], Fs, signal_df,
+plot_burst_detect_params(sigs[subj], fs, sig_df,
                          burst_kwargs, tlims=(0, 5), figsize=(16, 3))
 
 ####################################################################################################
@@ -127,7 +127,7 @@ feature_names = {'volt_amp': 'Amplitude',
                  'time_rdsym': 'Rise-decay symmetry',
                  'time_ptsym': 'Peak-trough symmetry'}
 for feat, feat_name in feature_names.items():
-    g = sns.catplot(x='group', y=feat, data=df_subjects)
+    graph = sns.catplot(x='group', y=feat, data=df_subjects)
     plt.xlabel('')
     plt.xticks(size=20)
     plt.ylabel(feat_name, size=20)
@@ -145,5 +145,5 @@ for feat, feat_name in feature_names.items():
 for feat, feat_name in feature_names.items():
     x_treatment = df_subjects[df_subjects['group']=='patient'][feat]
     x_control = df_subjects[df_subjects['group']=='control'][feat]
-    U, p = stats.mannwhitneyu(x_treatment, x_control)
-    print('{:20s} difference between groups, U= {:3.0f}, p={:.5f}'.format(feat_name, U, p))
+    ustat, pval = stats.mannwhitneyu(x_treatment, x_control)
+    print('{:20s} difference between groups, U= {:3.0f}, p={:.5f}'.format(feat_name, ustat, pval))

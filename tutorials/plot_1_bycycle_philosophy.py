@@ -28,35 +28,35 @@ import matplotlib.pyplot as plt
 from neurodsp.filt import filter_signal
 from neurodsp.timefrequency import amp_by_time, phase_by_time
 
-signal = np.load('data/sim_bursting_more_noise.npy')
-Fs = 1000  # Sampling rate
+sig = np.load('data/sim_bursting_more_noise.npy')
+fs = 1000  # Sampling rate
 f_alpha = (8, 12)
-N_seconds_filter = .5
+n_seconds_filter = .5
 
 # Compute amplitude and phase
-signal_filt = filter_signal(signal, Fs, 'bandpass', f_alpha, n_seconds=N_seconds_filter)
-theta_amp = amp_by_time(signal, Fs, f_alpha, n_seconds=N_seconds_filter)
-theta_phase = phase_by_time(signal, Fs, f_alpha, n_seconds=N_seconds_filter)
+sig_filt = filter_signal(sig, fs, 'bandpass', f_alpha, n_seconds=n_seconds_filter)
+theta_amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
+theta_phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
 
 # Plots signal
-t = np.arange(0, len(signal)/Fs, 1/Fs)
+times = np.arange(0, len(sig)/fs, 1/fs)
 tlim = (2, 6)
-tidx = np.logical_and(t>=tlim[0], t<tlim[1])
+tidx = np.logical_and(times>=tlim[0], times<tlim[1])
 
 plt.figure(figsize=(12,6))
 plt.subplot(3,1,1)
-plt.plot(t[tidx], signal[tidx], 'k')
+plt.plot(times[tidx], sig[tidx], 'k')
 plt.xlim(tlim)
 plt.ylabel('Voltage (mV)')
 
 plt.subplot(3,1,2)
-plt.plot(t[tidx], signal_filt[tidx], 'k', alpha=.5)
-plt.plot(t[tidx], theta_amp[tidx], 'r')
+plt.plot(times[tidx], sig_filt[tidx], 'k', alpha=.5)
+plt.plot(times[tidx], theta_amp[tidx], 'r')
 plt.xlim(tlim)
 plt.ylabel('Oscillation amplitude', color='r')
 
 plt.subplot(3,1,3)
-plt.plot(t[tidx], theta_phase[tidx], 'r')
+plt.plot(times[tidx], theta_phase[tidx], 'r')
 plt.xlim(tlim)
 plt.ylabel('Phase (radians)', color='r')
 
@@ -100,20 +100,20 @@ plt.show()
 
 # Different hyperparameter choices - filter length and center frequency and bandwidth
 f_alphas = [(6, 14), (8, 12), (9, 13)]
-N_secondss = [.4, .75, 1.2]
+n_secondss = [.4, .75, 1.2]
 
 amps = []
 phases = []
 for f_alpha in f_alphas:
-    for N_seconds_filter in N_secondss:
-        amp = amp_by_time(signal, Fs, f_alpha, n_seconds=N_seconds_filter)
-        phase = phase_by_time(signal, Fs, f_alpha, n_seconds=N_seconds_filter)
+    for n_seconds_filter in n_secondss:
+        amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
+        phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
         amps.append(amp)
         phases.append(phase)
 
 plt.figure(figsize=(12,2))
 for amp in amps:
-    plt.plot(t[tidx], amp[tidx])
+    plt.plot(times[tidx], amp[tidx])
 plt.xlim(tlim)
 plt.tight_layout()
 plt.show()
@@ -122,7 +122,7 @@ plt.show()
 
 plt.figure(figsize=(12,2))
 for phase in phases:
-    plt.plot(t[tidx], phase[tidx])
+    plt.plot(times[tidx], phase[tidx])
 plt.xlim(tlim)
 plt.tight_layout()
 plt.show()

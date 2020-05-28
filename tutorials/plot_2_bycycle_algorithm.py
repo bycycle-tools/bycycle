@@ -48,25 +48,25 @@ pd.options.display.max_columns = 30
 ####################################################################################################
 
 # Load data
-signal = np.load('data/ca1.npy') / 1000
-signal = signal[:125000]
-Fs = 1250
+sig = np.load('data/ca1.npy') / 1000
+sig = sig[:125000]
+fs = 1250
 f_theta = (4, 10)
 f_lowpass = 30
-N_seconds = .1
+n_seconds = .1
 
 # Lowpass filter
-signal_low = filter_signal(signal, Fs, 'lowpass', f_lowpass,
-                           n_seconds=N_seconds, remove_edges=False)
+sig_low = filter_signal(sig, fs, 'lowpass', f_lowpass,
+                        n_seconds=n_seconds, remove_edges=False)
 
 # Plot signal
-t = np.arange(0, len(signal)/Fs, 1/Fs)
+times = np.arange(0, len(sig)/fs, 1/fs)
 tlim = (2, 5)
-tidx = np.logical_and(t>=tlim[0], t<tlim[1])
+tidx = np.logical_and(times>=tlim[0], times<tlim[1])
 
 plt.figure(figsize=(12, 2))
-plt.plot(t[tidx], signal[tidx], '.5')
-plt.plot(t[tidx], signal_low[tidx], 'k')
+plt.plot(times[tidx], sig[tidx], '.5')
+plt.plot(times[tidx], sig_low[tidx], 'k')
 plt.xlim(tlim)
 plt.tight_layout()
 plt.show()
@@ -85,29 +85,29 @@ plt.show()
 from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema
 
 # Narrowband filter signal
-N_seconds_theta = .75
-signal_narrow = filter_signal(signal, Fs, 'bandpass', f_theta,
-                              n_seconds=N_seconds_theta, remove_edges=False)
+n_seconds_theta = .75
+sig_narrow = filter_signal(sig, fs, 'bandpass', f_theta,
+                           n_seconds=n_seconds_theta, remove_edges=False)
 
 # Find rising and falling zerocrossings (narrowband)
-zeroriseN = _fzerorise(signal_narrow)
-zerofallN = _fzerofall(signal_narrow)
+zerorise_narrow = _fzerorise(sig_narrow)
+zerofall_narrow = _fzerofall(sig_narrow)
 
 ####################################################################################################
 
 # Find peaks and troughs (this function also does the above)
-Ps, Ts = find_extrema(signal_low, Fs, f_theta,
-                      filter_kwargs={'n_seconds':N_seconds_theta})
+ps, ts = find_extrema(sig_low, fs, f_theta,
+                      filter_kwargs={'n_seconds':n_seconds_theta})
 
 tlim = (12, 15)
-tidx = np.logical_and(t>=tlim[0], t<tlim[1])
-tidxPs = Ps[np.logical_and(Ps>tlim[0]*Fs, Ps<tlim[1]*Fs)]
-tidxTs = Ts[np.logical_and(Ts>tlim[0]*Fs, Ts<tlim[1]*Fs)]
+tidx = np.logical_and(times>=tlim[0], times<tlim[1])
+tidxPs = ps[np.logical_and(ps>tlim[0]*fs, ps<tlim[1]*fs)]
+tidxTs = ts[np.logical_and(ts>tlim[0]*fs, ts<tlim[1]*fs)]
 
 plt.figure(figsize=(12, 2))
-plt.plot(t[tidx], signal_low[tidx], 'k')
-plt.plot(t[tidxPs], signal_low[tidxPs], 'b.', ms=10)
-plt.plot(t[tidxTs], signal_low[tidxTs], 'r.', ms=10)
+plt.plot(times[tidx], sig_low[tidx], 'k')
+plt.plot(times[tidxPs], sig_low[tidxPs], 'b.', ms=10)
+plt.plot(times[tidxTs], sig_low[tidxTs], 'r.', ms=10)
 plt.xlim(tlim)
 plt.tight_layout()
 plt.show()
@@ -118,7 +118,7 @@ plt.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Plot frequency response of bandpass filter
-filter_signal(signal, Fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
+filter_signal(sig, fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
 
 ####################################################################################################
 #
@@ -134,23 +134,23 @@ filter_signal(signal, Fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=Tr
 # however, this is rare, and most of these cycles should be removed by burst detection.
 
 from bycycle.cyclepoints import find_zerox
-zeroxR, zeroxD = find_zerox(signal_low, Ps, Ts)
+zerox_rise, zerox_decay = find_zerox(sig_low, ps, ts)
 
 ####################################################################################################
 
 tlim = (13, 14)
-tidx = np.logical_and(t>=tlim[0], t<tlim[1])
-tidxPs = Ps[np.logical_and(Ps>tlim[0]*Fs, Ps<tlim[1]*Fs)]
-tidxTs = Ts[np.logical_and(Ts>tlim[0]*Fs, Ts<tlim[1]*Fs)]
-tidxDs = zeroxD[np.logical_and(zeroxD>tlim[0]*Fs, zeroxD<tlim[1]*Fs)]
-tidxRs = zeroxR[np.logical_and(zeroxR>tlim[0]*Fs, zeroxR<tlim[1]*Fs)]
+tidx = np.logical_and(times>=tlim[0], times<tlim[1])
+tidx_ps = ps[np.logical_and(ps>tlim[0]*fs, ps<tlim[1]*fs)]
+tidx_ts = ts[np.logical_and(ts>tlim[0]*fs, ts<tlim[1]*fs)]
+tidx_ds = zerox_decay[np.logical_and(zerox_decay>tlim[0]*fs, zerox_decay<tlim[1]*fs)]
+tidx_rs = zerox_rise[np.logical_and(zerox_rise>tlim[0]*fs, zerox_rise<tlim[1]*fs)]
 
 plt.figure(figsize=(12, 2))
-plt.plot(t[tidx], signal_low[tidx], 'k')
-plt.plot(t[tidxPs], signal_low[tidxPs], 'b.', ms=10)
-plt.plot(t[tidxTs], signal_low[tidxTs], 'r.', ms=10)
-plt.plot(t[tidxDs], signal_low[tidxDs], 'm.', ms=10)
-plt.plot(t[tidxRs], signal_low[tidxRs], 'g.', ms=10)
+plt.plot(times[tidx], sig_low[tidx], 'k')
+plt.plot(times[tidx_ps], sig_low[tidx_ps], 'b.', ms=10)
+plt.plot(times[tidx_ts], sig_low[tidx_ts], 'r.', ms=10)
+plt.plot(times[tidx_ds], sig_low[tidx_ds], 'm.', ms=10)
+plt.plot(times[tidx_rs], sig_low[tidx_rs], 'g.', ms=10)
 plt.xlim(tlim)
 plt.xlabel('Time (seconds)')
 plt.tight_layout()
@@ -177,7 +177,7 @@ plt.show()
 ####################################################################################################
 
 from bycycle.features import compute_features
-df = compute_features(signal, Fs, f_theta)
+df = compute_features(sig, fs, f_theta)
 print(df.head())
 
 ####################################################################################################
@@ -226,12 +226,12 @@ print(df.head())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Load the signal
-signal = np.load('data/sim_bursting.npy')
-Fs = 1000  # Sampling rate
+sig = np.load('data/sim_bursting.npy')
+fs = 1000  # Sampling rate
 f_alpha = (8, 12)
 
 # Apply a lowpass filter to remove high frequency power that interferes with extrema localization
-signal = filter_signal(signal, Fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
+sig = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 
 ####################################################################################################
 #
@@ -264,12 +264,11 @@ burst_kwargs = {'amplitude_fraction_threshold': 0,
                 'amplitude_consistency_threshold': .2,
                 'period_consistency_threshold': .45,
                 'monotonicity_threshold': .7,
-                'N_cycles_min': 3}
+                'n_cycles_min': 3}
 
-df = compute_features(signal, Fs, f_alpha, burst_detection_kwargs=burst_kwargs)
+df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(signal, Fs, df, burst_kwargs,
-                         tlims=None, figsize=(12, 3))
+plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
 
 ####################################################################################################
 #
@@ -282,12 +281,11 @@ burst_kwargs = {'amplitude_fraction_threshold': 0,
                 'amplitude_consistency_threshold': .75,
                 'period_consistency_threshold': .7,
                 'monotonicity_threshold': .9,
-                'N_cycles_min': 3}
+                'n_cycles_min': 3}
 
-df = compute_features(signal, Fs, f_alpha, burst_detection_kwargs=burst_kwargs)
+df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(signal, Fs, df, burst_kwargs,
-                         tlims=None, figsize=(12, 3))
+plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
 
 ####################################################################################################
 #
@@ -304,9 +302,8 @@ burst_kwargs = {'amplitude_fraction_threshold': .3,
                 'amplitude_consistency_threshold': .4,
                 'period_consistency_threshold': .5,
                 'monotonicity_threshold': .8,
-                'N_cycles_min': 3}
+                'n_cycles_min': 3}
 
-df = compute_features(signal, Fs, f_alpha, burst_detection_kwargs=burst_kwargs)
+df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(signal, Fs, df, burst_kwargs,
-                         tlims=None, figsize=(12, 3))
+plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
