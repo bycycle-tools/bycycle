@@ -133,7 +133,7 @@ def detect_bursts_cycles(df, sig, amplitude_fraction_threshold=0,
 
 
 def _min_consecutive_cycles(df_shape, n_cycles_min=3):
-    '''Enforce minimum number of consecutive cycles'''
+    '''Enforce minimum number of consecutive cycles.'''
     is_burst = np.copy(df_shape['is_burst'].values)
     temp_cycle_count = 0
     for idx, bursting in enumerate(is_burst):
@@ -157,29 +157,29 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=None,
     Parameters
     ----------
     sig : 1d array
-        time series analyzed to compute `df_shape`
+        Time series analyzed to compute `df_shape`.
     fs : float
-        sampling rate (Hz)
+        Sampling rate (Hz).
     df_shape : pandas DataFrame
-        dataframe output of `features.compute_features()`
+        Dataframe output of `features.compute_features()`.
     osc_kwargs : dict
-        dictionary of thresholds for burst detection
+        Dictionary of thresholds for burst detection
         used in the function `features.compute_features()` using
-        the kwarg `burst_detection_kwargs`
+        the kwarg `burst_detection_kwargs`.
     tlims : tuple of (float, float)
-        start and stop times for plot
+        Start and stop times for plot.
     figsize : tuple of (float, float)
-        size of figure
+        Size of figure.
     plot_only_result : bool
-        if True, do not plot the subplots showing the parameters
+        If True, do not plot the subplots showing the parameters.
 
     Returns
     -------
     ax : matplotlib axis handle or list of axis handles
-        if `plot_only_result` = True: return a plot of the burst
-        detection in which periods with bursts are denoted in red
+        If `plot_only_result` = True: return a plot of the burst
+        detection in which periods with bursts are denoted in red.
 
-        if `plot_only_result` = False: return a list of the fig
+        If `plot_only_result` = False: return a list of the fig
         handle followed by the 5 axes.
 
         In the top plot, the raw signal is plotted in black, and the
@@ -323,35 +323,35 @@ def detect_bursts_df_amp(df, sig, fs, f_range, amp_threshes=(1, 2),
     """
 
     Determine which cycles in a signal are part of an oscillatory
-    burst using an amplitude thresholding approach
+    burst using an amplitude thresholding approach.
 
     Parameters
     ----------
     df : pandas DataFrame
-        dataframe of waveform features for individual cycles, trough-centered
+        Dataframe of waveform features for individual cycles, trough-centered.
     sig : 1d array
-        time series
+        Time series.
     fs : float
-        sampling rate, Hz
+        Sampling rate, Hz.
     f_range : tuple of (float, float)
-        frequency range (Hz) for oscillator of interest
+        Frequency range (Hz) for oscillator of interest.
     amp_threshes : tuple (low, high)
         Threshold values for determining timing of bursts.
         These values are in units of amplitude
         (or power, if specified) normalized to the median
         amplitude (value 1).
     N_cycles_min : int
-        minimum number of cycles to be identified as truly oscillating
+        Minimum number of cycles to be identified as truly oscillating
         needed in a row in order for them to remain identified as
-        truly oscillating
+        truly oscillating.
     filter_kwargs : dict
-        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`
+        Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`.
 
     Returns
     -------
     df : pandas DataFrame
-        same df as input, with an additional column to indicate
-        if the cycle is part of an oscillatory burst
+        Same df as input, with an additional column to indicate
+        if the cycle is part of an oscillatory burst.
     """
 
     # Detect bursts using the dual amplitude threshold approach

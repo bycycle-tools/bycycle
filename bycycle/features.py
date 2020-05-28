@@ -16,7 +16,7 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
                      hilbert_increase_n=False):
     """
     Segment a recording into individual cycles and compute
-    features for each cycle
+    features for each cycle.
 
     Parameters
     ----------
@@ -51,7 +51,7 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
     Returns
     -------
     df : pandas.DataFrame
-        dataframe containing several features and identifiers
+        Dataframe containing several features and identifiers
         for each cycle. Each row is one cycle.
         Columns (listed for peak-centered cycles):
 

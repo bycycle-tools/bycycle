@@ -16,28 +16,28 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak',
     Parameters
     ----------
     sig : 1d array
-        voltage time series
+        Voltage time series.
     fs : float
         sampling rate, Hz
     f_range : tuple of (float, float)
-        frequency range (Hz) for narrowband signal of interest,
-        used to find zerocrossings of the oscillation
+        Frequency range (Hz) for narrowband signal of interest,
+        used to find zerocrossings of the oscillation.
     boundary : int
-        number of samples from edge of recording to ignore
+        Number of samples from edge of recording to ignore.
     first_extrema: {'peak', 'trough', None}
-        if 'peak', then force the output to begin with a peak and end in a trough
-        if 'trough', then force the output to begin with a trough and end in peak
-        if None, force nothing
+        If 'peak', then force the output to begin with a peak and end in a trough.
+        If 'trough', then force the output to begin with a trough and end in peak.
+        If None, force nothing,
     filter_kwargs : dict
-        keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`, such as 'n_cycles' or
-        'n_seconds' to control filter length
+        Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`, such as 'n_cycles' or
+        'n_seconds' to control filter length.
 
     Returns
     -------
     ps : 1d array
-        indices at which oscillatory peaks occur in the input ``sig``
+        Indices at which oscillatory peaks occur in the input ``sig``.
     ts : 1d array
-        indices at which oscillatory troughs occur in the input ``sig``
+        Indices at which oscillatory troughs occur in the input ``sig``.
 
     Notes
     -----
@@ -113,7 +113,7 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak',
 
 
 def _fzerofall(sig):
-    """Find zerocrossings on falling edge of a filtered signal"""
+    """Find zerocrossings on falling edge of a filtered signal."""
     pos = sig > 0
     zerofalls = (pos[:-1] & ~pos[1:]).nonzero()[0]
 
@@ -125,7 +125,7 @@ def _fzerofall(sig):
 
 
 def _fzerorise(sig):
-    """Find zerocrossings on rising edge of a filtered signal"""
+    """Find zerocrossings on rising edge of a filtered signal."""
     pos = sig < 0
     zerorises = (pos[:-1] & ~pos[1:]).nonzero()[0]
 
@@ -148,18 +148,18 @@ def find_zerox(sig, ps, ts):
     Parameters
     ----------
     sig : 1d array
-        voltage time series
+        Voltage time series.
     ps : 1d array
-        samples of oscillatory peaks
+        Samples of oscillatory peaks.
     ts : 1d array
-        samples of osillatory troughs
+        Samples of osillatory troughs.
 
     Returns
     -------
     zerox_rise : array-like 1d
-        samples at which oscillatory rising zerocrossings occur
+        Samples at which oscillatory rising zerocrossings occur.
     zerox_decay : array-like 1d
-        samples at which oscillatory decaying zerocrossings occur
+        Samples at which oscillatory decaying zerocrossings occur.
 
     Notes
     -----
@@ -225,20 +225,20 @@ def extrema_interpolated_phase(sig, ps, ts, zerox_rise=None, zerox_decay=None):
     Parameters
     ----------
     sig : 1d array
-        voltage time series
+        Voltage time series.
     ps : 1d array
-        samples of oscillatory peaks
+        Samples of oscillatory peaks.
     ts : 1d array
-        samples of oscillatory troughs
+        Samples of oscillatory troughs.
     zerox_rise : 1d array
-        samples of oscillatory rising zerocrossings
+        Samples of oscillatory rising zerocrossings.
     zerox_decay : 1d array
-        samples of oscillatory decaying zerocrossings
+        Samples of oscillatory decaying zerocrossings.
 
     Returns
     -------
     pha : 1d array
-        instantaneous phase time series
+        Instantaneous phase time series.
 
     Notes
     -----
