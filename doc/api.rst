@@ -56,7 +56,6 @@ Burst Detection Functions
 
     detect_bursts_cycles
     detect_bursts_df_amp
-    twothresh_amp
 
 Plotting Function
 =================

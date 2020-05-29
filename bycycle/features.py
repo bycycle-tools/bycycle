@@ -27,15 +27,16 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest (Hz).
     center_extrema : {'P', 'T'}
-        The center extrema in the cycle
-        'P' : cycles are defined trough-to-trough
-        'T' : cycles are defined peak-to-peak
+        The center extrema in the cycle.
+
+        - 'P' : cycles are defined trough-to-trough
+        - 'T' : cycles are defined peak-to-peak
+
     burst_detection_method : {'consistency', 'amp'}
         Method for detecting bursts.
 
-        ..
-            'consistency': detect bursts based on the consistency of consecutive periods & amplitudes
-            'amp': detect bursts using an amplitude threshold
+        - 'consistency': detect bursts based on the consistency of consecutive periods & amplitudes
+        - 'amp': detect bursts using an amplitude threshold
 
     burst_detection_kwargs : dict | None
         Keyword arguments for function to find label cycles as in or not in an oscillation.
@@ -91,7 +92,7 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
         - By default, the first extrema analyzed will be a peak,
           and the final one a trough. In order to switch the preference,
           the signal is simply inverted and columns are renamed.
-        - Columns are slightly different depending on if 'center_extrema'
+        - Columns are slightly different depending on if ``center_extrema``
           is set to 'P' or 'T'.
     """
 

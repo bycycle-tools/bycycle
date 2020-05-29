@@ -18,7 +18,7 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak',
     sig : 1d array
         Voltage time series.
     fs : float
-        sampling rate, Hz
+        Sampling rate, Hz
     f_range : tuple of (float, float)
         Frequency range (Hz) for narrowband signal of interest,
         used to find zerocrossings of the oscillation.
