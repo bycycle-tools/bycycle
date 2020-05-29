@@ -35,7 +35,7 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
     burst_detection_method : {'cycles', 'amp'}
         Method for detecting bursts.
 
-        - 'consistency': detect bursts based on the consistency of consecutive periods & amplitudes
+        - 'cycles': detect bursts based on the consistency of consecutive periods & amplitudes
         - 'amp': detect bursts using an amplitude threshold
 
     burst_detection_kwargs : dict, optional
