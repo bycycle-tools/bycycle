@@ -1,34 +1,33 @@
-"""
-cyclespoints.py
-Functions to determine the locations of peaks, troughs, and zerocrossings (rise and decay)
-for individual cycles
+"""Functions to determine the locations of peaks, troughs, and zero-crossings (rise and decay)
+for individual cycles.
 """
 
 import numpy as np
+
 from neurodsp.filt import filter_signal
 
+###################################################################################################
+###################################################################################################
 
-def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak',
-                 filter_kwargs=None):
-    """
-    Identify peaks and troughs in a time series.
+def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_kwargs=None):
+    """Identify peaks and troughs in a time series.
 
     Parameters
     ----------
     sig : 1d array
         Voltage time series.
     fs : float
-        Sampling rate, Hz
+        Sampling rate, in Hz.
     f_range : tuple of (float, float)
-        Frequency range (Hz) for narrowband signal of interest,
-        used to find zerocrossings of the oscillation.
-    boundary : int
+        Frequency range, in Hz, for narrowband signal of interest,
+        used to find zero-crossings of the oscillation.
+    boundary : int, optional
         Number of samples from edge of recording to ignore.
     first_extrema: {'peak', 'trough', None}
         If 'peak', then force the output to begin with a peak and end in a trough.
         If 'trough', then force the output to begin with a trough and end in peak.
-        If None, force nothing,
-    filter_kwargs : dict
+        If None, force nothing.
+    filter_kwargs : dict, optional
         Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`, such as 'n_cycles' or
         'n_seconds' to control filter length.
 
@@ -56,7 +55,7 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak',
     # Narrowband filter signal
     sig_filt = filter_signal(sig, fs, 'bandpass', f_range, remove_edges=False, **filter_kwargs)
 
-    # Find rising and falling zerocrossings (narrowband)
+    # Find rising and falling zero-crossings (narrowband)
     zerorise_n = _fzerorise(sig_filt)
     zerofall_n = _fzerofall(sig_filt)
 
@@ -71,18 +70,18 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak',
     # Calculate peak samples
     ps = np.zeros(pl, dtype=int)
     for p_idx in range(pl):
-        # Calculate the sample range between the most recent zero rise
-        # and the next zero fall
+
+        # Calculate the sample range between the most recent zero rise and the next zero fall
         mrzerorise = zerorise_n[p_idx]
         nfzerofall = zerofall_n[zerofall_n > mrzerorise][0]
-        # Identify time fo peak
+        # Identify time of peak
         ps[p_idx] = np.argmax(sig[mrzerorise:nfzerofall]) + mrzerorise
 
     # Calculate trough samples
     ts = np.zeros(tl, dtype=int)
     for t_idx in range(tl):
-        # Calculate the sample range between the most recent zero fall
-        # and the next zero rise
+
+        # Calculate the sample range between the most recent zero fall and the next zero rise
         mrzerofall = zerofall_n[t_idx]
         nfzerorise = zerorise_n[zerorise_n > mrzerofall][0]
         # Identify time of trough
@@ -113,37 +112,40 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak',
 
 
 def _fzerofall(sig):
-    """Find zerocrossings on falling edge of a filtered signal."""
+    """Find zero-crossings on falling edge of a filtered signal."""
+
     pos = sig > 0
     zerofalls = (pos[:-1] & ~pos[1:]).nonzero()[0]
 
-    # In the rare case where no zerocrossing is found (peak and trough are same voltage),
+    # In the rare case where no zero-crossing is found (peak and trough are same voltage),
     #   output dummy value.
     if len(zerofalls) == 0:
         zerofalls = [int(len(sig) / 2)]
+
     return zerofalls
 
 
 def _fzerorise(sig):
-    """Find zerocrossings on rising edge of a filtered signal."""
+    """Find zero-crossings on rising edge of a filtered signal."""
+
     pos = sig < 0
     zerorises = (pos[:-1] & ~pos[1:]).nonzero()[0]
 
-    # In the rare case where no zerocrossing is found (peak and trough are same voltage),
+    # In the rare case where no zero-crossing is found (peak and trough are same voltage),
     #   output dummy value.
     if len(zerorises) == 0:
         zerorises = [int(len(sig) / 2)]
+
     return zerorises
 
 
 def find_zerox(sig, ps, ts):
-    """
-    Find zerocrossings within each cycle after peaks and troughs are identified.
-    A rising zerocrossing occurs when the voltage crosses
-    midway between the trough voltage and subsequent peak voltage.
-    A decay zerocrossing is defined similarly.
+    """Find zero-crossings within each cycle after peaks and troughs are identified.
+
+    A rising zero=crossing occurs when the voltage crosses midway between the trough
+    voltage and subsequent peak voltage. A decay zero-crossing is defined similarly.
     If this voltage is crossed at multiple times, the temporal median is taken
-    as the zerocrossing.
+    as the zero-crossing.
 
     Parameters
     ----------
@@ -152,20 +154,20 @@ def find_zerox(sig, ps, ts):
     ps : 1d array
         Samples of oscillatory peaks.
     ts : 1d array
-        Samples of osillatory troughs.
+        Samples of oscillatory troughs.
 
     Returns
     -------
-    zerox_rise : array-like 1d
-        Samples at which oscillatory rising zerocrossings occur.
-    zerox_decay : array-like 1d
-        Samples at which oscillatory decaying zerocrossings occur.
+    zerox_rise : 1d array
+        Samples at which oscillatory rising zero-crossings occur.
+    zerox_decay : 1d array
+        Samples at which oscillatory decaying zero-crossings occur.
 
     Notes
     -----
     - Sometimes, due to noise in estimating peaks and troughs when the oscillation
       is absent, the estimated peak might be lower than an adjacent trough. If this
-      occurs, the rise and decay zerocrossings will be set to be halfway between
+      occurs, the rise and decay zero-crossings will be set to be halfway between
       the peak and trough. Burst detection should be used in order to ignore these
       periods of the signal.
     """
@@ -180,34 +182,34 @@ def find_zerox(sig, ps, ts):
         n_decays = len(ts) - 1
         idx_bias = 1
 
-    # Find zerocrossings for rise
+    # Find zero-crossings for rise
     zerox_rise = np.zeros(n_rises, dtype=int)
     for idx_rise in range(n_rises):
         sig_temp = np.copy(sig[ts[idx_rise]:ps[idx_rise + 1 - idx_bias] + 1])
         sig_temp -= (sig_temp[0] + sig_temp[-1]) / 2.
 
-        # If data is all 0s, just set the zerocrossing to be halfway between.
+        # If data is all zeros, just set the zero-crossing to be halfway between
         if np.sum(np.abs(sig_temp)) == 0:
             zerox_rise[idx_rise] = ts[idx_rise] + int(len(sig_temp) / 2.)
 
-        # If rise is actually decay, just set the zerocrossing to be halfway between.
+        # If rise is actually decay, just set the zero-crossing to be halfway between
         elif sig_temp[0] > sig_temp[-1]:
             zerox_rise[idx_rise] = ts[idx_rise] + int(len(sig_temp) / 2.)
 
         else:
             zerox_rise[idx_rise] = ts[idx_rise] + int(np.median(_fzerorise(sig_temp)))
 
-    # Find zerocrossings for decays
+    # Find zero-crossings for decays
     zerox_decay = np.zeros(n_decays, dtype=int)
     for idx_decay in range(n_decays):
         sig_temp = np.copy(sig[ps[idx_decay]:ts[idx_decay + idx_bias] + 1])
         sig_temp -= (sig_temp[0] + sig_temp[-1]) / 2.
 
-        # If data is all 0s, just set the zerocrossing to be halfway between.
+        # If data is all zeros, just set the zero-crossing to be halfway between
         if np.sum(np.abs(sig_temp)) == 0:
             zerox_decay[idx_decay] = ps[idx_decay] + int(len(sig_temp) / 2.)
 
-        # If decay is actually rise, just set the zerocrossing to be halfway between.
+        # If decay is actually rise, just set the zero-crossing to be halfway between
         elif sig_temp[0] < sig_temp[-1]:
             zerox_decay[idx_decay] = ps[idx_decay] + int(len(sig_temp) / 2.)
         else:
@@ -217,10 +219,8 @@ def find_zerox(sig, ps, ts):
 
 
 def extrema_interpolated_phase(sig, ps, ts, zerox_rise=None, zerox_decay=None):
-    """
-    Use peaks (phase 0) and troughs (phase pi/-pi) to estimate
-    instantaneous phase. Also use rise and decay zerocrossings
-    (phase -pi/2 and pi/2, respectively) if provided.
+    """Use peaks (phase 0) and troughs (phase pi/-pi) to estimate instantaneous phase.
+    Also use rise and decay zero-crossings (phase -pi/2 and pi/2, respectively) if provided.
 
     Parameters
     ----------
@@ -230,10 +230,10 @@ def extrema_interpolated_phase(sig, ps, ts, zerox_rise=None, zerox_decay=None):
         Samples of oscillatory peaks.
     ts : 1d array
         Samples of oscillatory troughs.
-    zerox_rise : 1d array
-        Samples of oscillatory rising zerocrossings.
-    zerox_decay : 1d array
-        Samples of oscillatory decaying zerocrossings.
+    zerox_rise : 1d array, optional
+        Samples of oscillatory rising zero-crossings.
+    zerox_decay : 1d array, optional
+        Samples of oscillatory decaying zero-crossings.
 
     Returns
     -------
@@ -242,23 +242,21 @@ def extrema_interpolated_phase(sig, ps, ts, zerox_rise=None, zerox_decay=None):
 
     Notes
     -----
-    Sometimes, due to noise, extrema and zerocrossing estimation
-    is poor, and for example, the same index may be assigned to
-    both a peak and a decaying zerocrossing. Because of this,
-    we first assign phase values by zerocrossings, and then
-    may overwrite them with extrema phases. Use of burst detection
-    will help avoid analyzing the oscillatory properties of
+    Sometimes, due to noise, extrema and zero-crossing estimation is poor, and for example,
+    the same index may be assigned to both a peak and a decaying zero-crossing.
+    Because of this, we first assign phase values by zero-crossings, and then may overwrite
+    them with extrema phases.
+    Use of burst detection will help avoid analyzing the oscillatory properties of
     non-oscillatory sections of the signal.
     """
 
-    # Initialize phase arrays
-    # 2 phase arrays: trough pi and trough -pi
+    # Initialize phase arrays, one for trough pi and trough -pi
     sig_len = len(sig)
     times = np.arange(sig_len)
     pha_tpi = np.zeros(sig_len) * np.nan
     pha_tnpi = np.zeros(sig_len) * np.nan
 
-    # If specified, assign phases to zerocrossings
+    # If specified, assign phases to zero-crossings
     if zerox_rise is not None:
         pha_tpi[zerox_rise] = -np.pi / 2
         pha_tnpi[zerox_rise] = -np.pi / 2

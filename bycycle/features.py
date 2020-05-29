@@ -1,29 +1,29 @@
-"""
-features.py
-Quantify the shape of oscillatory waveforms on a cycle-by-cycle basis
-"""
+"""Quantify the shape of oscillatory waveforms on a cycle-by-cycle basis."""
 
 import warnings
+
 import numpy as np
 import pandas as pd
+
 from neurodsp.timefrequency import amp_by_time
+
 from bycycle.cyclepoints import find_extrema, find_zerox
 from bycycle.burst import detect_bursts_cycles, detect_bursts_df_amp
 
+###################################################################################################
+###################################################################################################
 
 def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_method='cycles',
                      burst_detection_kwargs=None, find_extrema_kwargs=None,
                      hilbert_increase_n=False):
-    """
-    Segment a recording into individual cycles and compute
-    features for each cycle.
+    """Segment a recording into individual cycles and compute features for each cycle.
 
     Parameters
     ----------
     sig : 1d array
         Voltage time series.
     fs : float
-        Sampling rate (Hz).
+        Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest (Hz).
     center_extrema : {'P', 'T'}
@@ -32,40 +32,39 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
         - 'P' : cycles are defined trough-to-trough
         - 'T' : cycles are defined peak-to-peak
 
-    burst_detection_method : {'consistency', 'amp'}
+    burst_detection_method : {'cycles', 'amp'}
         Method for detecting bursts.
 
         - 'consistency': detect bursts based on the consistency of consecutive periods & amplitudes
         - 'amp': detect bursts using an amplitude threshold
 
-    burst_detection_kwargs : dict | None
+    burst_detection_kwargs : dict, optional
         Keyword arguments for function to find label cycles as in or not in an oscillation.
-    find_extrema_kwargs : dict | None
+    find_extrema_kwargs : dict, optional
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
         to change filter Parameters or boundary.By default, it sets the filter length to three
         cycles of the low cutoff frequency (``f_range[0]``).
-    hilbert_increase_n : bool
+    hilbert_increase_n : bool, optional, default: False
         Corresponding kwarg for :func:`~neurodsp.timefrequency.hilbert.amp_by_time`.
-        If true, this zeropads the signal when computing the Fourier transform, which can be
+        If true, this zero-pads the signal when computing the Fourier transform, which can be
         necessary for computing it in a reasonable amount of time.
 
     Returns
     -------
     df : pandas.DataFrame
-        Dataframe containing several features and identifiers
-        for each cycle. Each row is one cycle.
+        Dataframe containing features and identifiers for each cycle. Each row is one cycle.
         Columns (listed for peak-centered cycles):
 
         - ``sample_peak`` : sample of 'sig' at which the peak occurs
-        - ``sample_zerox_decay`` : sample of the decaying zerocrossing
-        - ``sample_zerox_rise`` : sample of the rising zerocrossing
+        - ``sample_zerox_decay`` : sample of the decaying zero-crossing
+        - ``sample_zerox_rise`` : sample of the rising zero-crossing
         - ``sample_last_trough`` : sample of the last trough
         - ``sample_next_trough`` : sample of the next trough
         - ``period`` : period of the cycle
         - ``time_decay`` : time between peak and next trough
         - ``time_rise`` : time between peak and previous trough
-        - ``time_peak`` : time between rise and decay zerocrosses
-        - ``time_trough`` : duration of previous trough estimated by zerocrossings
+        - ``time_peak`` : time between rise and decay zero-crosses
+        - ``time_trough`` : duration of previous trough estimated by zero-crossings
         - ``volt_decay`` : voltage change between peak and next trough
         - ``volt_rise`` : voltage change between peak and previous trough
         - ``volt_amp`` : average of rise and decay voltage
@@ -89,31 +88,26 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
     Notes
     -----
     Peak vs trough centering
-        - By default, the first extrema analyzed will be a peak,
-          and the final one a trough. In order to switch the preference,
-          the signal is simply inverted and columns are renamed.
-        - Columns are slightly different depending on if ``center_extrema``
-          is set to 'P' or 'T'.
+        - By default, the first extrema analyzed will be a peak, and the final one a trough.
+        - In order to switch the preference, the signal is simply inverted and columns are renamed.
+        - Columns are slightly different depending on if ``center_extrema`` is set to 'P' or 'T'.
     """
 
     # Set defaults if user input is None
     if burst_detection_kwargs is None:
         burst_detection_kwargs = {}
         warnings.warn('''
-            No burst detection parameters are provided.
-            This is very much not recommended.
-            Please inspect your data and choose appropriate
-            parameters for "burst_detection_kwargs".
-            Default burst detection parameters are likely
-            not well suited for your desired application.
+            No burst detection parameters are provided. This is not recommended.
+            Check your data and choose appropriate parameters for "burst_detection_kwargs".
+            Default burst detection parameters are likely not well suited for the data.
             ''')
     if find_extrema_kwargs is None:
         find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
     else:
         # Raise warning if switch from peak start to trough start
         if 'first_extrema' in find_extrema_kwargs.keys():
-            raise ValueError('''This function has been designed
-                to assume that the first extrema identified will be a peak.
+            raise ValueError('''
+                This function assumes that the first extrema identified will be a peak.
                 This cannot be overwritten at this time.''')
 
     # Negate signal if to analyze trough-centered cycles
@@ -130,7 +124,7 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
     # Find zero-crossings
     zerox_rise, zerox_decay = find_zerox(sig, ps, ts)
 
-    # For each cycle, identify the sample of each extrema and zerocrossing
+    # For each cycle, identify the sample of each extrema and zero-crossing
     shape_features = {}
     shape_features['sample_peak'] = ps[1:]
     shape_features['sample_zerox_decay'] = zerox_decay[1:]
@@ -161,7 +155,7 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
     shape_features['volt_rise'] = sig[ps[1:]] - sig[ts[:-1]]
     shape_features['volt_amp'] = (shape_features['volt_decay'] + shape_features['volt_rise']) / 2
 
-    # Comptue rise-decay symmetry features
+    # Compute rise-decay symmetry features
     shape_features['time_rdsym'] = shape_features['time_rise'] / shape_features['period']
 
     # Compute peak-trough symmetry features

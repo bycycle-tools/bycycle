@@ -1,18 +1,18 @@
-"""
-burst.py
-Analyze periods of oscillatory bursting in a neural signal
-"""
+"""Analyze periods of oscillatory bursting in neural signals."""
 
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import zscore
 import pandas as pd
+from scipy.stats import zscore
+import matplotlib.pyplot as plt
+
 from neurodsp.burst import detect_bursts_dual_threshold
 
+###################################################################################################
+###################################################################################################
 
 pd.options.mode.chained_assignment = None
 
-def detect_bursts_cycles(df, sig, amplitude_fraction_threshold=0,
+def detect_bursts_cycles(df, sig, amplitude_fraction_threshold=0.,
                          amplitude_consistency_threshold=.5,
                          period_consistency_threshold=.5,
                          monotonicity_threshold=.8,
@@ -24,55 +24,50 @@ def detect_bursts_cycles(df, sig, amplitude_fraction_threshold=0,
     df : pandas DataFrame
         Dataframe of waveform features for individual cycles, trough-centered.
     sig : 1d array
-        Trace used to compute monotonicity.
-    amplitude_fraction_threshold : float (0 to 1)
+        Signal used to compute monotonicity.
+    amplitude_fraction_threshold : float, optional, default: 0.
         The minimum normalized amplitude a cycle must have in order to be considered in an
-        oscillation.
+        oscillation. Must be between 0 and 1.
 
         - 0 = the minimum amplitude across all cycles
         - .5 = the median amplitude across all cycles
         - 1 = the maximum amplitude across all cycles
 
-    amplitude_consistency_threshold : float (0 to 1)
+    amplitude_consistency_threshold : float, optional, default: 0.5
         The minimum normalized difference in rise and decay magnitude to be considered as in an
-        oscillatory mode.
+        oscillatory mode. Must be between 0 and 1.
 
         - 1 = the same amplitude for the rise and decay
         - .5 = the rise (or decay) is half the amplitude of the decay (rise)
 
-    period_consistency_threshold : float (0 to 1)
-        The minimum normalized difference in period between two adjacent cycles to be considered as
-        in an oscillatory mode.
+    period_consistency_threshold : float, optional, default: 0.5
+        The minimum normalized difference in period between two adjacent cycles to be considered
+        as in an oscillatory mode. Must be between 0 and 1.
 
         - 1 = the same period for both cycles
         - .5 = one cycle is half the duration of another cycle
 
-    monotonicity_threshold : float (0 to 1)
+    monotonicity_threshold : float, optional, default: 0.8
         The minimum fraction of time segments between samples that must be going in the same
-        direction.
+        direction. Must be between 0 and 1.
 
         - 1 = rise and decay are perfectly monotonic
         - .5 = both rise and decay are rising half of the time and decay half the time
         - 0 = rise period is all decaying and decay period is all rising
 
-    n_cycles_min : int
-        Minimum number of cycles to be identified as truly oscillating needed in a row in order for
-        them to remain identified as truly oscillating.
+    n_cycles_min : int, optional, default: 3
+        Minimum number of cycles to be identified as truly oscillating needed in a row in order
+        for them to remain identified as truly oscillating.
 
     Returns
     -------
     df : pandas DataFrame
-        Same df as input, with an additional column (`is_burst`) to indicate if the cycle is part of
-        an oscillatory burst.
-
-        Also additional columns indicating the burst detection
-        parameters.
+        Same df as input, with an additional column (`is_burst`) to indicate if the cycle is part
+        of an oscillatory burst, with additional columns indicating the burst detection parameters.
 
     Notes
     -----
-    * The first and last period cannot be considered oscillating
-      if the consistency measures are used.
-
+    * The first and last period cannot be considered oscillating if the consistency measures are used.
     """
 
     # Compute normalized amplitude for all cycles
@@ -83,34 +78,47 @@ def detect_bursts_cycles(df, sig, amplitude_fraction_threshold=0,
     amp_consists = np.ones(cycles) * np.nan
     rises = df['volt_rise'].values
     decays = df['volt_decay'].values
+
     for cyc in range(1, cycles-1):
+
         consist_current = np.min([rises[cyc], decays[cyc]]) / np.max([rises[cyc], decays[cyc]])
+
         if 'sample_peak' in df.columns:
             consist_last = np.min([rises[cyc], decays[cyc-1]]) / np.max([rises[cyc], decays[cyc-1]])
             consist_next = np.min([rises[cyc+1], decays[cyc]]) / np.max([rises[cyc+1], decays[cyc]])
+
         else:
             consist_last = np.min([rises[cyc-1], decays[cyc]]) / np.max([rises[cyc-1], decays[cyc]])
             consist_next = np.min([rises[cyc], decays[cyc+1]]) / np.max([rises[cyc], decays[cyc+1]])
+
         amp_consists[cyc] = np.min([consist_current, consist_next, consist_last])
+
     df['amp_consistency'] = amp_consists
 
     # Compute period consistency
     period_consists = np.ones(cycles) * np.nan
     periods = df['period'].values
+
     for cyc in range(1, cycles-1):
+
         consist_last = np.min([periods[cyc], periods[cyc-1]]) / \
             np.max([periods[cyc], periods[cyc-1]])
         consist_next = np.min([periods[cyc+1], periods[cyc]]) / \
             np.max([periods[cyc+1], periods[cyc]])
+
         period_consists[cyc] = np.min([consist_next, consist_last])
+
     df['period_consistency'] = period_consists
 
     # Compute monotonicity
     monotonicity = np.ones(cycles) * np.nan
+
     for idx, row in df.iterrows():
+
         if 'sample_peak' in df.columns:
             rise_period = sig[int(row['sample_last_trough']):int(row['sample_peak'])]
             decay_period = sig[int(row['sample_peak']):int(row['sample_next_trough'])]
+
         else:
             decay_period = sig[int(row['sample_last_peak']):int(row['sample_trough'])]
             rise_period = sig[int(row['sample_trough']):int(row['sample_next_peak'])]
@@ -118,6 +126,7 @@ def detect_bursts_cycles(df, sig, amplitude_fraction_threshold=0,
         decay_mono = np.mean(np.diff(decay_period) < 0)
         rise_mono = np.mean(np.diff(rise_period) > 0)
         monotonicity[idx] = np.mean([decay_mono, rise_mono])
+
     df['monotonicity'] = monotonicity
 
     # Compute if each period is part of an oscillation
@@ -125,36 +134,46 @@ def detect_bursts_cycles(df, sig, amplitude_fraction_threshold=0,
     cycle_good_amp_consist = df['amp_consistency'] > amplitude_consistency_threshold
     cycle_good_period_consist = df['period_consistency'] > period_consistency_threshold
     cycle_good_monotonicity = df['monotonicity'] > monotonicity_threshold
+
     is_burst = cycle_good_amp & cycle_good_amp_consist & \
         cycle_good_period_consist & cycle_good_monotonicity
     is_burst[0] = False
     is_burst[-1] = False
+
     df['is_burst'] = is_burst
     df = _min_consecutive_cycles(df, n_cycles_min=n_cycles_min)
     df['is_burst'] = df['is_burst'].astype(bool)
+
     return df
 
 
 def _min_consecutive_cycles(df_shape, n_cycles_min=3):
-    '''Enforce minimum number of consecutive cycles.'''
+    """Enforce minimum number of consecutive cycles."""
+
     is_burst = np.copy(df_shape['is_burst'].values)
     temp_cycle_count = 0
+
     for idx, bursting in enumerate(is_burst):
+
         if bursting:
             temp_cycle_count += 1
+
         else:
+
             if temp_cycle_count < n_cycles_min:
                 for c_rm in range(temp_cycle_count):
                     is_burst[idx - 1 - c_rm] = False
+
             temp_cycle_count = 0
+
     df_shape['is_burst'] = is_burst
+
     return df_shape
 
 
 def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=None,
                              figsize=(16, 3), plot_only_result=False):
-    """
-    Create a plot to study how the cycle-by-cycle burst detection
+    """Create a plot to study how the cycle-by-cycle burst detection
     algorithm determine bursting periods of a signal.
 
     Parameters
@@ -162,18 +181,17 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=None,
     sig : 1d array
         Time series analyzed to compute `df_shape`.
     fs : float
-        Sampling rate (Hz).
+        Sampling rate, in Hz.
     df_shape : pandas DataFrame
         Dataframe output of `features.compute_features()`.
     osc_kwargs : dict
-        Dictionary of thresholds for burst detection
-        used in the function `features.compute_features()` using
-        the kwarg `burst_detection_kwargs`.
-    tlims : tuple of (float, float)
+        Dictionary of thresholds for burst detection used in the function
+        `features.compute_features()` using the kwarg `burst_detection_kwargs`.
+    tlims : tuple of (float, float), optional
         Start and stop times for plot.
-    figsize : tuple of (float, float)
+    figsize : tuple of (float, float), optional
         Size of figure.
-    plot_only_result : bool
+    plot_only_result : bool, optional, default: False
         If True, do not plot the subplots showing the parameters.
 
     Returns
@@ -205,7 +223,7 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=None,
     if tlims is None:
         tlims = (times[0], times[-1])
 
-    # Determine extrema strs
+    # Determine extrema labels
     if 'sample_trough' in df_shape.columns:
         center_e = 'trough'
         side_e = 'peak'
@@ -232,17 +250,21 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=None,
         is_osc[samp_start_burst:samp_end_burst] = True
 
     if plot_only_result:
+
         # Plot the time series and indicate peaks and troughs
         _, ax = plt.subplots(figsize=figsize)
+
         ax.plot(times, sig, 'k')
         ax.plot(times[is_osc], sig[is_osc], 'r.')
         ax.set_xlim(tlims)
         ax.set_title('Raw z-scored signal. Red trace indicates periods of bursting', size=15)
         ax.set_xlabel('Time (s)', size=12)
         ax.set_ylabel('Voltage (normalized)', size=12)
+
         return ax
 
     else:
+
         # Plot the time series and indicate peaks and troughs
         fig = plt.figure(figsize=(figsize[0], 5*figsize[1]))
         ax1 = fig.add_subplot(5, 1, 1)
@@ -336,9 +358,7 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=None,
 
 def detect_bursts_df_amp(df, sig, fs, f_range, amp_threshes=(1, 2),
                          n_cycles_min=3, filter_kwargs=None):
-    """
-
-    Determine which cycles in a signal are part of an oscillatory
+    """Determine which cycles in a signal are part of an oscillatory
     burst using an amplitude thresholding approach.
 
     Parameters
@@ -351,16 +371,14 @@ def detect_bursts_df_amp(df, sig, fs, f_range, amp_threshes=(1, 2),
         Sampling rate, Hz.
     f_range : tuple of (float, float)
         Frequency range (Hz) for oscillator of interest.
-    amp_threshes : tuple (low, high)
+    amp_threshes : tuple (low, high), optional, default: (1, 2)
         Threshold values for determining timing of bursts.
-        These values are in units of amplitude
-        (or power, if specified) normalized to the median
-        amplitude (value 1).
-    N_cycles_min : int
-        Minimum number of cycles to be identified as truly oscillating
-        needed in a row in order for them to remain identified as
-        truly oscillating.
-    filter_kwargs : dict
+        These values are in units of amplitude (or power, if specified) normalized to
+        the median amplitude (value 1).
+    n_cycles_min : int, optional, default: 3
+        Minimum number of cycles to be identified as truly oscillating needed in a row in
+        order for them to remain identified as truly oscillating.
+    filter_kwargs : dict, optional
         Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`.
 
     Returns
