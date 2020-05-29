@@ -125,7 +125,7 @@ Usage
 
 The main function in ``bycycle`` is ``compute_features``, which takes a time series and some
 parameters as inputs and returns a table of features for each cycle. Consider having a 1-dimensional
-numpy array, ``signal``, which is a neural signal time series sampled at 1000 Hz (``Fs``) that
+numpy array, ``sig``, which is a neural signal time series sampled at 1000 Hz (``fs``) that
 contains an alpha (8-12 Hz, ``f_range``) oscillation. We can compute the table of cycle features
 with the following:
 
@@ -134,11 +134,11 @@ with the following:
     from bycycle.filt import lowpass_filter
     from bycycle.features import compute_features
 
-    signal = lowpass_filter(signal, Fs, f_lowpass, N_seconds=N_seconds, remove_edge_artifacts=False)
+    sig_filt = lowpass_filter(sig, fs, f_lowpass, n_seconds=n_seconds, remove_edge_artifacts=False)
 
-    Fs = 1000
+    fs = 1000
     f_range = (8, 12)
-    df = compute_features(signal, Fs, f_range)
+    df = compute_features(sig_filt, fs, f_range)
 
 
 Note that a lowpass filter is applied in order to remove high-frequency power that may interfere
@@ -158,11 +158,11 @@ The following example and text go over the different potential parameter changes
                     'amplitude_consistency_threshold': .5,
                     'period_consistency_threshold': .5,
                     'monotonicity_threshold': .8,
-                    'N_cycles_min': 3}
+                    'n_cycles_min': 3}
 
-    narrowband_kwargs = {'N_seconds': .5}
+    narrowband_kwargs = {'n_seconds': .5}
 
-    df = compute_features(signal, Fs, f_range,
+    df = compute_features(sig, fs, f_range,
                           center_extrema='T',
                           burst_detection_method='cycles',
                           burst_detection_kwargs=burst_kwargs,
