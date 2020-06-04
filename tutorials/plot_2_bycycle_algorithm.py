@@ -38,11 +38,16 @@ the measured features along with the raw data to assure they make sense.
 # plot the filtered signal in comparison to the original signal.
 
 import numpy as np
-import scipy as sp
-import matplotlib.pyplot as plt
-from neurodsp.filt import filter_signal
-
 import pandas as pd
+import matplotlib.pyplot as plt
+
+from neurodsp.filt import filter_signal
+from neurodsp.plts import plot_time_series
+
+from bycycle.features import compute_features
+from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema, find_zerox
+from bycycle.plts import plot_cyclepoints, plot_burst_detect_params
+
 pd.options.display.max_columns = 30
 
 ####################################################################################################
@@ -64,12 +69,7 @@ times = np.arange(0, len(sig)/fs, 1/fs)
 tlim = (2, 5)
 tidx = np.logical_and(times>=tlim[0], times<tlim[1])
 
-plt.figure(figsize=(12, 2))
-plt.plot(times[tidx], sig[tidx], '.5')
-plt.plot(times[tidx], sig_low[tidx], 'k')
-plt.xlim(tlim)
-plt.tight_layout()
-plt.show()
+plot_time_series(times[tidx], [sig[tidx], sig_low[tidx]], colors=['k', 'k'], alpha=[.5, 1], lw=2)
 
 ####################################################################################################
 #
@@ -81,8 +81,6 @@ plt.show()
 # individual cycles. To do this, the signal is first narrow-bandpass filtered in order to estimate
 # "zero-crossings." Then, in between these zerocrossings, the absolute maxima and minima are found
 # and labeled as the peaks and troughs, respectively.
-
-from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema
 
 # Narrowband filter signal
 n_seconds_theta = .75
@@ -99,18 +97,7 @@ zerofall_narrow = _fzerofall(sig_narrow)
 ps, ts = find_extrema(sig_low, fs, f_theta,
                       filter_kwargs={'n_seconds':n_seconds_theta})
 
-tlim = (12, 15)
-tidx = np.logical_and(times>=tlim[0], times<tlim[1])
-tidxPs = ps[np.logical_and(ps>tlim[0]*fs, ps<tlim[1]*fs)]
-tidxTs = ts[np.logical_and(ts>tlim[0]*fs, ts<tlim[1]*fs)]
-
-plt.figure(figsize=(12, 2))
-plt.plot(times[tidx], sig_low[tidx], 'k')
-plt.plot(times[tidxPs], sig_low[tidxPs], 'b.', ms=10)
-plt.plot(times[tidxTs], sig_low[tidxTs], 'r.', ms=10)
-plt.xlim(tlim)
-plt.tight_layout()
-plt.show()
+plot_cyclepoints(sig_low, fs, extrema=(ps, ts), tlims=(12, 15))
 
 ####################################################################################################
 #
@@ -133,28 +120,9 @@ filter_signal(sig, fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
 # multiple times, then the median time is chosen as the flank midpoint. This is not perfect;
 # however, this is rare, and most of these cycles should be removed by burst detection.
 
-from bycycle.cyclepoints import find_zerox
 zerox_rise, zerox_decay = find_zerox(sig_low, ps, ts)
 
-####################################################################################################
-
-tlim = (13, 14)
-tidx = np.logical_and(times>=tlim[0], times<tlim[1])
-tidx_ps = ps[np.logical_and(ps>tlim[0]*fs, ps<tlim[1]*fs)]
-tidx_ts = ts[np.logical_and(ts>tlim[0]*fs, ts<tlim[1]*fs)]
-tidx_ds = zerox_decay[np.logical_and(zerox_decay>tlim[0]*fs, zerox_decay<tlim[1]*fs)]
-tidx_rs = zerox_rise[np.logical_and(zerox_rise>tlim[0]*fs, zerox_rise<tlim[1]*fs)]
-
-plt.figure(figsize=(12, 2))
-plt.plot(times[tidx], sig_low[tidx], 'k')
-plt.plot(times[tidx_ps], sig_low[tidx_ps], 'b.', ms=10)
-plt.plot(times[tidx_ts], sig_low[tidx_ts], 'r.', ms=10)
-plt.plot(times[tidx_ds], sig_low[tidx_ds], 'm.', ms=10)
-plt.plot(times[tidx_rs], sig_low[tidx_rs], 'g.', ms=10)
-plt.xlim(tlim)
-plt.xlabel('Time (seconds)')
-plt.tight_layout()
-plt.show()
+plot_cyclepoints(sig_low, fs, zerox=(zerox_rise, zerox_decay), extrema=(ps, ts), tlims=(13, 14))
 
 ####################################################################################################
 #
@@ -176,7 +144,6 @@ plt.show()
 
 ####################################################################################################
 
-from bycycle.features import compute_features
 df = compute_features(sig, fs, f_theta)
 print(df.head())
 
@@ -258,7 +225,6 @@ sig = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 # of the signal that do not have much apparent oscillatory burst are still labeled as if they do.
 
 ####################################################################################################
-from bycycle.burst import plot_burst_detect_params
 
 burst_kwargs = {'amplitude_fraction_threshold': 0,
                 'amplitude_consistency_threshold': .2,
@@ -268,7 +234,7 @@ burst_kwargs = {'amplitude_fraction_threshold': 0,
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
+plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -285,7 +251,7 @@ burst_kwargs = {'amplitude_fraction_threshold': 0,
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
+plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -306,4 +272,4 @@ burst_kwargs = {'amplitude_fraction_threshold': .3,
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
+plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(16, 3))

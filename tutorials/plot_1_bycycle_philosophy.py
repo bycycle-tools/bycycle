@@ -22,11 +22,11 @@ transform. The latter is demonstrated below.
 # ---------------------------------------------------------------
 
 import numpy as np
-import scipy as sp
-from scipy import signal as spsignal
 import matplotlib.pyplot as plt
+
 from neurodsp.filt import filter_signal
 from neurodsp.timefrequency import amp_by_time, phase_by_time
+from neurodsp.plts import plot_time_series
 
 sig = np.load('data/sim_bursting_more_noise.npy')
 fs = 1000  # Sampling rate
@@ -43,26 +43,23 @@ times = np.arange(0, len(sig)/fs, 1/fs)
 tlim = (2, 6)
 tidx = np.logical_and(times>=tlim[0], times<tlim[1])
 
-plt.figure(figsize=(12,6))
-plt.subplot(3,1,1)
-plt.plot(times[tidx], sig[tidx], 'k')
-plt.xlim(tlim)
-plt.ylabel('Voltage (mV)')
+fig = plt.figure(figsize=(15, 9))
+ax1 = fig.add_subplot(3, 1, 1)
+ax2 = fig.add_subplot(3, 1, 2)
+ax3 = fig.add_subplot(3, 1, 3)
 
-plt.subplot(3,1,2)
-plt.plot(times[tidx], sig_filt[tidx], 'k', alpha=.5)
-plt.plot(times[tidx], theta_amp[tidx], 'r')
-plt.xlim(tlim)
-plt.ylabel('Oscillation amplitude', color='r')
+# Plot the raw signal
+plot_time_series(times[tidx], sig[tidx], ax=ax1, ylabel='Voltage (mV)',
+                 xlabel='', xlim=tlim, lw=2, labels='raw signal')
 
-plt.subplot(3,1,3)
-plt.plot(times[tidx], theta_phase[tidx], 'r')
-plt.xlim(tlim)
-plt.ylabel('Phase (radians)', color='r')
+# Plot the filtered signal and oscillation amplitude
+plot_time_series(times[tidx], [sig_filt[tidx], theta_amp[tidx]], ax=ax2,
+                 colors=['k', 'r'], xlim=tlim, ylabel='Oscillation amplitude',
+                 xlabel='', alpha=[.5, 1], lw=2, labels=['filtered signal', 'amplitude'])
 
-plt.tight_layout()
-plt.show()
-
+# Plot the phase
+plot_time_series(times[tidx], theta_phase[tidx], ax=ax3, colors='r', xlim=tlim,
+                 ylabel='Phase (radians)', lw=2)
 
 ####################################################################################################
 #
@@ -79,17 +76,17 @@ plt.show()
 # However, there are some key disadvantages to this analysis that stem from its sine wave basis.
 #
 # 1. Being defined at every point in time gives the illusion that the phase and amplitude estimates
-# are valid at all points in time. However, the amplitude and phase estimates are pretty garbage
-# when there's no oscillation going on (the latter half of the time series above). The "amplitude"
-# and "phase" values are meaningless when no oscillation is actually present. Rather, they are
-# influenced by the other aspects of the signal, such as transients. For this reason, these measures
-# are flaws, and burst detection is very important to help alleviate this issue.
+#    are valid at all points in time. However, the amplitude and phase estimates are pretty garbage
+#    when there's no oscillation going on (the latter half of the time series above). The "amplitude"
+#    and "phase" values are meaningless when no oscillation is actually present. Rather, they are
+#    influenced by the other aspects of the signal, such as transients. For this reason, these measures
+#    are flaws, and burst detection is very important to help alleviate this issue.
 # 2. This analysis does not capture a potentially important aspect of the data, in that the
-# oscillatory cycles tend to have short rises and longer decays. This is partly because the signal
-# is filtered in a narrow frequency band (using a sine wave basis) that cannot accurately
-# reconstruct nonsinusoidal waveforms. Furthermore, this nonsinusoidal feature will unintuitively
-# bias amplitude and phase estimates (though perhaps negligibly). Furthermore, there are no apparent
-# tools for extracting nonsinusoidal properties using conventional techniques.
+#    oscillatory cycles tend to have short rises and longer decays. This is partly because the signal
+#    is filtered in a narrow frequency band (using a sine wave basis) that cannot accurately
+#    reconstruct nonsinusoidal waveforms. Furthermore, this nonsinusoidal feature will unintuitively
+#    bias amplitude and phase estimates (though perhaps negligibly). Furthermore, there are no apparent
+#    tools for extracting nonsinusoidal properties using conventional techniques.
 #
 #
 # Note that different hyperparameter choices for filters can lead to significant differences in results
