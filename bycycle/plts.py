@@ -1,18 +1,18 @@
 """Plot burst detection parameters."""
 
+from itertools import cycle
+
 import numpy as np
 from scipy.stats import zscore
-
 import matplotlib.pyplot as plt
-from  matplotlib import rcParams
-rcParams['lines.markersize'] = 12
+from matplotlib import rcParams
 
 from neurodsp.plts import plot_time_series
 from neurodsp.plts import plot_bursts
 
 
 def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=(None, None),
-                             figsize=(16, 3), plot_only_result=False):
+                             figsize=(15, 3), plot_only_result=False):
     """Create a plot to study how the cycle-by-cycle burst detection
     algorithm determine bursting periods of a signal.
 
@@ -52,6 +52,10 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=(None, None),
         - red: amplitude_consistency_threshold
         - yellow: period_consistency_threshold
         - green: monotonicity_threshold
+
+    Examples
+    --------
+    See the `algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#compute-features-of-each-cycle>`_.
     """
 
     # Normalize signal
@@ -60,7 +64,7 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=(None, None),
     # Determine time array
     times = np.arange(0, len(sig) / fs, 1 /fs)
 
-    if any(tlim is None for tlim in tlims):
+    if tlims is None or any(tlim is None for tlim in tlims):
         tlims = (times[0], times[-1])
 
     # Determine extrema labels
@@ -134,7 +138,7 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=(None, None),
     # Plot amplitude fraction threshold
     plot_time_series([tpeaks, tlims], [df_shape['amp_fraction'], [amp_fthresh]*2],
                      ax=ax2, colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02),
-                     xlabel='', ylabel=f"Band amplitude fraction\nthreshold={amp_fthresh}",)
+                     xlabel='', ylabel=f"Band amplitude fraction\nthreshold={amp_fthresh}")
 
     # Plot amplitude consistency threshold
     plot_time_series([tpeaks, tlims], [df_shape['amp_consistency'], [amp_cthresh]*2],
@@ -167,7 +171,7 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=(None, None),
 
 
 def plot_cyclepoints(sig, fs, extrema=(None, None), zerox=(None, None),
-                     tlims=(None, None), figsize=(16, 3)):
+                     tlims=(None, None), figsize=(15, 3)):
     """ Plot extrema and/or zero crossings.
 
     Parameters
@@ -199,6 +203,10 @@ def plot_cyclepoints(sig, fs, extrema=(None, None), zerox=(None, None),
     >>> plot_cyclepoints(sig, fs, extrema=(ps, ts), zerox=(zerox_rise, zerox_decay), tlims=(0, 2))
     """
 
+    # Set the markersize for all points
+    rcParams['lines.markersize'] = 15
+
+    # Check arguments
     plot_extrema = False if any(arr is None for arr in extrema) else True
     plot_zerox = False if any(arr is None for arr in zerox) else True
 
@@ -208,7 +216,7 @@ def plot_cyclepoints(sig, fs, extrema=(None, None), zerox=(None, None),
     # Determine time array/indices
     times = np.arange(0, len(sig) / fs, 1 /fs)
 
-    if any(lim is None for lim in tlims):
+    if tlims is None or any(tlim is None for tlim in tlims):
         tlims = (times[0], times[-1])
 
     tidx = np.logical_and(times >= tlims[0], times < tlims[1])
@@ -254,6 +262,67 @@ def plot_cyclepoints(sig, fs, extrema=(None, None), zerox=(None, None),
         plot_time_series(times, sigs, ax=ax, colors=['k', 'm.', 'g.'], xlim=tlims, lw=2)
 
     return ax
+
+
+def plot_cycle_features(df_burst, fs, labels=None, colors='krbgcmy', figsize=(5, 5)):
+    """ Plot histograms of cycle features.
+
+    Parameters
+    ----------
+    df_burst : list of pandas DataFrames
+        Dataframe output(s) from :func:`~.compute_features`.
+    fs : float
+        Sampling rate, in Hz.
+    labels : string or list of strings, optional
+        Legend labels for each dataframe.
+    figsize : tuple of (float, float), optional
+        Size of figure.
+    colors : string or list of strings
+        Matplotlib color codes for historgrams.
+
+    Examples
+    --------
+    See the `feature distribution example <http://bycycle-tools.github.io/bycycle/auto_examples/plot_theta_feature_distributions.html#plot-feature-distributions>`_.
+
+    """
+
+    fig = plt.figure(figsize=(figsize[0]*2, figsize[1]*2))
+    ax1 = fig.add_subplot(2, 2, 1)
+    ax2 = fig.add_subplot(2, 2, 2)
+    ax3 = fig.add_subplot(2, 2, 3)
+    ax4 = fig.add_subplot(2, 2, 4)
+
+    # Axis styles
+    ax1.set_xlabel('Cycle amplitude (mV)', size=15)
+    ax1.set_ylabel('# cycles', size=15)
+
+    ax2.set_xlabel('Cycle period (ms)', size=15)
+    ax2.set_ylabel('# cycles', size=15)
+
+    ax3.set_xlabel('Rise-decay asymmetry\n(fraction of cycle in rise period)', size=15)
+    ax3.set_ylabel('# cycles', size=15)
+
+    ax4.set_xlabel('Peak-trough asymmetry\n(fraction of cycle in peak period)', size=15)
+    ax4.set_ylabel('# cycles', size=15)
+
+    # Plot cycle features
+    cycol = cycle(colors)
+
+    for idx, df in enumerate(df_burst):
+
+        color = next(cycol)
+
+        ax1.hist(df['volt_amp'] / 1000, bins='auto', color=color, alpha=.5)
+
+        if labels:
+            ax1.legend(labels)
+
+        ax2.hist(df['period'] / fs * 1000, bins='auto', color=color, alpha=.5)
+
+        ax3.hist(df['time_rdsym'], bins='auto', color=color, alpha=.5)
+
+        ax4.hist(df['time_ptsym'], bins='auto', color=color, alpha=.5)
+
 
 
 def _plot_fill(times, axes, param, thresh, color):

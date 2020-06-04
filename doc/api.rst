@@ -60,9 +60,12 @@ Burst Detection Functions
 Plotting Function
 =================
 
-.. currentmodule:: bycycle.burst
+.. currentmodule:: bycycle.plts
 
 .. autosummary::
     :toctree: generated/
 
     plot_burst_detect_params
+    plot_cycle_features
+    plot_cyclepoints
+
