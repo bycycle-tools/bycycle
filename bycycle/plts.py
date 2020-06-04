@@ -137,23 +137,23 @@ def plot_burst_detect_params(sig, fs, df_shape, osc_kwargs, tlims=(None, None),
 
     # Plot amplitude fraction threshold
     plot_time_series([tpeaks, tlims], [df_shape['amp_fraction'], [amp_fthresh]*2],
-                     ax=ax2, colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02),
-                     xlabel='', ylabel=f"Band amplitude fraction\nthreshold={amp_fthresh}")
+                     ax=ax2, colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02), xlabel='',
+                     ylabel="Band amplitude fraction\nthreshold={:.2f}".format(amp_fthresh))
 
     # Plot amplitude consistency threshold
     plot_time_series([tpeaks, tlims], [df_shape['amp_consistency'], [amp_cthresh]*2],
-                     ax=ax3, colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02),
-                     xlabel='', ylabel=f"Amplitude consistency\nthreshold={amp_cthresh}")
+                     ax=ax3, colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02), xlabel='',
+                     ylabel="Amplitude consistency\nthreshold={:.2f}".format(amp_cthresh))
 
     # Plot period threshold
     plot_time_series([tpeaks, tlims], [df_shape['period_consistency'], [period_cthresh]*2],
-                     ax=ax4, colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02),
-                     xlabel='', ylabel=f"Period consistency\nthreshold={period_cthresh}")
+                     ax=ax4, colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02), xlabel='',
+                     ylabel="Period consistency\nthreshold={:.2f}".format(period_cthresh))
 
     # Plot monotonicity threshold
-    plot_time_series([tpeaks, tlims], [df_shape['monotonicity'], [mono_thresh]*2],
-                     ax=ax5, colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02),
-                     xlabel='Time (s)', ylabel=f"Monotonicity\nthreshold={mono_thresh}")
+    plot_time_series([tpeaks, tlims], [df_shape['monotonicity'], [mono_thresh]*2], ax=ax5,
+                     colors=['k.-', 'k--'], xlim=tlims, ylim=(-.02, 1.02), xlabel='Time (s)',
+                     ylabel="Monotonicity\nthreshold={:.2f}".format(mono_thresh))
 
     # Highlight where burst detection parameters were violated
     # Use a different color for each burst detection parameter
