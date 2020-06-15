@@ -2,9 +2,12 @@
 
 import numpy as np
 
+###################################################################################################
+###################################################################################################
+
 def apply_tlims(df, sig, times, fs, tlims):
     """Limit dataframe to be within tlims.
-    
+
     Parameters
     ----------
     df : pandas DataFrame
@@ -31,10 +34,8 @@ def apply_tlims(df, sig, times, fs, tlims):
     center_e, side_e = get_extrema(df)
 
     # Limit dataframe to tlims and round to nearest +/- 1 cycle.
-    df = df[(df['sample_next_' + side_e].values >= tlims[0]*fs) &
-            (df['sample_last_' + side_e].values <= tlims[1]*fs)]
-    
-    tlims = (df['sample_last_' + side_e].min()/fs, df['sample_next_' + side_e].max()+1/fs)
+    df = df[(df['sample_last_' + side_e].values >= tlims[0]*fs) &
+            (df['sample_next_' + side_e].values <= tlims[1]*fs)]
 
     # Realign with sig and times
     df['sample_last_' + side_e] = df['sample_last_' + side_e] - int(fs * tlims[0])
@@ -51,12 +52,12 @@ def apply_tlims(df, sig, times, fs, tlims):
 
 def get_extrema(df):
     """Determine whether cycles are peaks or troughs centered.
-    
+
     Parameters
     ----------
     df : pandas DataFrame
         Dataframe output of :func:`~.compute_features`.
-    
+
     Returns
     -------
     center_e : str
@@ -64,7 +65,7 @@ def get_extrema(df):
     side_e : str
         Side extrema, either 'peak' or 'trough'
     """
-    
+
     center_e = 'peak' if 'sample_peak' in df.columns else 'trough'
     side_e = 'trough' if center_e == 'peak' else 'peak'
 

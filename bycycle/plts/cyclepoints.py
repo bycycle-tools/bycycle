@@ -10,14 +10,16 @@ from neurodsp.plts import plot_time_series
 
 from bycycle.plts.utils import apply_tlims, get_extrema
 
+###################################################################################################
+###################################################################################################
 
-def plot_cyclepoints(df, sig, fs, tlims=None, figsize=(15, 3), ax=None, xlabel='Time (s)', 
-                     ylabel='Voltage (uV)', plot_sig=True, plot_extrema=True, plot_zerox=True):
+def plot_cyclepoints(df, sig, fs, tlims=None, ax=None, plot_sig=True,
+                     plot_extrema=True, plot_zerox=True, **kwargs):
     """Plot extrema and/or zerox.
 
     Parameters
     ----------
-    df : pandas DataFrame
+    df : pandas.DataFrame
         Dataframe output of :func:`~.compute_features`.
     sig : 1d array
         Time series to plot.
@@ -25,12 +27,8 @@ def plot_cyclepoints(df, sig, fs, tlims=None, figsize=(15, 3), ax=None, xlabel='
         Sampling rate, in Hz.
     tlims : tuple of (float, float), optional, default: None
         Start and stop times.
-    figsize : tuple of (float, float), optional, default: (15, 3)
-        Size of figure.
-    ax : matplotlib axis, optional, default: None
-        Axis to plot figure.
-    xlabel : str, optional, default: 'Time (s)'
-    ylabel : str, optional, default: 'Voltage (uV)
+    ax : matplotlib.Axes, optional
+        Figure axes upon which to plot.   
     plot_sig : bool, optional, default: True
         Plots the raw signal.
     plot_extrema :  bool, optional, default: True
@@ -38,20 +36,30 @@ def plot_cyclepoints(df, sig, fs, tlims=None, figsize=(15, 3), ax=None, xlabel='
     plot_zerox :  bool, optional, default: True
         Plots zero-crossings.
 
-    Returns
-    -------
-    ax : matplotlib axis
-        Axis to customize plotting style.
+    Notes
+    -----
+    Optional keyword arguments include any that may be passed into :func:`~.plot_time_series`,
+    including:
+    
+    - ``figsize``: tuple of (float, float), default: (15, 3)
+    - ``xlabel``: str, default: 'Time (s)'
+    - ``ylabel``: str, default: 'Voltage (uV)
+
     """
     
     rcParams['lines.markersize'] = 12
+
+    # Set default kwargs
+    figsize = (15, 3) if 'figsize' not in kwargs.keys() else kwargs.pop('figsize')
+    xlabel = 'Time (s)' if 'xlabel' not in kwargs.keys() else kwargs.pop('xlabel')
+    ylabel = 'Voltage (uV)' if 'ylabel' not in kwargs.keys() else kwargs.pop('ylabel')
 
     # Set times and limits
     times = np.arange(0, len(sig) / fs, 1 / fs)
     tlims = (times[0], times[-1]) if tlims is None else tlims
 
     if ax is None:
-        _, ax = plt.subplots(figsize=figsize)
+        fig, ax = plt.subplots(figsize=figsize)
 
     # Determine extrema/zero-crossing times and signals
     center_e, side_e = get_extrema(df)
@@ -86,6 +94,4 @@ def plot_cyclepoints(df, sig, fs, tlims=None, figsize=(15, 3), ax=None, xlabel='
 
     # Plot cycle points
     plot_time_series(x_values, y_values, ax=ax, xlim=tlims, colors=colors,
-                     xlabel=xlabel, ylabel=ylabel)
-
-    return ax
+                     xlabel=xlabel, ylabel=ylabel, **kwargs)
