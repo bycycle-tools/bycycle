@@ -33,7 +33,7 @@ def apply_tlims(df, sig, times, fs, tlims):
 
     center_e, side_e = get_extrema(df)
 
-    # Limit dataframe to tlims and round to nearest +/- 1 cycle.
+    # Limit dataframe to tlims
     df = df[(df['sample_last_' + side_e].values >= tlims[0]*fs) &
             (df['sample_next_' + side_e].values <= tlims[1]*fs)]
 
