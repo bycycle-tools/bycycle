@@ -15,7 +15,7 @@ from bycycle.plts.utils import apply_tlims, get_extrema
 
 def plot_cyclepoints(df, sig, fs, tlims=None, ax=None, plot_sig=True,
                      plot_extrema=True, plot_zerox=True, **kwargs):
-    """Plot extrema and/or zerox.
+    """Plot extrema and/or zero-crossings.
 
     Parameters
     ----------
@@ -27,26 +27,27 @@ def plot_cyclepoints(df, sig, fs, tlims=None, ax=None, plot_sig=True,
         Sampling rate, in Hz.
     tlims : tuple of (float, float), optional, default: None
         Start and stop times.
-    ax : matplotlib.Axes, optional
-        Figure axes upon which to plot.   
+    ax : matplotlib.Axes, optional, default: None
+        Figure axes upon which to plot.
     plot_sig : bool, optional, default: True
         Plots the raw signal.
     plot_extrema :  bool, optional, default: True
         Plots peaks and troughs.
     plot_zerox :  bool, optional, default: True
         Plots zero-crossings.
+    **kwargs
+        Keyword arguments to pass into `plot_time_series`.
 
     Notes
     -----
-    Optional keyword arguments include any that may be passed into :func:`~.plot_time_series`,
-    including:
-    
+    Default keyword arguments include:
+
     - ``figsize``: tuple of (float, float), default: (15, 3)
     - ``xlabel``: str, default: 'Time (s)'
     - ``ylabel``: str, default: 'Voltage (uV)
 
     """
-    
+
     rcParams['lines.markersize'] = 12
 
     # Set default kwargs
@@ -63,9 +64,9 @@ def plot_cyclepoints(df, sig, fs, tlims=None, ax=None, plot_sig=True,
 
     # Determine extrema/zero-crossing times and signals
     center_e, side_e = get_extrema(df)
-    
+
     df, sig, times = apply_tlims(df, sig, times, fs, tlims)
-    
+
     # Extend plotting based on given arguments
     x_values = []
     y_values = []
@@ -81,11 +82,11 @@ def plot_cyclepoints(df, sig, fs, tlims=None, ax=None, plot_sig=True,
 
         mask = np.append(df['sample_last_' + side_e].values,
                          df['sample_next_' + side_e].values[-1])
-        
+
         x_values.extend([times[df['sample_' + center_e]], times[mask]])
         y_values.extend([sig[df['sample_' + center_e]], sig[mask]])
         colors.extend(['m.', 'c.'])
-     
+
     if plot_zerox:
 
         x_values.extend([times[df['sample_zerox_decay']], times[df['sample_zerox_rise']]])
@@ -95,3 +96,4 @@ def plot_cyclepoints(df, sig, fs, tlims=None, ax=None, plot_sig=True,
     # Plot cycle points
     plot_time_series(x_values, y_values, ax=ax, xlim=tlims, colors=colors,
                      xlabel=xlabel, ylabel=ylabel, **kwargs)
+

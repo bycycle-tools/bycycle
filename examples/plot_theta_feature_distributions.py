@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
-from bycycle.plts import plot_cycle_features
+from bycycle.plts.features import plot_feature_hist
 from bycycle.features import compute_features
 
 ####################################################################################################
@@ -82,14 +82,12 @@ ca1_plt = ca1_raw[samplims[0]:samplims[1]]/1000
 ec3_plt = ec3_raw[samplims[0]:samplims[1]]/1000
 times = np.arange(0, len(ca1_plt)/fs, 1/fs)
 
-fig = plt.figure(figsize=(15, 6))
-ax1 = fig.add_subplot(2, 1, 1)
-ax2 = fig.add_subplot(2, 1, 2)
+fig, axes = plt.subplots(figsize=(15, 6), nrows=2)
 
-plot_time_series(times, ca1_plt, ax=ax1, xlim=(0, 1.6), ylim=(-2.4, 2.4),
+plot_time_series(times, ca1_plt, ax=axes[0], xlim=(0, 1.6), ylim=(-2.4, 2.4),
                 xlabel="Time (s)", ylabel="CA1 Voltage (mV)")
 
-plot_time_series(times, ec3_plt, ax=ax2, colors='r', xlim=(0, 1.6),
+plot_time_series(times, ec3_plt, ax=axes[1], colors='r', xlim=(0, 1.6),
                  ylim=(-2.4, 2.4), xlabel="Time (s)", ylabel="EC3 Voltage (mV)")
 
 ####################################################################################################
@@ -99,4 +97,44 @@ plot_time_series(times, ec3_plt, ax=ax2, colors='r', xlim=(0, 1.6),
 
 ####################################################################################################
 
-plot_cycle_features([df_ca1_cycles, df_ec3_cycles], fs=1250, labels=['CA1', 'EC3'])
+fig, axes = plt.subplots(figsize=(15, 15), nrows=2, ncols=2)
+
+# Plot cycle amplitude
+cycles_ca1 = df_ca1_cycles['volt_amp']/1000
+cycles_ec3 = df_ec3_cycles['volt_amp']/1000
+
+plot_feature_hist(cycles_ca1, 'volt_amp', ax=axes[0][0], xlabel='Cycle amplitude (mV)',
+                  xlim=(0, 4.5), color='k', bins=np.arange(0, 8, .1), label='CA1')
+
+plot_feature_hist(cycles_ec3, 'volt_amp', ax=axes[0][0], xlabel='Cycle amplitude (mV)',
+                  xlim=(0, 4.5), color='r', bins=np.arange(0, 8, .1), label=['CA1', 'EC3'])
+
+axes[0][0].legend(['CA1', 'EC3'], fontsize=15)
+
+# Plot cycle period
+periods_ca1 = df_ca1_cycles['period'] / fs * 1000
+periods_ec3 = df_ec3_cycles['period'] / fs * 1000
+
+plot_feature_hist(periods_ca1, 'period', ax=axes[0][1], xlabel='Cycle period (ms)',
+                  xlim=(0, 250), color='k', bins=np.arange(0, 250, 5))
+
+plot_feature_hist(periods_ec3, 'volt_amp', ax=axes[0][1], xlabel='Cycle period (ms)',
+                  xlim=(0, 250), color='r', bins=np.arange(0, 250, 5))
+
+# Plot rise/decay symmetry
+plot_feature_hist(df_ca1_cycles, 'time_rdsym', ax=axes[1][0], xlim=(0, 1), color='k',
+                  xlabel='Rise-decay asymmetry\n(fraction of cycle in rise period)',
+                  bins=np.arange(0, 1, .02))
+
+plot_feature_hist(df_ec3_cycles, 'time_rdsym', ax=axes[1][0], xlim=(0, 1), color='r',
+                  xlabel='Rise-decay asymmetry\n(fraction of cycle in rise period)',
+                  bins=np.arange(0, 1, .02))
+
+# Plot peak/trough symmetry
+plot_feature_hist(df_ca1_cycles, 'time_ptsym', ax=axes[1][1], color='k',
+                  xlabel='Peak-trough asymmetry\n(fraction of cycle in peak period)',
+                  bins=np.arange(0, 1, .02))
+
+plot_feature_hist(df_ec3_cycles, 'time_ptsym', ax=axes[1][1], color='r',
+                  xlabel='Peak-trough asymmetry\n(fraction of cycle in peak period)',
+                  bins=np.arange(0, 1, .02))

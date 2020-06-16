@@ -43,23 +43,20 @@ times = np.arange(0, len(sig)/fs, 1/fs)
 tlim = (2, 6)
 tidx = np.logical_and(times>=tlim[0], times<tlim[1])
 
-fig = plt.figure(figsize=(15, 9))
-ax1 = fig.add_subplot(3, 1, 1)
-ax2 = fig.add_subplot(3, 1, 2)
-ax3 = fig.add_subplot(3, 1, 3)
+fig, axes = plt.subplots(figsize=(15, 9), nrows=3)
 
 # Plot the raw signal
-plot_time_series(times[tidx], sig[tidx], ax=ax1, ylabel='Voltage (mV)',
+plot_time_series(times[tidx], sig[tidx], ax=axes[0], ylabel='Voltage (mV)',
                  xlabel='', xlim=tlim, lw=2, labels='raw signal')
 
 # Plot the filtered signal and oscillation amplitude
-plot_time_series(times[tidx], [sig_filt[tidx], theta_amp[tidx]], ax=ax2,
+plot_time_series(times[tidx], [sig_filt[tidx], theta_amp[tidx]], ax=axes[1],
                  colors=['k', 'r'], xlim=tlim, ylabel='Oscillation amplitude',
                  xlabel='', alpha=[.5, 1], lw=2, labels=['filtered signal', 'amplitude'])
 
 # Plot the phase
-plot_time_series(times[tidx], theta_phase[tidx], ax=ax3, colors='r', xlim=tlim,
-                 ylabel='Phase (radians)', lw=2)
+plot_time_series(times[tidx], theta_phase[tidx], ax=axes[2], colors='r',
+                 xlim=tlim, ylabel='Phase (radians)', lw=2)
 
 ####################################################################################################
 #
@@ -97,32 +94,29 @@ plot_time_series(times[tidx], theta_phase[tidx], ax=ax3, colors='r', xlim=tlim,
 
 # Different hyperparameter choices - filter length and center frequency and bandwidth
 f_alphas = [(6, 14), (8, 12), (9, 13)]
-n_secondss = [.4, .75, 1.2]
+n_seconds = [.4, .75, 1.2]
 
 amps = []
 phases = []
+
 for f_alpha in f_alphas:
-    for n_seconds_filter in n_secondss:
-        amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
-        phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
+
+    for n_second_filter in n_seconds:
+
+        amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_second_filter)
+        phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_second_filter)
+
         amps.append(amp)
         phases.append(phase)
 
-plt.figure(figsize=(12,2))
-for amp in amps:
-    plt.plot(times[tidx], amp[tidx])
-plt.xlim(tlim)
-plt.tight_layout()
-plt.show()
 
-####################################################################################################
+color_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-plt.figure(figsize=(12,2))
-for phase in phases:
-    plt.plot(times[tidx], phase[tidx])
-plt.xlim(tlim)
-plt.tight_layout()
-plt.show()
+fig, axes = plt.subplots(figsize=(15, 6), nrows=2)
+
+plot_time_series(times, amps, ax=axes[0], colors=color_cycle, xlim=(2, 6))
+
+plot_time_series(times, phases, ax=axes[1], colors=color_cycle, xlim=(2, 6))
 
 ####################################################################################################
 #

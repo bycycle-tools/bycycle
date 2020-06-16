@@ -55,7 +55,6 @@ Burst Detection Functions
     :toctree: generated/
 
     detect_bursts_cycles
-    detect_bursts_df_amp
 
 Plotting Function
 =================
@@ -65,7 +64,8 @@ Plotting Function
 .. autosummary::
     :toctree: generated/
 
-    plot_burst_detect_params
-    plot_cycle_features
+    plot_burst_detect_summary
+    plot_burst_detect_param
     plot_cyclepoints
+    plot_feature_hist
 

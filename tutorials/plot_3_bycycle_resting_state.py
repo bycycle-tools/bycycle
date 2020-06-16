@@ -26,9 +26,9 @@ from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
 from bycycle.features import compute_features
-from bycycle.plts import plot_burst_detect_params
+from bycycle.plts import plot_burst_detect_summary
 
-pd.options.display.max_columns = 50
+pd.options.display.max_columns = 10
 
 ####################################################################################################
 #
@@ -87,7 +87,7 @@ df_cycles = pd.concat(dfs)
 
 ####################################################################################################
 
-print(df_cycles.head())
+df_cycles.head()
 
 ####################################################################################################
 #
@@ -101,11 +101,8 @@ print(df_cycles.head())
 subj = 1
 sig_df = df_cycles[df_cycles['subject_id'] == subj]
 
-plot_burst_detect_params(sigs[subj], fs, sig_df,
-                         burst_kwargs, tlims=(0, 5), figsize=(16, 3), plot_only_result=True)
-
-plot_burst_detect_params(sigs[subj], fs, sig_df,
-                         burst_kwargs, tlims=(0, 5), figsize=(16, 3))
+plot_burst_detect_summary(sig_df, sigs[subj], fs,  burst_kwargs,
+                          tlims=(0, 5), figsize=(16, 3))
 
 ####################################################################################################
 #

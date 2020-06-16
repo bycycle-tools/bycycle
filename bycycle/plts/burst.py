@@ -17,8 +17,9 @@ from bycycle.plts.utils import apply_tlims, get_extrema
 
 def plot_burst_detect_summary(df, sig, fs, osc_kwargs, tlims=None, figsize=(15, 3),
                               plot_only_result=False, burst_params=None):
-    """Create a plot to study how the cycle-by-cycle burst detection
-       algorithm determine bursting periods of a signal.
+    """
+    Create a plot to study how the cycle-by-cycle burst detection
+    algorithm determines bursting periods of a signal.
 
     Parameters
     ----------
@@ -144,7 +145,7 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, tlims=None, ax=Non
         Time series to plot.
     fs : float
         Sampling rate, in Hz.
-    burst_param : string
+    burst_param : str
         Column name of the parameter of interest in ``df``.
     thresh : float
         The burst parameter threshold. Parameter values greater
@@ -153,17 +154,19 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, tlims=None, ax=Non
         Start and stop times for plot.
     ax : matplotlib.Axes, optional
         Figure axes upon which to plot.
+    **kwargs
+        Keyword arguments to pass into `plot_time_series`.
 
     Notes
     -----
-    Optional keyword arguments include any that may be passed into :func:`~.plot_time_series`,
-    including:
+    Default keyword arguments include:
 
     - ``figsize``: tuple of (float, float), default: (15, 3)
     - ``xlabel``: str, default: 'Time (s)'
     - ``ylabel``: str, default: 'Voltage (uV)
     - ``color``: str, default: 'r'.
-     - Note: ``color`` here is the fill color, rather than line color.
+
+      - Note: ``color`` here is the fill color, rather than line color.
 
     """
 
