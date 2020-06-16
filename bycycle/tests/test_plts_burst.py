@@ -10,7 +10,8 @@ from bycycle.tests.utils import plot_test
 ###################################################################################################
 
 @plot_test
-def test_plot_burst_detect_param(sim_args):
+@pytest.mark.parametrize("interp", [True, False])
+def test_plot_burst_detect_param(sim_args, interp):
 
     df = sim_args['df']
     sig = sim_args['sig']
@@ -18,7 +19,7 @@ def test_plot_burst_detect_param(sim_args):
 
     thresh = np.nanmin(df['amp_consistency'].values) + 0.1
 
-    plot_burst_detect_param(df, sig, fs, 'amp_consistency', thresh)
+    plot_burst_detect_param(df, sig, fs, 'amp_consistency', thresh, interp=interp)
 
 
 @plot_test
