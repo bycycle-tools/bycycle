@@ -45,11 +45,11 @@ def plot_feature_hist(df, burst_param, ax=None, bins='auto', **kwargs):
         df = df[df['is_burst']]
 
     # Optional keyword args
-    figsize = (5, 5) if 'figsize' not in kwargs.keys() else kwargs.pop('figsize')
-    color = 'k' if 'color' not in kwargs.keys() else kwargs.pop('color')
-    xlabel = burst_param if 'xlabel' not in kwargs.keys() else kwargs.pop('xlabel')
-    xlim = None if 'xlim' not in kwargs.keys() else kwargs.pop('xlim')
-    fontsize = 15 if 'fontsize' not in kwargs.keys() else kwargs.pop('fontsize')
+    figsize =  kwargs.pop('figsize', (5, 5))
+    color = kwargs.pop('color', 'k')
+    xlabel =  kwargs.pop('xlabel', burst_param)
+    xlim = kwargs.pop('xlim', None)
+    fontsize = kwargs.pop('fontsize', 15)
 
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
