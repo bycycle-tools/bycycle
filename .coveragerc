@@ -1,4 +1,4 @@
 [run]
-omit = 
-	*__init__*
+omit =
+    *__init__*
     bycycle/tests/*

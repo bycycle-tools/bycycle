@@ -104,10 +104,10 @@ cycles_ca1 = df_ca1_cycles['volt_amp']/1000
 cycles_ec3 = df_ec3_cycles['volt_amp']/1000
 
 plot_feature_hist(cycles_ca1, 'volt_amp', ax=axes[0][0], xlabel='Cycle amplitude (mV)',
-                  xlim=(0, 4.5), color='k', bins=np.arange(0, 8, .1), label='CA1')
+                  xlim=(0, 4.5), color='k', bins=np.arange(0, 8, .1))
 
 plot_feature_hist(cycles_ec3, 'volt_amp', ax=axes[0][0], xlabel='Cycle amplitude (mV)',
-                  xlim=(0, 4.5), color='r', bins=np.arange(0, 8, .1), label=['CA1', 'EC3'])
+                  xlim=(0, 4.5), color='r', bins=np.arange(0, 8, .1))
 
 axes[0][0].legend(['CA1', 'EC3'], fontsize=15)
 

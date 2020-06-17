@@ -51,9 +51,9 @@ def plot_cyclepoints(df, sig, fs, tlims=None, ax=None, plot_sig=True,
     rcParams['lines.markersize'] = 12
 
     # Set default kwargs
-    figsize =  kwargs.pop('figsize', (15, 3))
+    figsize = kwargs.pop('figsize', (15, 3))
     xlabel = kwargs.pop('xlabel', 'Time (s)')
-    ylabel =  kwargs.pop('ylabel', 'Voltage (uV)')
+    ylabel = kwargs.pop('ylabel', 'Voltage (uV)')
 
     # Set times and limits
     times = np.arange(0, len(sig) / fs, 1 / fs)

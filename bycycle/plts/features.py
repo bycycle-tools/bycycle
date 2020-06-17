@@ -45,9 +45,9 @@ def plot_feature_hist(df, burst_param, ax=None, bins='auto', **kwargs):
         df = df[df['is_burst']]
 
     # Optional keyword args
-    figsize =  kwargs.pop('figsize', (5, 5))
+    figsize = kwargs.pop('figsize', (5, 5))
     color = kwargs.pop('color', 'k')
-    xlabel =  kwargs.pop('xlabel', burst_param)
+    xlabel = kwargs.pop('xlabel', burst_param)
     xlim = kwargs.pop('xlim', None)
     fontsize = kwargs.pop('fontsize', 15)
 

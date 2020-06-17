@@ -178,8 +178,8 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, tlims=None,
 
     # Set default kwargs
     figsize = kwargs.pop('figsize', (15, 3))
-    xlabel =  kwargs.pop('xlabel', 'Time (s)')
-    ylabel =  kwargs.pop('ylabel', burst_param)
+    xlabel = kwargs.pop('xlabel', 'Time (s)')
+    ylabel = kwargs.pop('ylabel', burst_param)
     color = kwargs.pop('color', 'r')
 
     # Determine time array and limits
