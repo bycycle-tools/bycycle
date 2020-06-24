@@ -9,3 +9,5 @@ sphinx-copybutton
 neurodsp >= 2.0.0
 pillow
 seaborn
+mne
+pactools

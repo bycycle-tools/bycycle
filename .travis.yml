@@ -12,8 +12,6 @@ notifications:
 # Install packages
 install:
   - pip install -r requirements.txt
-  - pip install -q mne
-  - pip install pactools
   - pip install pytest-cov
   - pip install codecov
   - pip install .
