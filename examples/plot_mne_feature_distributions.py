@@ -4,6 +4,11 @@ MNE interface cycle feature distributions
 This example computes the distributions of cycle features using MNE objects
 """
 
+"""
+First let's import the packages we need. This example depends on mne as well as
+the pactools simulator to make pac and a spurious pac function from the
+pactools spurious pac example.
+"""
 ####################################################################################################
 
 import mne
@@ -16,12 +21,6 @@ from pactools.utils.pink_noise import pink_noise
 from pactools.utils.validation import check_random_state
 
 from bycycle.features import compute_features
-
-####################################################################################################
-# Simulate and preprocess data
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-####################################################################################################
 
 
 def simulate_spurious_pac(n_points, fs, spike_amp=1.5, spike_fwhm=0.01,
@@ -58,44 +57,66 @@ def simulate_spurious_pac(n_points, fs, spike_amp=1.5, spike_fwhm=0.01,
     noise = pink_noise(n_points, slope=1., random_state=random_state)
     return spikes + noise, spikes
 
+####################################################################################################
+# Simulate and preprocess data
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+"""
+Now we will use the imported functions to make an mne raw object with the data.
+Ch1 will be the pac data, Ch2 will be the spurious pac data and Ch3 will be a
+sine wave with pink noise.
+"""
+####################################################################################################
+
+
 
 f_beta = (14, 28)
 trial_len = 40  # seconds
 fs = 200.  # Hz
-high_fq = 80.0  # Hz
-low_fq = 24.0  # Hz
+high_fq = 80.0  # Hz; carrier frequency
+low_fq = 24.0  # Hz; driver frequency
 low_fq_width = 2.0  # Hz
 
 n_points = int(trial_len * fs)
-noise_level = 0.4
+noise_level = 0.25
 
 # simulate beta-gamma pac
 signal_pac = simulate_pac(n_points=n_points, fs=fs,
                           high_fq=high_fq, low_fq=low_fq,
                           low_fq_width=low_fq_width,
                           noise_level=noise_level, random_state=99)
+# simulate 10 Hz spiking which couples to about 60 Hz
 signal_spurious_pac, spikes = simulate_spurious_pac(
     n_points=n_points, fs=fs, spike_amp=1. / noise_level, random_state=999)
+# make a sine wave that is the driver frequency
 low_fq_signal = np.sin(2 * np.pi * low_fq * np.linspace(0, trial_len,
                                                         n_points))
+# add the sine wave to pink noise to make a control, no pac signal
 signal_no_pac = low_fq_signal + pink_noise(n_points, slope=1.,
                                            random_state=9999)
 
 info = mne.create_info(['Ch1', 'Ch2', 'Ch3'], fs, ['eeg'] * 3)
+# combine into raw object, scale from volts to microvolts
 raw = mne.io.RawArray(np.stack([signal_pac, signal_spurious_pac,
                                 signal_no_pac]) * 1e-6, info)
 
 ####################################################################################################
 # Check comodulogram for PAC
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+"""
+Now, we will use the tools from pactools to compute the comodulogram which
+is a visualization of phase amplitude coupling. The stronger the driver
+phase couples with a particular frequency, the brighter the color value.
+The pac signal has 24 - 80 Hz pac as designed, the spurious pac has 10 - 60 Hz
+spurious pac and the final signal has no pac, just background noise.
+"""
 ####################################################################################################
 
 fig, axs = plt.subplots(nrows=3, figsize=(10, 12), sharex=True)
 for i, ax in enumerate(axs):
-    # check PAC within only channel
-    low_sig, high_sig, mask = raw_to_mask(raw, (i, i))
-    #
+    # check PAC within only channel; high and low sig are the same-- channel i
+    low_sig, high_sig, mask = raw_to_mask(raw, (i, i))  # mask is all points
+    # use the duprelatour driven autoregressive model to fit the data
     estimator = Comodulogram(fs=raw.info['sfreq'],
                              low_fq_range=np.arange(1, 41), low_fq_width=2.,
                              method='duprelatour', progress_bar=True)
@@ -109,7 +130,11 @@ plt.show()
 #
 # Plot time series for each recording
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+"""
+Now let's see how each signal looks in time. The third plot of spikes is added
+to pink noise to make the second plot which is the spurious pac. This is so
+that where the spikes occur can be noted in the spurious pac plot.
+"""
 ####################################################################################################
 
 # plot the signal and the spikes
@@ -129,7 +154,10 @@ plt.show()
 ####################################################################################################
 # Compute cycle-by-cycle features
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+"""
+Here we use the bycycle compute_features function to compute the cycle-by-
+cycle features of the three signals.
+"""
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
@@ -154,7 +182,10 @@ df_no_pac = compute_features(raw[2, :][0][0], fs, f_beta, center_extrema='T',
 #
 # Plot feature distributions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+"""
+As shown in the feature distributions, the pac signal displays some peak-
+tough asymmetry as does the spurious pac signal.
+"""
 ####################################################################################################
 
 plt.figure(figsize=(5, 5))
