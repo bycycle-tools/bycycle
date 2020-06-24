@@ -39,7 +39,6 @@ def simulate_spurious_pac(n_points, fs, spike_amp=1.5, spike_fwhm=0.01,
     n_points = int(n_points)
     fs = float(fs)
     rng = check_random_state(random_state)
-
     # draw the position of the spikes
     interval_min = 1. / float(spike_fq) * (1. - spike_interval_jitter)
     interval_max = 1. / float(spike_fq) * (1. + spike_interval_jitter)
@@ -48,7 +47,6 @@ def simulate_spurious_pac(n_points, fs, spike_amp=1.5, spike_fwhm=0.01,
                                   size=n_spikes_max)
     spike_positions = np.cumsum(np.int_(spike_intervals * fs))
     spike_positions = spike_positions[spike_positions < n_points]
-
     # build the spike time series, using a convolution
     spikes = np.zeros(n_points)
     spikes[spike_positions] = spike_amp
@@ -57,9 +55,7 @@ def simulate_spurious_pac(n_points, fs, spike_amp=1.5, spike_fwhm=0.01,
     spike_shape = scipy.signal.gaussian(M=np.int(spike_std * fs * 10),
                                         std=spike_std * fs)
     spikes = scipy.signal.fftconvolve(spikes, spike_shape, mode='same')
-
     noise = pink_noise(n_points, slope=1., random_state=random_state)
-
     return spikes + noise, spikes
 
 
@@ -108,11 +104,6 @@ for i, ax in enumerate(axs):
     # plot the results
     estimator.plot(axs=[ax], tight_layout=False)
 plt.show()
-
-####################################################################################################
-
-# Apply a lowpass filter at for the PAC signal
-raw = raw.filter(h_freq=30.)
 
 ####################################################################################################
 #
