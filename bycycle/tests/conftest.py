@@ -1,12 +1,13 @@
 """Configuration file for pytest for bycycle."""
 
+import os
+import shutil
 import pytest
-
-import numpy as np
 
 from neurodsp.utils.sim import set_random_seed
 from neurodsp.sim import sim_oscillation
 from bycycle.features import compute_features
+from bycycle.tests.settings import BASE_TEST_FILE_PATH, TEST_PLOTS_PATH
 
 ###################################################################################################
 ###################################################################################################
@@ -29,5 +30,17 @@ def sim_args():
 
     df = compute_features(sig, fs, f_range)
 
-
     yield {'df': df, 'sig': sig, 'fs': fs}
+
+
+@pytest.fixture(scope='session', autouse=True)
+def check_dir():
+    """Once, prior to session, this will clear and re-initialize the test file directories."""
+
+    # If the directories already exist, clear them
+    if os.path.exists(BASE_TEST_FILE_PATH):
+        shutil.rmtree(BASE_TEST_FILE_PATH)
+
+    # Remake (empty) directories
+    os.mkdir(BASE_TEST_FILE_PATH)
+    os.mkdir(TEST_PLOTS_PATH)

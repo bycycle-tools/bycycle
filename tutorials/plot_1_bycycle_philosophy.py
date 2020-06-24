@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 
 from neurodsp.filt import filter_signal
 from neurodsp.timefrequency import amp_by_time, phase_by_time
-from neurodsp.plts import plot_time_series
+from neurodsp.plts import plot_time_series, plot_instantaneous_measure
 
 sig = np.load('data/sim_bursting_more_noise.npy')
 fs = 1000  # Sampling rate
@@ -38,25 +38,25 @@ sig_filt = filter_signal(sig, fs, 'bandpass', f_alpha, n_seconds=n_seconds_filte
 theta_amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
 theta_phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
 
-# Plots signal
+# Plot signal
 times = np.arange(0, len(sig)/fs, 1/fs)
-tlim = (2, 6)
-tidx = np.logical_and(times>=tlim[0], times<tlim[1])
+xlim = (2, 6)
+tidx = np.logical_and(times >= xlim[0], times < xlim[1])
 
 fig, axes = plt.subplots(figsize=(15, 9), nrows=3)
 
 # Plot the raw signal
 plot_time_series(times[tidx], sig[tidx], ax=axes[0], ylabel='Voltage (mV)',
-                 xlabel='', xlim=tlim, lw=2, labels='raw signal')
+                 xlabel='', lw=2, labels='raw signal')
 
 # Plot the filtered signal and oscillation amplitude
-plot_time_series(times[tidx], [sig_filt[tidx], theta_amp[tidx]], ax=axes[1],
-                 colors=['k', 'r'], xlim=tlim, ylabel='Oscillation amplitude',
-                 xlabel='', alpha=[.5, 1], lw=2, labels=['filtered signal', 'amplitude'])
+plot_instantaneous_measure(times[tidx], [sig_filt[tidx], theta_amp[tidx]],
+                           ax=axes[1], measure='amplitude', lw=2, xlabel='',
+                           labels=['filtered signal', 'amplitude'])
 
 # Plot the phase
-plot_time_series(times[tidx], theta_phase[tidx], ax=axes[2], colors='r',
-                 xlim=tlim, ylabel='Phase (radians)', lw=2)
+plot_instantaneous_measure(times[tidx], theta_phase[tidx], ax=axes[2], colors='r',
+                           measure='phase', lw=2, xlabel='Time (s)')
 
 ####################################################################################################
 #
@@ -109,14 +109,13 @@ for f_alpha in f_alphas:
         amps.append(amp)
         phases.append(phase)
 
-
-color_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
-
 fig, axes = plt.subplots(figsize=(15, 6), nrows=2)
 
-plot_time_series(times, amps, ax=axes[0], colors=color_cycle, xlim=(2, 6))
+plot_instantaneous_measure(times, amps, ax=axes[0], xlim=(2,6),
+                           measure='amplitude', lw=2, xlabel='')
 
-plot_time_series(times, phases, ax=axes[1], colors=color_cycle, xlim=(2, 6))
+plot_instantaneous_measure(times, phases, ax=axes[1], xlim=(2,6),
+                           measure='phase',lw=2)
 
 ####################################################################################################
 #

@@ -46,7 +46,7 @@ from neurodsp.plts import plot_time_series
 
 from bycycle.features import compute_features
 from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema, find_zerox
-from bycycle.plts import plot_burst_detect_summary
+from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_array
 
 pd.options.display.max_columns = 10
 
@@ -66,8 +66,8 @@ sig_low = filter_signal(sig, fs, 'lowpass', f_lowpass,
 
 # Plot signal
 times = np.arange(0, len(sig)/fs, 1/fs)
-tlim = (2, 5)
-tidx = np.logical_and(times>=tlim[0], times<tlim[1])
+xlim = (2, 5)
+tidx = np.logical_and(times >= xlim[0], times < xlim[1])
 
 plot_time_series(times[tidx], [sig[tidx], sig_low[tidx]], colors=['k', 'k'], alpha=[.5, 1], lw=2)
 
@@ -97,12 +97,7 @@ zerofall_narrow = _fzerofall(sig_narrow)
 ps, ts = find_extrema(sig_low, fs, f_theta,
                       filter_kwargs={'n_seconds':n_seconds_theta})
 
-# Plot the signal
-plot_time_series(times, sig_low, xlim=(12, 15))
-
-# Overlay extrema points
-plt.plot(times[ps], sig_low[ps], 'b.', ms=10)
-plt.plot(times[ts], sig_low[ts], 'r.', ms=10)
+plot_cyclepoints_array(sig_low, fs, xlim=(12, 15), ps=ps, ts=ts)
 
 ####################################################################################################
 #
@@ -130,17 +125,8 @@ filter_signal(sig, fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
 
 zerox_rise, zerox_decay = find_zerox(sig_low, ps, ts)
 
-# Plot the signal
-plot_time_series(times, sig_low, xlim=(12, 15))
-
-# Overlay extrema
-plt.plot(times[ps], sig_low[ps], 'b.', ms=10)
-plt.plot(times[ts], sig_low[ts], 'r.', ms=10)
-
-# Overlay zero-crossing mid-points
-plt.plot(times[zerox_rise], sig_low[zerox_rise], 'g.', ms=10)
-plt.plot(times[zerox_decay], sig_low[zerox_decay], 'm.', ms=10)
-
+plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), ps=ps, ts=ts,
+                       zerox_rise=zerox_rise, zerox_decay=zerox_decay)
 
 ####################################################################################################
 #
@@ -244,15 +230,15 @@ sig = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 
 ####################################################################################################
 
-burst_kwargs = {'amplitude_fraction_threshold': 0,
-                'amplitude_consistency_threshold': .2,
+burst_kwargs = {'amp_fraction_threshold': 0,
+                'amp_consistency_threshold': .2,
                 'period_consistency_threshold': .45,
                 'monotonicity_threshold': .7,
                 'n_cycles_min': 3}
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_summary(df, sig, fs, burst_kwargs, tlims=None, figsize=(16, 3))
+plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -261,15 +247,15 @@ plot_burst_detect_summary(df, sig, fs, burst_kwargs, tlims=None, figsize=(16, 3)
 # These new burst detection thresholds seem to be set too high (too strict) as the algorithm is not
 # able to detect the bursts that are present.
 
-burst_kwargs = {'amplitude_fraction_threshold': 0,
-                'amplitude_consistency_threshold': .75,
+burst_kwargs = {'amp_fraction_threshold': 0,
+                'amp_consistency_threshold': .75,
                 'period_consistency_threshold': .7,
                 'monotonicity_threshold': .9,
                 'n_cycles_min': 3}
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_summary(df, sig, fs, burst_kwargs, tlims=None, figsize=(16, 3))
+plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -282,12 +268,12 @@ plot_burst_detect_summary(df, sig, fs, burst_kwargs, tlims=None, figsize=(16, 3)
 # Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove some false
 # positives that may occur, like that around 1.5 seconds.
 
-burst_kwargs = {'amplitude_fraction_threshold': .3,
-                'amplitude_consistency_threshold': .4,
+burst_kwargs = {'amp_fraction_threshold': .3,
+                'amp_consistency_threshold': .4,
                 'period_consistency_threshold': .5,
                 'monotonicity_threshold': .8,
                 'n_cycles_min': 3}
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_summary(df, sig, fs, burst_kwargs, tlims=None, figsize=(16, 3))
+plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))

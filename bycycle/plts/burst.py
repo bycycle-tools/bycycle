@@ -8,15 +8,17 @@ from scipy.stats import zscore
 import matplotlib.pyplot as plt
 
 from neurodsp.plts import plot_time_series, plot_bursts
+from neurodsp.plts.utils import savefig
 
-from bycycle.plts.cyclepoints import plot_cyclepoints
-from bycycle.plts.utils import apply_tlims, get_extrema
+from bycycle.plts.cyclepoints import plot_cyclepoints_df
+from bycycle.utils import limit_df, limit_sig_times, get_extrema
 
 ###################################################################################################
 ###################################################################################################
 
-def plot_burst_detect_summary(df, sig, fs, osc_kwargs, tlims=None, figsize=(15, 3),
-                              plot_only_result=False, burst_params=None, interp=True):
+@savefig
+def plot_burst_detect_summary(df, sig, fs, burst_detection_kwargs, xlim=None,
+                              figsize=(15, 3), plot_only_result=False, interp=True):
     """
     Create a plot to study how the cycle-by-cycle burst detection
     algorithm determines bursting periods of a signal.
@@ -29,21 +31,17 @@ def plot_burst_detect_summary(df, sig, fs, osc_kwargs, tlims=None, figsize=(15, 
         Time series to plot.
     fs : float
         Sampling rate, in Hz.
-    osc_kwargs : dict
+    burst_detection_kwargs : dict
         Burst parameter keys and threshold value pairs, as defined in the 'burst_detection_kwargs'
         argument of :func:`.compute_features`.
-    tlims : tuple of (float, float), optional, default: None
+    xlim : tuple of (float, float), optional, default: None
         Start and stop times for plot.
     figsize : tuple of (float, float), optional, default: (15, 3)
         Size of each plot.
     plot_only_result : bool, optional, default: False
         Plot only the signal and bursts, excluding burst parameter plots.
-    burst_params : list of str, optional, default: None
-        The names of the ``df`` burst detection parameter columns. These names may differ from the
-        keys in ``osc_kwargs``. This is only needed for non-default burst parameters.
-    interp : bool
-        Interpolates points if true.
-
+    interp : bool, optional, default: True
+        If True, interpolates between given values. Otherwise, plots in a step-wise fashion.
 
     Notes
     -----
@@ -57,13 +55,10 @@ def plot_burst_detect_summary(df, sig, fs, osc_kwargs, tlims=None, figsize=(15, 
       defined as oscillatory bursts. The highlighted regions indicate when each burst requirement
       was violated, color-coded consistently with the plots below.
 
-     - blue: amplitude_fraction_threshold
-     - red: amplitude_consistency_threshold
-     - yellow: period_consistency_threshold
-     - green: monotonicity_threshold
-
-    - Custom burst parameters may be defined in ``osc_kwargs`` and ``burst_params``, but the order
-      is expected to be the same for both arguments.
+      - blue: amp_fraction_threshold
+      - red: amp_consistency_threshold
+      - yellow: period_consistency_threshold
+      - green: monotonicity_threshold
 
     """
 
@@ -72,27 +67,28 @@ def plot_burst_detect_summary(df, sig, fs, osc_kwargs, tlims=None, figsize=(15, 
 
     # Determine time array and limits
     times = np.arange(0, len(sig) / fs, 1 / fs)
-    tlims = (times[0], times[-1]) if tlims is None else tlims
+    xlim = (times[0], times[-1]) if xlim is None else xlim
 
     # Determine if peak of troughs are the sides of an oscillation
     _, side_e = get_extrema(df)
 
-    df_lim, sig_lim, times_lim = apply_tlims(df, sig, times, fs, tlims)
+    # Remove this kwarg since it isn't stored cycle by cycle in the df (nothing to plot)
+    if 'n_cycles_min' in burst_detection_kwargs.keys():
+        del burst_detection_kwargs['n_cycles_min']
 
-    if burst_params is None:
-        burst_params = ['amp_fraction', 'amp_consistency', 'period_consistency', 'monotonicity']
+    n_kwargs = len(burst_detection_kwargs.keys())
 
     # Create figure and subplots
     if plot_only_result:
         fig, axes = plt.subplots(figsize=figsize, nrows=1)
         axes = [axes]
     else:
-        fig, axes = plt.subplots(figsize=(figsize[0], figsize[1]*len(burst_params)+1),
-                                 nrows=len(burst_params)+1, sharex=True)
+        fig, axes = plt.subplots(figsize=(figsize[0], figsize[1]*(n_kwargs+1)),
+                                 nrows=n_kwargs+1, sharex=True)
 
     # Determine which samples are defined as bursting
-    is_osc = np.zeros(len(sig_lim), dtype=bool)
-    df_osc =  df_lim[df_lim['is_burst']]
+    is_osc = np.zeros(len(sig), dtype=bool)
+    df_osc = df[df['is_burst']]
 
     for _, cyc in df_osc.iterrows():
 
@@ -103,25 +99,25 @@ def plot_burst_detect_summary(df, sig, fs, osc_kwargs, tlims=None, figsize=(15, 
     # Plot bursts with extrema points
     xlabel = 'Time (s)' if len(axes) == 1 else ''
 
-    plot_bursts(times_lim, sig_lim, is_osc, ax=axes[0], lw=2,
+    plot_bursts(times, sig, is_osc, ax=axes[0], xlim=xlim, lw=2,
                 labels=['Signal', 'Bursts'], xlabel='', ylabel='')
 
-    plot_cyclepoints(df, sig, fs, ax=axes[0], tlims=tlims, plot_zerox=False,
-                     plot_sig=False, xlabel=xlabel, ylabel='Voltage\n(normalized)')
+    plot_cyclepoints_df(df, sig, fs, ax=axes[0], xlim=xlim, plot_zerox=False, plot_sig=False,
+                        xlabel=xlabel, ylabel='Voltage\n(normalized)', colors=['m', 'c'])
 
     # Plot each burst param
     colors = cycle(['blue', 'red', 'yellow', 'green', 'cyan', 'magenta', 'orange'])
 
-    for idx, column in enumerate(burst_params):
+    for idx, osc_key in enumerate(burst_detection_kwargs.keys()):
 
-        osc_key = list(osc_kwargs.keys())[idx]
+        column = osc_key.replace('_threshold', '')
 
         color = next(colors)
 
         # Highlight where a burst param falls below threshold
         for _, cyc in df.iterrows():
 
-            if cyc[column] < osc_kwargs[osc_key]:
+            if cyc[column] < burst_detection_kwargs[osc_key]:
                 axes[0].axvspan(times[cyc['sample_last_' + side_e]],
                                 times[cyc['sample_next_' + side_e]],
                                 alpha=0.5, color=color, lw=0)
@@ -129,15 +125,16 @@ def plot_burst_detect_summary(df, sig, fs, osc_kwargs, tlims=None, figsize=(15, 
         # Plot each burst param on separate axes
         if not plot_only_result:
 
-            ylabel = osc_key.replace('_threshold', '').replace('_', ' ').capitalize()
-            xlabel = 'Time (s)' if idx == len(burst_params)-1 else ''
+            ylabel = column.replace('_', ' ').capitalize()
+            xlabel = 'Time (s)' if idx == n_kwargs-1 else ''
 
-            plot_burst_detect_param(df, sig, fs, burst_params[idx], osc_kwargs[osc_key],
-                                    figsize=figsize, ax=axes[idx+1], tlims=tlims,
+            plot_burst_detect_param(df, sig, fs, column, burst_detection_kwargs[osc_key],
+                                    figsize=figsize, ax=axes[idx+1], xlim=xlim,
                                     xlabel=xlabel, ylabel=ylabel, color=color, interp=interp)
 
 
-def plot_burst_detect_param(df, sig, fs, burst_param, thresh, tlims=None,
+@savefig
+def plot_burst_detect_param(df, sig, fs, burst_param, thresh, xlim=None,
                             ax=None, interp=True, **kwargs):
     """Plot a burst detection parameter and threshold.
 
@@ -154,7 +151,7 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, tlims=None,
     thresh : float
         The burst parameter threshold. Parameter values greater
         than ``thresh`` are considered bursts.
-    tlims : tuple of (float, float), optional, default: None
+    xlim : tuple of (float, float), optional, default: None
         Start and stop times for plot.
     ax : matplotlib.Axes, optional
         Figure axes upon which to plot.
@@ -184,7 +181,7 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, tlims=None,
 
     # Determine time array and limits
     times = np.arange(0, len(sig) / fs, 1 / fs)
-    tlims = (times[0], times[-1]) if tlims is None else tlims
+    xlim = (times[0], times[-1]) if xlim is None else xlim
 
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
@@ -192,29 +189,39 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, tlims=None,
     # Determine extrema strings
     center_e, side_e = get_extrema(df)
 
-    df, sig, times = apply_tlims(df, sig, times, fs, tlims)
+    # Limit dataframe, sig and times
+    df = limit_df(df, fs, xlim)
+    sig, times = limit_sig_times(sig, times, xlim)
+
+    # Remove start/end cycles that tlims falls between
+    df = df[df['sample_last_' + side_e] >= 0]
+    df = df[df['sample_next_' + side_e] < xlim[1]*fs]
 
     # Plot burst param
     if interp:
 
-        plot_time_series([times[df['sample_' + center_e]], tlims], [df[burst_param], [thresh]*2],
-                         ax=ax, colors=['k.-', 'k--'], xlim=tlims, xlabel=xlabel,
-                         ylabel="{0:s}\nthreshold={1:.2f}".format(ylabel, thresh), **kwargs)
+        plot_time_series([times[df['sample_' + center_e]], xlim], [df[burst_param], [thresh]*2],
+                         ax=ax, colors=['k', 'k'], ls=['-', '--'], marker=["o", None], lim=xlim,
+                         xlabel=xlabel, ylabel="{0:s}\nthreshold={1:.2f}".format(ylabel, thresh), **kwargs)
 
     else:
 
+        # Create steps, from side to side of each cycle, and set the y-value to the burst parameter
+        #   value for that cycle.
         side_times = np.array([])
         side_param = np.array([])
 
         for _, cyc in df.iterrows():
 
+            # Get the times for the last and next side of a cycle
             side_times = np.append(side_times, [times[cyc['sample_last_' + side_e]],
                                                 times[cyc['sample_next_' + side_e]]])
 
+            # Set the y-value, from side to side, to the burst param for a cycle.
             side_param = np.append(side_param, [cyc[burst_param]]*2)
 
-        plot_time_series([side_times, tlims], [side_param, [thresh]*2],
-                         ax=ax, colors=['k.-', 'k--'], xlim=tlims, xlabel=xlabel,
+        plot_time_series([side_times, xlim], [side_param, [thresh]*2], ax=ax, colors=['k', 'k'],
+                         ls=['-', '--'], marker=["o", None], xlim=xlim, xlabel=xlabel,
                          ylabel="{0:s}\nthreshold={1:.2f}".format(ylabel, thresh), **kwargs)
 
     # Highlight where param falls below threshold

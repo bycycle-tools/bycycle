@@ -56,8 +56,8 @@ Burst Detection Functions
 
     detect_bursts_cycles
 
-Plotting Function
-=================
+Plotting Functions
+==================
 
 .. currentmodule:: bycycle.plts
 
@@ -66,6 +66,8 @@ Plotting Function
 
     plot_burst_detect_summary
     plot_burst_detect_param
-    plot_cyclepoints
+    plot_cyclepoints_df
+    plot_cyclepoints_array
     plot_feature_hist
+    plot_feature_catplot
 

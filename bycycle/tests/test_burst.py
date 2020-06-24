@@ -1,22 +1,16 @@
 """Tests burst detection."""
 
+import os
 import itertools
-
 import numpy as np
 
 from neurodsp.filt import  filter_signal
-from neurodsp.sim import sim_oscillation
 
 from bycycle.features import compute_features
-
-import pytest
-
-from bycycle.burst import *
+from bycycle.burst import detect_bursts_df_amp, detect_bursts_cycles
 
 # Set data path
-import os
-import bycycle
-DATA_PATH = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
+DATA_PATH = os.getcwd() + '/tutorials/data/'
 
 ###################################################################################################
 ###################################################################################################

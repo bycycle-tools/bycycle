@@ -1,16 +1,14 @@
 """Tests the functions to identify points in cycles work."""
 
+import os
 import numpy as np
 from scipy.signal import argrelextrema
-
 import pytest
 
-from bycycle.cyclepoints import *
+from bycycle.cyclepoints import find_extrema, find_zerox, extrema_interpolated_phase
 
 # Set data path
-import os
-import bycycle
-DATA_PATH = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
+DATA_PATH = os.getcwd() + '/tutorials/data/'
 
 ###################################################################################################
 ###################################################################################################

@@ -52,17 +52,17 @@ ec3 = filter_signal(ec3_raw, fs, 'lowpass', fc, n_seconds=filter_seconds,
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
-osc_kwargs = {'amplitude_fraction_threshold': 0,
-              'amplitude_consistency_threshold': .6,
+osc_kwargs = {'amp_fraction_threshold': 0,
+              'amp_consistency_threshold': .6,
               'period_consistency_threshold': .75,
               'monotonicity_threshold': .8,
               'n_cycles_min': 3}
 
 # Cycle-by-cycle analysis
-df_ca1 = compute_features(ca1, fs, f_theta, center_extrema='T',
+df_ca1 = compute_features(ca1, fs, f_theta, center_extrema='trough',
                           burst_detection_kwargs=osc_kwargs)
 
-df_ec3 = compute_features(ec3, fs, f_theta, center_extrema='T',
+df_ec3 = compute_features(ec3, fs, f_theta, center_extrema='trough',
                           burst_detection_kwargs=osc_kwargs)
 
 # Limit analysis only to oscillatory bursts

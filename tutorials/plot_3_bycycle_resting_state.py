@@ -26,7 +26,7 @@ from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
 from bycycle.features import compute_features
-from bycycle.plts import plot_burst_detect_summary
+from bycycle.plts import plot_burst_detect_summary, plot_feature_catplot
 
 pd.options.display.max_columns = 10
 
@@ -62,8 +62,8 @@ plot_time_series(times, sigs[0], lw=2)
 ####################################################################################################
 
 f_alpha = (7, 13) # Frequency band of interest
-burst_kwargs = {'amplitude_fraction_threshold': .2,
-                'amplitude_consistency_threshold': .5,
+burst_kwargs = {'amp_fraction_threshold': .2,
+                'amp_consistency_threshold': .5,
                 'period_consistency_threshold': .5,
                 'monotonicity_threshold': .8,
                 'n_cycles_min': 3} # Tuned burst detection parameters
@@ -101,8 +101,7 @@ df_cycles.head()
 subj = 1
 sig_df = df_cycles[df_cycles['subject_id'] == subj]
 
-plot_burst_detect_summary(sig_df, sigs[subj], fs,  burst_kwargs,
-                          tlims=(0, 5), figsize=(16, 3))
+plot_burst_detect_summary(sig_df, sigs[subj], fs, burst_kwargs, xlim=(0, 5), figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -124,20 +123,20 @@ print(df_subjects)
 
 ####################################################################################################
 
-feature_names = {'volt_amp': 'Amplitude',
-                 'period': 'Period (ms)',
-                 'time_rdsym': 'Rise-decay symmetry',
-                 'time_ptsym': 'Peak-trough symmetry'}
+fig, axes = plt.subplots(figsize=(15, 15), nrows=2, ncols=2)
 
-for feat, feat_name in feature_names.items():
 
-    graph = sns.catplot(x='group', y=feat, data=df_subjects)
-    plt.xlabel('')
-    plt.xticks(size=20)
-    plt.ylabel(feat_name, size=20)
-    plt.yticks(size=15)
-    plt.tight_layout()
-    plt.show()
+plot_feature_catplot(df_subjects, 'volt_amp', group_by='group', ax=axes[0][0],
+                     xlabel=['Patient', 'Control'], ylabel='Amplitude')
+
+plot_feature_catplot(df_subjects, 'period', group_by='group', ax=axes[0][1],
+                     xlabel=['Patient', 'Control'], ylabel='Period (ms)')
+
+plot_feature_catplot(df_subjects, 'time_rdsym', group_by='group', ax=axes[1][0],
+                     xlabel=['Patient', 'Control'], ylabel='Rise-Decay Symmetry')
+
+plot_feature_catplot(df_subjects, 'time_ptsym', group_by='group', ax=axes[1][1],
+                     xlabel=['Patient', 'Control'], ylabel='Peak-Trough Symmetry')
 
 ####################################################################################################
 #
@@ -145,6 +144,11 @@ for feat, feat_name in feature_names.items():
 # -----------------------------------------
 
 ####################################################################################################
+
+feature_names = {'volt_amp': 'Amplitude',
+                 'period': 'Period (ms)',
+                 'time_rdsym': 'Rise-Decay Symmetry',
+                 'time_ptsym': 'Peak-Trough Symmetry'}
 
 for feat, feat_name in feature_names.items():
 

@@ -1,13 +1,12 @@
 """Tests the main cycle-by-cycle feature computation function."""
 
+import os
 import numpy as np
 
-from bycycle.features import *
+from bycycle.features import compute_features
 
 # Set data path
-import os
-import bycycle
-DATA_PATH = '/'.join(os.path.dirname(bycycle.__file__).split('/')[:-1]) + '/tutorials/data/'
+DATA_PATH = os.getcwd() + '/tutorials/data/'
 
 ###################################################################################################
 ###################################################################################################
@@ -25,7 +24,7 @@ def test_compute_features():
     df = compute_features(sig, fs, f_range)
 
     # Check inverted signal gives appropriately opposite data
-    df_opp = compute_features(-sig, fs, f_range, center_extrema='T')
+    df_opp = compute_features(-sig, fs, f_range, center_extrema='trough')
 
     np.testing.assert_allclose(df['sample_peak'], df_opp['sample_trough'])
     np.testing.assert_allclose(df['sample_last_trough'], df_opp['sample_last_peak'])

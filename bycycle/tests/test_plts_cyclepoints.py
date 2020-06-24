@@ -1,16 +1,26 @@
 """Tests plotting cyclepoints."""
 
-import pytest
-
-from bycycle.plts.cyclepoints import plot_cyclepoints
+from bycycle.plts.cyclepoints import plot_cyclepoints_df, plot_cyclepoints_array
+from bycycle.cyclepoints import find_extrema, find_zerox
 from bycycle.tests.utils import plot_test
+from bycycle.tests.settings import TEST_PLOTS_PATH
 
 ###################################################################################################
 ###################################################################################################
 
 @plot_test
-@pytest.mark.parametrize("tlims", [None, (0, 1)])
-def test_plot_cyclepoints(tlims, sim_args):
-    """Test plotting extrema/zero-crossings."""
+def test_plot_cyclepoints_df(sim_args):
 
-    plot_cyclepoints(sim_args['df'], sim_args['sig'], sim_args['fs'], tlims=tlims)
+    plot_cyclepoints_df(sim_args['df'], sim_args['sig'], sim_args['fs'], save_fig=True,
+                        file_name='test_plot_cyclepoints_df', file_path=TEST_PLOTS_PATH)
+
+
+@plot_test
+def test_plot_cyclepoints_array(sim_args):
+
+    ps, ts = find_extrema(sim_args['sig'], sim_args['fs'], (6, 14))
+    zerox_rise, zerox_decay = find_zerox(sim_args['sig'], ps, ts)
+
+    plot_cyclepoints_array(sim_args['sig'], sim_args['fs'], ps=ps, ts=ts,
+                           zerox_rise=zerox_rise, zerox_decay=zerox_decay, save_fig=True,
+                           file_name='test_plot_cyclepoints_array', file_path=TEST_PLOTS_PATH)
