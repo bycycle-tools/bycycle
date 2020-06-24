@@ -18,11 +18,11 @@ def plot_feature_hist(feature, burst_param, bins='auto', ax=None, **kwargs):
         Dataframe output from :func:`~.compute_features` or a 1d array.
     burst_param : str
         Column name of the parameter of interest in ``df``.
-    ax : matplotlib.Axes, optional, default: None
-        Figure axes upon which to plot.
     bins : int or string, optional, default: 'auto'
         The number of bins or binning strategy string,
         as specified in matplotlib.pyplot.hist.
+    ax : matplotlib.Axes, optional, default: None
+        Figure axes upon which to plot.
     **kwargs
         Keyword arguments to pass into `matplotlib.pyplot.hist`.
 
