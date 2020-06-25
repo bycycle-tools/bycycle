@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 from neurodsp.plts import plot_time_series
 from neurodsp.plts.utils import savefig
 
-from bycycle.utils import limit_df, limit_sig_times, get_extrema
+from bycycle.utils import limit_signal, get_extrema
 
 ###################################################################################################
 ###################################################################################################
 
 @savefig
-def plot_cyclepoints_df(df, sig, fs, xlim=None, plot_sig=True, plot_extrema=True,
-                        plot_zerox=True, ax=None, **kwargs):
+def plot_cyclepoints_df(df, sig, fs, plot_sig=True, plot_extrema=True,
+                        plot_zerox=True, xlim=None, ax=None, **kwargs):
     """Plot extrema and/or zero-crossings using a dataframe to define points.
 
     Parameters
@@ -25,14 +25,14 @@ def plot_cyclepoints_df(df, sig, fs, xlim=None, plot_sig=True, plot_extrema=True
         Time series to plot.
     fs : float
         Sampling rate, in Hz.
-    xlim : tuple of (float, float), optional, default: None
-        Start and stop times.
     plot_sig : bool, optional, default: True
         Plots the raw signal.
     plot_extrema :  bool, optional, default: True
         Plots peaks and troughs.
     plot_zerox :  bool, optional, default: True
         Plots zero-crossings.
+    xlim : tuple of (float, float), optional, default: None
+        Start and stop times.
     ax : matplotlib.Axes, optional, default: None
         Figure axes upon which to plot.
     **kwargs
@@ -48,70 +48,28 @@ def plot_cyclepoints_df(df, sig, fs, xlim=None, plot_sig=True, plot_extrema=True
 
     """
 
-    # Set default kwargs
-    figsize = kwargs.pop('figsize', (15, 3))
-    xlabel = kwargs.pop('xlabel', 'Time (s)')
-    ylabel = kwargs.pop('ylabel', 'Voltage (uV)')
-
-    # Set times and limits
-    times = np.arange(0, len(sig) / fs, 1 / fs)
-    xlim = (times[0], times[-1]) if xlim is None else xlim
-
-    # Determine extrema/zero-crossing times and signals
+    # Determine extrema/zero-crossings from dataframe
     center_e, side_e = get_extrema(df)
 
-    df = limit_df(df, fs, xlim)
-    sig, times = limit_sig_times(sig, times, xlim)
-
-    # Extend plotting based on given arguments
-    x_values = []
-    y_values = []
-    colors = ['k']
+    peaks, troughs, rises, decays = [None]*4
 
     if plot_extrema:
 
-        ps = df['sample_' + center_e].values
-        ts = df['sample_last_' + side_e].values
-        ts = np.append(ts, df['sample_next_' + side_e].values[-1])
-
-        # Cycles are kept if any cyclepoint is within tlims, this ensures all points to be plotted
-        #   are within the x limits.
-        ps = ps[(ps >= 0) & (ps < (xlim[1] - xlim[0]) * fs)]
-        ts = ts[(ts >= 0) & (ts < (xlim[1] - xlim[0]) * fs)]
-
-        x_values.extend([times[ps], times[ts]])
-        y_values.extend([sig[ps], sig[ts]])
-        colors.extend(['b', 'r'])
-
+        peaks = df['sample_' + center_e].values
+        troughs = np.append(df['sample_last_' + side_e].values,
+                            df['sample_next_' + side_e].values[-1])
     if plot_zerox:
-        zerox_rise = df['sample_zerox_rise'].values
-        zerox_rise = zerox_rise[(zerox_rise >= 0) & (zerox_rise < (xlim[1] - xlim[0]) * fs)]
-        zerox_decay = df['sample_zerox_decay'].values
-        zerox_decay = zerox_decay[(zerox_decay >= 0) & (zerox_decay < (xlim[1] - xlim[0]) * fs)]
 
-        x_values.extend([times[zerox_rise], times[zerox_decay]])
-        y_values.extend([sig[zerox_rise], sig[zerox_decay]])
-        colors.extend(['g', 'm'])
+        rises = df['sample_zerox_rise'].values
+        decays = df['sample_zerox_decay'].values
 
-    # Allow custom colors to overwrite default
-    colors = kwargs.pop('colors', colors)
-
-    # Plot cycle points
-    if ax is None:
-        fig, ax = plt.subplots(figsize=figsize)
-
-    if plot_sig:
-        plot_time_series(times, sig, colors=colors[0], ax=ax)
-
-    colors = colors[1:] if plot_sig is True else colors
-
-    plot_time_series(x_values, y_values, ax=ax, colors=colors, xlabel=xlabel,
-                     ylabel=ylabel, marker='o', ls='', **kwargs)
+    plot_cyclepoints_array(sig, fs, peaks=peaks, troughs=troughs, rises=rises,
+                           decays=decays, plot_sig=plot_sig, xlim=xlim, ax=ax, **kwargs)
 
 
 @savefig
-def plot_cyclepoints_array(sig, fs, xlim=None, ps=None, ts=None, zerox_rise=None,
-                           zerox_decay=None, ax=None, **kwargs):
+def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays=None,
+                           plot_sig=True, xlim=None, ax=None, **kwargs):
     """Plot extrema and/or zero-crossings using arrays to define points.
 
     Parameters
@@ -119,16 +77,16 @@ def plot_cyclepoints_array(sig, fs, xlim=None, ps=None, ts=None, zerox_rise=None
     sig : 1d array
         Time series to plot.
     fs : float
-        Sampling rate, in Hz.fs
+        Sampling rate, in Hz.
     xlim : tuple of (float, float), optional, default: None
         Start and stop times.
-    ps : 1d array, optional, default: None
+    peaks : 1d array, optional, default: None
         Peak signal indices from :func:`.find_extrema`.
-    ts : 1d array, optional, default: None
+    troughs : 1d array, optional, default: None
         Trough signal indices from :func:`.find_extrema`.
-    zerox_rise : 1d array, optional, default: None
+    rises : 1d array, optional, default: None
         Zero-crossing rise indices from :func:`~.find_zerox`.
-    zerox_decay : 1d array, optional, default: None
+    decays : 1d array, optional, default: None
         Zero-crossing decay indices from :func:`~.find_zerox`.
     ax : matplotlib.Axes, optional, default: None
         Figure axes upon which to plot.
@@ -151,7 +109,7 @@ def plot_cyclepoints_array(sig, fs, xlim=None, ps=None, ts=None, zerox_rise=None
     xlim = (times[0], times[-1]) if xlim is None else xlim
 
     # Restrict sig and times to xlim
-    sig, times = limit_sig_times(sig, times, xlim)
+    sig, times = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
 
     # Set default kwargs
     figsize = kwargs.pop('figsize', (15, 3))
@@ -164,12 +122,12 @@ def plot_cyclepoints_array(sig, fs, xlim=None, ps=None, ts=None, zerox_rise=None
     y_values = []
     colors = ['k']
 
-    for idx, points in enumerate([ps, ts, zerox_rise, zerox_decay]):
+    for idx, points in enumerate([peaks, troughs, rises, decays]):
 
         if points is not None:
 
             # Limit times and shift indices of cyclepoints (cps)
-            cps = points[(points > xlim[0]*fs) & (points <= xlim[1]*fs)]
+            cps = points[(points >= xlim[0]*fs) & (points < xlim[1]*fs)]
             cps = cps - int(xlim[0]*fs)
 
             y_values.append(sig[cps])
@@ -182,6 +140,9 @@ def plot_cyclepoints_array(sig, fs, xlim=None, ps=None, ts=None, zerox_rise=None
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
 
-    plot_time_series(times, sig, ax=ax, colors=colors[0])
+    if plot_sig:
+        plot_time_series(times, sig, colors=colors[0], ax=ax)
+        colors = colors[1:]
+
     plot_time_series(x_values, y_values, ax=ax, xlabel=xlabel, ylabel=ylabel,
-                     colors=colors[1:], marker='o', ls='', **kwargs)
+                     colors=colors, marker='o', ls='', **kwargs)

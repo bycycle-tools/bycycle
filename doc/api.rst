@@ -69,5 +69,19 @@ Plotting Functions
     plot_cyclepoints_df
     plot_cyclepoints_array
     plot_feature_hist
-    plot_feature_catplot
+    plot_feature_categorical
+
+Utility Functions
+=================
+
+.. currentmodule:: bycycle.utils
+
+.. autosummary::
+    :toctree: generated/
+
+    limit_df
+    limit_signal
+    get_extrema
+
+
 

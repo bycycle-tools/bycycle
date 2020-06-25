@@ -26,7 +26,7 @@ from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
 from bycycle.features import compute_features
-from bycycle.plts import plot_burst_detect_summary, plot_feature_catplot
+from bycycle.plts import plot_burst_detect_summary, plot_feature_categorical
 
 pd.options.display.max_columns = 10
 
@@ -126,17 +126,17 @@ print(df_subjects)
 fig, axes = plt.subplots(figsize=(15, 15), nrows=2, ncols=2)
 
 
-plot_feature_catplot(df_subjects, 'volt_amp', group_by='group', ax=axes[0][0],
-                     xlabel=['Patient', 'Control'], ylabel='Amplitude')
+plot_feature_categorical(df_subjects, 'volt_amp', group_by='group', ax=axes[0][0],
+                        xlabel=['Patient', 'Control'], ylabel='Amplitude')
 
-plot_feature_catplot(df_subjects, 'period', group_by='group', ax=axes[0][1],
-                     xlabel=['Patient', 'Control'], ylabel='Period (ms)')
+plot_feature_categorical(df_subjects, 'period', group_by='group', ax=axes[0][1],
+                        xlabel=['Patient', 'Control'], ylabel='Period (ms)')
 
-plot_feature_catplot(df_subjects, 'time_rdsym', group_by='group', ax=axes[1][0],
-                     xlabel=['Patient', 'Control'], ylabel='Rise-Decay Symmetry')
+plot_feature_categorical(df_subjects, 'time_rdsym', group_by='group', ax=axes[1][0],
+                        xlabel=['Patient', 'Control'], ylabel='Rise-Decay Symmetry')
 
-plot_feature_catplot(df_subjects, 'time_ptsym', group_by='group', ax=axes[1][1],
-                     xlabel=['Patient', 'Control'], ylabel='Peak-Trough Symmetry')
+plot_feature_categorical(df_subjects, 'time_ptsym', group_by='group', ax=axes[1][1],
+                        xlabel=['Patient', 'Control'], ylabel='Peak-Trough Symmetry')
 
 ####################################################################################################
 #

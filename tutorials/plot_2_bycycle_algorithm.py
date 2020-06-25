@@ -94,10 +94,10 @@ zerofall_narrow = _fzerofall(sig_narrow)
 ####################################################################################################
 
 # Find peaks and troughs (this function also does the above)
-ps, ts = find_extrema(sig_low, fs, f_theta,
-                      filter_kwargs={'n_seconds':n_seconds_theta})
+peaks, troughs = find_extrema(sig_low, fs, f_theta,
+                              filter_kwargs={'n_seconds':n_seconds_theta})
 
-plot_cyclepoints_array(sig_low, fs, xlim=(12, 15), ps=ps, ts=ts)
+plot_cyclepoints_array(sig_low, fs, peaks=peaks, troughs=troughs, xlim=(12, 15))
 
 ####################################################################################################
 #
@@ -123,10 +123,10 @@ filter_signal(sig, fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
 # Note: Plotting midpoints and extrema may also be performed using the dataframe output from
 # :func:`~.compute_features` with the :func:`~.plot_cyclepoints` function.
 
-zerox_rise, zerox_decay = find_zerox(sig_low, ps, ts)
+rises, decays = find_zerox(sig_low, peaks, troughs)
 
-plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), ps=ps, ts=ts,
-                       zerox_rise=zerox_rise, zerox_decay=zerox_decay)
+plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
+                       rises=rises, decays=decays)
 
 ####################################################################################################
 #

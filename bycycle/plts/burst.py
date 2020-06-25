@@ -11,7 +11,7 @@ from neurodsp.plts import plot_time_series, plot_bursts
 from neurodsp.plts.utils import savefig
 
 from bycycle.plts.cyclepoints import plot_cyclepoints_df
-from bycycle.utils import limit_df, limit_sig_times, get_extrema
+from bycycle.utils import limit_df, limit_signal, get_extrema
 
 ###################################################################################################
 ###################################################################################################
@@ -190,8 +190,8 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, xlim=None,
     center_e, side_e = get_extrema(df)
 
     # Limit dataframe, sig and times
-    df = limit_df(df, fs, xlim)
-    sig, times = limit_sig_times(sig, times, xlim)
+    df = limit_df(df, fs, start=xlim[0], stop=xlim[1])
+    sig, times = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
 
     # Remove start/end cycles that tlims falls between
     df = df[df['sample_last_' + side_e] >= 0]
@@ -231,4 +231,3 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, xlim=None,
 
             ax.axvspan(times[cyc['sample_last_' + side_e]], times[cyc['sample_next_' + side_e]],
                        alpha=0.5, color=color, lw=0)
-
