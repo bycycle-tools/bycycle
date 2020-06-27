@@ -55,14 +55,33 @@ Burst Detection Functions
     :toctree: generated/
 
     detect_bursts_cycles
-    detect_bursts_df_amp
 
-Plotting Function
-=================
+Plotting Functions
+==================
 
-.. currentmodule:: bycycle.burst
+.. currentmodule:: bycycle.plts
 
 .. autosummary::
     :toctree: generated/
 
-    plot_burst_detect_params
+    plot_burst_detect_summary
+    plot_burst_detect_param
+    plot_cyclepoints_df
+    plot_cyclepoints_array
+    plot_feature_hist
+    plot_feature_categorical
+
+Utility Functions
+=================
+
+.. currentmodule:: bycycle.utils
+
+.. autosummary::
+    :toctree: generated/
+
+    limit_df
+    limit_signal
+    get_extrema
+
+
+

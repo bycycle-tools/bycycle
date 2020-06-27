@@ -13,7 +13,7 @@ from bycycle.burst import detect_bursts_cycles, detect_bursts_df_amp
 ###################################################################################################
 ###################################################################################################
 
-def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_method='cycles',
+def compute_features(sig, fs, f_range, center_extrema='peak', burst_detection_method='cycles',
                      burst_detection_kwargs=None, find_extrema_kwargs=None,
                      hilbert_increase_n=False):
     """Segment a recording into individual cycles and compute features for each cycle.
@@ -26,11 +26,11 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest (Hz).
-    center_extrema : {'P', 'T'}
+    center_extrema : {'peak', 'trough'}
         The center extrema in the cycle.
 
-        - 'P' : cycles are defined trough-to-trough
-        - 'T' : cycles are defined peak-to-peak
+        - 'peak' : cycles are defined trough-to-trough
+        - 'trough' : cycles are defined peak-to-peak
 
     burst_detection_method : {'cycles', 'amp'}
         Method for detecting bursts.
@@ -90,7 +90,7 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
     Peak vs trough centering
         - By default, the first extrema analyzed will be a peak, and the final one a trough.
         - In order to switch the preference, the signal is simply inverted and columns are renamed.
-        - Columns are slightly different depending on if ``center_extrema`` is set to 'P' or 'T'.
+        - Columns are slightly different depending on if ``center_extrema`` is set to 'peak' or 'trough'.
     """
 
     # Set defaults if user input is None
@@ -111,9 +111,9 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
                 This cannot be overwritten at this time.''')
 
     # Negate signal if to analyze trough-centered cycles
-    if center_extrema == 'P':
+    if center_extrema == 'peak':
         pass
-    elif center_extrema == 'T':
+    elif center_extrema == 'trough':
         sig = -sig
     else:
         raise ValueError('Parameter "center_extrema" must be either "P" or "T"')
@@ -179,7 +179,7 @@ def compute_features(sig, fs, f_range, center_extrema='P', burst_detection_metho
         raise ValueError('Invalid entry for "burst_detection_method"')
 
     # Rename columns if they are actually trough-centered
-    if center_extrema == 'T':
+    if center_extrema == 'trough':
         rename_dict = {'sample_peak': 'sample_trough',
                        'sample_zerox_decay': 'sample_zerox_rise',
                        'sample_zerox_rise': 'sample_zerox_decay',

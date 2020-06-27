@@ -38,12 +38,17 @@ the measured features along with the raw data to assure they make sense.
 # plot the filtered signal in comparison to the original signal.
 
 import numpy as np
-import scipy as sp
-import matplotlib.pyplot as plt
-from neurodsp.filt import filter_signal
-
 import pandas as pd
-pd.options.display.max_columns = 30
+import matplotlib.pyplot as plt
+
+from neurodsp.filt import filter_signal
+from neurodsp.plts import plot_time_series
+
+from bycycle.features import compute_features
+from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema, find_zerox
+from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_array
+
+pd.options.display.max_columns = 10
 
 ####################################################################################################
 
@@ -61,15 +66,10 @@ sig_low = filter_signal(sig, fs, 'lowpass', f_lowpass,
 
 # Plot signal
 times = np.arange(0, len(sig)/fs, 1/fs)
-tlim = (2, 5)
-tidx = np.logical_and(times>=tlim[0], times<tlim[1])
+xlim = (2, 5)
+tidx = np.logical_and(times >= xlim[0], times < xlim[1])
 
-plt.figure(figsize=(12, 2))
-plt.plot(times[tidx], sig[tidx], '.5')
-plt.plot(times[tidx], sig_low[tidx], 'k')
-plt.xlim(tlim)
-plt.tight_layout()
-plt.show()
+plot_time_series(times[tidx], [sig[tidx], sig_low[tidx]], colors=['k', 'k'], alpha=[.5, 1], lw=2)
 
 ####################################################################################################
 #
@@ -81,8 +81,6 @@ plt.show()
 # individual cycles. To do this, the signal is first narrow-bandpass filtered in order to estimate
 # "zero-crossings." Then, in between these zerocrossings, the absolute maxima and minima are found
 # and labeled as the peaks and troughs, respectively.
-
-from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema
 
 # Narrowband filter signal
 n_seconds_theta = .75
@@ -96,21 +94,10 @@ zerofall_narrow = _fzerofall(sig_narrow)
 ####################################################################################################
 
 # Find peaks and troughs (this function also does the above)
-ps, ts = find_extrema(sig_low, fs, f_theta,
-                      filter_kwargs={'n_seconds':n_seconds_theta})
+peaks, troughs = find_extrema(sig_low, fs, f_theta,
+                              filter_kwargs={'n_seconds':n_seconds_theta})
 
-tlim = (12, 15)
-tidx = np.logical_and(times>=tlim[0], times<tlim[1])
-tidxPs = ps[np.logical_and(ps>tlim[0]*fs, ps<tlim[1]*fs)]
-tidxTs = ts[np.logical_and(ts>tlim[0]*fs, ts<tlim[1]*fs)]
-
-plt.figure(figsize=(12, 2))
-plt.plot(times[tidx], sig_low[tidx], 'k')
-plt.plot(times[tidxPs], sig_low[tidxPs], 'b.', ms=10)
-plt.plot(times[tidxTs], sig_low[tidxTs], 'r.', ms=10)
-plt.xlim(tlim)
-plt.tight_layout()
-plt.show()
+plot_cyclepoints_array(sig_low, fs, peaks=peaks, troughs=troughs, xlim=(12, 15))
 
 ####################################################################################################
 #
@@ -132,29 +119,14 @@ filter_signal(sig, fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
 # crosses halfway between the adjacent peak and trough voltages. If this threshold is crossed
 # multiple times, then the median time is chosen as the flank midpoint. This is not perfect;
 # however, this is rare, and most of these cycles should be removed by burst detection.
+#
+# Note: Plotting midpoints and extrema may also be performed using the dataframe output from
+# :func:`~.compute_features` with the :func:`~.plot_cyclepoints` function.
 
-from bycycle.cyclepoints import find_zerox
-zerox_rise, zerox_decay = find_zerox(sig_low, ps, ts)
+rises, decays = find_zerox(sig_low, peaks, troughs)
 
-####################################################################################################
-
-tlim = (13, 14)
-tidx = np.logical_and(times>=tlim[0], times<tlim[1])
-tidx_ps = ps[np.logical_and(ps>tlim[0]*fs, ps<tlim[1]*fs)]
-tidx_ts = ts[np.logical_and(ts>tlim[0]*fs, ts<tlim[1]*fs)]
-tidx_ds = zerox_decay[np.logical_and(zerox_decay>tlim[0]*fs, zerox_decay<tlim[1]*fs)]
-tidx_rs = zerox_rise[np.logical_and(zerox_rise>tlim[0]*fs, zerox_rise<tlim[1]*fs)]
-
-plt.figure(figsize=(12, 2))
-plt.plot(times[tidx], sig_low[tidx], 'k')
-plt.plot(times[tidx_ps], sig_low[tidx_ps], 'b.', ms=10)
-plt.plot(times[tidx_ts], sig_low[tidx_ts], 'r.', ms=10)
-plt.plot(times[tidx_ds], sig_low[tidx_ds], 'm.', ms=10)
-plt.plot(times[tidx_rs], sig_low[tidx_rs], 'g.', ms=10)
-plt.xlim(tlim)
-plt.xlabel('Time (seconds)')
-plt.tight_layout()
-plt.show()
+plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
+                       rises=rises, decays=decays)
 
 ####################################################################################################
 #
@@ -172,13 +144,12 @@ plt.show()
 # - peak-trough symmetry (time_ptsym) - fraction of the period in the peak period
 #
 # Note that a warning appears here because no burst detection parameters are provided. This is
-# addressed in section #4
+# addressed in `section #4 <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#determine-parts-of-signal-in-oscillatory-burst>`_.
 
 ####################################################################################################
 
-from bycycle.features import compute_features
 df = compute_features(sig, fs, f_theta)
-print(df.head())
+df.head()
 
 ####################################################################################################
 #
@@ -198,25 +169,25 @@ print(df.head())
 #
 # 1. amplitude consistency - consecutive rises and decays should be comparable in magnitude.
 #
-# - The amplitude consistency of a cycle is equal to the maximum relative difference between rises \
-#   and decay amplitudes across all pairs of adjacent rises and decays that include one of the \
+# - The amplitude consistency of a cycle is equal to the maximum relative difference between rises
+#   and decay amplitudes across all pairs of adjacent rises and decays that include one of the
 #   flanks in the cycle (3 pairs)
 # - e.g. if a rise is 10mV and a decay is 7mV, then its amplitude consistency is 0.7.
 #
 # 2. period consistency - consecutive cycles should be comparable in duration
 #
-# - The period consistency is equal to the maximu relative difference between all pairs of \
-#   adjacent periods that include the cycle of interest (2 pairs: current + previous cycles and \
+# - The period consistency is equal to the maximu relative difference between all pairs of
+#   adjacent periods that include the cycle of interest (2 pairs: current + previous cycles and
 #   current + next cycles)
-# - e.g. if the previous, current, and next cycles have periods 60ms, 100ms, and 120ms, \
+# - e.g. if the previous, current, and next cycles have periods 60ms, 100ms, and 120ms,
 #   respectively, then the period consistency is min(60/100, 100/120) = 0.6.
 #
 # 3. monotonicity - the rise and decay flanks of the cycle should be mostly monotonic
 #
-# - The monotonicity is the fraction of samples that the instantaneous derivative (numpy.diff) is \
+# - The monotonicity is the fraction of samples that the instantaneous derivative (numpy.diff) is
 #   consistent with the direction of the flank.
-# - e.g. if in the rise, the instantaneous derivative is 90% positive, and in the decay, the \
-#   instantaneous derivative is 80% negative, then the monotonicity of the cycle would be 0.85 \
+# - e.g. if in the rise, the instantaneous derivative is 90% positive, and in the decay, the
+#   instantaneous derivative is 80% negative, then the monotonicity of the cycle would be 0.85
 #   ((0.9+0.8)/2)
 #
 # Below, we load a simulated signal and then define 3 sets of thresholds ranging from liberal to
@@ -258,17 +229,16 @@ sig = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 # of the signal that do not have much apparent oscillatory burst are still labeled as if they do.
 
 ####################################################################################################
-from bycycle.burst import plot_burst_detect_params
 
-burst_kwargs = {'amplitude_fraction_threshold': 0,
-                'amplitude_consistency_threshold': .2,
+burst_kwargs = {'amp_fraction_threshold': 0,
+                'amp_consistency_threshold': .2,
                 'period_consistency_threshold': .45,
                 'monotonicity_threshold': .7,
                 'n_cycles_min': 3}
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
+plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -277,15 +247,15 @@ plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
 # These new burst detection thresholds seem to be set too high (too strict) as the algorithm is not
 # able to detect the bursts that are present.
 
-burst_kwargs = {'amplitude_fraction_threshold': 0,
-                'amplitude_consistency_threshold': .75,
+burst_kwargs = {'amp_fraction_threshold': 0,
+                'amp_consistency_threshold': .75,
                 'period_consistency_threshold': .7,
                 'monotonicity_threshold': .9,
                 'n_cycles_min': 3}
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
+plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -298,12 +268,12 @@ plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
 # Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove some false
 # positives that may occur, like that around 1.5 seconds.
 
-burst_kwargs = {'amplitude_fraction_threshold': .3,
-                'amplitude_consistency_threshold': .4,
+burst_kwargs = {'amp_fraction_threshold': .3,
+                'amp_consistency_threshold': .4,
                 'period_consistency_threshold': .5,
                 'monotonicity_threshold': .8,
                 'n_cycles_min': 3}
 
 df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
 
-plot_burst_detect_params(sig, fs, df, burst_kwargs, tlims=None, figsize=(12, 3))
+plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))

@@ -17,14 +17,18 @@ oscillatory input (measured by its symmetry).
 ####################################################################################################
 
 import numpy as np
-import scipy as sp
 from scipy import stats
 import matplotlib.pyplot as plt
-from neurodsp.filt import filter_signal
-from bycycle.features import compute_features
 import pandas as pd
 import seaborn as sns
-pd.options.display.max_columns=50
+
+from neurodsp.filt import filter_signal
+from neurodsp.plts import plot_time_series
+
+from bycycle.features import compute_features
+from bycycle.plts import plot_burst_detect_summary, plot_feature_categorical
+
+pd.options.display.max_columns = 10
 
 ####################################################################################################
 #
@@ -48,10 +52,7 @@ n_signals = len(sigs)
 n_seconds = len(sigs[0])/fs
 times = np.arange(0, n_seconds, 1/fs)
 
-plt.figure(figsize=(16,3))
-plt.plot(times, sigs[0], 'k')
-plt.xlim((0, n_seconds))
-plt.show()
+plot_time_series(times, sigs[0], lw=2)
 
 ####################################################################################################
 #
@@ -61,8 +62,8 @@ plt.show()
 ####################################################################################################
 
 f_alpha = (7, 13) # Frequency band of interest
-burst_kwargs = {'amplitude_fraction_threshold': .2,
-                'amplitude_consistency_threshold': .5,
+burst_kwargs = {'amp_fraction_threshold': .2,
+                'amp_consistency_threshold': .5,
                 'period_consistency_threshold': .5,
                 'monotonicity_threshold': .8,
                 'n_cycles_min': 3} # Tuned burst detection parameters
@@ -70,19 +71,23 @@ burst_kwargs = {'amplitude_fraction_threshold': .2,
 # Compute features for each signal and concatenate into single dataframe
 dfs = []
 for idx in range(n_signals):
+
     df = compute_features(sigs[idx], fs, f_alpha,
                           burst_detection_kwargs=burst_kwargs)
+
     if idx >= int(n_signals/2):
         df['group'] = 'patient'
     else:
         df['group'] = 'control'
+
     df['subject_id'] = idx
     dfs.append(df)
+
 df_cycles = pd.concat(dfs)
 
 ####################################################################################################
 
-print(df_cycles.head())
+df_cycles.head()
 
 ####################################################################################################
 #
@@ -94,13 +99,9 @@ print(df_cycles.head())
 # signal segments from a few subjects.
 
 subj = 1
-sig_df = df_cycles[df_cycles['subject_id']==subj]
-from bycycle.burst import plot_burst_detect_params
-plot_burst_detect_params(sigs[subj], fs, sig_df,
-                         burst_kwargs, tlims=(0, 5), figsize=(16, 3), plot_only_result=True)
+sig_df = df_cycles[df_cycles['subject_id'] == subj]
 
-plot_burst_detect_params(sigs[subj], fs, sig_df,
-                         burst_kwargs, tlims=(0, 5), figsize=(16, 3))
+plot_burst_detect_summary(sig_df, sigs[subj], fs, burst_kwargs, xlim=(0, 5), figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -122,18 +123,20 @@ print(df_subjects)
 
 ####################################################################################################
 
-feature_names = {'volt_amp': 'Amplitude',
-                 'period': 'Period (ms)',
-                 'time_rdsym': 'Rise-decay symmetry',
-                 'time_ptsym': 'Peak-trough symmetry'}
-for feat, feat_name in feature_names.items():
-    graph = sns.catplot(x='group', y=feat, data=df_subjects)
-    plt.xlabel('')
-    plt.xticks(size=20)
-    plt.ylabel(feat_name, size=20)
-    plt.yticks(size=15)
-    plt.tight_layout()
-    plt.show()
+fig, axes = plt.subplots(figsize=(15, 15), nrows=2, ncols=2)
+
+
+plot_feature_categorical(df_subjects, 'volt_amp', group_by='group', ax=axes[0][0],
+                        xlabel=['Patient', 'Control'], ylabel='Amplitude')
+
+plot_feature_categorical(df_subjects, 'period', group_by='group', ax=axes[0][1],
+                        xlabel=['Patient', 'Control'], ylabel='Period (ms)')
+
+plot_feature_categorical(df_subjects, 'time_rdsym', group_by='group', ax=axes[1][0],
+                        xlabel=['Patient', 'Control'], ylabel='Rise-Decay Symmetry')
+
+plot_feature_categorical(df_subjects, 'time_ptsym', group_by='group', ax=axes[1][1],
+                        xlabel=['Patient', 'Control'], ylabel='Peak-Trough Symmetry')
 
 ####################################################################################################
 #
@@ -142,8 +145,14 @@ for feat, feat_name in feature_names.items():
 
 ####################################################################################################
 
+feature_names = {'volt_amp': 'Amplitude',
+                 'period': 'Period (ms)',
+                 'time_rdsym': 'Rise-Decay Symmetry',
+                 'time_ptsym': 'Peak-Trough Symmetry'}
+
 for feat, feat_name in feature_names.items():
-    x_treatment = df_subjects[df_subjects['group']=='patient'][feat]
-    x_control = df_subjects[df_subjects['group']=='control'][feat]
+
+    x_treatment = df_subjects[df_subjects['group'] == 'patient'][feat]
+    x_control = df_subjects[df_subjects['group'] == 'control'][feat]
     ustat, pval = stats.mannwhitneyu(x_treatment, x_control)
     print('{:20s} difference between groups, U= {:3.0f}, p={:.5f}'.format(feat_name, ustat, pval))

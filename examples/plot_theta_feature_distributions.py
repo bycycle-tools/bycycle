@@ -10,8 +10,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from neurodsp.filt import filter_signal
-from bycycle.features import compute_features
+from neurodsp.plts import plot_time_series
 
+from bycycle.plts.features import plot_feature_hist
+from bycycle.features import compute_features
 
 ####################################################################################################
 # Load and preprocess data
@@ -50,17 +52,17 @@ ec3 = filter_signal(ec3_raw, fs, 'lowpass', fc, n_seconds=filter_seconds,
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
-osc_kwargs = {'amplitude_fraction_threshold': 0,
-              'amplitude_consistency_threshold': .6,
+osc_kwargs = {'amp_fraction_threshold': 0,
+              'amp_consistency_threshold': .6,
               'period_consistency_threshold': .75,
               'monotonicity_threshold': .8,
               'n_cycles_min': 3}
 
 # Cycle-by-cycle analysis
-df_ca1 = compute_features(ca1, fs, f_theta, center_extrema='T',
+df_ca1 = compute_features(ca1, fs, f_theta, center_extrema='trough',
                           burst_detection_kwargs=osc_kwargs)
 
-df_ec3 = compute_features(ec3, fs, f_theta, center_extrema='T',
+df_ec3 = compute_features(ec3, fs, f_theta, center_extrema='trough',
                           burst_detection_kwargs=osc_kwargs)
 
 # Limit analysis only to oscillatory bursts
@@ -80,30 +82,13 @@ ca1_plt = ca1_raw[samplims[0]:samplims[1]]/1000
 ec3_plt = ec3_raw[samplims[0]:samplims[1]]/1000
 times = np.arange(0, len(ca1_plt)/fs, 1/fs)
 
-####################################################################################################
+fig, axes = plt.subplots(figsize=(15, 6), nrows=2)
 
-plt.figure(figsize=(12, 3))
-plt.plot(times, ca1_plt, 'k')
-plt.xlim((0, 1.6))
-plt.ylim((-2.4, 2.4))
-plt.xlabel('Time (s)', size=15)
-plt.ylabel('CA1 Voltage (mV)', size=15)
-plt.xticks(size=12)
-plt.yticks(size=12)
-plt.show()
+plot_time_series(times, ca1_plt, ax=axes[0], xlim=(0, 1.6), ylim=(-2.4, 2.4),
+                xlabel="Time (s)", ylabel="CA1 Voltage (mV)")
 
-####################################################################################################
-
-plt.figure(figsize=(12, 3))
-plt.plot(times, ec3_plt, 'r')
-plt.xlim((0, 1.6))
-plt.ylim((-2.4, 2.4))
-plt.xlabel('Time (s)', size=15)
-plt.ylabel('EC3 Voltage (mV)', size=15)
-plt.xticks(size=12)
-plt.yticks(size=12)
-plt.show()
-
+plot_time_series(times, ec3_plt, ax=axes[1], colors='r', xlim=(0, 1.6),
+                 ylim=(-2.4, 2.4), xlabel="Time (s)", ylabel="EC3 Voltage (mV)")
 
 ####################################################################################################
 #
@@ -112,47 +97,44 @@ plt.show()
 
 ####################################################################################################
 
-plt.figure(figsize=(5, 5))
-plt.hist(df_ca1_cycles['volt_amp']/1000, bins=np.arange(0, 8, .1), color='k', alpha=.5, label='CA1')
-plt.hist(df_ec3_cycles['volt_amp']/1000, bins=np.arange(0, 8, .1), color='r', alpha=.5, label='EC3')
-plt.xticks(np.arange(5), size=12)
-plt.legend(fontsize=15)
-plt.yticks(size=12)
-plt.xlim((0, 4.5))
-plt.xlabel('Cycle amplitude (mV)', size=15)
-plt.ylabel('# cycles', size=15)
-plt.tight_layout()
-plt.show()
+fig, axes = plt.subplots(figsize=(15, 15), nrows=2, ncols=2)
 
-plt.figure(figsize=(5, 5))
-plt.hist(df_ca1_cycles['period'] / fs * 1000, bins=np.arange(0, 250, 5), color='k', alpha=.5)
-plt.hist(df_ec3_cycles['period'] / fs * 1000, bins=np.arange(0, 250, 5), color='r', alpha=.5)
-plt.xticks(size=12)
-plt.yticks(size=12)
-plt.xlim((0, 250))
-plt.xlabel('Cycle period (ms)', size=15)
-plt.ylabel('# cycles', size=15)
-plt.tight_layout()
-plt.show()
+# Plot cycle amplitude
+cycles_ca1 = df_ca1_cycles['volt_amp']/1000
+cycles_ec3 = df_ec3_cycles['volt_amp']/1000
 
-plt.figure(figsize=(5, 5))
-plt.hist(df_ca1_cycles['time_rdsym'], bins=np.arange(0, 1, .02), color='k', alpha=.5)
-plt.hist(df_ec3_cycles['time_rdsym'], bins=np.arange(0, 1, .02), color='r', alpha=.5)
-plt.xticks(size=12)
-plt.yticks(size=12)
-plt.xlim((0, 1))
-plt.xlabel('Rise-decay asymmetry\n(fraction of cycle in rise period)', size=15)
-plt.ylabel('# cycles', size=15)
-plt.tight_layout()
-plt.show()
+plot_feature_hist(cycles_ca1, 'volt_amp', ax=axes[0][0], xlabel='Cycle amplitude (mV)',
+                  xlim=(0, 4.5), color='k', bins=np.arange(0, 8, .1))
 
-plt.figure(figsize=(5, 5))
-plt.hist(df_ca1_cycles['time_ptsym'], bins=np.arange(0, 1, .02), color='k', alpha=.5)
-plt.hist(df_ec3_cycles['time_ptsym'], bins=np.arange(0, 1, .02), color='r', alpha=.5)
-plt.xticks(size=12)
-plt.yticks(size=12)
-plt.xlim((0, 1))
-plt.xlabel('Peak-trough asymmetry\n(fraction of cycle in peak period)', size=15)
-plt.ylabel('# cycles', size=15)
-plt.tight_layout()
-plt.show()
+plot_feature_hist(cycles_ec3, 'volt_amp', ax=axes[0][0], xlabel='Cycle amplitude (mV)',
+                  xlim=(0, 4.5), color='r', bins=np.arange(0, 8, .1))
+
+axes[0][0].legend(['CA1', 'EC3'], fontsize=15)
+
+# Plot cycle period
+periods_ca1 = df_ca1_cycles['period'] / fs * 1000
+periods_ec3 = df_ec3_cycles['period'] / fs * 1000
+
+plot_feature_hist(periods_ca1, 'period', ax=axes[0][1], xlabel='Cycle period (ms)',
+                  xlim=(0, 250), color='k', bins=np.arange(0, 250, 5))
+
+plot_feature_hist(periods_ec3, 'volt_amp', ax=axes[0][1], xlabel='Cycle period (ms)',
+                  xlim=(0, 250), color='r', bins=np.arange(0, 250, 5))
+
+# Plot rise/decay symmetry
+plot_feature_hist(df_ca1_cycles, 'time_rdsym', ax=axes[1][0], xlim=(0, 1), color='k',
+                  xlabel='Rise-decay asymmetry\n(fraction of cycle in rise period)',
+                  bins=np.arange(0, 1, .02))
+
+plot_feature_hist(df_ec3_cycles, 'time_rdsym', ax=axes[1][0], xlim=(0, 1), color='r',
+                  xlabel='Rise-decay asymmetry\n(fraction of cycle in rise period)',
+                  bins=np.arange(0, 1, .02))
+
+# Plot peak/trough symmetry
+plot_feature_hist(df_ca1_cycles, 'time_ptsym', ax=axes[1][1], color='k',
+                  xlabel='Peak-trough asymmetry\n(fraction of cycle in peak period)',
+                  bins=np.arange(0, 1, .02))
+
+plot_feature_hist(df_ec3_cycles, 'time_ptsym', ax=axes[1][1], color='r',
+                  xlabel='Peak-trough asymmetry\n(fraction of cycle in peak period)',
+                  bins=np.arange(0, 1, .02))

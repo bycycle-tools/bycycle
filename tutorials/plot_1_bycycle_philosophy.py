@@ -22,11 +22,11 @@ transform. The latter is demonstrated below.
 # ---------------------------------------------------------------
 
 import numpy as np
-import scipy as sp
-from scipy import signal as spsignal
 import matplotlib.pyplot as plt
+
 from neurodsp.filt import filter_signal
 from neurodsp.timefrequency import amp_by_time, phase_by_time
+from neurodsp.plts import plot_time_series, plot_instantaneous_measure
 
 sig = np.load('data/sim_bursting_more_noise.npy')
 fs = 1000  # Sampling rate
@@ -38,31 +38,25 @@ sig_filt = filter_signal(sig, fs, 'bandpass', f_alpha, n_seconds=n_seconds_filte
 theta_amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
 theta_phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
 
-# Plots signal
+# Plot signal
 times = np.arange(0, len(sig)/fs, 1/fs)
-tlim = (2, 6)
-tidx = np.logical_and(times>=tlim[0], times<tlim[1])
+xlim = (2, 6)
+tidx = np.logical_and(times >= xlim[0], times < xlim[1])
 
-plt.figure(figsize=(12,6))
-plt.subplot(3,1,1)
-plt.plot(times[tidx], sig[tidx], 'k')
-plt.xlim(tlim)
-plt.ylabel('Voltage (mV)')
+fig, axes = plt.subplots(figsize=(15, 9), nrows=3)
 
-plt.subplot(3,1,2)
-plt.plot(times[tidx], sig_filt[tidx], 'k', alpha=.5)
-plt.plot(times[tidx], theta_amp[tidx], 'r')
-plt.xlim(tlim)
-plt.ylabel('Oscillation amplitude', color='r')
+# Plot the raw signal
+plot_time_series(times[tidx], sig[tidx], ax=axes[0], ylabel='Voltage (mV)',
+                 xlabel='', lw=2, labels='raw signal')
 
-plt.subplot(3,1,3)
-plt.plot(times[tidx], theta_phase[tidx], 'r')
-plt.xlim(tlim)
-plt.ylabel('Phase (radians)', color='r')
+# Plot the filtered signal and oscillation amplitude
+plot_instantaneous_measure(times[tidx], [sig_filt[tidx], theta_amp[tidx]],
+                           ax=axes[1], measure='amplitude', lw=2, xlabel='',
+                           labels=['filtered signal', 'amplitude'])
 
-plt.tight_layout()
-plt.show()
-
+# Plot the phase
+plot_instantaneous_measure(times[tidx], theta_phase[tidx], ax=axes[2], colors='r',
+                           measure='phase', lw=2, xlabel='Time (s)')
 
 ####################################################################################################
 #
@@ -79,17 +73,17 @@ plt.show()
 # However, there are some key disadvantages to this analysis that stem from its sine wave basis.
 #
 # 1. Being defined at every point in time gives the illusion that the phase and amplitude estimates
-# are valid at all points in time. However, the amplitude and phase estimates are pretty garbage
-# when there's no oscillation going on (the latter half of the time series above). The "amplitude"
-# and "phase" values are meaningless when no oscillation is actually present. Rather, they are
-# influenced by the other aspects of the signal, such as transients. For this reason, these measures
-# are flaws, and burst detection is very important to help alleviate this issue.
+#    are valid at all points in time. However, the amplitude and phase estimates are pretty garbage
+#    when there's no oscillation going on (the latter half of the time series above). The "amplitude"
+#    and "phase" values are meaningless when no oscillation is actually present. Rather, they are
+#    influenced by the other aspects of the signal, such as transients. For this reason, these measures
+#    are flaws, and burst detection is very important to help alleviate this issue.
 # 2. This analysis does not capture a potentially important aspect of the data, in that the
-# oscillatory cycles tend to have short rises and longer decays. This is partly because the signal
-# is filtered in a narrow frequency band (using a sine wave basis) that cannot accurately
-# reconstruct nonsinusoidal waveforms. Furthermore, this nonsinusoidal feature will unintuitively
-# bias amplitude and phase estimates (though perhaps negligibly). Furthermore, there are no apparent
-# tools for extracting nonsinusoidal properties using conventional techniques.
+#    oscillatory cycles tend to have short rises and longer decays. This is partly because the signal
+#    is filtered in a narrow frequency band (using a sine wave basis) that cannot accurately
+#    reconstruct nonsinusoidal waveforms. Furthermore, this nonsinusoidal feature will unintuitively
+#    bias amplitude and phase estimates (though perhaps negligibly). Furthermore, there are no apparent
+#    tools for extracting nonsinusoidal properties using conventional techniques.
 #
 #
 # Note that different hyperparameter choices for filters can lead to significant differences in results
@@ -100,32 +94,28 @@ plt.show()
 
 # Different hyperparameter choices - filter length and center frequency and bandwidth
 f_alphas = [(6, 14), (8, 12), (9, 13)]
-n_secondss = [.4, .75, 1.2]
+n_seconds = [.4, .75, 1.2]
 
 amps = []
 phases = []
+
 for f_alpha in f_alphas:
-    for n_seconds_filter in n_secondss:
-        amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
-        phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
+
+    for n_second_filter in n_seconds:
+
+        amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_second_filter)
+        phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_second_filter)
+
         amps.append(amp)
         phases.append(phase)
 
-plt.figure(figsize=(12,2))
-for amp in amps:
-    plt.plot(times[tidx], amp[tidx])
-plt.xlim(tlim)
-plt.tight_layout()
-plt.show()
+fig, axes = plt.subplots(figsize=(15, 6), nrows=2)
 
-####################################################################################################
+plot_instantaneous_measure(times, amps, ax=axes[0], xlim=(2,6),
+                           measure='amplitude', lw=2, xlabel='')
 
-plt.figure(figsize=(12,2))
-for phase in phases:
-    plt.plot(times[tidx], phase[tidx])
-plt.xlim(tlim)
-plt.tight_layout()
-plt.show()
+plot_instantaneous_measure(times, phases, ax=axes[1], xlim=(2,6),
+                           measure='phase',lw=2)
 
 ####################################################################################################
 #
