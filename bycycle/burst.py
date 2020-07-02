@@ -5,8 +5,6 @@ import pandas as pd
 
 from neurodsp.burst import detect_bursts_dual_threshold
 
-from bycycle.features import compute_burst_fraction
-
 ###################################################################################################
 ###################################################################################################
 
