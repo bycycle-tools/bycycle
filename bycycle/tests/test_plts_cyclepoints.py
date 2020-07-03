@@ -11,7 +11,7 @@ from bycycle.tests.settings import TEST_PLOTS_PATH
 @plot_test
 def test_plot_cyclepoints_df(sim_args):
 
-    plot_cyclepoints_df(sim_args['df'], sim_args['sig'], sim_args['fs'], save_fig=True,
+    plot_cyclepoints_df(sim_args['df_shapes'], sim_args['sig'], sim_args['fs'], save_fig=True,
                         file_name='test_plot_cyclepoints_df', file_path=TEST_PLOTS_PATH)
 
 

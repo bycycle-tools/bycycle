@@ -6,7 +6,7 @@ import numpy as np
 
 from neurodsp.filt import  filter_signal
 
-from bycycle.features import compute_features
+from bycycle.features import compute_shapes, compute_features
 from bycycle.burst import detect_bursts_df_amp, detect_bursts_cycles
 
 # Set data path
@@ -26,19 +26,25 @@ def test_detect_bursts_cycles():
 
     sig_filt = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.3, remove_edges=False)
 
-    # Compute cycle-by-cycle df without burst detection column
-    df = compute_features(sig_filt, fs, f_range, burst_detection_method='amp',
-                          burst_detection_kwargs={'amp_threshes': (1, 2),
-                                                  'filter_kwargs': {'n_seconds': .5}})
-    df.drop('is_burst', axis=1, inplace=True)
+    # Compute cycle shapes
+    df_shapes = compute_shapes(sig_filt, fs, f_range)
 
-    # Apply consistency burst detection
-    df_burst_cycles = detect_bursts_cycles(df, sig_filt)
+    # Compute cycle features
+    df_features = compute_features(df_shapes, sig)
+
+    # Apply consistency burst detection for consistency detection
+    burst_detection_kwargs = {'amplitude_fraction_threshold': 0.,
+                              'amplitude_consistency_threshold': .5,
+                              'period_consistency_threshold': .5,
+                              'monotonicity_threshold': .5,
+                              'n_cycles_min': 3}
+
+    df_burst_cycles = detect_bursts_cycles(df_features, **burst_detection_kwargs)
 
     # Make sure that burst detection is only boolean
     assert df_burst_cycles.dtypes['is_burst'] == 'bool'
-    assert df_burst_cycles['is_burst'].mean() > 0
-    assert df_burst_cycles['is_burst'].mean() < 1
+    assert df_burst_cycles['is_burst'].mean() >= 0
+    assert df_burst_cycles['is_burst'].mean() <= 1
     assert np.min([sum(1 for _ in group) for key, group in \
         itertools.groupby(df_burst_cycles['is_burst']) if key]) >= 3
 
@@ -54,20 +60,20 @@ def test_detect_bursts_df_amp():
 
     sig_filt = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.3, remove_edges=False)
 
-    # Compute cycle-by-cycle df without burst detection column
-    df = compute_features(sig_filt, fs, f_range, burst_detection_method='amp',
-                          burst_detection_kwargs={'amp_threshes': (1, 2),
-                                                  'filter_kwargs': {'n_seconds': .5}})
-    df.drop('is_burst', axis=1, inplace=True)
+     # Compute cycle shapes
+    df_shapes = compute_shapes(sig, fs, f_range)
 
-    # Apply consistency burst detection
-    df_burst_amp = detect_bursts_df_amp(df, sig_filt, fs, f_range,
-                                        amp_threshes=(.5, 1), n_cycles_min=4,
-                                        filter_kwargs={'n_seconds': .5})
+    # Compute cycle features for dual threshold detection
+    dual_threshold_kwargs = {'fs': fs, 'f_range':f_range, 'amp_threshes': (1, 2),
+                             'n_cycles_min': 3, 'filter_kwargs': None}
+    df_features = compute_features(df_shapes, sig, dual_threshold_kwargs=dual_threshold_kwargs)
+
+    # Apply dual threshold burst detection
+    df_features = detect_bursts_df_amp(df_features, burst_fraction_threshold=1, n_cycles_min=3)
 
     # Make sure that burst detection is only boolean
-    assert df_burst_amp.dtypes['is_burst'] == 'bool'
-    assert df_burst_amp['is_burst'].mean() > 0
-    assert df_burst_amp['is_burst'].mean() < 1
+    assert df_features.dtypes['is_burst'] == 'bool'
+    assert df_features['is_burst'].mean() >= 0
+    assert df_features['is_burst'].mean() <= 1
     assert np.min([sum(1 for _ in group) for key, group \
-        in itertools.groupby(df_burst_amp['is_burst']) if key]) >= 4
+        in itertools.groupby(df_features['is_burst']) if key]) >= 4
