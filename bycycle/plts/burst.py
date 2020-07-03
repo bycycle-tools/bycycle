@@ -3,6 +3,7 @@
 from itertools import cycle
 
 import numpy as np
+import pandas as pd
 from scipy.stats import zscore
 
 import matplotlib.pyplot as plt
@@ -94,8 +95,8 @@ def plot_burst_detect_summary(df_features, df_shapes, sig, fs, burst_detection_k
 
     for _, cyc in df_osc.iterrows():
 
-        samp_start_burst = cyc['sample_last_' + side_e]
-        samp_end_burst = cyc['sample_next_' + side_e] + 1
+        samp_start_burst = int(cyc['sample_last_' + side_e])
+        samp_end_burst = int(cyc['sample_next_' + side_e] + 1)
         is_osc[samp_start_burst:samp_end_burst] = True
 
     # Plot bursts with extrema points
@@ -117,11 +118,11 @@ def plot_burst_detect_summary(df_features, df_shapes, sig, fs, burst_detection_k
         color = next(colors)
 
         # Highlight where a burst param falls below threshold
-        for _, cyc in df_features.iterrows():
+        for row_idx, cyc in df_shapes.iterrows():
 
-            if cyc[column] < burst_detection_kwargs[osc_key]:
-                axes[0].axvspan(times[cyc['sample_last_' + side_e]],
-                                times[cyc['sample_next_' + side_e]],
+            if df_features.iloc[row_idx][column] < burst_detection_kwargs[osc_key]:
+                axes[0].axvspan(times[int(cyc['sample_last_' + side_e])],
+                                times[int(cyc['sample_next_' + side_e])],
                                 alpha=0.5, color=color, lw=0)
 
         # Plot each burst param on separate axes
@@ -130,7 +131,7 @@ def plot_burst_detect_summary(df_features, df_shapes, sig, fs, burst_detection_k
             ylabel = column.replace('_', ' ').capitalize()
             xlabel = 'Time (s)' if idx == n_kwargs-1 else ''
 
-            plot_burst_detect_param(df_feature, df_shapes, sig, fs, column,
+            plot_burst_detect_param(df_features, df_shapes, sig, fs, column,
                                     burst_detection_kwargs[osc_key], figsize=figsize,
                                     ax=axes[idx+1], xlim=xlim, xlabel=xlabel, ylabel=ylabel,
                                     color=color, interp=interp)
@@ -195,22 +196,21 @@ def plot_burst_detect_param(df_features, df_shapes, sig, fs, burst_param, thresh
     center_e, side_e = get_extrema(df_shapes)
 
     # Limit dataframe, sig and times
-    df_shapes = limit_df(df_shapes, fs, start=xlim[0], stop=xlim[1])
-    df_features = limit_df(df_features, fs, start=xlim[0], stop=xlim[1])
+    df = pd.concat([df_shapes, df_features], axis=1)
+
+    df = limit_df(df, fs, start=xlim[0], stop=xlim[1])
+
     sig, times = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
 
     # Remove start/end cycles that tlims falls between
-    mask = (df_shapes['sample_last_' + side_e] >= 0) & \
-           (df_shapes['sample_next_' + side_e] < xlim[1]*fs)
-
-    df_shapes = df_shapes[mask]
-    df_features = df_features[mask]
+    df = df[(df['sample_last_' + side_e] >= 0) & \
+            (df['sample_next_' + side_e] < xlim[1]*fs)]
 
     # Plot burst param
     if interp:
 
-        plot_time_series([times[df_shapes['sample_' + center_e]], xlim],
-                         [df_features[burst_param], [thresh]*2], ax=ax, colors=['k', 'k'],
+        plot_time_series([times[df['sample_' + center_e]], xlim],
+                         [df[burst_param], [thresh]*2], ax=ax, colors=['k', 'k'],
                          ls=['-', '--'], marker=["o", None], xlabel=xlabel,
                          ylabel="{0:s}\nthreshold={1:.2f}".format(ylabel, thresh), **kwargs)
 
@@ -221,23 +221,24 @@ def plot_burst_detect_param(df_features, df_shapes, sig, fs, burst_param, thresh
         side_times = np.array([])
         side_param = np.array([])
 
-        for idx, cyc in df_shapes.iterrows():
+        for _, cyc in df.iterrows():
 
             # Get the times for the last and next side of a cycle
-            side_times = np.append(side_times, [times[cyc['sample_last_' + side_e]],
-                                                times[cyc['sample_next_' + side_e]]])
+            side_times = np.append(side_times, [times[int(cyc['sample_last_' + side_e])],
+                                                times[int(cyc['sample_next_' + side_e])]])
 
             # Set the y-value, from side to side, to the burst param for each cycle.
-            side_param = np.append(side_param, [df_features.iloc[idx][burst_param]] * 2)
+            side_param = np.append(side_param, [cyc[burst_param]] * 2)
 
         plot_time_series([side_times, xlim], [side_param, [thresh]*2], ax=ax, colors=['k', 'k'],
                          ls=['-', '--'], marker=["o", None], xlim=xlim, xlabel=xlabel,
                          ylabel="{0:s}\nthreshold={1:.2f}".format(ylabel, thresh), **kwargs)
 
     # Highlight where param falls below threshold
-    for idx, cyc in df.iterrows():
+    for _, cyc in df.iterrows():
 
-        if df_features.iloc[idx][burst_param] < thresh:
+        if cyc[burst_param] < thresh:
 
-            ax.axvspan(times[cyc['sample_last_' + side_e]], times[cyc['sample_next_' + side_e]],
+            ax.axvspan(times[int(cyc['sample_last_' + side_e])],
+                       times[int(cyc['sample_next_' + side_e])],
                        alpha=0.5, color=color, lw=0)
