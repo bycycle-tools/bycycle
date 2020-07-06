@@ -13,14 +13,14 @@ from bycycle.utils import limit_signal, get_extrema
 ###################################################################################################
 
 @savefig
-def plot_cyclepoints_df(df_shape, sig, fs, plot_sig=True, plot_extrema=True,
+def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
                         plot_zerox=True, xlim=None, ax=None, **kwargs):
     """Plot extrema and/or zero-crossings using a dataframe to define points.
 
     Parameters
     ----------
-    df_shape : pandas.DataFrame
-        Dataframe output of :func:`~.compute_shape`.
+    df_samples: pandas.DataFrame
+        Dataframe output of :func:`~.compute_samples`.
     sig : 1d array
         Time series to plot.
     fs : float
@@ -49,19 +49,19 @@ def plot_cyclepoints_df(df_shape, sig, fs, plot_sig=True, plot_extrema=True,
     """
 
     # Determine extrema/zero-crossings from dataframe
-    center_e, side_e = get_extrema(df_shape)
+    center_e, side_e = get_extrema(df_samples)
 
     peaks, troughs, rises, decays = [None]*4
 
     if plot_extrema:
 
-        peaks = df_shape['sample_' + center_e].values
-        troughs = np.append(df_shape['sample_last_' + side_e].values,
-                            df_shape['sample_next_' + side_e].values[-1])
+        peaks = df_samples['sample_' + center_e].values
+        troughs = np.append(df_samples['sample_last_' + side_e].values,
+                            df_samples['sample_next_' + side_e].values[-1])
     if plot_zerox:
 
-        rises = df_shape['sample_zerox_rise'].values
-        decays = df_shape['sample_zerox_decay'].values
+        rises = df_samples['sample_zerox_rise'].values
+        decays = df_samples['sample_zerox_decay'].values
 
     plot_cyclepoints_array(sig, fs, peaks=peaks, troughs=troughs, rises=rises,
                            decays=decays, plot_sig=plot_sig, xlim=xlim, ax=ax, **kwargs)
