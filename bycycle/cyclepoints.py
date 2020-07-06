@@ -94,15 +94,11 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
     # Force the first extrema to be as desired
     # Assure equal # of peaks and troughs
     if first_extrema == 'peak':
-        if ps[0] > ts[0]:
-            ts = ts[1:]
-        if ps[-1] > ts[-1]:
-            ps = ps[:-1]
+        ts = ts[1:] if ps[0] > ts[0] else ts
+        ps = ps[:-1] if ps[-1] > ts[-1] else ps
     elif first_extrema == 'trough':
-        if ts[0] > ps[0]:
-            ps = ps[1:]
-        if ts[-1] > ps[-1]:
-            ts = ts[:-1]
+        ps = ps[1:] if ts[0] > ps[0] else ps
+        ts = ts[:-1] if ts[-1] > ps[-1] else ts
     elif first_extrema is None:
         pass
     else:
@@ -119,8 +115,7 @@ def _fzerofall(sig):
 
     # In the rare case where no zero-crossing is found (peak and trough are same voltage),
     #   output dummy value.
-    if len(zerofalls) == 0:
-        zerofalls = [int(len(sig) / 2)]
+    zerofalls = [int(len(sig) / 2)] if len(zerofalls) == 0 else zerofalls
 
     return zerofalls
 
@@ -133,8 +128,7 @@ def _fzerorise(sig):
 
     # In the rare case where no zero-crossing is found (peak and trough are same voltage),
     #   output dummy value.
-    if len(zerorises) == 0:
-        zerorises = [int(len(sig) / 2)]
+    zerorises = [int(len(sig) / 2)] if len(zerorises) == 0 else zerorises
 
     return zerorises
 
@@ -158,9 +152,9 @@ def find_zerox(sig, ps, ts):
 
     Returns
     -------
-    zerox_rise : 1d array
+    rises : 1d array
         Samples at which oscillatory rising zero-crossings occur.
-    zerox_decay : 1d array
+    decays : 1d array
         Samples at which oscillatory decaying zero-crossings occur.
 
     Notes
@@ -183,42 +177,42 @@ def find_zerox(sig, ps, ts):
         idx_bias = 1
 
     # Find zero-crossings for rise
-    zerox_rise = np.zeros(n_rises, dtype=int)
+    rises = np.zeros(n_rises, dtype=int)
     for idx_rise in range(n_rises):
         sig_temp = np.copy(sig[ts[idx_rise]:ps[idx_rise + 1 - idx_bias] + 1])
         sig_temp -= (sig_temp[0] + sig_temp[-1]) / 2.
 
         # If data is all zeros, just set the zero-crossing to be halfway between
         if np.sum(np.abs(sig_temp)) == 0:
-            zerox_rise[idx_rise] = ts[idx_rise] + int(len(sig_temp) / 2.)
+            rises[idx_rise] = ts[idx_rise] + int(len(sig_temp) / 2.)
 
         # If rise is actually decay, just set the zero-crossing to be halfway between
         elif sig_temp[0] > sig_temp[-1]:
-            zerox_rise[idx_rise] = ts[idx_rise] + int(len(sig_temp) / 2.)
+            rises[idx_rise] = ts[idx_rise] + int(len(sig_temp) / 2.)
 
         else:
-            zerox_rise[idx_rise] = ts[idx_rise] + int(np.median(_fzerorise(sig_temp)))
+            rises[idx_rise] = ts[idx_rise] + int(np.median(_fzerorise(sig_temp)))
 
     # Find zero-crossings for decays
-    zerox_decay = np.zeros(n_decays, dtype=int)
+    decays = np.zeros(n_decays, dtype=int)
     for idx_decay in range(n_decays):
         sig_temp = np.copy(sig[ps[idx_decay]:ts[idx_decay + idx_bias] + 1])
         sig_temp -= (sig_temp[0] + sig_temp[-1]) / 2.
 
         # If data is all zeros, just set the zero-crossing to be halfway between
         if np.sum(np.abs(sig_temp)) == 0:
-            zerox_decay[idx_decay] = ps[idx_decay] + int(len(sig_temp) / 2.)
+            decays[idx_decay] = ps[idx_decay] + int(len(sig_temp) / 2.)
 
         # If decay is actually rise, just set the zero-crossing to be halfway between
         elif sig_temp[0] < sig_temp[-1]:
-            zerox_decay[idx_decay] = ps[idx_decay] + int(len(sig_temp) / 2.)
+            decays[idx_decay] = ps[idx_decay] + int(len(sig_temp) / 2.)
         else:
-            zerox_decay[idx_decay] = ps[idx_decay] + int(np.median(_fzerofall(sig_temp)))
+            decays[idx_decay] = ps[idx_decay] + int(np.median(_fzerofall(sig_temp)))
 
-    return zerox_rise, zerox_decay
+    return rises, decays
 
 
-def extrema_interpolated_phase(sig, ps, ts, zerox_rise=None, zerox_decay=None):
+def extrema_interpolated_phase(sig, ps, ts, rises=None, decays=None):
     """Use peaks (phase 0) and troughs (phase pi/-pi) to estimate instantaneous phase.
     Also use rise and decay zero-crossings (phase -pi/2 and pi/2, respectively) if provided.
 
@@ -230,9 +224,9 @@ def extrema_interpolated_phase(sig, ps, ts, zerox_rise=None, zerox_decay=None):
         Samples of oscillatory peaks.
     ts : 1d array
         Samples of oscillatory troughs.
-    zerox_rise : 1d array, optional
+    rises : 1d array, optional
         Samples of oscillatory rising zero-crossings.
-    zerox_decay : 1d array, optional
+    decays : 1d array, optional
         Samples of oscillatory decaying zero-crossings.
 
     Returns
@@ -257,12 +251,12 @@ def extrema_interpolated_phase(sig, ps, ts, zerox_rise=None, zerox_decay=None):
     pha_tnpi = np.zeros(sig_len) * np.nan
 
     # If specified, assign phases to zero-crossings
-    if zerox_rise is not None:
-        pha_tpi[zerox_rise] = -np.pi / 2
-        pha_tnpi[zerox_rise] = -np.pi / 2
-    if zerox_decay is not None:
-        pha_tpi[zerox_decay] = np.pi / 2
-        pha_tnpi[zerox_decay] = np.pi / 2
+    if rises is not None:
+        pha_tpi[rises] = -np.pi / 2
+        pha_tnpi[rises] = -np.pi / 2
+    if decays is not None:
+        pha_tpi[decays] = np.pi / 2
+        pha_tnpi[decays] = np.pi / 2
 
     # Define phases
     pha_tpi[ps] = 0
