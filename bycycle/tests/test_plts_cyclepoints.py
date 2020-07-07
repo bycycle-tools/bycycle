@@ -11,7 +11,7 @@ from bycycle.tests.settings import TEST_PLOTS_PATH
 @plot_test
 def test_plot_cyclepoints_df(sim_args):
 
-    plot_cyclepoints_df(sim_args['df_shapes'], sim_args['sig'], sim_args['fs'], save_fig=True,
+    plot_cyclepoints_df(sim_args['df_samples'], sim_args['sig'], sim_args['fs'], save_fig=True,
                         file_name='test_plot_cyclepoints_df', file_path=TEST_PLOTS_PATH)
 
 
@@ -19,8 +19,8 @@ def test_plot_cyclepoints_df(sim_args):
 def test_plot_cyclepoints_array(sim_args):
 
     ps, ts = find_extrema(sim_args['sig'], sim_args['fs'], (6, 14))
-    zerox_rise, zerox_decay = find_zerox(sim_args['sig'], ps, ts)
+    rises, decays = find_zerox(sim_args['sig'], ps, ts)
 
     plot_cyclepoints_array(sim_args['sig'], sim_args['fs'], ps=ps, ts=ts,
-                           zerox_rise=zerox_rise, zerox_decay=zerox_decay, save_fig=True,
+                           rises=rises, decays=decays, save_fig=True,
                            file_name='test_plot_cyclepoints_array', file_path=TEST_PLOTS_PATH)

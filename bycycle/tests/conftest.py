@@ -6,7 +6,7 @@ import pytest
 
 from neurodsp.utils.sim import set_random_seed
 from neurodsp.sim import sim_oscillation
-from bycycle.features import compute_shapes, compute_features
+from bycycle.features import compute_shape_features, compute_burst_features, compute_features
 from bycycle.burst import detect_bursts_cycles
 from bycycle.tests.settings import BASE_TEST_FILE_PATH, TEST_PLOTS_PATH
 
@@ -29,11 +29,12 @@ def sim_args():
 
     sig = sim_oscillation(n_seconds, fs, freq)
 
-    df_shapes = compute_shapes(sig, fs, f_range)
-    df_features = compute_features(df_shapes, sig)
-    df_features = detect_bursts_cycles(df_features)
+    df_shapes, df_samples = compute_shape_features(sig, fs, f_range, return_samples=True)
+    df_burst = compute_burst_features(df_shapes, df_samples, sig)
+    df_features, df_samples = compute_features(sig, fs, f_range, return_samples=True)
 
-    yield {'df_features': df_features, 'df_shapes': df_shapes, 'sig': sig, 'fs': fs}
+    yield {'df_features': df_features, 'df_shapes': df_shapes, 'df_burst': df_burst,
+           'df_samples': df_samples, 'sig': sig, 'fs': fs, 'f_range': f_range}
 
 
 @pytest.fixture(scope='session', autouse=True)

@@ -59,14 +59,14 @@ def test_find_zerox():
     ps, ts = find_extrema(sig, fs, f_range, boundary=1, first_extrema='peak')
 
     # Find zerocrossings
-    zerox_rise, zerox_decay = find_zerox(sig, ps, ts)
+    rises, decays = find_zerox(sig, ps, ts)
 
-    assert len(ps) == (len(zerox_rise) + 1)
-    assert len(ts) == len(zerox_decay)
-    assert ps[0] < zerox_decay[0]
-    assert zerox_decay[0] < ts[0]
-    assert ts[0] < zerox_rise[0]
-    assert zerox_rise[0] < ps[1]
+    assert len(ps) == (len(rises) + 1)
+    assert len(ts) == len(decays)
+    assert ps[0] < decays[0]
+    assert decays[0] < ts[0]
+    assert ts[0] < rises[0]
+    assert rises[0] < ps[1]
 
 
 def test_extrema_interpolated_phase():
@@ -82,13 +82,13 @@ def test_extrema_interpolated_phase():
     ps, ts = find_extrema(sig, fs, f_range, boundary=1, first_extrema='peak')
 
     # Find zerocrossings
-    zerox_rise, zerox_decay = find_zerox(sig, ps, ts)
+    rises, decays = find_zerox(sig, ps, ts)
 
     # Compute phase
-    pha = extrema_interpolated_phase(sig, ps, ts, zerox_rise=zerox_rise, zerox_decay=zerox_decay)
+    pha = extrema_interpolated_phase(sig, ps, ts, rises=rises, decays=decays)
 
     assert len(pha) == len(sig)
     assert np.all(np.isclose(pha[ps], 0))
     assert np.all(np.isclose(pha[ts], -np.pi))
-    assert np.all(np.isclose(pha[zerox_rise], -np.pi/2))
-    assert np.all(np.isclose(pha[zerox_decay], np.pi/2))
+    assert np.all(np.isclose(pha[rises], -np.pi/2))
+    assert np.all(np.isclose(pha[decays], np.pi/2))

@@ -9,13 +9,13 @@ from bycycle.utils import limit_df, limit_signal, get_extrema
 
 def test_limit_df(sim_args):
 
-    df_shapes = sim_args['df_shapes']
+    df_samples = sim_args['df_samples']
     sig = sim_args['sig']
     fs = sim_args['fs']
 
     xlim = (1, 2)
 
-    df_short = limit_df(df_shapes, fs, start=xlim[0], stop=xlim[1])
+    df_short = limit_df(df_samples, fs, start=xlim[0], stop=xlim[1])
 
     assert df_short['sample_next_trough'].min() >= 0
     assert df_short['sample_last_trough'].max() <= fs * (xlim[1] - xlim[0])
@@ -37,15 +37,15 @@ def test_limit_signal(sim_args):
 
 def test_get_extrema(sim_args):
 
-    df_shapes = sim_args['df_shapes']
-    center_e, side_e = get_extrema(df_shapes)
+    df_samples = sim_args['df_samples']
+    center_e, side_e = get_extrema(df_samples)
 
     # The fixture will return peak centered cycles
     assert center_e == 'peak'
     assert side_e == 'trough'
 
-    df_shapes = pd.DataFrame({'sample_trough': []})
-    center_e, side_e = get_extrema(df_shapes)
+    df_samples = pd.DataFrame({'sample_trough': []})
+    center_e, side_e = get_extrema(df_samples)
 
     assert center_e == 'trough'
     assert side_e == 'peak'
