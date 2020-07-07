@@ -3,8 +3,6 @@
 import numpy as np
 import pandas as pd
 
-from neurodsp.burst import detect_bursts_dual_threshold
-
 ###################################################################################################
 ###################################################################################################
 
@@ -63,7 +61,8 @@ def detect_bursts_cycles(df_features, amplitude_fraction_threshold=0.,
 
     Notes
     -----
-    * The first and last period cannot be considered oscillating if the consistency measures are used.
+    * The first and last period cannot be considered oscillating if the consistency measures are
+      used.
     """
 
     # Compute if each period is part of an oscillation

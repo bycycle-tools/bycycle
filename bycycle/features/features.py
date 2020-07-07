@@ -1,8 +1,5 @@
 """Quantify the shape of oscillatory waveforms on a cycle-by-cycle basis."""
 
-import warnings
-
-import numpy as np
 import pandas as pd
 
 from bycycle.features.shape import compute_shape_features

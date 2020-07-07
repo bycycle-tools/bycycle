@@ -105,8 +105,9 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
     plot_bursts(times, sig, is_osc, ax=axes[0], xlim=xlim, lw=2,
                 labels=['Signal', 'Bursts'], xlabel='', ylabel='')
 
-    plot_cyclepoints_df(df_samples, sig, fs, ax=axes[0], xlim=xlim, plot_zerox=False, plot_sig=False,
-                        xlabel=xlabel, ylabel='Voltage\n(normalized)', colors=['m', 'c'])
+    plot_cyclepoints_df(df_samples, sig, fs, ax=axes[0], xlim=xlim, plot_zerox=False,
+                        plot_sig=False, xlabel=xlabel, ylabel='Voltage\n(normalized)',
+                        colors=['m', 'c'])
 
     # Plot each burst param
     colors = cycle(['blue', 'red', 'yellow', 'green', 'cyan', 'magenta', 'orange'])

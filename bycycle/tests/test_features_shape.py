@@ -41,10 +41,10 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, r
 
     else:
 
-        df_shapes =  compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
-                                            find_extrema_kwargs=find_extrema_kwargs,
-                                            hilbert_increase_n=False,
-                                            return_samples=return_samples)
+        df_shapes = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
+                                           find_extrema_kwargs=find_extrema_kwargs,
+                                           hilbert_increase_n=False,
+                                           return_samples=return_samples)
 
     # Assert that np.nan isn't dataframe(s), with the exception of the first and last row
     for idx, row in df_shapes.iterrows():
@@ -66,7 +66,7 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, r
     cols_peak = ['time_peak', 'time_rise', 'volt_rise',
                  'volt_amp', 'period', 'time_rdsym', 'time_ptsym']
     cols_trough = ['time_trough', 'time_decay', 'volt_decay',
-                  'volt_amp', 'period', 'time_rdsym', 'time_ptsym']
+                   'volt_amp', 'period', 'time_rdsym', 'time_ptsym']
 
     df_opp['time_rdsym'] = 1 - df_opp['time_rdsym']
     df_opp['time_ptsym'] = 1 - df_opp['time_ptsym']

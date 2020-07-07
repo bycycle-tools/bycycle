@@ -5,8 +5,6 @@ import numpy as np
 import pandas as pd
 
 from neurodsp.burst import detect_bursts_dual_threshold
-from bycycle.features.shape import compute_shape_features
-from bycycle.utils import get_extrema
 
 ###################################################################################################
 ###################################################################################################

@@ -143,7 +143,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
                                   range(len(df_samples['sample_peak']))]
 
     # Convert feature dictionary into a DataFrame
-    df_features= pd.DataFrame.from_dict(shape_features)
+    df_features = pd.DataFrame.from_dict(shape_features)
 
     # Rename columns if they are actually trough-centered
     if center_extrema == 'trough':
