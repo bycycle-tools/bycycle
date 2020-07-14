@@ -18,7 +18,7 @@ def detect_bursts_cycles(df_features, amplitude_fraction_threshold=0.,
     Parameters
     ----------
     df_features : pandas DataFrame
-        Waveform features for individual cycles from :func:`~.compute_features`.
+        Waveform features for individual cycles from :func:`~.compute_burst_features`.
     amplitude_fraction_threshold : float, optional, default: 0.
         The minimum normalized amplitude a cycle must have in order to be considered in an
         oscillation. Must be between 0 and 1.
@@ -90,7 +90,7 @@ def detect_bursts_df_amp(df_features, burst_fraction_threshold=1, n_cycles_min=3
     Parameters
     ----------
     df_features : pandas DataFrame
-        Waveform features for individual cycles from :func:`~.compute_features`.
+        Waveform features for individual cycles from :func:`~.compute_burst_features`.
     burst_fraction_threshold : int or float, optional, default: 1
         Minimum fraction of a cycle to be indentified as a burst.
     n_cycles_min : int, optional, default: 3
