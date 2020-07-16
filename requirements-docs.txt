@@ -11,3 +11,4 @@ pillow
 seaborn
 mne
 pactools
+scikit-learn
