@@ -9,7 +9,7 @@ from neurodsp.plts.utils import savefig
 ###################################################################################################
 
 @savefig
-def plot_feature_hist(feature, param_label, bins='auto', ax=None, **kwargs):
+def plot_feature_hist(feature, param_label, only_bursts=True, bins='auto', ax=None, **kwargs):
     """Plot a histogram for a cycle feature.
 
     Parameters
@@ -18,6 +18,8 @@ def plot_feature_hist(feature, param_label, bins='auto', ax=None, **kwargs):
         Dataframe output from :func:`~.compute_features` or a 1d array.
     param_label : str
         Column name of the parameter of interest in ``df``.
+    only_burst : bool
+        Limit cycles to those that are bursting.
     bins : int or string, optional, default: 'auto'
         The number of bins or binning strategy string,
         as specified in matplotlib.pyplot.hist.
@@ -40,12 +42,13 @@ def plot_feature_hist(feature, param_label, bins='auto', ax=None, **kwargs):
     """
 
     # Limit dataframe to bursts
-    if isinstance(feature, pd.core.frame.DataFrame):
+    if isinstance(feature, pd.core.frame.DataFrame) and only_bursts is True:
         feature = feature[feature['is_burst']][param_label]
+    elif isinstance(feature, pd.core.frame.DataFrame) and only_bursts is False:
+        feature = feature[param_label]
 
     # Default keyword args
     figsize = kwargs.pop('figsize', (5, 5))
-    color = kwargs.pop('color', 'k')
     xlabel = kwargs.pop('xlabel', param_label)
     xlim = kwargs.pop('xlim', None)
     fontsize = kwargs.pop('fontsize', 15)
@@ -61,7 +64,10 @@ def plot_feature_hist(feature, param_label, bins='auto', ax=None, **kwargs):
     if xlim:
         ax.set_xlim(xlim)
 
-    ax.hist(feature, bins=bins, color=color, alpha=alpha, **kwargs)
+    ax.hist(feature, bins=bins, alpha=alpha, **kwargs)
+
+    if 'label' in kwargs:
+        ax.legend(fontsize=fontsize)
 
 
 @savefig
