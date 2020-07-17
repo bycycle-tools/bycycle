@@ -227,7 +227,7 @@ def plot_burst_detect_param(df, sig, fs, burst_param, thresh, xlim=None,
     # Highlight where param falls below threshold
     for _, cyc in df.iterrows():
 
-        if cyc[burst_param] < thresh:
+        if cyc[burst_param] <= thresh:
 
             ax.axvspan(times[cyc['sample_last_' + side_e]], times[cyc['sample_next_' + side_e]],
                        alpha=0.5, color=color, lw=0)
