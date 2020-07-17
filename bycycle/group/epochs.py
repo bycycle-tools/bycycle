@@ -3,7 +3,6 @@
 
 from functools import partial
 from multiprocessing import Pool, cpu_count
-from tqdm import tqdm
 
 from bycycle.features import compute_features
 
@@ -122,7 +121,7 @@ def _progress(iterable, progress, n_to_run):
             # If tqdm loaded, apply the progress bar to the iterable
             pbar = tqdm(iterable, desc=pbar_desc, total=n_to_run, dynamic_ncols=True)
 
-        except ModuleNotFoundError:
+        except ImportError:
 
             # If tqdm isn't available, proceed without a progress bar
             print(("A progress bar requiring the 'tqdm' module was requested, "
