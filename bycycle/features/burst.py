@@ -1,5 +1,4 @@
-"""Functions to determine the burst features for individual cycles.
-"""
+"""Functions to determine the burst features for individual cycles."""
 
 import numpy as np
 import pandas as pd
@@ -8,7 +7,6 @@ from neurodsp.burst import detect_bursts_dual_threshold
 
 ###################################################################################################
 ###################################################################################################
-
 
 def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kwargs=None):
     """Compute burst features for each cycle.
@@ -21,8 +19,9 @@ def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kw
         Indices of cyclepoints returned from :func:`~.compute_samples`.
     sig : 1d array
         Voltage time series used for determining monotonicity.
-    dual_threshold_kwargs : dict, optional, deault: None
-        Additional keyword arguments defined in :func:`~.compute_burst_fraction`. Keys include:
+    dual_threshold_kwargs : dict, optional
+        Additional keyword arguments defined in :func:`~.compute_burst_fraction`.
+        Keys include:
 
         - ``fs`` : required for dual threshold detection
         - ``f_range`` : required for dual threshold detection
@@ -54,7 +53,6 @@ def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kw
     used, rather than cycle feature consistency.
     """
 
-    # Compute burst features.
     df_burst_features = pd.DataFrame()
 
     # Use feature consistency burst detection
@@ -84,8 +82,8 @@ def compute_amplitude_fraction(df_shape_features):
 
     Parameters
     ----------
-    df_shape_features : pandas DataFrame
-        Shape featires for each cycle, determined using :func:`~.compute_shape_features`.
+    df_shape_features : pandas.DataFrame
+        Shape features for each cycle, determined using :func:`~.compute_shape_features`.
 
     Returns
     -------
@@ -93,15 +91,15 @@ def compute_amplitude_fraction(df_shape_features):
         The amplitude fraction of each cycle.
     """
 
-    return df_shape_features['volt_amp'].rank()/len(df_shape_features)
+    return df_shape_features['volt_amp'].rank() / len(df_shape_features)
 
 
 def compute_amplitude_consistency(df_shape_features, df_samples):
-    """Compute ampltidue consistency for each cycle.
+    """Compute amplitude consistency for each cycle.
 
     Parameters
     ----------
-    df_shape_features : pandas DataFrame
+    df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
     df_samples : pandas.DataFrame
         Indices of cyclepoints returned from :func:`~.compute_samples`.
@@ -140,7 +138,7 @@ def compute_period_consistency(df_shape_features):
 
     Parameters
     ----------
-    df_shape_features : pandas DataFrame
+    df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
 
     Returns
@@ -205,7 +203,7 @@ def compute_monotonicity(df_samples, sig):
 
 def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
                            n_cycles_min=3, filter_kwargs=None):
-    """ Compute the proportion of a cycle that is bursting.
+    """Compute the proportion of a cycle that is bursting.
 
     Parameters
     ----------

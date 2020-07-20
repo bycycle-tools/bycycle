@@ -1,6 +1,4 @@
-"""Functions to determine the shape features, and the locations of peaks, troughs, and
-zero-crossings (rise and decay) for individual cycles.
-"""
+"""Functions to determine the shape features for individual cycles."""
 
 import numpy as np
 import pandas as pd
@@ -12,7 +10,6 @@ from bycycle.cyclepoints import find_extrema, find_zerox
 ###################################################################################################
 ###################################################################################################
 
-
 def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema_kwargs=None,
                            hilbert_increase_n=False, return_samples=True):
     """Compute shapes parameters of each cycle, used for determining burst features.
@@ -20,7 +17,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
     Parameters
     ----------
     sig : 1d array
-        Voltage time series.
+        Time series.
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
@@ -92,41 +89,39 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         raise ValueError('''This function has been designed to assume that the first extrema
             identified will be a peak. This cannot be overwritten at this time.''')
 
-    # Negate signal if to analyze trough-centered cycles
+    # Negate signal if set to analyze trough-centered cycles
     if center_extrema == 'peak':
         pass
     elif center_extrema == 'trough':
         sig = -sig
     else:
-        raise ValueError('Parameter "center_extrema" must be either "P" or "T"')
+        raise ValueError('Parameter "center_extrema" must be either "peak" or "trough"')
 
     # Find extrema and zero-crossings locations in the signal
-    ps, ts = find_extrema(sig, fs, f_range, **find_extrema_kwargs)
-    rises, decays = find_zerox(sig, ps, ts)
+    peaks, troughs = find_extrema(sig, fs, f_range, **find_extrema_kwargs)
+    rises, decays = find_zerox(sig, peaks, troughs)
 
     # For each cycle, identify the sample of each extrema and zero-crossing
-    df_samples = compute_samples(ps, ts, decays, rises)
+    df_samples = compute_samples(peaks, troughs, decays, rises)
 
-    # Compute duration of period
+    # Initialize dictionary for shape features
     shape_features = {}
+
+    # Compute durations of period, peaks, and troughs
     shape_features['period'] = df_samples['sample_next_trough'] - df_samples['sample_last_trough']
-
-    # Compute duration of peak
     shape_features['time_peak'] = df_samples['sample_zerox_decay'] - df_samples['sample_zerox_rise']
-
-    # Compute duration of last trough
     shape_features['time_trough'] = rises - decays[:-1]
 
     # Determine extrema voltage
-    shape_features['volt_peak'] = sig[ps[1:]]
-    shape_features['volt_trough'] = sig[ts[:-1]]
+    shape_features['volt_peak'] = sig[peaks[1:]]
+    shape_features['volt_trough'] = sig[troughs[:-1]]
 
     # Determine rise and decay characteristics
-    shape_features['time_decay'] = (ts[1:] - ps[1:])
-    shape_features['time_rise'] = (ps[1:] - ts[:-1])
+    shape_features['time_decay'] = (troughs[1:] - peaks[1:])
+    shape_features['time_rise'] = (peaks[1:] - troughs[:-1])
 
-    shape_features['volt_decay'] = sig[ps[1:]] - sig[ts[1:]]
-    shape_features['volt_rise'] = sig[ps[1:]] - sig[ts[:-1]]
+    shape_features['volt_decay'] = sig[peaks[1:]] - sig[troughs[1:]]
+    shape_features['volt_rise'] = sig[peaks[1:]] - sig[troughs[:-1]]
     shape_features['volt_amp'] = (shape_features['volt_decay'] + shape_features['volt_rise']) / 2
 
     # Compute rise-decay symmetry features
@@ -138,8 +133,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
 
     # Compute average oscillatory amplitude estimate during cycle
     amp = amp_by_time(sig, fs, f_range, hilbert_increase_n=hilbert_increase_n, n_cycles=3)
-
-    shape_features['band_amp'] = [np.mean(amp[ts[sig_idx]:ts[sig_idx + 1]]) for sig_idx in
+    shape_features['band_amp'] = [np.mean(amp[troughs[sig_idx]:troughs[sig_idx + 1]]) for sig_idx in
                                   range(len(df_samples['sample_peak']))]
 
     # Convert feature dictionary into a DataFrame
@@ -173,20 +167,19 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         df_features['time_ptsym'] = 1 - df_features['time_ptsym']
 
     if return_samples:
-
         return df_features, df_samples
 
     return df_features
 
 
-def compute_samples(ps, ts, decays, rises):
+def compute_samples(peaks, troughs, decays, rises):
     """Compute sample indices for cyclepoints.
 
     Parameters
     ----------
-    ps : 1d array
+    peaks : 1d array
         Signal indices of oscillatory peaks.
-    ts : 1d array
+    troughs : 1d array
         Signal indices of oscillatory troughs.
     rises : 1d array, optional
         Signal indices of oscillatory rising zero-crossings.
@@ -209,11 +202,11 @@ def compute_samples(ps, ts, decays, rises):
 
     # For each cycle, identify the sample of each extrema and zero-crossing
     samples = {}
-    samples['sample_peak'] = ps[1:]
+    samples['sample_peak'] = peaks[1:]
     samples['sample_zerox_decay'] = decays[1:]
     samples['sample_zerox_rise'] = rises
-    samples['sample_last_trough'] = ts[:-1]
-    samples['sample_next_trough'] = ts[1:]
+    samples['sample_last_trough'] = troughs[:-1]
+    samples['sample_next_trough'] = troughs[1:]
 
     df_samples = pd.DataFrame.from_dict(samples)
 

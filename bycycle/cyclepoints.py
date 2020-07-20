@@ -15,7 +15,7 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
     Parameters
     ----------
     sig : 1d array
-        Voltage time series.
+        Time series.
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
@@ -117,7 +117,7 @@ def find_zerox(sig, peaks, troughs):
     Parameters
     ----------
     sig : 1d array
-        Voltage time series.
+        Time series.
     peaks : 1d array
         Samples of oscillatory peaks.
     troughs : 1d array

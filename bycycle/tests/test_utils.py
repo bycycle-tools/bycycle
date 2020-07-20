@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+
 from bycycle.utils import limit_df, limit_signal, get_extrema
 
 ###################################################################################################
@@ -10,7 +11,6 @@ from bycycle.utils import limit_df, limit_signal, get_extrema
 def test_limit_df(sim_args):
 
     df_samples = sim_args['df_samples']
-    sig = sim_args['sig']
     fs = sim_args['fs']
 
     xlim = (1, 2)

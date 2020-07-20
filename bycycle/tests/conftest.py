@@ -2,12 +2,15 @@
 
 import os
 import shutil
+
 import pytest
 
-from neurodsp.utils.sim import set_random_seed
 from neurodsp.sim import sim_oscillation
+from neurodsp.utils.sim import set_random_seed
+
 from bycycle.features import compute_shape_features, compute_burst_features, compute_features
-from bycycle.tests.settings import BASE_TEST_FILE_PATH, TEST_PLOTS_PATH
+from bycycle.tests.settings import (N_SECONDS, FS, FREQ, F_RANGE,
+                                    BASE_TEST_FILE_PATH, TEST_PLOTS_PATH)
 
 ###################################################################################################
 ###################################################################################################
@@ -20,17 +23,11 @@ def pytest_configure(config):
 @pytest.fixture(scope='module')
 def sim_args():
 
-    # Simulate oscillating time series
-    n_seconds = 10
-    fs = 500
-    freq = 10
-    f_range = (6, 14)
+    sig = sim_oscillation(N_SECONDS, FS, FREQ)
 
-    sig = sim_oscillation(n_seconds, fs, freq)
-
-    df_shapes, df_samples = compute_shape_features(sig, fs, f_range, return_samples=True)
+    df_shapes, df_samples = compute_shape_features(sig, FS, F_RANGE, return_samples=True)
     df_burst = compute_burst_features(df_shapes, df_samples, sig)
-    df_features, df_samples = compute_features(sig, fs, f_range, return_samples=True)
+    df_features, df_samples = compute_features(sig, FS, F_RANGE, return_samples=True)
 
     burst_detection_kwargs = {'amplitude_fraction_threshold': 0.,
                               'amplitude_consistency_threshold': .5,
@@ -38,7 +35,7 @@ def sim_args():
                               'monotonicity_threshold': .5,
                               'n_cycles_min': 3}
 
-    yield {'sig': sig, 'fs': fs, 'f_range': f_range, 'df_features': df_features,
+    yield {'sig': sig, 'fs': FS, 'f_range': F_RANGE, 'df_features': df_features,
            'df_shapes': df_shapes, 'df_burst': df_burst, 'df_samples': df_samples,
            'burst_detection_kwargs': burst_detection_kwargs}
 

@@ -9,7 +9,6 @@ from bycycle.burst import detect_bursts_cycles, detect_bursts_df_amp
 ###################################################################################################
 ###################################################################################################
 
-
 def compute_features(sig, fs, f_range, center_extrema='peak', burst_detection_method='cycles',
                      burst_detection_kwargs=None, find_extrema_kwargs=None,
                      hilbert_increase_n=False, return_samples=True):
@@ -18,7 +17,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_detection_me
     Parameters
     ----------
     sig : 1d array
-        Voltage time series.
+        Time series.
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
@@ -121,7 +120,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_detection_me
 
         dual_threshold_kwargs = None
 
-    # Compute burst features for each cycle.
+    # Compute burst features for each cycle
     df_burst_features = compute_burst_features(df_shape_features, df_samples, sig,
                                                dual_threshold_kwargs=dual_threshold_kwargs)
 

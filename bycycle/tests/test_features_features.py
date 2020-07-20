@@ -1,13 +1,13 @@
 """Tests the cycle-by-cycle burst feature computation function."""
 
-import numpy as np
 import pytest
+
+import numpy as np
 
 from bycycle.features import compute_features
 
 ###################################################################################################
 ###################################################################################################
-
 
 @pytest.mark.parametrize("burst_detection_method",
     [

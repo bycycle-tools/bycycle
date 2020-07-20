@@ -1,7 +1,8 @@
 """Tests the cycle-by-cycle shape feature computation function."""
 
-import numpy as np
 import pytest
+
+import numpy as np
 
 from bycycle.cyclepoints import find_extrema, find_zerox
 from bycycle.features import compute_shape_features, compute_samples
@@ -30,21 +31,16 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, r
     fs = sim_args['fs']
     f_range = sim_args['f_range']
 
+    outs = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
+                                  find_extrema_kwargs=find_extrema_kwargs,
+                                  hilbert_increase_n=False, return_samples=return_samples)
+
     if return_samples:
-
-        df_shapes, df_samples = \
-            compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
-                                   find_extrema_kwargs=find_extrema_kwargs,
-                                   hilbert_increase_n=False, return_samples=return_samples)
-
+        df_shapes, df_samples = outs
         assert len(df_shapes) == len(df_samples)
 
     else:
-
-        df_shapes = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
-                                           find_extrema_kwargs=find_extrema_kwargs,
-                                           hilbert_increase_n=False,
-                                           return_samples=return_samples)
+        df_shapes = outs
 
     # Assert that np.nan isn't dataframe(s), with the exception of the first and last row
     for idx, row in df_shapes.iterrows():
@@ -71,7 +67,6 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, r
     df_opp['time_rdsym'] = 1 - df_opp['time_rdsym']
     df_opp['time_ptsym'] = 1 - df_opp['time_ptsym']
 
-
     for idx, col in enumerate(cols_peak):
 
         if center_extrema == 'peak':
@@ -86,13 +81,13 @@ def test_compute_samples(sim_args):
     fs = sim_args['fs']
     f_range = sim_args['f_range']
 
-    ps, ts = find_extrema(sig, fs, f_range)
-    rises, decays = find_zerox(sig, ps, ts)
+    peaks, troughs = find_extrema(sig, fs, f_range)
+    rises, decays = find_zerox(sig, peaks, troughs)
 
-    df_samples = compute_samples(ps, ts, decays, rises)
+    df_samples = compute_samples(peaks, troughs, decays, rises)
 
-    assert (df_samples['sample_peak'] == ps[1:]).all()
+    assert (df_samples['sample_peak'] == peaks[1:]).all()
     assert (df_samples['sample_zerox_decay'] == decays[1:]).all()
     assert (df_samples['sample_zerox_rise'] == rises).all()
-    assert (df_samples['sample_last_trough'] == ts[:-1]).all()
-    assert (df_samples['sample_next_trough'] == ts[1:]).all()
+    assert (df_samples['sample_last_trough'] == troughs[:-1]).all()
+    assert (df_samples['sample_next_trough'] == troughs[1:]).all()

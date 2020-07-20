@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 def plot_test(func):
     """Decorator for simple testing of plotting functions.
+
     Notes
     -----
     This decorator closes all plots prior to the test.

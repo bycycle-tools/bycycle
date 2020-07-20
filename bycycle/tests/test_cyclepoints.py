@@ -35,15 +35,15 @@ def test_find_extrema(first_extrema):
     minima = argrelextrema(sig, np.less)
 
     # Find peaks and troughs using bycycle and make sure match scipy
-    ps, ts = find_extrema(sig, fs, f_range, boundary=1, first_extrema=first_extrema)
+    peaks, troughs = find_extrema(sig, fs, f_range, boundary=1, first_extrema=first_extrema)
 
     if first_extrema == 'trough':
-        assert len(ps) == len(ts)
-        assert ts[0] < ps[0]
-        np.testing.assert_allclose(ps, maxima[0])
-        np.testing.assert_allclose(ts[:len(ps)], minima[0][:len(ps)])
+        assert len(peaks) == len(troughs)
+        assert troughs[0] < peaks[0]
+        np.testing.assert_allclose(peaks, maxima[0])
+        np.testing.assert_allclose(troughs[:len(peaks)], minima[0][:len(peaks)])
     elif first_extrema == 'peak':
-        assert ps[0] < ts[0]
+        assert peaks[0] < troughs[0]
 
 
 def test_find_zerox():
@@ -56,17 +56,17 @@ def test_find_zerox():
     f_range = (6, 14)
 
     # Find peaks and troughs
-    ps, ts = find_extrema(sig, fs, f_range, boundary=1, first_extrema='peak')
+    peaks, troughs = find_extrema(sig, fs, f_range, boundary=1, first_extrema='peak')
 
     # Find zerocrossings
-    rises, decays = find_zerox(sig, ps, ts)
+    rises, decays = find_zerox(sig, peaks, troughs)
 
-    assert len(ps) == (len(rises) + 1)
-    assert len(ts) == len(decays)
-    assert ps[0] < decays[0]
-    assert decays[0] < ts[0]
-    assert ts[0] < rises[0]
-    assert rises[0] < ps[1]
+    assert len(peaks) == (len(rises) + 1)
+    assert len(troughs) == len(decays)
+    assert peaks[0] < decays[0]
+    assert decays[0] < troughs[0]
+    assert troughs[0] < rises[0]
+    assert rises[0] < peaks[1]
 
 
 def test_extrema_interpolated_phase():
@@ -79,16 +79,16 @@ def test_extrema_interpolated_phase():
     f_range = (6, 14)
 
     # Find peaks and troughs
-    ps, ts = find_extrema(sig, fs, f_range, boundary=1, first_extrema='peak')
+    peaks, troughs = find_extrema(sig, fs, f_range, boundary=1, first_extrema='peak')
 
     # Find zerocrossings
-    rises, decays = find_zerox(sig, ps, ts)
+    rises, decays = find_zerox(sig, peaks, troughs)
 
     # Compute phase
-    pha = extrema_interpolated_phase(sig, ps, ts, rises=rises, decays=decays)
+    pha = extrema_interpolated_phase(sig, peaks, troughs, rises=rises, decays=decays)
 
     assert len(pha) == len(sig)
-    assert np.all(np.isclose(pha[ps], 0))
-    assert np.all(np.isclose(pha[ts], -np.pi))
+    assert np.all(np.isclose(pha[peaks], 0))
+    assert np.all(np.isclose(pha[troughs], -np.pi))
     assert np.all(np.isclose(pha[rises], -np.pi/2))
     assert np.all(np.isclose(pha[decays], np.pi/2))

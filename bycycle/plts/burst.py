@@ -5,7 +5,6 @@ from itertools import cycle
 import numpy as np
 import pandas as pd
 from scipy.stats import zscore
-
 import matplotlib.pyplot as plt
 
 from neurodsp.plts import plot_time_series, plot_bursts
@@ -20,9 +19,7 @@ from bycycle.utils import limit_df, limit_signal, get_extrema
 @savefig
 def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_kwargs, xlim=None,
                               figsize=(15, 3), plot_only_result=False, interp=True):
-    """
-    Create a plot to study how the cycle-by-cycle burst detection
-    algorithm determines bursting periods of a signal.
+    """Plot the cycle-by-cycle burst detection parameters and burst detection summary.
 
     Parameters
     ----------
@@ -62,7 +59,6 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
       - red: amp_consistency_threshold
       - yellow: period_consistency_threshold
       - green: monotonicity_threshold
-
     """
 
     # Normalize signal
@@ -162,7 +158,7 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
         Start and stop times for plot.
     ax : matplotlib.Axes, optional
         Figure axes upon which to plot.
-    interp : bool
+    interp : bool, optional, default: True
         Interpolates points if true.
     **kwargs
         Keyword arguments to pass into `plot_time_series`.
@@ -177,7 +173,6 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
     - ``color``: str, default: 'r'.
 
       - Note: ``color`` here is the fill color, rather than line color.
-
     """
 
     # Set default kwargs
@@ -218,7 +213,7 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
     else:
 
         # Create steps, from side to side of each cycle, and set the y-value to the burst parameter
-        #   value for that cycle.
+        #   value for that cycle
         side_times = np.array([])
         side_param = np.array([])
 

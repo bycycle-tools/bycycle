@@ -1,7 +1,6 @@
 """Plot extrema and zero-crossings."""
 
 import numpy as np
-
 import matplotlib.pyplot as plt
 
 from neurodsp.plts import plot_time_series
@@ -26,14 +25,14 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
     fs : float
         Sampling rate, in Hz.
     plot_sig : bool, optional, default: True
-        Plots the raw signal.
+        Whether to also plot the raw signal.
     plot_extrema :  bool, optional, default: True
-        Plots peaks and troughs.
+        Whether to plots the peaks and troughs.
     plot_zerox :  bool, optional, default: True
-        Plots zero-crossings.
-    xlim : tuple of (float, float), optional, default: None
+        Whether to plots the zero-crossings.
+    xlim : tuple of (float, float), optional
         Start and stop times.
-    ax : matplotlib.Axes, optional, default: None
+    ax : matplotlib.Axes, optional
         Figure axes upon which to plot.
     **kwargs
         Keyword arguments to pass into `plot_time_series`.
@@ -45,7 +44,6 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
     - ``figsize``: tuple of (float, float), default: (15, 3)
     - ``xlabel``: str, default: 'Time (s)'
     - ``ylabel``: str, default: 'Voltage (uV)
-
     """
 
     # Determine extrema/zero-crossings from dataframe
@@ -78,16 +76,18 @@ def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays
         Time series to plot.
     fs : float
         Sampling rate, in Hz.
-    xlim : tuple of (float, float), optional, default: None
-        Start and stop times.
-    peaks : 1d array, optional, default: None
+    peaks : 1d array, optional
         Peak signal indices from :func:`.find_extrema`.
-    troughs : 1d array, optional, default: None
+    troughs : 1d array, optional
         Trough signal indices from :func:`.find_extrema`.
-    rises : 1d array, optional, default: None
+    rises : 1d array, optional
         Zero-crossing rise indices from :func:`~.find_zerox`.
-    decays : 1d array, optional, default: None
+    decays : 1d array, optional
         Zero-crossing decay indices from :func:`~.find_zerox`.
+    plot_sig : bool, optional, default: True
+        Whether to also plot the raw signal.
+    xlim : tuple of (float, float), optional
+        Start and stop times.
     ax : matplotlib.Axes, optional, default: None
         Figure axes upon which to plot.
     **kwargs
@@ -101,7 +101,6 @@ def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays
     - ``xlabel``: str, default: 'Time (s)'
     - ``ylabel``: str, default: 'Voltage (uV)
     - ``colors``: list, default: ['k', 'b', 'r', 'g', 'm']
-
     """
 
     # Set times and limits

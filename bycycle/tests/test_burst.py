@@ -1,16 +1,14 @@
 """Tests burst detection."""
 
 import itertools
-import numpy as np
 
-from neurodsp.filt import  filter_signal
+import numpy as np
 
 from bycycle.features import compute_burst_features
 from bycycle.burst import detect_bursts_df_amp, detect_bursts_cycles
 
 ###################################################################################################
 ###################################################################################################
-
 
 def test_detect_bursts_cycles(sim_args):
 

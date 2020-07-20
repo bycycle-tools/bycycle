@@ -1,27 +1,25 @@
-"""Plotting utility functions."""
-
+"""General utility functions."""
 
 ###################################################################################################
 ###################################################################################################
-
 
 def limit_df(df, fs, start=None, stop=None):
     """Restrict dataframe to be within time limits.
 
     Parameters
     ----------
-    df : pandas DataFrame
+    df : pandas.DataFrame
         Dataframe output of :func:`~.compute_features`.
     fs : float
         Sampling rate, in Hz.
-    start : int or float, optional, default: None
+    start : float, optional
         The lower time limit, in seconds, to restrict the df.
-    stop : int or float, optional, default: None
+    stop : float, optional
         The upper time limit, in seconds, to restrict the df.
 
     Returns
     -------
-    df : pandas DataFrame
+    df : pandas.DataFrame
         A limited dataframe of cycle features.
 
     Notes
@@ -32,7 +30,6 @@ def limit_df(df, fs, start=None, stop=None):
 
     center_e, side_e = get_extrema(df)
 
-    # Limit dataframe to xlim
     start = 0 if start is None else start
 
     df = df[df['sample_next_' + side_e].values >= start*fs]
@@ -59,17 +56,17 @@ def limit_signal(times, sig, start=None, stop=None):
         Time definition for the time series.
     sig : 1d array
         Time series.
-    start : int or float
+    start : float
         The lower time limit, in seconds, to restrict the df.
-    stop : int or float
+    stop : float
         The upper time limit, in seconds, to restrict the df.
 
     Returns
     -------
     sig : 1d array
         A limited time series.
-    times : 1d
-        A limited time definintion.
+    times : 1d array
+        A limited time definition.
     """
     # Limit times and sig to start and stop times
     if start is not None:
@@ -88,7 +85,7 @@ def get_extrema(df):
 
     Parameters
     ----------
-    df : pandas DataFrame
+    df : pandas.DataFrame
         Dataframe output of :func:`~.compute_features`.
 
     Returns
