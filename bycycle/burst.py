@@ -78,9 +78,7 @@ def detect_bursts_cycles(df_features, amplitude_fraction_threshold=0.,
     is_burst[0] = False
     is_burst[-1] = False
 
-    df_features['is_burst'] = is_burst
-    df_features = _min_consecutive_cycles(df_features, n_cycles_min=n_cycles_min)
-    df_features['is_burst'] = df_features['is_burst'].astype(bool)
+    df_features['is_burst'] = _min_consecutive_cycles(is_burst, n_cycles_min=n_cycles_min)
 
     return df_features
 
@@ -107,19 +105,16 @@ def detect_bursts_df_amp(df_features, burst_fraction_threshold=1, n_cycles_min=3
     """
 
     # Determine cycles that are defined as bursting throughout the whole cycle
-    df_features['is_burst'] = [frac >= burst_fraction_threshold for frac in
-                               df_features['burst_fraction']]
+    is_burst = [frac >= burst_fraction_threshold for frac in df_features['burst_fraction']]
 
-    df_features = _min_consecutive_cycles(df_features, n_cycles_min=n_cycles_min)
-    df_features['is_burst'] = df_features['is_burst'].astype(bool)
+    df_features['is_burst'] = _min_consecutive_cycles(is_burst, n_cycles_min=n_cycles_min)
 
     return df_features
 
 
-def _min_consecutive_cycles(df_shape, n_cycles_min=3):
+def _min_consecutive_cycles(is_burst, n_cycles_min=3):
     """Enforce minimum number of consecutive cycles."""
 
-    is_burst = np.copy(df_shape['is_burst'].values)
     temp_cycle_count = 0
 
     for idx, bursting in enumerate(is_burst):
@@ -135,6 +130,4 @@ def _min_consecutive_cycles(df_shape, n_cycles_min=3):
 
             temp_cycle_count = 0
 
-    df_shape['is_burst'] = is_burst
-
-    return df_shape
+    return is_burst
