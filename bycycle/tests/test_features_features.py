@@ -26,18 +26,18 @@ def test_features_features(sim_args, return_samples, burst_detection_method):
     # Set burst detection kwargs
     if burst_detection_method == 'amplitude':
 
-        burst_detection_kwargs = {'burst_fraction_threshold': 1, 'n_cycles_min': 3}
+        burst_threshold_kwargs = {'burst_fraction_threshold': 1, 'n_cycles_min': 3}
 
     else:
 
-        burst_detection_kwargs = sim_args['burst_detection_kwargs']
+        burst_threshold_kwargs = sim_args['burst_threshold_kwargs']
 
     # Test returning sample indices in a separate dataframe.
     if return_samples:
 
         df_features, df_samples = compute_features(sig, fs, f_range, \
             burst_detection_method=burst_detection_method, \
-            burst_detection_kwargs=burst_detection_kwargs, return_samples=return_samples)
+            burst_threshold_kwargs=burst_threshold_kwargs, return_samples=return_samples)
 
         assert len(df_features) == len(df_samples)
 

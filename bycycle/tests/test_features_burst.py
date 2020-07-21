@@ -31,10 +31,11 @@ def test_compute_burst_features(sim_args, dual_thresh, center_e):
     if dual_thresh:
 
         # Use dual threshold burst detecion.
-        dual_threshold_kwargs = {'fs': sim_args['fs'], 'f_range': sim_args['f_range']}
+        burst_detection_kwargs =  {'fs': sim_args['fs'], 'f_range': sim_args['f_range']}
 
         df_burst_features = compute_burst_features(df_shape_features, df_samples, sig,
-                                                   dual_threshold_kwargs=dual_threshold_kwargs)
+                                                   burst_detection_method='amplitude',
+                                                   burst_detection_kwargs=burst_detection_kwargs)
 
         burst_fraction = df_burst_features['burst_fraction']
 
@@ -45,8 +46,7 @@ def test_compute_burst_features(sim_args, dual_thresh, center_e):
     else:
 
         # Use consistency burst detection
-        df_burst_features = compute_burst_features(df_shape_features, df_samples,
-                                                   sig, dual_threshold_kwargs=None)
+        df_burst_features = compute_burst_features(df_shape_features, df_samples, sig)
 
         amplitude_fraction = df_burst_features['amplitude_fraction'].values[1:-1]
         amplitude_consistency = df_burst_features['amplitude_consistency'].values[1:-1]

@@ -8,7 +8,8 @@ from neurodsp.burst import detect_bursts_dual_threshold
 ###################################################################################################
 ###################################################################################################
 
-def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kwargs=None):
+def compute_burst_features(df_shape_features, df_samples, sig, burst_detection_method='cycles',
+                           burst_detection_kwargs=None):
     """Compute burst features for each cycle.
 
     Parameters
@@ -19,12 +20,18 @@ def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kw
         Indices of cyclepoints returned from :func:`~.compute_samples`.
     sig : 1d array
         Voltage time series used for determining monotonicity.
-    dual_threshold_kwargs : dict, optional
-        Additional keyword arguments defined in :func:`~.compute_burst_fraction`.
-        Keys include:
+    burst_detection_method : string, optional, default: 'cycles'
+        Method for detecting bursts.
 
-        - ``fs`` : required for dual threshold detection
-        - ``f_range`` : required for dual threshold detection
+        - 'cycles': detect bursts based on the consistency of consecutive periods & amplitudes
+        - 'amplitude': detect bursts using an amplitude threshold
+
+    burst_detection_kwargs : dict, optional, default: None
+        Additional arguments required for amplitude burst detection. Defined in
+        :func:`~.compute_burst_fraction`, keys include:
+
+        - ``fs`` : required for dual amplitude threshold burst detection
+        - ``f_range`` : required for dual amplitude threshold burst detection
         - ``amp_threshes`` : optional, default: (1, 2)
         - ``n_cycles_min`` : optional, default: 3
         - ``filter_kwargs`` : optional, default: None
@@ -34,7 +41,7 @@ def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kw
     df_burst_features : pandas.DataFrame
         Dataframe containing burst features. Each row is one cycle. Columns:
 
-        When consistency burst detection is used (i.e. dual_threshold_kwargs is None):
+        When cycle consistency burst detection is used (i.e. burst_detection_method == 'cycles'):
 
         - ``amplitude_fraction`` : normalized amplitude
         - ``amplitude_consistency`` : difference in the rise and decay voltage within a cycle
@@ -43,7 +50,7 @@ def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kw
         - ``monotonicity`` : fraction of instantaneous voltage changes between consecutive
           samples that are positive during the rise phase and negative during the decay phase
 
-        When dual threshold burst detection is used (i.e. dual_threshold_kwargs is not None):
+        When dual threshold burst detection is used (i.e. burst_detection_method == 'amplitude'):
 
         - ``burst_fraction`` : fraction of a cycle that is bursting
 
@@ -56,7 +63,7 @@ def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kw
     df_burst_features = pd.DataFrame()
 
     # Use feature consistency burst detection
-    if dual_threshold_kwargs is None:
+    if burst_detection_method == 'cycles':
 
         # Custom feature functions may be inserted here as long as an array is return with a length
         #   length equal to the number of cycles, or rows in df_shapes.
@@ -69,10 +76,21 @@ def compute_burst_features(df_shape_features, df_samples, sig, dual_threshold_kw
         df_burst_features['monotonicity'] = compute_monotonicity(df_samples, sig)
 
     # Use dual threshold burst detection
-    else:
+    elif burst_detection_method == 'amplitude':
+
+        fs = burst_detection_kwargs.pop('fs', None)
+        f_range = burst_detection_kwargs.pop('f_range', None)
+
+        if fs is None or f_range is None:
+            raise ValueError("'fs' and 'f_range' must be defined in 'burst_detection_kwargs' "
+                             "when 'burst_detection_method' is 'amplitude'.")
 
         df_burst_features['burst_fraction'] = \
-            compute_burst_fraction(df_samples, sig, **dual_threshold_kwargs)
+            compute_burst_fraction(df_samples, sig, fs, f_range, **burst_detection_kwargs)
+
+    else:
+
+        raise ValueError("Unrecognized 'burst_detection_method'.")
 
     return df_burst_features
 
@@ -202,7 +220,7 @@ def compute_monotonicity(df_samples, sig):
 
 
 def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
-                           n_cycles_min=3, filter_kwargs=None):
+                           min_n_cycles=3, filter_kwargs=None):
     """Compute the proportion of a cycle that is bursting.
 
     Parameters
@@ -235,7 +253,7 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
 
     # Detect bursts using the dual amplitude threshold approach
     is_burst = detect_bursts_dual_threshold(sig, fs, amp_threshes, f_range,
-                                            min_n_cycles=n_cycles_min, **filter_kwargs)
+                                            min_n_cycles=min_n_cycles, **filter_kwargs)
 
     # Determine cycle sides
     side_e = 'trough' if 'sample_peak' in df_samples.columns else 'peak'

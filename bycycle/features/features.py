@@ -4,14 +4,14 @@ import pandas as pd
 
 from bycycle.features.shape import compute_shape_features
 from bycycle.features.burst import compute_burst_features
-from bycycle.burst import detect_bursts_cycles, detect_bursts_df_amp
+from bycycle.burst import detect_bursts_cycles, detect_bursts_amp
 
 ###################################################################################################
 ###################################################################################################
 
 def compute_features(sig, fs, f_range, center_extrema='peak', burst_detection_method='cycles',
-                     burst_detection_kwargs=None, find_extrema_kwargs=None,
-                     hilbert_increase_n=False, return_samples=True):
+                     burst_detection_kwargs=None, burst_threshold_kwargs=None,
+                     find_extrema_kwargs=None, hilbert_increase_n=False, return_samples=True):
     """Compute shape and burst features for each cycle.
 
     Parameters
@@ -35,12 +35,16 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_detection_me
         - 'amplitude': detect bursts using an amplitude threshold
 
     burst_detection_kwargs : dict, optional, default: None
-        Keyword arguments defined in either:
+        Additional keyword arguments defined in :func:`~.compute_burst_fraction` for dual
+        amplitude threshold burst detection (i.e. when burst_detection_method == 'amplitude').
+    burst_threshold_kwargs : dict, optional, default: None
+        Feature thresholds for cycles to be considered bursts. These are keyword arguements defined
+        in:
 
         - :func:`~.detect_bursts_cycles` for consistency burst detection
           (i.e. when burst_detection_method == 'cycles')
-        - :func:`~.detect_bursts_df_amp` and :func:`~.compute_burst_fraction` for dual
-          amplitude threshold burst detection (i.e. when burst_detection_method == 'amplitude').
+        - :func:`~.detect_bursts_amp` for  amplitude threshold burst detection
+          (i.e. when burst_detection_method == 'amplitude').
 
     find_extrema_kwargs : dict, optional, default: None
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
@@ -105,37 +109,31 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_detection_me
                                find_extrema_kwargs=find_extrema_kwargs,
                                hilbert_increase_n=hilbert_increase_n)
 
-    # Ensure required dual thresh kwargs are set for calculating amplitude consistency features
+    # Ensure kwargs are a dictionaries
+    if burst_detection_method == 'amplitude' and not isinstance(burst_detection_kwargs, dict):
+        burst_detection_kwargs = {}
+
+    if not isinstance(burst_threshold_kwargs, dict):
+        burst_threshold_kwargs = {}
+
+    # Ensure required kwargs are set for amplitude burst detection
     if burst_detection_method == 'amplitude':
-
-        dual_threshold_kwargs = {}
-        dual_threshold_kwargs['fs'] = fs
-        dual_threshold_kwargs['f_range'] = f_range
-        dual_threshold_kwargs['amp_threshes'] = burst_detection_kwargs.pop('amp_threshes', (1, 2))
-        dual_threshold_kwargs['filter_kwargs'] = burst_detection_kwargs.pop('filter_kwargs', None)
-        dual_threshold_kwargs['n_cycles_min'] = burst_detection_kwargs['n_cycles_min']  if \
-            'n_cycles_min' in burst_detection_kwargs else 3
-
-    else:
-
-        dual_threshold_kwargs = None
+        burst_detection_kwargs['fs'] = fs
+        burst_detection_kwargs['f_range'] = f_range
 
     # Compute burst features for each cycle
     df_burst_features = compute_burst_features(df_shape_features, df_samples, sig,
-                                               dual_threshold_kwargs=dual_threshold_kwargs)
+                                               burst_detection_method=burst_detection_method,
+                                               burst_detection_kwargs=burst_detection_kwargs)
 
     # Concatenate shape and burst features
     df_features = pd.concat((df_shape_features, df_burst_features), axis=1)
 
-    # Allow argument unpacking
-    burst_detection_kwargs = {} if not isinstance(burst_detection_kwargs, dict) else \
-        burst_detection_kwargs
-
     # Define whether or not each cycle is part of a burst
     if burst_detection_method == 'cycles':
-        df_features = detect_bursts_cycles(df_features, **burst_detection_kwargs)
+        df_features = detect_bursts_cycles(df_features, **burst_threshold_kwargs)
     elif burst_detection_method == 'amplitude':
-        df_features = detect_bursts_df_amp(df_features, **burst_detection_kwargs)
+        df_features = detect_bursts_amp(df_features, **burst_threshold_kwargs)
     else:
         raise ValueError('Invalid argument for "burst_detection_method".'
                          'Either "cycles" or "amplitude" must be specified."')

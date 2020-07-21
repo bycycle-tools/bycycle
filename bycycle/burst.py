@@ -83,7 +83,7 @@ def detect_bursts_cycles(df_features, amplitude_fraction_threshold=0.,
     return df_features
 
 
-def detect_bursts_df_amp(df_features, burst_fraction_threshold=1, n_cycles_min=3):
+def detect_bursts_amp(df_features, burst_fraction_threshold=1, n_cycles_min=3):
     """Determine which cycles in a signal are part of an oscillatory
     burst using an amplitude thresholding approach.
 
