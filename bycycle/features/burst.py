@@ -221,7 +221,7 @@ def compute_monotonicity(df_samples, sig):
 
 def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
                            min_n_cycles=3, filter_kwargs=None):
-    """Compute the proportion of a cycle that is bursting.
+    """Compute the proportion of each cycle that is bursting using a dual threshold algorithm.
 
     Parameters
     ----------
@@ -247,6 +247,11 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     -------
     burst_fraction : 1d array
         The proportion of each cycle that is bursting.
+
+    Notes
+    -----
+    If a cycle contains three samples and the corresponding section of `is_burst` is
+    np.array([True, True, False]), the burst fraction is 0.66 for that cycle.
     """
 
     filter_kwargs = {} if filter_kwargs is None else filter_kwargs
@@ -254,6 +259,9 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     # Detect bursts using the dual amplitude threshold approach
     is_burst = detect_bursts_dual_threshold(sig, fs, amp_threshes, f_range,
                                             min_n_cycles=min_n_cycles, **filter_kwargs)
+
+    # Convert the boolean array to binary
+    is_burst = is_burst.astype(int)
 
     # Determine cycle sides
     side_e = 'trough' if 'sample_peak' in df_samples.columns else 'peak'
