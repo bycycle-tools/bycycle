@@ -244,23 +244,36 @@ def extrema_interpolated_phase(sig, peaks, troughs, rises=None, decays=None):
     pha_tpi = np.interp(times, times[~np.isnan(pha_tpi)], pha_tpi[~np.isnan(pha_tpi)])
     pha_tnpi = np.interp(times, times[~np.isnan(pha_tnpi)], pha_tnpi[~np.isnan(pha_tnpi)])
 
-    # For the phase time series in which the trough is negative pi, replace the decaying
-    #   periods with these periods in the phase time series in which the trough is pi
+    pha = _merge_phases(pha_tpi, pha_tnpi)
+
+    return pha, pha_tpi, pha_tnpi
+
+
+def _merge_phases(pha_tpi, pha_tnpi):
+    """Helper functions for extrema_interpolated_phase."""
+
+    # Create a phase difference array to determine where the phase decaying/rising
+    #   in the negative pi array.
     diffs = np.diff(pha_tnpi)
-    diffs = np.append(diffs, 99)
-    pha_tnpi[diffs < 0] = pha_tpi[diffs < 0]
+
+    # Pad the phase difference array with a NaN to maintain a length equal to the signal timeseries.
+    diffs = np.append(diffs, np.nan)
+
+    # Create a phase timeseries where trough pi values are used for decaying periods
+    #   and trough negative pi values are used for rising periods.
+    pha = np.array([pha_tpi[idx] if diffs[idx] < 0 else pha for idx, pha in enumerate(pha_tnpi)])
 
     # Assign the periods before the first empirical phase timepoint to NaN
-    diffs = np.diff(pha_tnpi)
+    diffs = np.diff(pha)
     first_empirical_idx = next(idx for idx, xi in enumerate(diffs) if xi > 0)
-    pha_tnpi[:first_empirical_idx] = np.nan
+    pha[:first_empirical_idx] = np.nan
 
     # Assign the periods after the last empirical phase timepoint to NaN
-    diffs = np.diff(pha_tnpi)
+    diffs = np.diff(pha)
     last_empirical_idx = next(idx for idx, xi in enumerate(diffs[::-1]) if xi > 0)
-    pha_tnpi[-last_empirical_idx + 1:] = np.nan
+    pha[-last_empirical_idx + 1:] = np.nan
 
-    return pha_tnpi
+    return pha
 
 
 def find_flank_zero_xs(sig, flank):
