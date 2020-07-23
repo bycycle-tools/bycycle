@@ -11,7 +11,7 @@ from bycycle.cyclepoints import find_extrema, find_zerox
 ###################################################################################################
 
 def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema_kwargs=None,
-                           hilbert_increase_n=False, return_samples=True):
+                           hilbert_increase_n=False, n_cycles=3, return_samples=True):
     """Compute shapes parameters of each cycle, used for determining burst features.
 
     Parameters
@@ -36,6 +36,8 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         Corresponding kwarg for :func:`~neurodsp.timefrequency.hilbert.amp_by_time`.
         If true, this zero-pads the signal when computing the Fourier transform, which can be
         necessary for computing it in a reasonable amount of time.
+    n_cycles : int, optional, default: 3
+        Length of filter, in number of cycles, at the lower cutoff frequency.
     return_samples : bool, optional, default: True
         Returns samples indices of cyclepoints used for determining features if True.
 
@@ -83,7 +85,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
 
     # Set defaults if user input is None
     if find_extrema_kwargs is None:
-        find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
+        find_extrema_kwargs = {'filter_kwargs': {'n_cycles': n_cycles}}
 
     elif 'first_extrema' in find_extrema_kwargs.keys():
         raise ValueError('''This function has been designed to assume that the first extrema
@@ -132,7 +134,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
             (shape_features['time_peak'] + shape_features['time_trough'])
 
     # Compute average oscillatory amplitude estimate during cycle
-    amp = amp_by_time(sig, fs, f_range, hilbert_increase_n=hilbert_increase_n, n_cycles=3)
+    amp = amp_by_time(sig, fs, f_range, n_cycles=n_cycles, hilbert_increase_n=hilbert_increase_n)
     shape_features['band_amp'] = [np.mean(amp[troughs[sig_idx]:troughs[sig_idx + 1]]) for sig_idx in
                                   range(len(df_samples['sample_peak']))]
 
