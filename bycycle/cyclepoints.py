@@ -56,8 +56,8 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
                              remove_edges=False, **filter_kwargs)
 
     # Find rising and decaying zero-crossings (narrowband)
-    rise_xs = find_flank_zero_xs(sig_filt, 'rise')
-    decay_xs = find_flank_zero_xs(sig_filt, 'decay')
+    rise_xs = find_flank_zerox(sig_filt, 'rise')
+    decay_xs = find_flank_zerox(sig_filt, 'decay')
 
     # Compute number of peaks and troughs
     if rise_xs[-1] > decay_xs[-1]:
@@ -151,13 +151,13 @@ def find_zerox(sig, peaks, troughs):
         n_decays -= 1
         idx_bias += 1
 
-    rises = _find_zerox_flanks(sig, 'rise', n_rises, troughs, peaks, idx_bias)
-    decays = _find_zerox_flanks(sig, 'decay', n_decays, peaks, troughs, idx_bias)
+    rises = _find_flank_midpoints(sig, 'rise', n_rises, troughs, peaks, idx_bias)
+    decays = _find_flank_midpoints(sig, 'decay', n_decays, peaks, troughs, idx_bias)
 
     return rises, decays
 
 
-def _find_zerox_flanks(sig, flank, n_flanks, extrema_start, extrema_end, idx_bias):
+def _find_flank_midpoints(sig, flank, n_flanks, extrema_start, extrema_end, idx_bias):
     """Helper function for find_zerox."""
 
     assert flank in ['rise', 'decay']
@@ -179,9 +179,36 @@ def _find_zerox_flanks(sig, flank, n_flanks, extrema_start, extrema_end, idx_bia
             flanks[idx] = extrema_start[idx] + int(len(sig_temp) / 2.)
 
         else:
-            flanks[idx] = extrema_start[idx] + int(np.median(find_flank_zero_xs(sig_temp, flank)))
+            flanks[idx] = extrema_start[idx] + int(np.median(find_flank_zerox(sig_temp, flank)))
 
     return flanks
+
+
+def find_flank_zerox(sig, flank):
+    """Find zero-crossings on rising or decay flanks of a filtered signal.
+
+    Parameters
+    ----------
+    sig : 1d array
+        Time series to detect zero-crossings in.
+    flank : {'rise', 'decay'}
+        Which flank, rise or decay, to use to get zero crossings.
+
+    Returns
+    -------
+    zero_xs : 1d array
+        Locations of the zero crossings.
+    """
+
+    assert flank in ['rise', 'decay']
+    pos = sig < 0 if flank == 'rise' else sig > 0
+
+    zero_xs = (pos[:-1] & ~pos[1:]).nonzero()[0]
+
+    # If no zero-crossing's found (peak and trough are same voltage), output dummy value
+    zero_xs = [int(len(sig) / 2)] if len(zero_xs) == 0 else zero_xs
+
+    return zero_xs
 
 
 def extrema_interpolated_phase(sig, peaks, troughs, rises=None, decays=None):
@@ -246,7 +273,7 @@ def extrema_interpolated_phase(sig, peaks, troughs, rises=None, decays=None):
 
     pha = _merge_phases(pha_tpi, pha_tnpi)
 
-    return pha, pha_tpi, pha_tnpi
+    return pha
 
 
 def _merge_phases(pha_tpi, pha_tnpi):
@@ -274,30 +301,3 @@ def _merge_phases(pha_tpi, pha_tnpi):
     pha[-last_empirical_idx + 1:] = np.nan
 
     return pha
-
-
-def find_flank_zero_xs(sig, flank):
-    """Find zero-crossings on rising or decay flanks of a filtered signal.
-
-    Parameters
-    ----------
-    sig : 1d array
-        Time series to detect zero-crossings in.
-    flank : {'rise', 'decay'}
-        Which flank, rise or decay, to use to get zero crossings.
-
-    Returns
-    -------
-    zero_xs : 1d array
-        Locations of the zero crossings.
-    """
-
-    assert flank in ['rise', 'decay']
-    pos = sig < 0 if flank == 'rise' else sig > 0
-
-    zero_xs = (pos[:-1] & ~pos[1:]).nonzero()[0]
-
-    # If no zero-crossing's found (peak and trough are same voltage), output dummy value
-    zero_xs = [int(len(sig) / 2)] if len(zero_xs) == 0 else zero_xs
-
-    return zero_xs
