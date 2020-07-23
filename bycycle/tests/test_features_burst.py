@@ -34,7 +34,7 @@ def test_compute_burst_features(sim_args, dual_thresh, center_e):
         burst_detection_kwargs =  {'fs': sim_args['fs'], 'f_range': sim_args['f_range']}
 
         df_burst_features = compute_burst_features(df_shape_features, df_samples, sig,
-                                                   burst_method='amplitude',
+                                                   burst_method='amp',
                                                    burst_kwargs=burst_detection_kwargs)
 
         burst_fraction = df_burst_features['burst_fraction']
@@ -48,13 +48,13 @@ def test_compute_burst_features(sim_args, dual_thresh, center_e):
         # Use consistency burst detection
         df_burst_features = compute_burst_features(df_shape_features, df_samples, sig)
 
-        amplitude_fraction = df_burst_features['amplitude_fraction'].values[1:-1]
-        amplitude_consistency = df_burst_features['amplitude_consistency'].values[1:-1]
+        amp_fraction = df_burst_features['amp_fraction'].values[1:-1]
+        amp_consistency = df_burst_features['amp_consistency'].values[1:-1]
         period_consistency = df_burst_features['period_consistency'].values[1:-1]
         monotonicity = df_burst_features['monotonicity'].values[1:-1]
 
-        assert np.all((amplitude_fraction >= 0) & (amplitude_fraction <= 1))
-        assert np.all((amplitude_consistency >= 0) & (amplitude_consistency <= 1))
+        assert np.all((amp_fraction >= 0) & (amp_fraction <= 1))
+        assert np.all((amp_consistency >= 0) & (amp_consistency <= 1))
         assert np.all((period_consistency >= 0) & (period_consistency <= 1))
         assert np.all((monotonicity >= 0) & (monotonicity <= 1))
 

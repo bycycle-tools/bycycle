@@ -21,9 +21,9 @@ def test_plot_burst_detect_param(sim_args, interp):
     sig = sim_args['sig']
     fs = sim_args['fs']
 
-    thresh = np.nanmin(df_features['amplitude_consistency'].values) + 0.1
+    thresh = np.nanmin(df_features['amp_consistency'].values) + 0.1
 
-    plot_burst_detect_param(df_features, df_samples, sig, fs, 'amplitude_consistency',
+    plot_burst_detect_param(df_features, df_samples, sig, fs, 'amp_consistency',
                             thresh, interp=interp, save_fig=True,
                             file_path=TEST_PLOTS_PATH, file_name='test_plot_burst_detect_param')
 
@@ -32,8 +32,8 @@ def test_plot_burst_detect_param(sim_args, interp):
 @pytest.mark.parametrize("plot_only_result", [True, False])
 def test_plot_burst_detect_summary(sim_args, plot_only_result):
 
-    burst_detection_kwargs = {'amplitude_fraction_threshold': 1.1,
-                              'amplitude_consistency_threshold': .5,
+    burst_detection_kwargs = {'amp_fraction_threshold': 1.1,
+                              'amp_consistency_threshold': .5,
                               'period_consistency_threshold': .5,
                               'monotonicity_threshold': .8,
                               'n_cycles_min': 3}

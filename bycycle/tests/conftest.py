@@ -29,8 +29,8 @@ def sim_args():
     df_burst = compute_burst_features(df_shapes, df_samples, sig)
     df_features, df_samples = compute_features(sig, FS, F_RANGE, return_samples=True)
 
-    threshold_kwargs = {'amplitude_fraction_threshold': 0.,
-                        'amplitude_consistency_threshold': .5,
+    threshold_kwargs = {'amp_fraction_threshold': 0.,
+                        'amp_consistency_threshold': .5,
                         'period_consistency_threshold': .5,
                         'monotonicity_threshold': .5,
                         'n_cycles_min': 3}

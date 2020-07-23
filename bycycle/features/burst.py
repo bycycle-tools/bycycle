@@ -24,7 +24,7 @@ def compute_burst_features(df_shape_features, df_samples, sig,
         Method for detecting bursts.
 
         - 'cycles': detect bursts based on the consistency of consecutive periods & amplitudes
-        - 'amplitude': detect bursts using an amplitude threshold
+        - 'amp': detect bursts using an amplitude threshold
 
     burst_kwargs : dict, optional, default: None
         Additional arguments required for amplitude burst detection. Defined in
@@ -43,14 +43,14 @@ def compute_burst_features(df_shape_features, df_samples, sig,
 
         When cycle consistency burst detection is used (i.e. burst_method == 'cycles'):
 
-        - ``amplitude_fraction`` : normalized amplitude
-        - ``amplitude_consistency`` : difference in the rise and decay voltage within a cycle
+        - ``amp_fraction`` : normalized amplitude
+        - ``amp_consistency`` : difference in the rise and decay voltage within a cycle
         - ``period_consistency`` : difference between a cycle’s period and the period of the
           adjacent cycles
         - ``monotonicity`` : fraction of instantaneous voltage changes between consecutive
           samples that are positive during the rise phase and negative during the decay phase
 
-        When dual threshold burst detection is used (i.e. burst_method == 'amplitude'):
+        When dual threshold burst detection is used (i.e. burst_method == 'amp'):
 
         - ``burst_fraction`` : fraction of a cycle that is bursting
 
@@ -67,23 +67,23 @@ def compute_burst_features(df_shape_features, df_samples, sig,
 
         # Custom feature functions may be inserted here as long as an array is return with a length
         #   length equal to the number of cycles, or rows in df_shapes.
-        df_burst_features['amplitude_fraction'] = compute_amplitude_fraction(df_shape_features)
+        df_burst_features['amp_fraction'] = compute_amp_fraction(df_shape_features)
 
-        df_burst_features['amplitude_consistency'] = \
-                compute_amplitude_consistency(df_shape_features, df_samples)
+        df_burst_features['amp_consistency'] = \
+                compute_amp_consistency(df_shape_features, df_samples)
 
         df_burst_features['period_consistency'] = compute_period_consistency(df_shape_features)
         df_burst_features['monotonicity'] = compute_monotonicity(df_samples, sig)
 
     # Use dual threshold burst detection
-    elif burst_method == 'amplitude':
+    elif burst_method == 'amp':
 
         fs = burst_kwargs.pop('fs', None)
         f_range = burst_kwargs.pop('f_range', None)
 
         if fs is None or f_range is None:
             raise ValueError("'fs' and 'f_range' must be defined in 'burst_kwargs' "
-                             "when 'burst_method' is 'amplitude'.")
+                             "when 'burst_method' is 'amp'.")
 
         df_burst_features['burst_fraction'] = \
             compute_burst_fraction(df_samples, sig, fs, f_range, **burst_kwargs)
@@ -95,7 +95,7 @@ def compute_burst_features(df_shape_features, df_samples, sig,
     return df_burst_features
 
 
-def compute_amplitude_fraction(df_shape_features):
+def compute_amp_fraction(df_shape_features):
     """Compute the amplitude fraction of each cycle.
 
     Parameters
@@ -112,7 +112,7 @@ def compute_amplitude_fraction(df_shape_features):
     return df_shape_features['volt_amp'].rank() / len(df_shape_features)
 
 
-def compute_amplitude_consistency(df_shape_features, df_samples):
+def compute_amp_consistency(df_shape_features, df_samples):
     """Compute amplitude consistency for each cycle.
 
     Parameters
@@ -130,7 +130,7 @@ def compute_amplitude_consistency(df_shape_features, df_samples):
 
     # Compute amplitude consistency
     cycles = len(df_shape_features)
-    amplitude_consistency = np.ones(cycles) * np.nan
+    amp_consistency = np.ones(cycles) * np.nan
     rises = df_shape_features['volt_rise'].values
     decays = df_shape_features['volt_decay'].values
 
@@ -146,9 +146,9 @@ def compute_amplitude_consistency(df_shape_features, df_samples):
             consist_last = np.min([rises[cyc-1], decays[cyc]]) / np.max([rises[cyc-1], decays[cyc]])
             consist_next = np.min([rises[cyc], decays[cyc+1]]) / np.max([rises[cyc], decays[cyc+1]])
 
-        amplitude_consistency[cyc] = np.min([consist_current, consist_next, consist_last])
+        amp_consistency[cyc] = np.min([consist_current, consist_next, consist_last])
 
-    return amplitude_consistency
+    return amp_consistency
 
 
 def compute_period_consistency(df_shape_features):

@@ -19,7 +19,7 @@ def test_plot_feature_hist(sim_args):
     # Apply consistency burst detection
     df_features = detect_bursts_cycles(df_features, **threshold_kwargs)
 
-    plot_feature_hist(df_features, 'amplitude_consistency', xlim=(0, 1), save_fig=True,
+    plot_feature_hist(df_features, 'amp_consistency', xlim=(0, 1), save_fig=True,
                       file_name='test_plot_feature_hist', file_path=TEST_PLOTS_PATH)
 
 @plot_test
@@ -37,5 +37,5 @@ def test_plot_feature_categorical(sim_args):
     group[:round(len(group)/2)] = 'Second Half'
     df_features['group'] = group
 
-    plot_feature_categorical(df_features, 'amplitude_consistency', group_by='group', save_fig=True,
+    plot_feature_categorical(df_features, 'amp_consistency', group_by='group', save_fig=True,
                              file_name='test_plot_feature_hist', file_path=TEST_PLOTS_PATH)

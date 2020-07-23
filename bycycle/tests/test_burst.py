@@ -34,7 +34,7 @@ def test_detect_bursts_amp(sim_args):
     burst_kwarg = {'fs': sim_args['fs'], 'f_range': sim_args['f_range'], 'amp_threshes': (0.5, 1)}
 
     df_features = compute_burst_features(df_shape_features, df_samples, sig,
-                                         burst_method='amplitude',
+                                         burst_method='amp',
                                          burst_kwargs=burst_kwarg)
 
     # Apply dual threshold burst detection

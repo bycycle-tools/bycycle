@@ -12,7 +12,7 @@ from bycycle.features import compute_features
 @pytest.mark.parametrize("burst_method",
     [
         'cycles',
-        'amplitude',
+        'amp',
         pytest.param(None, marks=pytest.mark.xfail)
     ]
 )
@@ -24,7 +24,7 @@ def test_features_features(sim_args, return_samples, burst_method):
     f_range = sim_args['f_range']
 
     # Set burst detection kwargs
-    if burst_method == 'amplitude':
+    if burst_method == 'amp':
 
         threshold_kwargs = {'burst_fraction_threshold': 1, 'n_cycles_min': 3}
 

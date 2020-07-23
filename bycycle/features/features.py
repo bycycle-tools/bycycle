@@ -32,11 +32,11 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         Method for detecting bursts.
 
         - 'cycles': detect bursts based on the consistency of consecutive periods & amplitudes
-        - 'amplitude': detect bursts using an amplitude threshold
+        - 'amp': detect bursts using an amplitude threshold
 
     burst_kwargs : dict, optional, default: None
         Additional keyword arguments defined in :func:`~.compute_burst_fraction` for dual
-        amplitude threshold burst detection (i.e. when burst_method == 'amplitude').
+        amplitude threshold burst detection (i.e. when burst_method == 'amp').
     threshold_kwargs : dict, optional, default: None
         Feature thresholds for cycles to be considered bursts. These are keyword arguements defined
         in:
@@ -44,7 +44,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - :func:`~.detect_bursts_cycles` for consistency burst detection
           (i.e. when burst_method == 'cycles')
         - :func:`~.detect_bursts_amp` for  amplitude threshold burst detection
-          (i.e. when burst_method == 'amplitude').
+          (i.e. when burst_method == 'amp').
 
     find_extrema_kwargs : dict, optional, default: None
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
@@ -80,14 +80,14 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
 
         When consistency burst detection is used (i.e. burst_method == 'cycles'):
 
-        - ``amplitude_fraction`` : normalized amplitude
-        - ``amplitude_consistency`` : difference in the rise and decay voltage within a cycle
+        - ``amp_fraction`` : normalized amplitude
+        - ``amp_consistency`` : difference in the rise and decay voltage within a cycle
         - ``period_consistency`` : difference between a cycle’s period and the period of the
           adjacent cycles
         - ``monotonicity`` : fraction of instantaneous voltage changes between consecutive
           samples that are positive during the rise phase and negative during the decay phase
 
-        When dual threshold burst detection is used (i.e. burst_method == 'amplitude'):
+        When dual threshold burst detection is used (i.e. burst_method == 'amp'):
 
         - ``burst_fraction`` : fraction of a cycle that is bursting
 
@@ -110,14 +110,14 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
                                hilbert_increase_n=hilbert_increase_n)
 
     # Ensure kwargs are a dictionaries
-    if burst_method == 'amplitude' and not isinstance(burst_kwargs, dict):
+    if burst_method == 'amp' and not isinstance(burst_kwargs, dict):
         burst_kwargs = {}
 
     if not isinstance(threshold_kwargs, dict):
         threshold_kwargs = {}
 
     # Ensure required kwargs are set for amplitude burst detection
-    if burst_method == 'amplitude':
+    if burst_method == 'amp':
         burst_kwargs['fs'] = fs
         burst_kwargs['f_range'] = f_range
 
@@ -132,11 +132,11 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
     # Define whether or not each cycle is part of a burst
     if burst_method == 'cycles':
         df_features = detect_bursts_cycles(df_features, **threshold_kwargs)
-    elif burst_method == 'amplitude':
+    elif burst_method == 'amp':
         df_features = detect_bursts_amp(df_features, **threshold_kwargs)
     else:
         raise ValueError('Invalid argument for "burst_method".'
-                         'Either "cycles" or "amplitude" must be specified."')
+                         'Either "cycles" or "amp" must be specified."')
 
     if return_samples:
         return df_features, df_samples

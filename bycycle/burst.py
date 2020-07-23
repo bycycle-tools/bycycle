@@ -8,10 +8,8 @@ import pandas as pd
 
 pd.options.mode.chained_assignment = None
 
-def detect_bursts_cycles(df_features, amplitude_fraction_threshold=0.,
-                         amplitude_consistency_threshold=.5,
-                         period_consistency_threshold=.5,
-                         monotonicity_threshold=.8,
+def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency_threshold=.5,
+                         period_consistency_threshold=.5, monotonicity_threshold=.8,
                          n_cycles_min=3):
     """Compute consistency between cycles and determine which are truly oscillating.
 
@@ -19,7 +17,7 @@ def detect_bursts_cycles(df_features, amplitude_fraction_threshold=0.,
     ----------
     df_features : pandas.DataFrame
         Waveform features for individual cycles from :func:`~.compute_burst_features`.
-    amplitude_fraction_threshold : float, optional, default: 0.
+    amp_fraction_threshold : float, optional, default: 0.
         The minimum normalized amplitude a cycle must have in order to be considered in an
         oscillation. Must be between 0 and 1.
 
@@ -27,7 +25,7 @@ def detect_bursts_cycles(df_features, amplitude_fraction_threshold=0.,
         - .5 = the median amplitude across all cycles
         - 1 = the maximum amplitude across all cycles
 
-    amplitude_consistency_threshold : float, optional, default: 0.5
+    amp_consistency_threshold : float, optional, default: 0.5
         The minimum normalized difference in rise and decay magnitude to be considered as in an
         oscillatory mode. Must be between 0 and 1.
 
@@ -66,8 +64,8 @@ def detect_bursts_cycles(df_features, amplitude_fraction_threshold=0.,
     """
 
     # Compute if each period is part of an oscillation
-    amp_fraction = df_features['amplitude_fraction'] > amplitude_fraction_threshold
-    amp_consistency = df_features['amplitude_consistency'] > amplitude_consistency_threshold
+    amp_fraction = df_features['amp_fraction'] > amp_fraction_threshold
+    amp_consistency = df_features['amp_consistency'] > amp_consistency_threshold
     period_consistency = df_features['period_consistency'] > period_consistency_threshold
     monotonicity = df_features['monotonicity'] > monotonicity_threshold
 
