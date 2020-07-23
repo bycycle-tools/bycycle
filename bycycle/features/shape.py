@@ -141,6 +141,18 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
     # Convert feature dictionary into a DataFrame
     df_features = pd.DataFrame.from_dict(shape_features)
 
+    # Rename the dataframe if trough centered
+    df_features, df_samples = _rename_df(center_extrema, df_samples, df_features)
+
+    if return_samples:
+        return df_features, df_samples
+
+    return df_features
+
+
+def _rename_df(center_extrema, df_samples, df_features):
+    """Helper function for compute_shape_features."""
+
     # Rename columns if they are actually trough-centered
     if center_extrema == 'trough':
 
@@ -168,10 +180,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         df_features['time_rdsym'] = 1 - df_features['time_rdsym']
         df_features['time_ptsym'] = 1 - df_features['time_ptsym']
 
-    if return_samples:
-        return df_features, df_samples
-
-    return df_features
+    return df_features, df_samples
 
 
 def compute_samples(peaks, troughs, decays, rises):
