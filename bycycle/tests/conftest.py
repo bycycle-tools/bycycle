@@ -29,15 +29,15 @@ def sim_args():
     df_burst = compute_burst_features(df_shapes, df_samples, sig)
     df_features, df_samples = compute_features(sig, FS, F_RANGE, return_samples=True)
 
-    burst_threshold_kwargs = {'amplitude_fraction_threshold': 0.,
-                              'amplitude_consistency_threshold': .5,
-                              'period_consistency_threshold': .5,
-                              'monotonicity_threshold': .5,
-                              'n_cycles_min': 3}
+    threshold_kwargs = {'amplitude_fraction_threshold': 0.,
+                        'amplitude_consistency_threshold': .5,
+                        'period_consistency_threshold': .5,
+                        'monotonicity_threshold': .5,
+                        'n_cycles_min': 3}
 
     yield {'sig': sig, 'fs': FS, 'f_range': F_RANGE, 'df_features': df_features,
            'df_shapes': df_shapes, 'df_burst': df_burst, 'df_samples': df_samples,
-           'burst_threshold_kwargs': burst_threshold_kwargs}
+           'threshold_kwargs': threshold_kwargs}
 
 
 @pytest.fixture(scope='session', autouse=True)

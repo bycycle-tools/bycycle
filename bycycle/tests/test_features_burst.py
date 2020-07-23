@@ -34,8 +34,8 @@ def test_compute_burst_features(sim_args, dual_thresh, center_e):
         burst_detection_kwargs =  {'fs': sim_args['fs'], 'f_range': sim_args['f_range']}
 
         df_burst_features = compute_burst_features(df_shape_features, df_samples, sig,
-                                                   burst_detection_method='amplitude',
-                                                   burst_detection_kwargs=burst_detection_kwargs)
+                                                   burst_method='amplitude',
+                                                   burst_kwargs=burst_detection_kwargs)
 
         burst_fraction = df_burst_features['burst_fraction']
 
