@@ -11,7 +11,7 @@ from bycycle.burst import detect_bursts_cycles, detect_bursts_amp
 
 def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycles',
                      burst_kwargs=None, threshold_kwargs=None, find_extrema_kwargs=None,
-                     hilbert_increase_n=False, return_samples=True):
+                     return_samples=True):
     """Compute shape and burst features for each cycle.
 
     Parameters
@@ -49,10 +49,6 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
         to change filter Parameters or boundary. By default, it sets the filter length to three
         cycles of the low cutoff frequency (``f_range[0]``).
-    hilbert_increase_n : bool, optional, default: False
-        Corresponding kwarg for :func:`~neurodsp.timefrequency.hilbert.amp_by_time` for determining
-        ``band_amp``. If true, this zero-pads the signal when computing the Fourier transform, which
-        can be necessary for computing it in a reasonable amount of time.
     return_samples : bool, optional, default: True
         Returns samples indices of cyclepoints used for determining features if True.
 
@@ -73,9 +69,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - ``volt_trough`` : voltage at the last trough
         - ``time_rdsym`` : fraction of cycle in the rise period
         - ``time_ptsym`` : fraction of cycle in the peak period
-        - ``band_amp`` : average analytic amplitude of the oscillation computed using narrowband
-          filtering and the Hilbert transform. Filter length is 3 cycles of the low cutoff
-          frequency. Average taken across all time points in the cycle.
+        - ``band_amp`` : average analytic amplitude of the oscillation.
 
         When consistency burst detection is used (i.e. burst_method == 'cycles'):
 
@@ -105,8 +99,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
     # Compute shape features for each cycle.
     df_shape_features, df_samples = \
         compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
-                               find_extrema_kwargs=find_extrema_kwargs,
-                               hilbert_increase_n=hilbert_increase_n)
+                               find_extrema_kwargs=find_extrema_kwargs)
 
     # Ensure kwargs are a dictionaries
     if burst_method == 'amp' and not isinstance(burst_kwargs, dict):

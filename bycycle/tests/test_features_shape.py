@@ -31,9 +31,10 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, r
     fs = sim_args['fs']
     f_range = sim_args['f_range']
 
-    outs = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
+    outs = compute_shape_features(sig, fs, f_range,
+                                  center_extrema=center_extrema,
                                   find_extrema_kwargs=find_extrema_kwargs,
-                                  hilbert_increase_n=False, return_samples=return_samples)
+                                  return_samples=return_samples)
 
     if return_samples:
         df_shapes, df_samples = outs
@@ -54,9 +55,9 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, r
     # Check inverted signal gives appropriately opposite data
     extrema_opp = 'trough' if center_extrema == 'peak' else 'peak'
 
-    df_opp = compute_shape_features(-sig, fs, f_range, center_extrema=extrema_opp,
+    df_opp = compute_shape_features(-sig, fs, f_range,
+                                    center_extrema=extrema_opp,
                                     find_extrema_kwargs=find_extrema_kwargs,
-                                    hilbert_increase_n=False,
                                     return_samples=False)
 
     cols_peak = ['time_peak', 'time_rise', 'volt_rise',

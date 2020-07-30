@@ -11,7 +11,7 @@ from bycycle.cyclepoints import find_extrema, find_zerox
 ###################################################################################################
 
 def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema_kwargs=None,
-                           hilbert_increase_n=False, n_cycles=3, return_samples=True):
+                           n_cycles=3, return_samples=True):
     """Compute shapes parameters of each cycle, used for determining burst features.
 
     Parameters
@@ -32,10 +32,6 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
         to change filter parameters or boundary. By default, it sets the filter length to three
         cycles of the low cutoff frequency (``f_range[0]``).
-    hilbert_increase_n : bool, optional, default: False
-        Corresponding kwarg for :func:`~neurodsp.timefrequency.hilbert.amp_by_time`.
-        If true, this zero-pads the signal when computing the Fourier transform, which can be
-        necessary for computing it in a reasonable amount of time.
     n_cycles : int, optional, default: 3
         Length of filter, in number of cycles, at the lower cutoff frequency.
     return_samples : bool, optional, default: True
@@ -58,9 +54,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         - ``volt_trough`` : voltage at the last trough
         - ``time_rdsym`` : fraction of cycle in the rise period
         - ``time_ptsym`` : fraction of cycle in the peak period
-        - ``band_amp`` : average analytic amplitude of the oscillation computed using narrowband
-          filtering and the Hilbert transform. Filter length is 3 cycles of the low cutoff
-          frequency. Average taken across all time points in the cycle.
+        - ``band_amp`` : average analytic amplitude of the oscillation
 
     df_samples : pandas.DataFrame, optional, default: True
         Dataframe containing sample indices of cyclepoints.
@@ -113,8 +107,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
                                     time_peak=time_peak, time_trough=time_trough)
 
     # Compute average oscillatory amplitude estimate during cycle
-    band_amp = compute_band_amp(df_samples, sig, fs, f_range,
-                                hilbert_increase_n=hilbert_increase_n, n_cycles=3)
+    band_amp = compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3)
 
     # Organize shape features into a dataframe
     shape_features = {}
@@ -284,7 +277,7 @@ def compute_symmetry(df_samples, sig, period=None, time_peak=None, time_trough=N
     return sym_features
 
 
-def compute_band_amp(df_samples, sig, fs, f_range, hilbert_increase_n=False, n_cycles=3):
+def compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3):
     """Compute the average amplitude of each oscillation.
 
     Parameters
@@ -295,22 +288,16 @@ def compute_band_amp(df_samples, sig, fs, f_range, hilbert_increase_n=False, n_c
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest (Hz).
-    hilbert_increase_n : bool, optional, default: False
-        Corresponding kwarg for :func:`~neurodsp.timefrequency.hilbert.amp_by_time`.
-        If true, this zero-pads the signal when computing the Fourier transform, which can be
-        necessary for computing it in a reasonable amount of time.
     n_cycles : int, optional, default: 3
         Length of filter, in number of cycles, at the lower cutoff frequency.
 
     Returns
     -------
     band_amp : 1d array
-        Average analytic amplitude of the oscillation computed using narrowband filtering and the
-        Hilbert transform. Filter length is 3 cycles of the low cutoff frequency. Average taken
-        across all time points in the cycle.
+        Average analytic amplitude of the oscillation.
     """
 
-    amp = amp_by_time(sig, fs, f_range, n_cycles=n_cycles, hilbert_increase_n=hilbert_increase_n)
+    amp = amp_by_time(sig, fs, f_range, n_cycles=n_cycles)
 
     troughs = np.append(df_samples['sample_last_trough'].values[0],
                         df_samples['sample_next_trough'].values)
