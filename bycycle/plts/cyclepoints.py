@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from neurodsp.plts import plot_time_series
 from neurodsp.plts.utils import savefig
 
-from bycycle.utils import limit_signal, get_extrema
+from bycycle.utils import limit_signal, get_extrema_df
 
 ###################################################################################################
 ###################################################################################################
@@ -47,7 +47,7 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
     """
 
     # Determine extrema/zero-crossings from dataframe
-    center_e, side_e = get_extrema(df_samples)
+    center_e, side_e = get_extrema_df(df_samples)
 
     peaks, troughs, rises, decays = [None]*4
 

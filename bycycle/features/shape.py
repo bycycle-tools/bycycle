@@ -5,6 +5,7 @@ import pandas as pd
 
 from neurodsp.timefrequency import amp_by_time
 
+from bycycle.utils import rename_extrema_df
 from bycycle.cyclepoints import find_extrema, find_zerox
 
 ###################################################################################################
@@ -127,45 +128,12 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
     df_shape_features = pd.DataFrame.from_dict(shape_features)
 
     # Rename the dataframe if trough centered
-    df_shape_features, df_samples = _rename_df(center_extrema, df_samples, df_shape_features)
+    df_shape_features, df_samples = rename_extrema_df(center_extrema, df_samples, df_shape_features)
 
     if return_samples:
         return df_shape_features, df_samples
 
     return df_shape_features
-
-
-def _rename_df(center_extrema, df_samples, df_features):
-    """Helper function for compute_shape_features."""
-
-    # Rename columns if they are actually trough-centered
-    if center_extrema == 'trough':
-
-        samples_rename_dict = {'sample_peak': 'sample_trough',
-                               'sample_zerox_decay': 'sample_zerox_rise',
-                               'sample_zerox_rise': 'sample_zerox_decay',
-                               'sample_last_trough': 'sample_last_peak',
-                               'sample_next_trough': 'sample_next_peak'}
-
-        features_rename_dict = {'time_peak': 'time_trough',
-                                'time_trough': 'time_peak',
-                                'volt_peak': 'volt_trough',
-                                'volt_trough': 'volt_peak',
-                                'time_rise': 'time_decay',
-                                'time_decay': 'time_rise',
-                                'volt_rise': 'volt_decay',
-                                'volt_decay': 'volt_rise'}
-
-        df_samples.rename(columns=samples_rename_dict, inplace=True)
-        df_features.rename(columns=features_rename_dict, inplace=True)
-
-        # Need to reverse symmetry measures
-        df_features['volt_peak'] = -df_features['volt_peak']
-        df_features['volt_trough'] = -df_features['volt_trough']
-        df_features['time_rdsym'] = 1 - df_features['time_rdsym']
-        df_features['time_ptsym'] = 1 - df_features['time_ptsym']
-
-    return df_features, df_samples
 
 
 def compute_durations(df_samples):

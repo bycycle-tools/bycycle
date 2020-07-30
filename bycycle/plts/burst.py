@@ -11,7 +11,7 @@ from neurodsp.plts import plot_time_series, plot_bursts
 from neurodsp.plts.utils import savefig
 
 from bycycle.plts.cyclepoints import plot_cyclepoints_df
-from bycycle.utils import limit_df, limit_signal, get_extrema
+from bycycle.utils import limit_df, limit_signal, get_extrema_df
 
 ###################################################################################################
 ###################################################################################################
@@ -69,7 +69,7 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
     xlim = (times[0], times[-1]) if xlim is None else xlim
 
     # Determine if peak of troughs are the sides of an oscillation
-    _, side_e = get_extrema(df_samples)
+    _, side_e = get_extrema_df(df_samples)
 
     # Remove this kwarg since it isn't stored cycle by cycle in the df (nothing to plot)
     if 'min_n_cycles' in burst_detection_kwargs.keys():
@@ -189,7 +189,7 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
         fig, ax = plt.subplots(figsize=figsize)
 
     # Determine extrema strings
-    center_e, side_e = get_extrema(df_samples)
+    center_e, side_e = get_extrema_df(df_samples)
 
     # Limit dataframe, sig and times
     df = pd.concat([df_samples, df_features], axis=1)

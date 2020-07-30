@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from bycycle.utils import limit_df, limit_signal, get_extrema
+from bycycle.utils import limit_df, limit_signal, get_extrema_df
 
 ###################################################################################################
 ###################################################################################################
@@ -35,17 +35,17 @@ def test_limit_signal(sim_args):
     assert np.array_equal(sig_short, sig[fs*xlim[0]:fs*xlim[1]])
 
 
-def test_get_extrema(sim_args):
+def test_get_extrema_df(sim_args):
 
     df_samples = sim_args['df_samples']
-    center_e, side_e = get_extrema(df_samples)
+    center_e, side_e = get_extrema_df(df_samples)
 
     # The fixture will return peak centered cycles
     assert center_e == 'peak'
     assert side_e == 'trough'
 
     df_samples = pd.DataFrame({'sample_trough': []})
-    center_e, side_e = get_extrema(df_samples)
+    center_e, side_e = get_extrema_df(df_samples)
 
     assert center_e == 'trough'
     assert side_e == 'peak'

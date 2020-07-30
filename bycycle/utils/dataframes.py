@@ -1,4 +1,4 @@
-"""General utility functions."""
+"""Utility functions for working with ByCycle DataFrames."""
 
 ###################################################################################################
 ###################################################################################################
@@ -28,7 +28,7 @@ def limit_df(df, fs, start=None, stop=None):
     `stop` time or before the `end` time.
     """
 
-    center_e, side_e = get_extrema(df)
+    center_e, side_e = get_extrema_df(df)
 
     start = 0 if start is None else start
 
@@ -47,40 +47,7 @@ def limit_df(df, fs, start=None, stop=None):
     return df
 
 
-def limit_signal(times, sig, start=None, stop=None):
-    """Restrict signal and times to be within time limits.
-
-    Parameters
-    ----------
-    times : 1d array
-        Time definition for the time series.
-    sig : 1d array
-        Time series.
-    start : float
-        The lower time limit, in seconds, to restrict the df.
-    stop : float
-        The upper time limit, in seconds, to restrict the df.
-
-    Returns
-    -------
-    sig : 1d array
-        A limited time series.
-    times : 1d array
-        A limited time definition.
-    """
-
-    if start is not None:
-        sig = sig[times >= start]
-        times = times[times >= start]
-
-    if stop is not None:
-        sig = sig[times < stop]
-        times = times[times < stop]
-
-    return sig, times
-
-
-def get_extrema(df):
+def get_extrema_df(df):
     """Determine whether cycles are peak or trough centered.
 
     Parameters
@@ -100,3 +67,49 @@ def get_extrema(df):
     side_e = 'trough' if center_e == 'peak' else 'peak'
 
     return center_e, side_e
+
+
+def rename_extrema_df(center_extrema, df_samples, df_features):
+    """Rename a dataframe based on the centered extrema.
+
+    Parameters
+    ----------
+    center_extrema : {'trough', 'peak'}
+        Which extrema is centered.
+    df_samples, df_features : pandas.DataFrames
+        ByCycle dataframes to rename, given the centered extrema.
+
+    Returns
+    -------
+    df_features, df_samples : pandas.DataFrames
+        Updated dataframes.
+    """
+
+    # Rename columns if they are actually trough-centered
+    if center_extrema == 'trough':
+
+        samples_rename_dict = {'sample_peak': 'sample_trough',
+                               'sample_zerox_decay': 'sample_zerox_rise',
+                               'sample_zerox_rise': 'sample_zerox_decay',
+                               'sample_last_trough': 'sample_last_peak',
+                               'sample_next_trough': 'sample_next_peak'}
+
+        features_rename_dict = {'time_peak': 'time_trough',
+                                'time_trough': 'time_peak',
+                                'volt_peak': 'volt_trough',
+                                'volt_trough': 'volt_peak',
+                                'time_rise': 'time_decay',
+                                'time_decay': 'time_rise',
+                                'volt_rise': 'volt_decay',
+                                'volt_decay': 'volt_rise'}
+
+        df_samples.rename(columns=samples_rename_dict, inplace=True)
+        df_features.rename(columns=features_rename_dict, inplace=True)
+
+        # Need to reverse symmetry measures
+        df_features['volt_peak'] = -df_features['volt_peak']
+        df_features['volt_trough'] = -df_features['volt_trough']
+        df_features['time_rdsym'] = 1 - df_features['time_rdsym']
+        df_features['time_ptsym'] = 1 - df_features['time_ptsym']
+
+    return df_features, df_samples
