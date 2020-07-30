@@ -279,15 +279,13 @@ def extrema_interpolated_phase(sig, peaks, troughs, rises=None, decays=None):
 def _merge_phases(pha_tpi, pha_tnpi):
     """Helper functions for extrema_interpolated_phase."""
 
-    # Create a phase difference array to determine where the phase decaying/rising
-    #   in the negative pi array.
+    # Create phase differences to determine where phase is decaying/rising in the -pi array
     diffs = np.diff(pha_tnpi)
 
-    # Pad the phase difference array with a NaN to maintain a length equal to the signal timeseries.
+    # Pad the phase difference array with a NaN to maintain a length equal to the timeseries
     diffs = np.append(diffs, np.nan)
 
-    # Create a phase timeseries where trough pi values are used for decaying periods
-    #   and trough negative pi values are used for rising periods.
+    # Create new phase series, using trough pi for decaying periods & trough -pi for rising periods
     pha = np.array([pha_tpi[idx] if diffs[idx] < 0 else pha for idx, pha in enumerate(pha_tnpi)])
 
     # Assign the periods before the first empirical phase timepoint to NaN

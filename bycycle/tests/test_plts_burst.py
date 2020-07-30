@@ -36,7 +36,7 @@ def test_plot_burst_detect_summary(sim_args, plot_only_result):
                               'amp_consistency_threshold': .5,
                               'period_consistency_threshold': .5,
                               'monotonicity_threshold': .8,
-                              'n_cycles_min': 3}
+                              'min_n_cycles': 3}
 
     df_samples = sim_args['df_samples']
     df_features = sim_args['df_features']

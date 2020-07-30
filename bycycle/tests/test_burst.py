@@ -38,7 +38,7 @@ def test_detect_bursts_amp(sim_args):
                                          burst_kwargs=burst_kwarg)
 
     # Apply dual threshold burst detection
-    df_features = detect_bursts_amp(df_features, burst_fraction_threshold=1, n_cycles_min=3)
+    df_features = detect_bursts_amp(df_features, burst_fraction_threshold=1, min_n_cycles=3)
 
     # Make sure that burst detection is only boolean
     assert df_features.dtypes['is_burst'] == 'bool'

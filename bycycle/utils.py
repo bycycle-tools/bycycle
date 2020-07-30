@@ -68,7 +68,7 @@ def limit_signal(times, sig, start=None, stop=None):
     times : 1d array
         A limited time definition.
     """
-    # Limit times and sig to start and stop times
+
     if start is not None:
         sig = sig[times >= start]
         times = times[times >= start]

@@ -33,7 +33,7 @@ def sim_args():
                         'amp_consistency_threshold': .5,
                         'period_consistency_threshold': .5,
                         'monotonicity_threshold': .5,
-                        'n_cycles_min': 3}
+                        'min_n_cycles': 3}
 
     yield {'sig': sig, 'fs': FS, 'f_range': F_RANGE, 'df_features': df_features,
            'df_shapes': df_shapes, 'df_burst': df_burst, 'df_samples': df_samples,

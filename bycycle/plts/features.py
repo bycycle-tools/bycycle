@@ -22,7 +22,7 @@ def plot_feature_hist(feature, param_label, only_bursts=True, bins='auto', ax=No
     only_burst : bool, optional, default: True
         Whether to limit cycles to only those that are bursting.
     bins : int or string, optional, default: 'auto'
-        The number of bins or binning strategy, as specified in matplotlib.pyplot.hist.
+        The number of bins or binning strategy, as specified in `matplotlib.pyplot.hist`.
     ax : matplotlib.Axes, optional
         Figure axes upon which to plot.
     **kwargs

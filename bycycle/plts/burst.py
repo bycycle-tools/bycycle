@@ -72,8 +72,8 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
     _, side_e = get_extrema(df_samples)
 
     # Remove this kwarg since it isn't stored cycle by cycle in the df (nothing to plot)
-    if 'n_cycles_min' in burst_detection_kwargs.keys():
-        del burst_detection_kwargs['n_cycles_min']
+    if 'min_n_cycles' in burst_detection_kwargs.keys():
+        del burst_detection_kwargs['min_n_cycles']
 
     n_kwargs = len(burst_detection_kwargs.keys())
 
@@ -198,7 +198,7 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
 
     sig, times = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
 
-    # Remove start/end cycles that tlims falls between
+    # Remove start / end cycles that tlims falls between
     df = df[(df['sample_last_' + side_e] >= 0) & \
             (df['sample_next_' + side_e] < xlim[1]*fs)]
 
@@ -212,8 +212,8 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
 
     else:
 
-        # Create steps, from side to side of each cycle, and set the y-value to the burst parameter
-        #   value for that cycle
+        # Create steps, from side to side of each cycle, and set the y-value
+        #   to the burst parameter value for that cycle
         side_times = np.array([])
         side_param = np.array([])
 
@@ -223,7 +223,7 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
             side_times = np.append(side_times, [times[int(cyc['sample_last_' + side_e])],
                                                 times[int(cyc['sample_next_' + side_e])]])
 
-            # Set the y-value, from side to side, to the burst param for each cycle.
+            # Set the y-value, from side to side, to the burst param for each cycle
             side_param = np.append(side_param, [cyc[burst_param]] * 2)
 
         plot_time_series([side_times, xlim], [side_param, [thresh]*2], ax=ax, colors=['k', 'k'],

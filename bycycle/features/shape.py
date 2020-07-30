@@ -113,7 +113,8 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
                                     time_peak=time_peak, time_trough=time_trough)
 
     # Compute average oscillatory amplitude estimate during cycle
-    band_amp = compute_band_amp(df_samples, sig, fs, f_range, hilbert_increase_n=False, n_cycles=3)
+    band_amp = compute_band_amp(df_samples, sig, fs, f_range,
+                                hilbert_increase_n=hilbert_increase_n, n_cycles=3)
 
     # Organize shape features into a dataframe
     shape_features = {}
@@ -179,7 +180,7 @@ def compute_durations(df_samples):
 
     Parameters
     ---------
-    df_samples : pandas DataFrame
+    df_samples : pandas.DataFrame
         Dataframe containing sample indices of cyclepoints.
 
     Returns
@@ -189,7 +190,7 @@ def compute_durations(df_samples):
     time_peak : 1d array
         Time between peak and next trough.
     time_trough : 1d array
-        Time between peak and previous trough
+        Time between peak and previous trough.
     """
 
     period = df_samples['sample_next_trough'] - df_samples['sample_last_trough']
@@ -204,7 +205,7 @@ def compute_extrema_voltage(df_samples, sig):
 
     Parameters
     ---------
-    df_samples : pandas DataFrame
+    df_samples : pandas.DataFrame
         Dataframe containing sample indices of cyclepoints.
     sig : 1d array
         Time series.
@@ -228,7 +229,7 @@ def compute_symmetry(df_samples, sig, period=None, time_peak=None, time_trough=N
 
     Parameters
     ---------
-    df_samples : pandas DataFrame
+    df_samples : pandas.DataFrame
         Dataframe containing sample indices of cyclepoints.
     sig : 1d array
         Time series.
@@ -332,13 +333,13 @@ def compute_samples(sig, fs, f_range, **find_extrema_kwargs):
     f_range : tuple of (float, float)
         Frequency range, in Hz, to narrowband filter the signal, used to find zero-crossings.
     find_extrema_kwargs : dict, optional, default: None
-        Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
+        Keyword arguments for function to find peaks and troughs (:func:`~.find_extrema`)
         to change filter parameters or boundary. By default, it sets the filter length to three
         cycles of the low cutoff frequency (``f_range[0]``).
 
     Returns
     -------
-    df_samples : pandas DataFrame, optional, default: False
+    df_samples : pandas.DataFrame, optional, default: False
         Dataframe containing sample indices of cyclepoints.
         Columns (listed for peak-centered cycles):
 

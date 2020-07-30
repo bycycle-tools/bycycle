@@ -1,4 +1,4 @@
-"""Settings for bycycle."""
+"""Settings for bycycle tests."""
 
 import os
 import pkg_resources as pkg

@@ -33,7 +33,7 @@ def compute_burst_features(df_shape_features, df_samples, sig,
         - ``fs`` : required for dual amplitude threshold burst detection
         - ``f_range`` : required for dual amplitude threshold burst detection
         - ``amp_threshes`` : optional, default: (1, 2)
-        - ``n_cycles_min`` : optional, default: 3
+        - ``min_n_cycles`` : optional, default: 3
         - ``filter_kwargs`` : optional, default: None
 
     Returns
@@ -53,11 +53,6 @@ def compute_burst_features(df_shape_features, df_samples, sig,
         When dual threshold burst detection is used (i.e. burst_method == 'amp'):
 
         - ``burst_fraction`` : fraction of a cycle that is bursting
-
-    Notes
-    -----
-    If ``dual_threshold_kwargs`` is *not* None, dual amplitude threshold burst detection will be
-    used, rather than cycle feature consistency.
     """
 
     df_burst_features = pd.DataFrame()
@@ -65,8 +60,8 @@ def compute_burst_features(df_shape_features, df_samples, sig,
     # Use feature consistency burst detection
     if burst_method == 'cycles':
 
-        # Custom feature functions may be inserted here as long as an array is return with a length
-        #   length equal to the number of cycles, or rows in df_shapes.
+        # Custom feature functions may be inserted here as long as an array is returned
+        #   with length equal to the number of cycles, or rows in df_shapes
         df_burst_features['amp_fraction'] = compute_amp_fraction(df_shape_features)
 
         df_burst_features['amp_consistency'] = \
@@ -89,7 +84,6 @@ def compute_burst_features(df_shape_features, df_samples, sig,
             compute_burst_fraction(df_samples, sig, fs, f_range, **burst_kwargs)
 
     else:
-
         raise ValueError("Unrecognized 'burst_method'.")
 
     return df_burst_features
@@ -220,7 +214,7 @@ def compute_monotonicity(df_samples, sig):
 
 
 def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
-                           n_cycles_min=3, filter_kwargs=None):
+                           min_n_cycles=3, filter_kwargs=None):
     """Compute the proportion of each cycle that is bursting using a dual threshold algorithm.
 
     Parameters
@@ -237,7 +231,7 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
         Threshold values for determining timing of bursts.
         These values are in units of amplitude (or power, if specified) normalized to
         the median amplitude (value 1).
-    n_cycles_min : int, optional, default: 3
+    min_n_cycles : int, optional, default: 3
         Minimum number of cycles to be identified as truly oscillating needed in a row in
         order for them to remain identified as truly oscillating.
     filter_kwargs : dict, optional, default: None
@@ -258,7 +252,7 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
 
     # Detect bursts using the dual amplitude threshold approach
     is_burst = detect_bursts_dual_threshold(sig, fs, amp_threshes, f_range,
-                                            min_n_cycles=n_cycles_min, **filter_kwargs)
+                                            min_n_cycles=min_n_cycles, **filter_kwargs)
 
     # Convert the boolean array to binary
     is_burst = is_burst.astype(int)

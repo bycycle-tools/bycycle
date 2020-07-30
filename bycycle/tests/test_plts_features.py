@@ -3,7 +3,7 @@
 import numpy as np
 
 from bycycle.burst import detect_bursts_cycles
-from bycycle.plts.features import  plot_feature_hist, plot_feature_categorical
+from bycycle.plts.features import plot_feature_hist, plot_feature_categorical
 from bycycle.tests.utils import plot_test
 from bycycle.tests.settings import TEST_PLOTS_PATH
 
@@ -31,8 +31,7 @@ def test_plot_feature_categorical(sim_args):
     # Apply consistency burst detection
     df_features = detect_bursts_cycles(df_features, **threshold_kwargs)
 
-    # Compare the first to second half of a signal.
-    #   The distribution should be the same since sim_oscillation is used.
+    # Compare first & second halves of the signal - distributions should be the same
     group = np.array(['First Half' for row in range(len(df_features))])
     group[:round(len(group)/2)] = 'Second Half'
     df_features['group'] = group

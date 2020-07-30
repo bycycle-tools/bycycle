@@ -26,13 +26,13 @@ def test_features_features(sim_args, return_samples, burst_method):
     # Set burst detection kwargs
     if burst_method == 'amp':
 
-        threshold_kwargs = {'burst_fraction_threshold': 1, 'n_cycles_min': 3}
+        threshold_kwargs = {'burst_fraction_threshold': 1, 'min_n_cycles': 3}
 
     else:
 
         threshold_kwargs = sim_args['threshold_kwargs']
 
-    # Test returning sample indices in a separate dataframe.
+    # Test returning sample indices in a separate dataframe
     if return_samples:
 
         df_features, df_samples = compute_features(sig, fs, f_range, burst_method=burst_method, \

@@ -38,8 +38,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         Additional keyword arguments defined in :func:`~.compute_burst_fraction` for dual
         amplitude threshold burst detection (i.e. when burst_method == 'amp').
     threshold_kwargs : dict, optional, default: None
-        Feature thresholds for cycles to be considered bursts. These are keyword arguements defined
-        in:
+        Feature thresholds for cycles to be considered bursts, matching keyword arguments for:
 
         - :func:`~.detect_bursts_cycles` for consistency burst detection
           (i.e. when burst_method == 'cycles')

@@ -11,7 +11,6 @@ from bycycle.features.shape import (compute_shape_features, compute_samples, com
 ###################################################################################################
 ###################################################################################################
 
-
 @pytest.mark.parametrize("find_extrema_kwargs",
     [
         None,
