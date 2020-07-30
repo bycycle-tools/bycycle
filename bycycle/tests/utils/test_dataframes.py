@@ -1,9 +1,9 @@
-"""Tests plotting utilities."""
+"""Tests dataframe utility functions."""
 
 import numpy as np
 import pandas as pd
 
-from bycycle.utils import limit_df, limit_signal, get_extrema_df
+from bycycle.utils.dataframes import limit_df, get_extrema_df
 
 ###################################################################################################
 ###################################################################################################
@@ -19,20 +19,6 @@ def test_limit_df(sim_args):
 
     assert df_short['sample_next_trough'].min() >= 0
     assert df_short['sample_last_trough'].max() <= fs * (xlim[1] - xlim[0])
-
-
-def test_limit_signal(sim_args):
-
-    sig = sim_args['sig']
-    fs = sim_args['fs']
-
-    times = np.arange(0, len(sig) / fs, 1 / fs)
-    xlim = (1, 2)
-
-    sig_short, times_short = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
-
-    assert np.array_equal(times_short, times[fs*xlim[0]:fs*xlim[1]])
-    assert np.array_equal(sig_short, sig[fs*xlim[0]:fs*xlim[1]])
 
 
 def test_get_extrema_df(sim_args):
