@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from bycycle.cyclepoints import find_extrema, find_zerox
-from bycycle.features.shape import (compute_shape_features, compute_samples, compute_durations,
+from bycycle.features.shape import (compute_shape_features, compute_cyclepoints, compute_durations,
                                     compute_extrema_voltage, compute_symmetry, compute_band_amp)
 
 ###################################################################################################
@@ -76,7 +76,7 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, r
             np.testing.assert_allclose(df_opp.loc[:, col], df_shapes.loc[:, cols_trough[idx]])
 
 
-def test_compute_samples(sim_args):
+def test_compute_cyclepoints(sim_args):
 
     sig = sim_args['sig']
     fs = sim_args['fs']
@@ -85,7 +85,7 @@ def test_compute_samples(sim_args):
     peaks, troughs = find_extrema(sig, fs, f_range)
     rises, decays = find_zerox(sig, peaks, troughs)
 
-    df_samples = compute_samples(sig, fs, f_range)
+    df_samples = compute_cyclepoints(sig, fs, f_range)
 
     assert (df_samples['sample_peak'] == peaks[1:]).all()
     assert (df_samples['sample_zerox_decay'] == decays[1:]).all()

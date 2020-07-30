@@ -26,7 +26,7 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
     df_features : pandas.DataFrame
         Dataframe output of :func:`~.compute_features`.
     df_samples : pandas.DataFrame
-        Dataframe output of :func:`~.compute_samples`.
+        Dataframe output of :func:`~.compute_cyclepoints`.
     sig : 1d array
         Time series to plot.
     fs : float

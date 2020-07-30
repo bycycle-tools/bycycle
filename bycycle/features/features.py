@@ -1,4 +1,4 @@
-"""Quantify the shape of oscillatory waveforms on a cycle-by-cycle basis."""
+"""Functions for compute cycle-by-cycle features."""
 
 import pandas as pd
 

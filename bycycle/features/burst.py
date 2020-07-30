@@ -1,4 +1,4 @@
-"""Functions to determine the burst features for individual cycles."""
+"""Functions to compute burst features for individual cycles."""
 
 import numpy as np
 import pandas as pd
@@ -17,7 +17,7 @@ def compute_burst_features(df_shape_features, df_samples, sig,
     df_shape_features : pandas.DataFrame
         Shape parameters for each cycle, determined using :func:`~.compute_shape_features`.
     df_samples : pandas.DataFrame
-        Indices of cyclepoints returned from :func:`~.compute_samples`.
+        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
     sig : 1d array
         Voltage time series used for determining monotonicity.
     burst_method : string, optional, default: 'cycles'
@@ -114,7 +114,7 @@ def compute_amp_consistency(df_shape_features, df_samples):
     df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
     df_samples : pandas.DataFrame
-        Indices of cyclepoints returned from :func:`~.compute_samples`.
+        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
 
     Returns
     -------
@@ -182,7 +182,7 @@ def compute_monotonicity(df_samples, sig):
     Parameters
     ----------
     df_samples : pandas.DataFrame
-        Indices of cyclepoints returned from :func:`~.compute_samples`.
+        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
     sig : 1d array
         Time series.
 
@@ -220,7 +220,7 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     Parameters
     ----------
     df_samples : pandas.DataFrame
-        Indices of cyclepoints returned from :func:`~.compute_samples`.
+        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
     sig : 1d array
         Time series.
     fs : float
