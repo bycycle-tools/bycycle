@@ -91,11 +91,17 @@ Install
 
 **Stable Version**
 
-To install the latest stable release of ``bycycle``, you can use pip:
+To install the latest stable release, you can use pip:
 
 .. code-block:: shell
 
     $ pip install bycycle
+    
+ByCycle can also be installed with conda, from the conda-forge channel:
+
+.. code-block:: shell
+
+    $ conda install -c conda-forge bycycle
 
 **Development Version**
 
