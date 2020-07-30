@@ -157,33 +157,6 @@ def find_zerox(sig, peaks, troughs):
     return rises, decays
 
 
-def _find_flank_midpoints(sig, flank, n_flanks, extrema_start, extrema_end, idx_bias):
-    """Helper function for find_zerox."""
-
-    assert flank in ['rise', 'decay']
-    idx_bias = -idx_bias + 1 if flank == 'rise' else idx_bias
-    comp = gt if flank == 'rise' else lt
-
-    flanks = np.zeros(n_flanks, dtype=int)
-    for idx in range(n_flanks):
-
-        sig_temp = np.copy(sig[extrema_start[idx]:extrema_end[idx + idx_bias] + 1])
-        sig_temp -= (sig_temp[0] + sig_temp[-1]) / 2.
-
-        # If data is all zeros, just set the zero-crossing to be halfway between
-        if np.sum(np.abs(sig_temp)) == 0:
-            flanks[idx] = extrema_start[idx] + int(len(sig_temp) / 2.)
-
-        # If flank is actually an extrema, just set the zero-crossing to be halfway between
-        elif comp(sig_temp[0], sig_temp[-1]):
-            flanks[idx] = extrema_start[idx] + int(len(sig_temp) / 2.)
-
-        else:
-            flanks[idx] = extrema_start[idx] + int(np.median(find_flank_zerox(sig_temp, flank)))
-
-    return flanks
-
-
 def find_flank_zerox(sig, flank):
     """Find zero-crossings on rising or decay flanks of a filtered signal.
 
@@ -211,91 +184,28 @@ def find_flank_zerox(sig, flank):
     return zero_xs
 
 
-def extrema_interpolated_phase(sig, peaks, troughs, rises=None, decays=None):
-    """Use extrema and (optionally) zero-crossings to estimate instantaneous phase.
+def _find_flank_midpoints(sig, flank, n_flanks, extrema_start, extrema_end, idx_bias):
+    """Helper function for find_zerox."""
 
-    Parameters
-    ----------
-    sig : 1d array
-        Time series.
-    peaks : 1d array
-        Samples of oscillatory peaks.
-    troughs : 1d array
-        Samples of oscillatory troughs.
-    rises : 1d array, optional
-        Samples of oscillatory rising zero-crossings.
-    decays : 1d array, optional
-        Samples of oscillatory decaying zero-crossings.
+    assert flank in ['rise', 'decay']
+    idx_bias = -idx_bias + 1 if flank == 'rise' else idx_bias
+    comp = gt if flank == 'rise' else lt
 
-    Returns
-    -------
-    pha : 1d array
-        Instantaneous phase time series.
+    flanks = np.zeros(n_flanks, dtype=int)
+    for idx in range(n_flanks):
 
-    Notes
-    -----
-    - Phase is encoded as:
-        - phase 0 for peaks
-        - phase pi/2 for decay zero-crossing
-        - phase pi/-pi for troughs
-        - phase -pi/2 for rise zero-crossing
-    - Sometimes, due to noise, extrema and zero-crossing estimation is poor, and for example,
-      the same index may be assigned to both a peak and a decaying zero-crossing.
-      Because of this, we first assign phase values by zero-crossings, and then may overwrite
-      them with extrema phases.
-    - Use of burst detection will help avoid analyzing the oscillatory properties of
-      non-oscillatory sections of the signal.
-    """
+        sig_temp = np.copy(sig[extrema_start[idx]:extrema_end[idx + idx_bias] + 1])
+        sig_temp -= (sig_temp[0] + sig_temp[-1]) / 2.
 
-    # Initialize phase arrays, one for trough pi and trough -pi
-    sig_len = len(sig)
-    times = np.arange(sig_len)
-    pha_tpi = np.zeros(sig_len) * np.nan
-    pha_tnpi = np.zeros(sig_len) * np.nan
+        # If data is all zeros, just set the zero-crossing to be halfway between
+        if np.sum(np.abs(sig_temp)) == 0:
+            flanks[idx] = extrema_start[idx] + int(len(sig_temp) / 2.)
 
-    # If specified, assign phases to zero-crossings
-    if rises is not None:
-        pha_tpi[rises] = -np.pi / 2
-        pha_tnpi[rises] = -np.pi / 2
-    if decays is not None:
-        pha_tpi[decays] = np.pi / 2
-        pha_tnpi[decays] = np.pi / 2
+        # If flank is actually an extrema, just set the zero-crossing to be halfway between
+        elif comp(sig_temp[0], sig_temp[-1]):
+            flanks[idx] = extrema_start[idx] + int(len(sig_temp) / 2.)
 
-    # Define phases
-    pha_tpi[peaks] = 0
-    pha_tpi[troughs] = np.pi
-    pha_tnpi[peaks] = 0
-    pha_tnpi[troughs] = -np.pi
+        else:
+            flanks[idx] = extrema_start[idx] + int(np.median(find_flank_zerox(sig_temp, flank)))
 
-    # Interpolate to find all phases
-    pha_tpi = np.interp(times, times[~np.isnan(pha_tpi)], pha_tpi[~np.isnan(pha_tpi)])
-    pha_tnpi = np.interp(times, times[~np.isnan(pha_tnpi)], pha_tnpi[~np.isnan(pha_tnpi)])
-
-    pha = _merge_phases(pha_tpi, pha_tnpi)
-
-    return pha
-
-
-def _merge_phases(pha_tpi, pha_tnpi):
-    """Helper functions for extrema_interpolated_phase."""
-
-    # Create phase differences to determine where phase is decaying/rising in the -pi array
-    diffs = np.diff(pha_tnpi)
-
-    # Pad the phase difference array with a NaN to maintain a length equal to the timeseries
-    diffs = np.append(diffs, np.nan)
-
-    # Create new phase series, using trough pi for decaying periods & trough -pi for rising periods
-    pha = np.array([pha_tpi[idx] if diffs[idx] < 0 else pha for idx, pha in enumerate(pha_tnpi)])
-
-    # Assign the periods before the first empirical phase timepoint to NaN
-    diffs = np.diff(pha)
-    first_empirical_idx = next(idx for idx, xi in enumerate(diffs) if xi > 0)
-    pha[:first_empirical_idx] = np.nan
-
-    # Assign the periods after the last empirical phase timepoint to NaN
-    diffs = np.diff(pha)
-    last_empirical_idx = next(idx for idx, xi in enumerate(diffs[::-1]) if xi > 0)
-    pha[-last_empirical_idx + 1:] = np.nan
-
-    return pha
+    return flanks
