@@ -1,6 +1,8 @@
-"""Analyze periods of oscillatory bursting in neural signals."""
+"""Detect bursts: cycle consistency approach."""
 
 import pandas as pd
+
+from bycycle.burst.utils import check_min_burst_cycles
 
 ###################################################################################################
 ###################################################################################################
@@ -10,7 +12,7 @@ pd.options.mode.chained_assignment = None
 def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency_threshold=.5,
                          period_consistency_threshold=.5, monotonicity_threshold=.8,
                          min_n_cycles=3):
-    """Compute consistency between cycles and determine which are truly oscillating.
+    """Detects bursts based on consistency between cycles.
 
     Parameters
     ----------
@@ -47,8 +49,7 @@ def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency
         - 0 = rise period is all decaying and decay period is all rising
 
     min_n_cycles : int, optional, default: 3
-        Minimum number of cycles to be identified as truly oscillating needed in a row in order
-        for them to remain identified as truly oscillating.
+        The minimum number of cycles of consecutive cycles required to be considered a burst.
 
     Returns
     -------
@@ -75,56 +76,6 @@ def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency
     is_burst[0] = False
     is_burst[-1] = False
 
-    df_features['is_burst'] = _min_consecutive_cycles(is_burst, min_n_cycles=min_n_cycles)
+    df_features['is_burst'] = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
 
     return df_features
-
-
-def detect_bursts_amp(df_features, burst_fraction_threshold=1, min_n_cycles=3):
-    """Determine which cycles in a signal are part of an oscillatory
-    burst using an amplitude thresholding approach.
-
-    Parameters
-    ----------
-    df_features : pandas.DataFrame
-        Waveform features for individual cycles from :func:`~.compute_burst_features`.
-    burst_fraction_threshold : int or float, optional, default: 1
-        Minimum fraction of a cycle to be identified as a burst.
-    min_n_cycles : int, optional, default: 3
-        Minimum number of cycles to be identified as truly oscillating needed in a row in order
-        for them to remain identified as truly oscillating.
-
-    Returns
-    -------
-    df_features : pandas.DataFrame
-        Same df as input, with an additional column to indicate
-        if the cycle is part of an oscillatory burst.
-    """
-
-    # Determine cycles that are defined as bursting throughout the whole cycle
-    is_burst = [frac >= burst_fraction_threshold for frac in df_features['burst_fraction']]
-
-    df_features['is_burst'] = _min_consecutive_cycles(is_burst, min_n_cycles=min_n_cycles)
-
-    return df_features
-
-
-def _min_consecutive_cycles(is_burst, min_n_cycles=3):
-    """Enforce minimum number of consecutive cycles."""
-
-    temp_cycle_count = 0
-
-    for idx, bursting in enumerate(is_burst):
-
-        if bursting:
-            temp_cycle_count += 1
-
-        else:
-
-            if temp_cycle_count < min_n_cycles:
-                for c_rm in range(temp_cycle_count):
-                    is_burst[idx - 1 - c_rm] = False
-
-            temp_cycle_count = 0
-
-    return is_burst

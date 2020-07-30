@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from neurodsp.burst import detect_bursts_dual_threshold
+from bycycle.burst import detect_bursts_dual_threshold
 
 ###################################################################################################
 ###################################################################################################
