@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 
+from bycycle.utils.checks import check_param
 from bycycle.burst import detect_bursts_dual_threshold
 
 ###################################################################################################
@@ -247,6 +248,14 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     If a cycle contains three samples and the corresponding section of `is_burst` is
     np.array([True, True, False]), the burst fraction is 0.66 for that cycle.
     """
+
+    # Ensure arguments are within valid ranges
+    check_param(fs, 'fs', (0, np.inf))
+    check_param(f_range[0], 'lower f_range', (0, f_range[1]))
+    check_param(f_range[1], 'upper f_range', (f_range[0], np.inf))
+    check_param(amp_threshes[0], 'lower amp_threshes', (0, amp_threshes[1]))
+    check_param(amp_threshes[1], 'upper amp_threshes', (amp_threshes[0], np.inf))
+    check_param(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
     filter_kwargs = {} if filter_kwargs is None else filter_kwargs
 

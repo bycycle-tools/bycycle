@@ -5,6 +5,7 @@ import pandas as pd
 
 from neurodsp.timefrequency import amp_by_time
 
+from bycycle.utils.checks import check_param
 from bycycle.utils import rename_extrema_df
 from bycycle.features.cyclepoints import compute_cyclepoints
 
@@ -77,6 +78,12 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
           'trough'.
 
     """
+
+    # Ensure arguments are within valid ranges
+    check_param(fs, 'fs', (0, np.inf))
+    check_param(f_range[0], 'lower f_range', (0, f_range[1]))
+    check_param(f_range[1], 'upper f_range', (f_range[0], np.inf))
+    check_param(n_cycles, 'n_cycles', (0, np.inf))
 
     # Set defaults if user input is None
     if find_extrema_kwargs is None:
@@ -264,6 +271,12 @@ def compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3):
     band_amp : 1d array
         Average analytic amplitude of the oscillation.
     """
+
+    # Ensure arguments are within valid ranges
+    check_param(fs, 'fs', (0, np.inf))
+    check_param(f_range[0], 'lower f_range', (0, f_range[1]))
+    check_param(f_range[1], 'upper f_range', (f_range[0], np.inf))
+    check_param(n_cycles, 'n_cycles', (0, np.inf))
 
     amp = amp_by_time(sig, fs, f_range, n_cycles=n_cycles)
 

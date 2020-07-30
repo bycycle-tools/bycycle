@@ -32,7 +32,7 @@ def test_plot_burst_detect_param(sim_args, interp):
 @pytest.mark.parametrize("plot_only_result", [True, False])
 def test_plot_burst_detect_summary(sim_args, plot_only_result):
 
-    burst_detection_kwargs = {'amp_fraction_threshold': 1.1,
+    burst_detection_kwargs = {'amp_fraction_threshold': 1,
                               'amp_consistency_threshold': .5,
                               'period_consistency_threshold': .5,
                               'monotonicity_threshold': .8,

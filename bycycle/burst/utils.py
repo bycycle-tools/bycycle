@@ -1,5 +1,8 @@
 """Utilities for burst detection."""
 
+import numpy as np
+from bycycle.utils.checks import check_param
+
 ###################################################################################################
 ###################################################################################################
 
@@ -18,6 +21,9 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     is_burst : 1d array
         Updated burst array.
     """
+
+    # Ensure argument is within valid range
+    check_param(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
     temp_cycle_count = 0
 

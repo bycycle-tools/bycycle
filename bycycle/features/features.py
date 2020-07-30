@@ -1,7 +1,9 @@
 """Functions for compute cycle-by-cycle features."""
 
+import numpy as np
 import pandas as pd
 
+from bycycle.utils.checks import check_param
 from bycycle.features.shape import compute_shape_features
 from bycycle.features.burst import compute_burst_features
 from bycycle.burst import detect_bursts_cycles, detect_bursts_amp
@@ -95,6 +97,11 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - ``sample_next_trough`` : sample of the next trough
 
     """
+
+    # Ensure arguments are within valid range
+    check_param(fs, 'fs', (0, np.inf))
+    check_param(f_range[0], 'lower f_range', (0, f_range[1]))
+    check_param(f_range[1], 'upper f_range', (f_range[0], np.inf))
 
     # Compute shape features for each cycle.
     df_shape_features, df_samples = \

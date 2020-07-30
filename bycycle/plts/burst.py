@@ -12,6 +12,7 @@ from neurodsp.plts.utils import savefig
 
 from bycycle.plts.cyclepoints import plot_cyclepoints_df
 from bycycle.utils import limit_df, limit_signal, get_extrema_df
+from bycycle.utils.checks import check_param
 
 ###################################################################################################
 ###################################################################################################
@@ -60,6 +61,12 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
       - yellow: period_consistency_threshold
       - green: monotonicity_threshold
     """
+
+    # Ensure arguments are within valid range
+    check_param(fs, 'fs', (0, np.inf))
+    if xlim:
+        check_param(xlim[0], 'lower xlim', (0, xlim[1]))
+        check_param(xlim[1], 'lower xlim', (xlim[0], np.inf))
 
     # Normalize signal
     sig = zscore(sig)
@@ -174,6 +181,12 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
 
       - Note: ``color`` here is the fill color, rather than line color.
     """
+
+    # Ensure arguments are within valid range
+    check_param(fs, 'fs', (0, np.inf))
+    if xlim:
+        check_param(xlim[0], 'lower xlim', (0, xlim[1]))
+        check_param(xlim[1], 'lower xlim', (xlim[0], np.inf))
 
     # Set default kwargs
     figsize = kwargs.pop('figsize', (15, 3))

@@ -1,5 +1,9 @@
 """Utility functions for working with time series."""
 
+import numpy as np
+
+from bycycle.utils.checks import check_param
+
 ###################################################################################################
 ###################################################################################################
 
@@ -24,6 +28,10 @@ def limit_signal(times, sig, start=None, stop=None):
     times : 1d array
         A limited time definition.
     """
+
+    # Ensure arguments are within valid range
+    check_param(start, 'start', (0, stop))
+    check_param(stop, 'stop', (start, np.inf))
 
     if start is not None:
         sig = sig[times >= start]

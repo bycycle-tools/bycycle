@@ -1,5 +1,9 @@
 """Utility functions for working with ByCycle DataFrames."""
 
+import numpy as np
+
+from bycycle.utils.checks import check_param
+
 ###################################################################################################
 ###################################################################################################
 
@@ -27,6 +31,11 @@ def limit_df(df, fs, start=None, stop=None):
     Cycles, or rows in the `df`, are included if any segment of the cycle falls after the
     `stop` time or before the `end` time.
     """
+
+    # Ensure arguments are within valid range
+    check_param(fs, 'fs', (0, np.inf))
+    check_param(start, 'start', (0, stop))
+    check_param(stop, 'stop', (start, np.inf))
 
     center_e, side_e = get_extrema_df(df)
 

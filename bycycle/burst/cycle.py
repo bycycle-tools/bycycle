@@ -1,7 +1,9 @@
 """Detect bursts: cycle consistency approach."""
 
+import numpy as np
 import pandas as pd
 
+from bycycle.utils.checks import check_param
 from bycycle.burst.utils import check_min_burst_cycles
 
 ###################################################################################################
@@ -62,6 +64,13 @@ def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency
     * The first and last period cannot be considered oscillating if the consistency measures are
       used.
     """
+
+    # Ensure arguments are within valid ranges
+    check_param(amp_fraction_threshold, 'amp_fraction_threshold', (0, 1))
+    check_param(amp_consistency_threshold, 'amp_consistency_threshold', (0, 1))
+    check_param(period_consistency_threshold, 'period_consistency_threshold', (0, 1))
+    check_param(monotonicity_threshold, 'monotonicity_threshold', (0, 1))
+    check_param(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
     # Compute if each period is part of an oscillation
     amp_fraction = df_features['amp_fraction'] > amp_fraction_threshold
