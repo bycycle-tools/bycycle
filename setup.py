@@ -13,7 +13,7 @@ with open('README.rst') as readme_file:
 
 # Load the required dependencies from the requirements file
 with open("requirements.txt") as requirements_file:
-    install_requires = [req for req in requirements_file.read().splitlines() if 'git+' not in req]
+    install_requires = [req for req in requirements_file.read().splitlines()]
 
 setup(
     name = 'bycycle',
@@ -50,6 +50,5 @@ setup(
     download_url = 'https://github.com/bycycle-tools/bycycle/releases',
     keywords = ['neuroscience', 'neural oscillations', 'waveform', 'shape', 'electrophysiology'],
     install_requires = install_requires,
-    dependency_links = ['git+https://github.com/neurodsp-tools/neurodsp.git@master'],
     tests_require = ['pytest']
 )

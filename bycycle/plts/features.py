@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
 from neurodsp.plts.utils import savefig
 
 ###################################################################################################
@@ -17,13 +18,12 @@ def plot_feature_hist(feature, param_label, only_bursts=True, bins='auto', ax=No
     feature : pandas.DataFrame or 1d array
         Dataframe output from :func:`~.compute_features` or a 1d array.
     param_label : str
-        Column name of the parameter of interest in ``df``.
-    only_burst : bool
-        Limit cycles to those that are bursting.
+        Column name of the parameter of interest in ``df_features``.
+    only_burst : bool, optional, default: True
+        Whether to limit cycles to only those that are bursting.
     bins : int or string, optional, default: 'auto'
-        The number of bins or binning strategy string,
-        as specified in matplotlib.pyplot.hist.
-    ax : matplotlib.Axes, optional, default: None
+        The number of bins or binning strategy, as specified in `matplotlib.pyplot.hist`.
+    ax : matplotlib.Axes, optional
         Figure axes upon which to plot.
     **kwargs
         Keyword arguments to pass into `matplotlib.pyplot.hist`.
@@ -37,8 +37,7 @@ def plot_feature_hist(feature, param_label, only_bursts=True, bins='auto', ax=No
     - ``color``: str, default: 'k'
     - ``xlim``: tuple of (float, float), default: None
     - ``fontsize``: float, default: 15
-    - ``alpha``: float, deafult: .5
-
+    - ``alpha``: float, default: .5
     """
 
     # Limit dataframe to bursts
@@ -71,18 +70,18 @@ def plot_feature_hist(feature, param_label, only_bursts=True, bins='auto', ax=No
 
 
 @savefig
-def plot_feature_categorical(df, param_label, group_by=None, ax=None, **kwargs):
-    """ Plot a cycle feature by one or more categories.
+def plot_feature_categorical(df_features, param_label, group_by=None, ax=None, **kwargs):
+    """Plot a cycle feature by one or more categories.
 
     Parameters
     ----------
-    df : pandas.DataFrame.
+    df_features : pandas.DataFrame
         Dataframe output from :func:`~.compute_features`.
     param_label : str
-        Column name of the parameter of interest in ``df``.
-    group_by : str, optional, default: None
+        Column name of the parameter of interest in ``df_features``.
+    group_by : str, optional
         Dataframe column name of a grouping variable to split plotting by.
-    ax : matplotlib.Axes, optional, default: None
+    ax : matplotlib.Axes, optional
         Figure axes upon which to plot.
     **kwargs
         Keyword arguments to pass into `matplotlib.pyplot.scatter`.
@@ -95,18 +94,17 @@ def plot_feature_categorical(df, param_label, group_by=None, ax=None, **kwargs):
     - ``ylabel``: str, default: ``param_label``
     - ``figsize``: tuple of (float, float), default: (10, 10)
     - ``fontsize``: float, default: 20
-
     """
 
     # Split features by group if specified
-    features = [df[param_label]]
+    features = [df_features[param_label]]
 
     if group_by is not None:
 
         features = []
 
-        for group in np.unique(df[group_by].values):
-            features.append(df[df[group_by] == group][param_label])
+        for group in np.unique(df_features[group_by].values):
+            features.append(df_features[df_features[group_by] == group][param_label])
 
     # Add random variance along x-axis
     x_values = [np.random.normal(idx+1, 0.05, len(feature)) for idx, feature in enumerate(features)]
