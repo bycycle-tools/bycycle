@@ -33,11 +33,11 @@ def extrema_interpolated_phase(sig, peaks, troughs, rises=None, decays=None):
         - phase pi/2 for decay zero-crossing
         - phase pi/-pi for troughs
         - phase -pi/2 for rise zero-crossing
-    - Sometimes, due to noise, extrema and zero-crossing estimation is poor, and for example,
-      the same index may be assigned to both a peak and a decaying zero-crossing.
-      Because of this, we first assign phase values by zero-crossings, and then may overwrite
+    - Extrema and zero-crossing estimation can be poor if, for example, the signal is noisy.
+      In such cases, the same index may be assigned to both a peak and a decaying zero-crossing.
+      To address this, we first assign phase values by zero-crossings, and then may overwrite
       them with extrema phases.
-    - Use of burst detection will help avoid analyzing the oscillatory properties of
+    - Using burst detection helps avoid analyzing oscillatory properties of
       non-oscillatory sections of the signal.
     """
 

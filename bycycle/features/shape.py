@@ -14,7 +14,7 @@ from bycycle.features.cyclepoints import compute_cyclepoints
 
 def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema_kwargs=None,
                            n_cycles=3, return_samples=True):
-    """Compute shapes parameters of each cycle, used for determining burst features.
+    """Compute shape features for each cycle.
 
     Parameters
     ----------

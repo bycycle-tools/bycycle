@@ -15,7 +15,7 @@ from bycycle.utils import limit_signal, get_extrema_df
 @savefig
 def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
                         plot_zerox=True, xlim=None, ax=None, **kwargs):
-    """Plot extrema and/or zero-crossings using a dataframe to define points.
+    """Plot extrema and/or zero-crossings from a DataFrame.
 
     Parameters
     ----------
@@ -72,7 +72,7 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
 @savefig
 def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays=None,
                            plot_sig=True, xlim=None, ax=None, **kwargs):
-    """Plot extrema and/or zero-crossings using arrays to define points.
+    """Plot extrema and/or zero-crossings from arrays.
 
     Parameters
     ----------

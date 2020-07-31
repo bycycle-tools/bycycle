@@ -42,6 +42,7 @@ def compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs):
         - ``sample_next_trough`` : sample of the next trough
 
     """
+
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
 
