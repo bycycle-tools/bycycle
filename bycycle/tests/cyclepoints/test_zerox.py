@@ -1,12 +1,12 @@
-"""Tests for cyclepoints.phase."""
+"""Tests for cyclepoints.zerox."""
 
 import os
 
 import numpy as np
 
-from bycycle.cyclepoints import find_extrema, find_zerox
+from bycycle.cyclepoints import find_extrema
 
-from bycycle.cyclepoints.phase import *
+from bycycle.cyclepoints.zerox import *
 
 # Set data path
 DATA_PATH = os.getcwd() + '/tutorials/data/'
@@ -14,8 +14,8 @@ DATA_PATH = os.getcwd() + '/tutorials/data/'
 ###################################################################################################
 ###################################################################################################
 
-def test_extrema_interpolated_phase():
-    """Test waveform phase estimate."""
+def test_find_zerox():
+    """Test ability to find peaks and troughs."""
 
     # Load signal
     sig = np.load(DATA_PATH + 'sim_stationary.npy')
@@ -29,11 +29,9 @@ def test_extrema_interpolated_phase():
     # Find zerocrossings
     rises, decays = find_zerox(sig, peaks, troughs)
 
-    # Compute phase
-    pha = extrema_interpolated_phase(sig, peaks, troughs, rises=rises, decays=decays)
-
-    assert len(pha) == len(sig)
-    assert np.all(np.isclose(pha[peaks], 0))
-    assert np.all(np.isclose(pha[troughs], -np.pi))
-    assert np.all(np.isclose(pha[rises], -np.pi/2))
-    assert np.all(np.isclose(pha[decays], np.pi/2))
+    assert len(peaks) == (len(rises) + 1)
+    assert len(troughs) == len(decays)
+    assert peaks[0] < decays[0]
+    assert decays[0] < troughs[0]
+    assert troughs[0] < rises[0]
+    assert rises[0] < peaks[1]

@@ -1,6 +1,5 @@
 """Detect bursts: cycle consistency approach."""
 
-import numpy as np
 import pandas as pd
 
 from bycycle.utils.checks import check_param

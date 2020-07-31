@@ -1,7 +1,5 @@
 """Detect bursts: amplitude threshold approach."""
 
-import numpy as np
-
 from bycycle.utils.checks import check_param
 from bycycle.burst.utils import check_min_burst_cycles
 
