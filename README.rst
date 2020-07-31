@@ -25,6 +25,9 @@ bycycle - cycle-by-cycle analysis of neural oscillations
 .. |Publication| image:: https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue
 .. _Publication: https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019
 
+NOTE: `ByCycle` is currently under-going a major new version update. 
+
+The development version in this repository is no longer compatible with prior releases. 
 
 Overview
 --------
