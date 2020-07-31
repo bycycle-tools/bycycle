@@ -1,4 +1,4 @@
-"""Functions to compute burst features for individual cycles."""
+"""Compute burst features for individual cycles."""
 
 import numpy as np
 import pandas as pd

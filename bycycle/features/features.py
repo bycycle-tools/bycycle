@@ -1,4 +1,4 @@
-"""Functions for compute cycle-by-cycle features."""
+"""Compute cycle-by-cycle features."""
 
 import numpy as np
 import pandas as pd

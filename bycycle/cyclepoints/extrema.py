@@ -1,4 +1,4 @@
-"""Functions to finding cyclepoints for individual cycles."""
+"""Find cyclepoints for individual cycles."""
 
 from operator import gt, lt
 

@@ -1,4 +1,4 @@
-"""Functions to compute cyclepoints features for individual cycles."""
+"""Compute cyclepoint features for individual cycles."""
 
 import pandas as pd
 import numpy as np

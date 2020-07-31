@@ -1,4 +1,4 @@
-"""Functions for compute shape features for individual cycles."""
+"""Compute shape features for individual cycles."""
 
 import numpy as np
 import pandas as pd

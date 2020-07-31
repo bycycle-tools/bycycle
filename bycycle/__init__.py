@@ -1,3 +1,3 @@
-"""bycycle: cycle-by-cycle analysis of neural oscillations."""
+"""ByCycle: cycle-by-cycle analyses of neural oscillations."""
 
 from .version import __version__
