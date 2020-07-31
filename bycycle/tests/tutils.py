@@ -1,4 +1,4 @@
-"""Utility functions for testing bycycle plotting."""
+"""Utility functions for testing bycycle."""
 
 from functools import wraps
 

@@ -1,10 +1,10 @@
-"""Tests the cycle-by-cycle burst feature computation function."""
+"""Tests for features.burst."""
 
 import pytest
 
 import numpy as np
 
-from bycycle.features import compute_burst_features
+from bycycle.features import *
 
 ###################################################################################################
 ###################################################################################################

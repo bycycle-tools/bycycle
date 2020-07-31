@@ -1,10 +1,10 @@
-"""Tests the cycle-by-cycle burst feature computation function."""
+"""Tests for features.features."""
 
 import pytest
 
 import numpy as np
 
-from bycycle.features import compute_features
+from bycycle.features import *
 
 ###################################################################################################
 ###################################################################################################
@@ -17,7 +17,7 @@ from bycycle.features import compute_features
     ]
 )
 @pytest.mark.parametrize("return_samples", [True, False])
-def test_features_features(sim_args, return_samples, burst_method):
+def test_compute_features(sim_args, return_samples, burst_method):
 
     sig = sim_args['sig']
     fs = sim_args['fs']

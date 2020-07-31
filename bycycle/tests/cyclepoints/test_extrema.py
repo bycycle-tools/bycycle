@@ -1,11 +1,13 @@
-"""Tests the functions to identify points in cycles work."""
+"""Tests for cyclepoints.cyclepoints."""
 
 import os
+
 import numpy as np
 from scipy.signal import argrelextrema
+
 import pytest
 
-from bycycle.cyclepoints.extrema import find_extrema, find_zerox
+from bycycle.cyclepoints.extrema import *
 
 # Set data path
 DATA_PATH = os.getcwd() + '/tutorials/data/'

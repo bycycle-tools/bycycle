@@ -1,11 +1,12 @@
-
-"""Test interpolating phase from cyclepoints."""
+"""Tests for cyclepoints.phase."""
 
 import os
+
 import numpy as np
 
 from bycycle.cyclepoints.extrema import find_extrema, find_zerox
-from bycycle.cyclepoints.phase import extrema_interpolated_phase
+
+from bycycle.cyclepoints.phase import *
 
 # Set data path
 DATA_PATH = os.getcwd() + '/tutorials/data/'

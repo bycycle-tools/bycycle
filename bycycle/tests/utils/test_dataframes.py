@@ -1,9 +1,9 @@
-"""Tests dataframe utility functions."""
+"""Tests for utils.dataframe."""
 
 import numpy as np
 import pandas as pd
 
-from bycycle.utils.dataframes import limit_df, get_extrema_df
+from bycycle.utils.dataframes import *
 
 ###################################################################################################
 ###################################################################################################

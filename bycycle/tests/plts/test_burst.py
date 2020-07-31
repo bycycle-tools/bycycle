@@ -1,13 +1,15 @@
-"""Tests plotting bursts."""
+"""Tests for plts.burst."""
 
 import pytest
 
 import numpy as np
 
 from bycycle.burst import detect_bursts_cycles
-from bycycle.plts import plot_burst_detect_param, plot_burst_detect_summary
-from bycycle.tests.utils import plot_test
+
+from bycycle.tests.tutils import plot_test
 from bycycle.tests.settings import TEST_PLOTS_PATH
+
+from bycycle.plts import *
 
 ###################################################################################################
 ###################################################################################################

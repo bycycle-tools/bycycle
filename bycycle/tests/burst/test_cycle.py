@@ -1,11 +1,12 @@
-"""Tests cycle burst detection."""
+"""Tests for burst.cycle."""
 
 import itertools
 
 import numpy as np
 
 from bycycle.features import compute_burst_features
-from bycycle.burst.cycle import detect_bursts_cycles
+
+from bycycle.burst.cycle import *
 
 ###################################################################################################
 ###################################################################################################

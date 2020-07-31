@@ -1,8 +1,8 @@
-"""Tests timeseries utility function."""
+"""Tests for utils.timeseries."""
 
 import numpy as np
 
-from bycycle.utils.timeseries import limit_signal
+from bycycle.utils.timeseries import *
 
 ###################################################################################################
 ###################################################################################################

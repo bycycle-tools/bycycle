@@ -1,8 +1,8 @@
-"""Test utilities for burst detection."""
+"""Test burst.utils."""
 
 import numpy as np
 
-from bycycle.burst.utils import check_min_burst_cycles
+from bycycle.burst.utils import *
 
 ###################################################################################################
 ###################################################################################################

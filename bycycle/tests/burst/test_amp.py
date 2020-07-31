@@ -1,10 +1,11 @@
-"""Tests amplitude burst detection."""
+"""Tests for burst.amp."""
 
 import itertools
 import numpy as np
 
 from bycycle.features import compute_burst_features
-from bycycle.burst.amp import detect_bursts_amp
+
+from bycycle.burst.amp import *
 
 ###################################################################################################
 ###################################################################################################
