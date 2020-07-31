@@ -70,7 +70,6 @@ def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency
     check_param(amp_consistency_threshold, 'amp_consistency_threshold', (0, 1))
     check_param(period_consistency_threshold, 'period_consistency_threshold', (0, 1))
     check_param(monotonicity_threshold, 'monotonicity_threshold', (0, 1))
-    check_param(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
     # Compute if each period is part of an oscillation
     amp_fraction = df_features['amp_fraction'] > amp_fraction_threshold

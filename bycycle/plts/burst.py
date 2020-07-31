@@ -64,9 +64,6 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
 
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
-    if xlim:
-        check_param(xlim[0], 'lower xlim', (0, xlim[1]))
-        check_param(xlim[1], 'lower xlim', (xlim[0], np.inf))
 
     # Normalize signal
     sig = zscore(sig)
@@ -184,9 +181,6 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
 
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
-    if xlim:
-        check_param(xlim[0], 'lower xlim', (0, xlim[1]))
-        check_param(xlim[1], 'lower xlim', (xlim[0], np.inf))
 
     # Set default kwargs
     figsize = kwargs.pop('figsize', (15, 3))

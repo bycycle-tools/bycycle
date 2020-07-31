@@ -47,8 +47,6 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
 
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
-    check_param(f_range[0], 'lower f_range', (0, f_range[1]))
-    check_param(f_range[1], 'upper f_range', (f_range[0], np.inf))
 
     # Set default filtering parameters
     if filter_kwargs is None:

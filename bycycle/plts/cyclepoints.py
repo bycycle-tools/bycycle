@@ -49,9 +49,6 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
 
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
-    if xlim:
-        check_param(xlim[0], 'lower xlim', (0, xlim[1]))
-        check_param(xlim[1], 'lower xlim', (xlim[0], np.inf))
 
     # Determine extrema/zero-crossings from dataframe
     center_e, side_e = get_extrema_df(df_samples)
@@ -112,9 +109,6 @@ def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays
 
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
-    if xlim:
-        check_param(xlim[0], 'lower xlim', (0, xlim[1]))
-        check_param(xlim[1], 'lower xlim', (xlim[0], np.inf))
 
     # Set times and limits
     times = np.arange(0, len(sig) / fs, 1 / fs)

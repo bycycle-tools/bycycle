@@ -81,8 +81,6 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
 
     # Ensure arguments are within valid ranges
     check_param(fs, 'fs', (0, np.inf))
-    check_param(f_range[0], 'lower f_range', (0, f_range[1]))
-    check_param(f_range[1], 'upper f_range', (f_range[0], np.inf))
     check_param(n_cycles, 'n_cycles', (0, np.inf))
 
     # Set defaults if user input is None
@@ -90,8 +88,8 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         find_extrema_kwargs = {'filter_kwargs': {'n_cycles': n_cycles}}
 
     elif 'first_extrema' in find_extrema_kwargs.keys():
-        raise ValueError('''This function has been designed to assume that the first extrema
-            identified will be a peak. This cannot be overwritten at this time.''')
+        raise ValueError("This function has been designed to assume that the first extrema "
+                         "identified will be a peak. This cannot be overwritten at this time.")
 
     # Negate signal if set to analyze trough-centered cycles
     if center_extrema == 'peak':
@@ -115,7 +113,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
                                     time_peak=time_peak, time_trough=time_trough)
 
     # Compute average oscillatory amplitude estimate during cycle
-    band_amp = compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3)
+    band_amp = compute_band_amp(df_samples, sig, fs, f_range, n_cycles=n_cycles)
 
     # Organize shape features into a dataframe
     shape_features = {}
@@ -274,8 +272,6 @@ def compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3):
 
     # Ensure arguments are within valid ranges
     check_param(fs, 'fs', (0, np.inf))
-    check_param(f_range[0], 'lower f_range', (0, f_range[1]))
-    check_param(f_range[1], 'upper f_range', (f_range[0], np.inf))
     check_param(n_cycles, 'n_cycles', (0, np.inf))
 
     amp = amp_by_time(sig, fs, f_range, n_cycles=n_cycles)
