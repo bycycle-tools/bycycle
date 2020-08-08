@@ -5,24 +5,25 @@ from functools import partial
 from multiprocessing import Pool, cpu_count
 
 from bycycle.features import compute_features
+from bycycle.group.utils import progress_bar
 
 ###################################################################################################
 ###################################################################################################
 
-def compute_features_epochs(sigs, fs, f_range, compute_features_kwargs=None,
-                            return_samples=True, n_cpus=-1, progress=None):
+def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
+                        return_samples=True, n_cpus=-1, progress=None):
     """Compute shape and burst features for epoched signals.
 
     Parameters
     ----------
     sigs : 2d array
-        Voltage time series for each epoch.
+        Voltage time series for each epoch with shape (i.e. n_epochs, n_points).
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest (Hz).
-    compute_features_kwargs : dict
-        Keyword arguments used in :func:`~.compute_features`
+    compute_features_kwargs : dict or list of dict
+        Keyword arguments used in :func:`~.compute_features`.
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
     n_cpus : int, optional, default: -1
@@ -41,8 +42,17 @@ def compute_features_epochs(sigs, fs, f_range, compute_features_kwargs=None,
 
     Notes
     -----
-    The order of ``df_features`` and ``df_samples`` corresponds to the order of ``sigs``.
+
+    - The order of ``df_features`` and ``df_samples`` corresponds to the order of ``sigs``.
+    - If ``compute_features_kwargs`` is a dictionary, the same kwargs are applied applied across
+      the first axis of ``sigs``. Otherwise, a list of dictionaries equal in length to the
+      first axis of ``sigs`` is required to apply unique kwargs to each signal.
+
     """
+
+    if isinstance(compute_features_kwargs, list) and len(compute_features_kwargs) != len(sigs):
+        raise ValueError('When compute_features_kwargs is a list, it\'s length must be equal to '
+                         'sigs. Use a dictionary when applying the same kwargs to each signal.')
 
     n_cpus = cpu_count() if n_cpus == -1 else n_cpus
 
@@ -51,85 +61,33 @@ def compute_features_epochs(sigs, fs, f_range, compute_features_kwargs=None,
 
     with Pool(processes=n_cpus) as pool:
 
+        def _proxy(args, fs=None, f_range=None):
+            """Proxy function to map kwargs and sigs together."""
+
+            sig, kwargs = args[0], args[1:]
+            return compute_features(sig, fs=fs, f_range=f_range, **kwargs)
+
+        if isinstance(compute_features_kwargs, list):
+            # Map iterable sigs and kwargs together
+            mapping = pool.imap(partial(_proxy, fs=fs, f_range=f_range),
+                                zip(sigs, compute_features_kwargs))
+
+        else:
+            # Only map sigs, kwargs are the same for each mapping
+            mapping = pool.imap(partial(compute_features, fs=fs, f_range=f_range,
+                                        **compute_features_kwargs),
+                                sigs)
+
         if return_samples is True:
-            df_features, df_samples = zip(*_progress(pool.imap(partial(compute_features, fs=fs,
-                                                                       f_range=f_range,
-                                                                       **compute_features_kwargs),
-                                                               sigs),
-                                                     progress, len(sigs)))
+            df_features, df_samples = zip(*progress_bar(mapping, progress, len(sigs)))
 
             df_features = list(df_features)
             df_samples = list(df_samples)
 
         else:
-            df_features = list(_progress(pool.imap(partial(compute_features, fs=fs,
-                                                           f_range=f_range,
-                                                           **compute_features_kwargs),
-                                                   sigs),
-                                         progress, len(sigs)))
+            df_features = list(progress_bar(mapping, progress, len(sigs)))
 
     if return_samples is True:
         return df_features, df_samples
 
     return df_features
-
-
-def _progress(iterable, progress, n_to_run):
-    """Add a progress bar to an iterable to be processed.
-
-    Parameters
-    ----------
-    iterable : list or iterable
-        Iterable object to potentially apply progress tracking to.
-    progress : {None, 'tqdm'}, optional
-        Which kind of progress bar to use. If None, no progress bar is used.
-    n_to_run : int
-        Number of jobs to complete.
-
-    Returns
-    -------
-    pbar : iterable or tqdm object
-        Iterable object, with tqdm progress functionality, if requested.
-
-    Raises
-    ------
-    ValueError
-        If the input for `progress` is not understood.
-
-    Notes
-    -----
-    The explicit `n_to_run` input is required as tqdm requires this in the parallel case.
-    The `tqdm` object that is potentially returned acts the same as the underlying iterable,
-    with the addition of printing out progress every time items are requested.
-    """
-
-    # Check progress specifier is okay
-    tqdm_options = ['tqdm', 'tqdm.notebook']
-    if progress is not None and progress not in tqdm_options:
-        raise ValueError("Progress bar option not understood.")
-
-    # Set the display text for the progress bar
-    pbar_desc = 'Computing Bycycle Features'
-
-    # Use a tqdm, progress bar, if requested
-    if progress:
-
-        # Try loading the tqdm module
-        try:
-            from tqdm import tqdm
-
-            # If tqdm loaded, apply the progress bar to the iterable
-            pbar = tqdm(iterable, desc=pbar_desc, total=n_to_run, dynamic_ncols=True)
-
-        except ImportError:
-
-            # If tqdm isn't available, proceed without a progress bar
-            print(("A progress bar requiring the 'tqdm' module was requested, "
-                   "but 'tqdm' is not installed. \nProceeding without using a progress bar."))
-            pbar = iterable
-
-    # If progress is None, return the original iterable without a progress bar applied
-    else:
-        pbar = iterable
-
-    return pbar

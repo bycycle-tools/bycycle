@@ -4,20 +4,20 @@ import time
 import pytest
 import numpy as np
 
-from bycycle.group.epochs import compute_features_epochs, _progress
+from bycycle.group.epochs import compute_features_2d
 
 ###################################################################################################
 ###################################################################################################
 
-def test_compute_features_epochs(sim_args):
+def test_compute_features_2d(sim_args):
 
     sigs = np.array([sim_args['sig']] * 50)
     fs  = sim_args['fs']
     f_range = sim_args['f_range']
 
     # Test returning only features, without samples
-    features = compute_features_epochs(sigs, fs, f_range, n_cpus=1,
-                                       compute_features_kwargs={'return_samples': False})
+    features = compute_features_2d(sigs, fs, f_range, n_cpus=1,
+                                   compute_features_kwargs={'return_samples': False})
 
     for df_features in features:
         assert df_features.equals(features[0])
@@ -27,8 +27,8 @@ def test_compute_features_epochs(sim_args):
 
     start = time.time()
 
-    features_seq, samples_seq = compute_features_epochs(sigs, fs, f_range, n_cpus=n_cpus,
-                                                        compute_features_kwargs={
+    features_seq, samples_seq = compute_features_2d(sigs, fs, f_range, n_cpus=n_cpus,
+                                                    compute_features_kwargs={
                                                             'return_samples': True})
 
     end = time.time()
@@ -40,7 +40,7 @@ def test_compute_features_epochs(sim_args):
 
     start = time.time()
 
-    features, samples = compute_features_epochs(sigs, fs, f_range, n_cpus=n_cpus,
+    features, samples = compute_features_2d(sigs, fs, f_range, n_cpus=n_cpus,
                                                 compute_features_kwargs={'return_samples': True})
 
     end = time.time()
@@ -69,15 +69,3 @@ def test_compute_features_epochs(sim_args):
 
     for idx, df_samples in enumerate(samples):
         assert df_samples.equals(samples_seq[idx])
-
-
-@pytest.mark.parametrize("progress", [None, 'tqdm', pytest.param('invalid',
-                                                                 marks=pytest.mark.xfail)])
-def test_progress(progress):
-
-    n_iterations = 10
-    iterable = [0] * n_iterations
-
-    pbar = _progress(iterable, progress, n_iterations)
-
-    assert type(pbar) == list
