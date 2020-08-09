@@ -1,8 +1,10 @@
 """Test functions to compute features across epoched data."""
 
 import time
-import pytest
+
 import numpy as np
+
+import pytest
 
 from bycycle.group.epochs import compute_features_2d
 
@@ -23,40 +25,27 @@ def test_compute_features_2d(sim_args):
         assert df_features.equals(features[0])
 
     # Sequential processing check
-    n_cpus = 1
-
     start = time.time()
-
-    features_seq, samples_seq = compute_features_2d(sigs, fs, f_range, n_cpus=n_cpus,
-                                                    compute_features_kwargs={
-                                                            'return_samples': True})
-
+    features_seq, samples_seq = \
+        compute_features_2d(sigs, fs, f_range, n_cpus=1,
+                            compute_features_kwargs={'return_samples': True})
     end = time.time()
-
     elapsed_time_sequential = end - start
 
     # Parallel processing check
-    n_cpus = -1
-
     start = time.time()
-
-    features, samples = compute_features_2d(sigs, fs, f_range, n_cpus=n_cpus,
-                                                compute_features_kwargs={'return_samples': True})
-
+    features, samples = compute_features_2d(sigs, fs, f_range, n_cpus=-1,
+                                            compute_features_kwargs={'return_samples': True})
     end = time.time()
-
     elapsed_time_parallel = end - start
 
-    # The same sig array is used. Assert each df is the same.
+    # Since the same signal is used, check that each df is the same
     for df_features in features_seq:
         assert df_features.equals(features_seq[0])
-
     for df_features in features:
         assert df_features.equals(features[0])
-
     for df_samples in samples_seq:
         assert df_samples.equals(samples_seq[0])
-
     for df_samples in samples:
         assert df_samples.equals(samples[0])
 
