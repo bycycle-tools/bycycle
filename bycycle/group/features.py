@@ -10,7 +10,7 @@ from bycycle.group.utils import progress_bar
 ###################################################################################################
 
 def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
-                        return_samples=True, n_cpus=-1, progress=None):
+                        return_samples=True, n_jobs=-1, progress=None):
     """Compute shape and burst features for a 2 dimensional array of signals.
 
     Parameters
@@ -25,9 +25,9 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
         Keyword arguments used in :func:`~.compute_features`.
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
-    n_cpus : int, optional, default: -1
+    n_jobs : int, optional, default: -1
         The number of jobs, one per cpu, to compute features in parallel.
-    progress: str, optional, default: None
+    progress: {None, 'tqdm', 'tqdm.notebook'}, optional, default: None
         Specify whether to display a progress bar. Use 'tqdm' if installed.
 
     Returns
@@ -54,12 +54,12 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
         raise ValueError("When compute_features_kwargs is a list, it's length must be equal to "
                          "sigs. Use a dictionary when applying the same kwargs to each signal.")
 
-    n_cpus = cpu_count() if n_cpus == -1 else n_cpus
+    n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
     return_samples = compute_features_kwargs['return_samples'] if 'return_samples' in \
         compute_features_kwargs.keys() else True
 
-    with Pool(processes=n_cpus) as pool:
+    with Pool(processes=n_jobs) as pool:
 
         def _proxy(args, fs=None, f_range=None):
             """Proxy function to map kwargs and sigs together."""

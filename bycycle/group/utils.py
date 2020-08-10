@@ -10,7 +10,7 @@ def progress_bar(iterable, progress, n_to_run):
     ----------
     iterable : list or iterable
         Iterable object to potentially apply progress tracking to.
-    progress : {None, 'tqdm'}, optional
+    progress : {None, 'tqdm', 'tqdm.notebook'}, optional
         Which kind of progress bar to use. If None, no progress bar is used.
     n_to_run : int
         Number of jobs to complete.

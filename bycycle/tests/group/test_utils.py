@@ -18,4 +18,4 @@ def test_progress_bar(progress):
 
     pbar = progress_bar(iterable, progress, n_iterations)
 
-    assert type(pbar) == list
+    assert len(pbar) == n_iterations

@@ -18,26 +18,20 @@ def test_compute_features_2d(sim_args):
     f_range = sim_args['f_range']
 
     # Test returning only features, without samples
-    features = compute_features_2d(sigs, fs, f_range, n_cpus=1,
+    features = compute_features_2d(sigs, fs, f_range, n_jobs=1,
                                    compute_features_kwargs={'return_samples': False})
 
     for df_features in features:
         assert df_features.equals(features[0])
 
     # Sequential processing check
-    start = time.time()
     features_seq, samples_seq = \
-        compute_features_2d(sigs, fs, f_range, n_cpus=1,
+        compute_features_2d(sigs, fs, f_range, n_jobs=1,
                             compute_features_kwargs={'return_samples': True})
-    end = time.time()
-    elapsed_time_sequential = end - start
 
     # Parallel processing check
-    start = time.time()
-    features, samples = compute_features_2d(sigs, fs, f_range, n_cpus=-1,
+    features, samples = compute_features_2d(sigs, fs, f_range, n_jobs=-1,
                                             compute_features_kwargs={'return_samples': True})
-    end = time.time()
-    elapsed_time_parallel = end - start
 
     # Since the same signal is used, check that each df is the same
     for df_features in features_seq:
@@ -48,9 +42,6 @@ def test_compute_features_2d(sim_args):
         assert df_samples.equals(samples_seq[0])
     for df_samples in samples:
         assert df_samples.equals(samples[0])
-
-    # Assert that two cpus computes faster than one
-    assert elapsed_time_parallel < elapsed_time_sequential
 
     # Assert that sequential and parallel processing is equivalent
     for idx, df_features in enumerate(features):
