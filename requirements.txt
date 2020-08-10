@@ -2,4 +2,4 @@ numpy
 scipy
 pandas
 matplotlib
-neurodsp @ git+https://github.com/neurodsp-tools/neurodsp.git@master
+neurodsp >= 2.1.0
