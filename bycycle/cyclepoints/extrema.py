@@ -55,8 +55,17 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
     if boundary is None:
         boundary = int(np.ceil(fs / float(f_range[0])))
 
+    # Pad signal with zeros on either side to ensure no missing cyclepoints
+    pad_seconds = .2
+    pad_samples = round(pad_seconds * fs)
+    zero_pad = np.zeros(pad_samples)
+
+    sig_pad = np.zeros(len(sig) + (2*pad_samples))
+    sig_pad[:pad_samples], sig_pad[-pad_samples:] = zero_pad, zero_pad
+    sig_pad[pad_samples:-pad_samples] = sig
+
     # Narrowband filter signal
-    sig_filt = filter_signal(sig, fs, 'bandpass', f_range,
+    sig_filt = filter_signal(sig_pad, fs, 'bandpass', f_range,
                              remove_edges=False, **filter_kwargs)
 
     # Find rising and decaying zero-crossings (narrowband)
@@ -79,7 +88,7 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
         last_rise = rise_xs[p_idx]
         next_decay = decay_xs[decay_xs > last_rise][0]
         # Identify time of peak
-        peaks[p_idx] = np.argmax(sig[last_rise:next_decay]) + last_rise
+        peaks[p_idx] = np.argmax(sig_pad[last_rise:next_decay]) + last_rise
 
     # Calculate trough samples
     troughs = np.zeros(n_troughs, dtype=int)
@@ -89,7 +98,11 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
         last_decay = decay_xs[t_idx]
         next_rise = rise_xs[rise_xs > last_decay][0]
         # Identify time of trough
-        troughs[t_idx] = np.argmin(sig[last_decay:next_rise]) + last_decay
+        troughs[t_idx] = np.argmin(sig_pad[last_decay:next_rise]) + last_decay
+
+    # Remove padding
+    peaks = peaks - pad_samples
+    troughs = troughs- pad_samples
 
     # Remove peaks and troughs within the boundary limit
     peaks = peaks[np.logical_and(peaks > boundary, peaks < len(sig) - boundary)]

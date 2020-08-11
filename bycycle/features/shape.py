@@ -100,7 +100,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         raise ValueError('Parameter "center_extrema" must be either "peak" or "trough"')
 
     # For each cycle, identify the sample of each extrema and zero-crossing
-    df_samples = compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs)
+    df_samples = compute_cyclepoints(sig, fs, f_range, boundary=0, **find_extrema_kwargs)
 
     # Compute durations of period, peaks, and troughs
     period, time_peak, time_trough = compute_durations(df_samples)
@@ -274,7 +274,7 @@ def compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3):
     check_param(fs, 'fs', (0, np.inf))
     check_param(n_cycles, 'n_cycles', (0, np.inf))
 
-    amp = amp_by_time(sig, fs, f_range, n_cycles=n_cycles)
+    amp = amp_by_time(sig, fs, f_range, remove_edges=False, n_cycles=n_cycles)
 
     troughs = np.append(df_samples['sample_last_trough'].values[0],
                         df_samples['sample_next_trough'].values)

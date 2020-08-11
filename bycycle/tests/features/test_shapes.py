@@ -129,4 +129,4 @@ def test_compute_band_amp(sim_args):
     band_amp = compute_band_amp(df_samples, sig, fs, f_range)
 
     for amp in band_amp[:-1]:
-        np.testing.assert_allclose(amp, band_amp[0], rtol=1e-3)
+        np.testing.assert_allclose(amp, band_amp[0], rtol=1e-1)
