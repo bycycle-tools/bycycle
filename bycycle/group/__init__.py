@@ -1,3 +1,3 @@
 """Group feature functions."""
 
-from .epochs import compute_features_2d
+from .features import compute_features_2d

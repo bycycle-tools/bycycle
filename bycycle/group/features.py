@@ -3,6 +3,8 @@
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
+import numpy as np
+
 from bycycle.features import compute_features
 from bycycle.group.utils import progress_bar
 
@@ -47,35 +49,44 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
     - If ``compute_features_kwargs`` is a dictionary, the same kwargs are applied applied across
       the first axis of ``sigs``. Otherwise, a list of dictionaries equal in length to the
       first axis of ``sigs`` is required to apply unique kwargs to each signal.
+    - ``return_samples`` is controlled from the kwargs passed in this function. If
+      ``return_samples`` is a key in ``compute_features_kwargs``, it's value will be ignored.
 
     """
 
     if isinstance(compute_features_kwargs, list) and len(compute_features_kwargs) != len(sigs):
         raise ValueError("When compute_features_kwargs is a list, it's length must be equal to "
                          "sigs. Use a dictionary when applying the same kwargs to each signal.")
+    elif compute_features_kwargs is None:
+        compute_features_kwargs = {}
+
+    # Remove return_samples from compute_features_kwargs
+    #   This kwarg is set directly in the function call
+    if isinstance(compute_features_kwargs, list):
+
+        for kwargs in compute_features_kwargs:
+            if 'return_samples' in kwargs.keys():
+                kwargs.pop('return_samples')
+
+    elif (isinstance(compute_features_kwargs, dict) and
+         'return_samples' in compute_features_kwargs.keys()):
+
+        compute_features_kwargs.pop('return_samples')
 
     n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
-    return_samples = compute_features_kwargs['return_samples'] if 'return_samples' in \
-        compute_features_kwargs.keys() else True
-
     with Pool(processes=n_jobs) as pool:
-
-        def _proxy(args, fs=None, f_range=None):
-            """Proxy function to map kwargs and sigs together."""
-
-            sig, kwargs = args[0], args[1:]
-            return compute_features(sig, fs=fs, f_range=f_range, **kwargs)
 
         if isinstance(compute_features_kwargs, list):
             # Map iterable sigs and kwargs together
-            mapping = pool.imap(partial(_proxy, fs=fs, f_range=f_range),
+            mapping = pool.imap(partial(_proxy, fs=fs, f_range=f_range,
+                                        return_samples=return_samples),
                                 zip(sigs, compute_features_kwargs))
 
         else:
             # Only map sigs, kwargs are the same for each mapping
             mapping = pool.imap(partial(compute_features, fs=fs, f_range=f_range,
-                                        **compute_features_kwargs),
+                                        return_samples=return_samples, **compute_features_kwargs),
                                 sigs)
 
         if return_samples is True:
@@ -91,3 +102,11 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
         return df_features, df_samples
 
     return df_features
+
+
+def _proxy(args, fs=None, f_range=None, return_samples=None):
+    """Proxy function to map kwargs and sigs together."""
+
+    sig, kwargs = args[0], args[1:]
+    return compute_features(sig, fs=fs, f_range=f_range,
+                            return_samples=return_samples, **kwargs[0])
