@@ -76,30 +76,37 @@ def test_compute_features_3d(sim_args, compute_features_kwargs_error,
     dim2 = 2
 
     sigs_2d = np.array([sim_args['sig']] * dim2)
-    sigs_3d = np.array([sigs_2d] * dim1)  # shape: (3, 2, 5000)
+    sigs_3d = np.array([sigs_2d] * dim1)
 
     fs = sim_args['fs']
     f_range = sim_args['f_range']
 
     compute_features_kwargs = {'center_extrema': 'peak'}
 
+    # 1d list of kwargs dicts
     if compute_features_kwargs_dtype == '1dlist':
 
         if compute_features_kwargs_error is True:
+            # Mismatch dimension, error expected
             compute_features_kwargs = [compute_features_kwargs] * (dim1 - 1)
         else:
+            # Valid kwargs
             compute_features_kwargs = [compute_features_kwargs] * dim1
 
+    # 2d list of kwargs dicts
     elif compute_features_kwargs_dtype == '2dlist':
 
         if compute_features_kwargs_error is True:
+            # Mismatch dimension, error expected
             compute_features_kwargs = [compute_features_kwargs] * (dim2 - 1)
         else:
+            # Valid kwargs
             compute_features_kwargs = [compute_features_kwargs] * dim2
 
-
+        # Add 2d
         compute_features_kwargs = [compute_features_kwargs] * dim1
 
+    # No kwargs passed
     elif compute_features_kwargs_dtype == None:
         compute_features_kwargs = None
 
@@ -108,11 +115,22 @@ def test_compute_features_3d(sim_args, compute_features_kwargs_error,
         compute_features_3d(sigs_3d, fs, f_range, compute_features_kwargs=compute_features_kwargs,
                             return_samples=return_samples, n_jobs=-1, progress=None)
 
+    # Check lengths
     if return_samples:
         df_features, df_samples = df_features[0], df_features[1]
-        assert np.shape(df_features)[0] == np.shape(df_samples)[0] == dim1
-        assert np.shape(df_features)[1] == np.shape(df_samples)[1] == dim2
+
+        assert len(df_features) == len(df_samples) == dim1
+        assert len(df_features[0])== len(df_samples[0]) == dim2
 
     else:
-        assert np.shape(df_features)[0] == dim1
-        assert np.shape(df_features)[1] == dim2
+        assert len(df_features) == dim1
+        assert len(df_features[0]) == dim2
+
+    # Check equal values
+    for row_idx in range(dim1):
+        for col_idx in range(dim2):
+
+            assert df_features[row_idx][col_idx].equals(df_features[0][0])
+
+            if return_samples:
+                assert df_samples[row_idx][col_idx].equals(df_samples[0][0])
