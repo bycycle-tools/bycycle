@@ -200,12 +200,12 @@ def compute_monotonicity(df_samples, sig):
     for idx, row in df_samples.iterrows():
 
         if 'sample_peak' in df_samples.columns:
-            rise_period = sig[int(row['sample_last_trough']):int(row['sample_peak'])]
-            decay_period = sig[int(row['sample_peak']):int(row['sample_next_trough'])]
+            rise_period = sig[int(row['sample_last_trough']):int(row['sample_peak'])+1]
+            decay_period = sig[int(row['sample_peak']):int(row['sample_next_trough'])+1]
 
         else:
-            decay_period = sig[int(row['sample_last_peak']):int(row['sample_trough'])]
-            rise_period = sig[int(row['sample_trough']):int(row['sample_next_peak'])]
+            decay_period = sig[int(row['sample_last_peak']):int(row['sample_trough'])+1]
+            rise_period = sig[int(row['sample_trough']):int(row['sample_next_peak'])+1]
 
         decay_mono = np.mean(np.diff(decay_period) < 0)
         rise_mono = np.mean(np.diff(rise_period) > 0)
