@@ -75,7 +75,7 @@ def find_flank_zerox(sig, flank):
     """
 
     assert flank in ['rise', 'decay']
-    pos = sig < 0 if flank == 'rise' else sig > 0
+    pos = sig <= 0 if flank == 'rise' else sig >= 0
 
     zero_xs = (pos[:-1] & ~pos[1:]).nonzero()[0]
 
