@@ -131,17 +131,31 @@ def compute_amp_consistency(df_shape_features, df_samples):
 
     for cyc in range(1, cycles-1):
 
-        consist_current = np.min([rises[cyc], decays[cyc]]) / np.max([rises[cyc], decays[cyc]])
+        # Division by zero will return np.nan, supress warning.
+        with np.errstate(invalid='ignore', divide='ignore'):
 
-        if 'sample_peak' in df_samples.columns:
-            consist_last = np.min([rises[cyc], decays[cyc-1]]) / np.max([rises[cyc], decays[cyc-1]])
-            consist_next = np.min([rises[cyc+1], decays[cyc]]) / np.max([rises[cyc+1], decays[cyc]])
+            consist_current = np.min([rises[cyc], decays[cyc]]) / np.max([rises[cyc], decays[cyc]])
 
-        else:
-            consist_last = np.min([rises[cyc-1], decays[cyc]]) / np.max([rises[cyc-1], decays[cyc]])
-            consist_next = np.min([rises[cyc], decays[cyc+1]]) / np.max([rises[cyc], decays[cyc+1]])
+            if 'sample_peak' in df_samples.columns:
 
-        amp_consistency[cyc] = np.min([consist_current, consist_next, consist_last])
+                consist_last = np.min([rises[cyc], decays[cyc-1]]) / \
+                    np.max([rises[cyc], decays[cyc-1]])
+
+                consist_next = np.min([rises[cyc+1], decays[cyc]]) / \
+                    np.max([rises[cyc+1], decays[cyc]])
+
+            else:
+
+                consist_last = np.min([rises[cyc-1], decays[cyc]]) / \
+                    np.max([rises[cyc-1], decays[cyc]])
+
+                consist_next = np.min([rises[cyc], decays[cyc+1]]) / \
+                    np.max([rises[cyc], decays[cyc+1]])
+
+            if np.isnan([consist_current, consist_next, consist_last]).all():
+                amp_consistency[cyc] = np.nan
+            else:
+                amp_consistency[cyc] = np.nanmin([consist_current, consist_next, consist_last])
 
     return amp_consistency
 
