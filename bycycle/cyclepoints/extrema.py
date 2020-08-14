@@ -55,14 +55,10 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
     if boundary is None:
         boundary = int(np.ceil(fs / float(f_range[0])))
 
-    # Pad signal with zeros on either side to ensure no missing cyclepoints
-    pad_seconds = .2
-    pad_samples = round(pad_seconds * fs)
-    zero_pad = np.zeros(pad_samples)
-
-    sig_pad = np.zeros(len(sig) + (2*pad_samples))
-    sig_pad[:pad_samples], sig_pad[-pad_samples:] = zero_pad, zero_pad
-    sig_pad[pad_samples:-pad_samples] = sig
+    # Pad beginning of signal with zeros to prevent missing cyclepoints
+    pad_samples = int(fs)
+    sig_pad = np.zeros(len(sig) + pad_samples)
+    sig_pad[pad_samples:] = sig
 
     # Narrowband filter signal
     sig_filt = filter_signal(sig_pad, fs, 'bandpass', f_range,
