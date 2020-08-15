@@ -62,6 +62,18 @@ def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency
     -----
     * The first and last period cannot be considered oscillating if the consistency measures are
       used.
+
+    Examples
+    --------
+    Apply thresholding for consistency burst detection.
+
+    >>> from bycycle.features import compute_burst_features, compute_shape_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> df_burst = compute_burst_features(df_shapes, df_samples, sig)
+    >>> df_burst = detect_bursts_cycles(df_burst)
     """
 
     # Ensure arguments are within valid ranges

@@ -54,6 +54,18 @@ def compute_burst_features(df_shape_features, df_samples, sig,
         When dual threshold burst detection is used (i.e. burst_method == 'amp'):
 
         - ``burst_fraction`` : fraction of a cycle that is bursting
+
+    Examples
+    --------
+    Determine burst features.
+
+    >>> from bycycle.features import compute_shape_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> df_burst = compute_burst_features(df_shapes, df_samples, sig, burst_method='amp',
+    ...                                   burst_kwargs={'fs': fs, 'f_range': f_range})
     """
 
     df_burst_features = pd.DataFrame()
@@ -102,6 +114,17 @@ def compute_amp_fraction(df_shape_features):
     -------
     amp_fract : 1d array
         The amplitude fraction of each cycle.
+
+    Examples
+    --------
+    Determine amplitude fractions.
+
+    >>> from bycycle.features import compute_shape_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> amp_fraction = compute_amp_fraction(df_shapes)
     """
 
     return df_shape_features['volt_amp'].rank() / len(df_shape_features)
@@ -121,6 +144,17 @@ def compute_amp_consistency(df_shape_features, df_samples):
     -------
     amp_consist : 1d array
         The amplitude consistency of each cycle.
+
+    Examples
+    --------
+    Determine amplitude consistency.
+
+    >>> from bycycle.features import compute_shape_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> amp_consistency = compute_amp_consistency(df_shapes, df_samples)
     """
 
     # Compute amplitude consistency
@@ -172,6 +206,17 @@ def compute_period_consistency(df_shape_features):
     -------
     period_consistency : 1d array
         The period consistency of each cycle.
+
+    Examples
+    --------
+    Determine period consistency.
+
+    >>> from bycycle.features import compute_shape_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> period_consistency = compute_period_consistency(df_shapes)
     """
 
     # Compute period consistency
@@ -205,6 +250,17 @@ def compute_monotonicity(df_samples, sig):
     -------
     monotonicity : 1d array
         The monotonicity of each cycle.
+
+    Examples
+    --------
+    Determine monotonicity.
+
+    >>> from bycycle.features import compute_cyclepoints
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range)
+    >>> montonicity = compute_monotonicity(df_samples, sig)
     """
 
     # Compute monotonicity
@@ -261,6 +317,17 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     -----
     If a cycle contains three samples and the corresponding section of `is_burst` is
     np.array([True, True, False]), the burst fraction is 0.66 for that cycle.
+
+    Examples
+    --------
+    Determine proportions of cycles that are bursting using dual amplitude thresholding.
+
+    >>> from bycycle.features import compute_cyclepoints
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range)
+    >>> burst_fraction = compute_burst_fraction(df_samples, sig, fs, f_range)
     """
 
     # Ensure arguments are within valid ranges

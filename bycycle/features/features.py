@@ -96,6 +96,14 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - ``sample_last_trough`` : sample of the last trough
         - ``sample_next_trough`` : sample of the next trough
 
+    Examples
+    --------
+    Determine shape and burst features.
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_features, df_samples = compute_features(sig, fs, f_range)
     """
 
     # Ensure arguments are within valid range

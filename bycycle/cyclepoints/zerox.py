@@ -72,6 +72,16 @@ def find_flank_zerox(sig, flank):
     -------
     zero_xs : 1d array
         Samples of the zero crossings.
+
+    Examples
+    --------
+    Find rising flanks in a filtered signal.
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from neurodsp.filt import filter_signal
+    >>> sig = sim_bursty_oscillation(10, 500, 10)
+    >>> sig_filt = filter_signal(sig, 500, 'lowpass', 30)
+    >>> rises_flank = find_flank_zerox(sig_filt, 'rise')
     """
 
     assert flank in ['rise', 'decay']

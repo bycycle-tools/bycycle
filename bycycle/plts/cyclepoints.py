@@ -45,6 +45,17 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
     - ``figsize``: tuple of (float, float), default: (15, 3)
     - ``xlabel``: str, default: 'Time (s)'
     - ``ylabel``: str, default: 'Voltage (uV)
+
+    Examples
+    --------
+    Plot cyclepoints using a dataframe from :func:`~.compute_cyclepoints`.
+
+    >>> from bycycle.features import compute_cyclepoints
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range)
+    >>> plot_cyclepoints_df(df_samples, sig, fs)
     """
 
     # Ensure arguments are within valid range
@@ -105,6 +116,18 @@ def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays
     - ``xlabel``: str, default: 'Time (s)'
     - ``ylabel``: str, default: 'Voltage (uV)
     - ``colors``: list, default: ['k', 'b', 'r', 'g', 'm']
+
+    Examples
+    --------
+    Plot cyclepoints using arrays from :func:`.find_extrema` and  :func:`~.find_zerox`.
+
+    >>> from bycycle.cyclepoints import find_extrema, find_zerox
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> peaks, troughs = find_extrema(sig, fs, f_range, boundary=0)
+    >>> rises, decays = find_zerox(sig, peaks, troughs)
+    >>> plot_cyclepoints_array(sig, fs, peaks=peaks, troughs=troughs, rises=rises, decays=decays)
     """
 
     # Ensure arguments are within valid range

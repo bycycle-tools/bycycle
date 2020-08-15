@@ -39,6 +39,17 @@ def extrema_interpolated_phase(sig, peaks, troughs, rises=None, decays=None):
       them with extrema phases.
     - Using burst detection helps avoid analyzing oscillatory properties of
       non-oscillatory sections of the signal.
+
+    Examples
+    --------
+    Estimate phase from peaks and troughs.
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.cyclepoints import find_extrema
+    >>> fs, f_range = 500, (8, 12)
+    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> peaks, troughs = find_extrema(sig, fs, f_range)
+    >>> pha = extrema_interpolated_phase(sig, peaks, troughs)
     """
 
     # Initialize phase arrays, one for trough pi and trough -pi
