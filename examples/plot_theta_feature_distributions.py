@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
+from bycycle.group import compute_features_2d
 from bycycle.plts.features import plot_feature_hist
-from bycycle.features import compute_features
 
 ####################################################################################################
 # Load and preprocess data
@@ -52,18 +52,21 @@ ec3 = filter_signal(ec3_raw, fs, 'lowpass', fc, n_seconds=filter_seconds,
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
-osc_kwargs = {'amp_fraction_threshold': 0,
-              'amp_consistency_threshold': .6,
-              'period_consistency_threshold': .75,
-              'monotonicity_threshold': .8,
-              'n_cycles_min': 3}
+threshold_kwargs = {'amp_fraction_threshold': 0,
+                    'amp_consistency_threshold': .6,
+                    'period_consistency_threshold': .75,
+                    'monotonicity_threshold': .8,
+                    'min_n_cycles': 3}
 
 # Cycle-by-cycle analysis
-df_ca1 = compute_features(ca1, fs, f_theta, center_extrema='trough',
-                          burst_detection_kwargs=osc_kwargs)
+sigs = np.array([ca1, ec3])
 
-df_ec3 = compute_features(ec3, fs, f_theta, center_extrema='trough',
-                          burst_detection_kwargs=osc_kwargs)
+compute_features_kwargs = {'center_extrema': 'trough', 'threshold_kwargs': threshold_kwargs}
+
+df_features = compute_features_2d(sigs, fs, f_theta, return_samples=False,
+                                  compute_features_kwargs=compute_features_kwargs)
+
+df_ca1, df_ec3 = df_features[0], df_features[1]
 
 # Limit analysis only to oscillatory bursts
 df_ca1_cycles = df_ca1[df_ca1['is_burst']]
@@ -85,7 +88,7 @@ times = np.arange(0, len(ca1_plt)/fs, 1/fs)
 fig, axes = plt.subplots(figsize=(15, 6), nrows=2)
 
 plot_time_series(times, ca1_plt, ax=axes[0], xlim=(0, 1.6), ylim=(-2.4, 2.4),
-                xlabel="Time (s)", ylabel="CA1 Voltage (mV)")
+                 xlabel="Time (s)", ylabel="CA1 Voltage (mV)")
 
 plot_time_series(times, ec3_plt, ax=axes[1], colors='r', xlim=(0, 1.6),
                  ylim=(-2.4, 2.4), xlabel="Time (s)", ylabel="EC3 Voltage (mV)")

@@ -25,7 +25,7 @@ import seaborn as sns
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
-from bycycle.features import compute_features
+from bycycle.group import compute_features_2d
 from bycycle.plts import plot_burst_detect_summary, plot_feature_categorical
 
 pd.options.display.max_columns = 10
@@ -61,33 +61,36 @@ plot_time_series(times, sigs[0], lw=2)
 
 ####################################################################################################
 
-f_alpha = (7, 13) # Frequency band of interest
-burst_kwargs = {'amp_fraction_threshold': .2,
-                'amp_consistency_threshold': .5,
-                'period_consistency_threshold': .5,
-                'monotonicity_threshold': .8,
-                'n_cycles_min': 3} # Tuned burst detection parameters
+# Frequency band of interest
+f_alpha = (7, 13)
 
-# Compute features for each signal and concatenate into single dataframe
-dfs = []
-for idx in range(n_signals):
+# Tuned burst detection parameters
+threshold_kwargs = {'amp_fraction_threshold': .2,
+                    'amp_consistency_threshold': .5,
+                    'period_consistency_threshold': .5,
+                    'monotonicity_threshold': .8,
+                    'min_n_cycles': 3}
 
-    df = compute_features(sigs[idx], fs, f_alpha,
-                          burst_detection_kwargs=burst_kwargs)
+# Compute features for each signal
+compute_features_kwargs={'threshold_kwargs': threshold_kwargs}
 
-    if idx >= int(n_signals/2):
-        df['group'] = 'patient'
-    else:
-        df['group'] = 'control'
+df_features_list, df_samples_list = \
+    compute_features_2d(sigs, fs, f_alpha, compute_features_kwargs=compute_features_kwargs)
 
-    df['subject_id'] = idx
-    dfs.append(df)
+# Add group and subject ids to dataframes
+groups = ['patient' if idx >= int(n_signals/2) else 'control' for idx in range(n_signals)]
+subject_ids = [idx for idx in range(n_signals)]
 
-df_cycles = pd.concat(dfs)
+for idx, group in enumerate(groups):
+    df_features_list[idx]['group'] = group
+    df_features_list[idx]['subject_id'] = subject_ids[idx]
+
+# Concatenate the list of dataframes
+df_features = pd.concat(df_features_list)
 
 ####################################################################################################
 
-df_cycles.head()
+df_features.head()
 
 ####################################################################################################
 #
@@ -98,10 +101,8 @@ df_cycles.head()
 # periods of the signal that appear to be bursting. This was confirmed by looking at a few different
 # signal segments from a few subjects.
 
-subj = 1
-sig_df = df_cycles[df_cycles['subject_id'] == subj]
-
-plot_burst_detect_summary(sig_df, sigs[subj], fs, burst_kwargs, xlim=(0, 5), figsize=(16, 3))
+plot_burst_detect_summary(df_features_list[1], df_samples_list[1], sigs[1], fs,
+                          threshold_kwargs, xlim=(0, 5), figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -114,12 +115,12 @@ plot_burst_detect_summary(sig_df, sigs[subj], fs, burst_kwargs, xlim=(0, 5), fig
 ####################################################################################################
 
 # Only consider cycles that were identified to be in bursting regimes
-df_cycles_burst = df_cycles[df_cycles['is_burst']]
+df_features_burst = df_features[df_features['is_burst']]
 
 # Compute average features across subjects in a recording
 features_keep = ['volt_amp', 'period', 'time_rdsym', 'time_ptsym']
-df_subjects = df_cycles_burst.groupby(['group', 'subject_id']).mean()[features_keep].reset_index()
-print(df_subjects)
+df_subjects = df_features_burst.groupby(['group', 'subject_id']).mean()[features_keep].reset_index()
+df_subjects
 
 ####################################################################################################
 
