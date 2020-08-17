@@ -146,12 +146,6 @@ html_show_sourcelink = False
 # Add logo
 html_logo = 'logo.jpg'
 
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None,
-                       'https://neurodsp-tools.github.io/neurodsp/': None}
-
-
 # -- Extension configuration -------------------------------------------------
 
 sphinx_gallery_conf = {
@@ -166,4 +160,8 @@ sphinx_gallery_conf = {
     'reference_url': {
         'bycycle': None
         }
+}
+
+intersphinx_mapping = {
+    'neurodsp': ('https://neurodsp-tools.github.io/neurodsp/', None),
 }
