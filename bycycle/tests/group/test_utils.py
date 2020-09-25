@@ -1,6 +1,5 @@
 """Test group utility functions."""
 
-import time
 import pytest
 import numpy as np
 

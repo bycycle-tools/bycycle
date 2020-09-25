@@ -1,5 +1,7 @@
 """Functions to compute features across epoched data."""
 
+from importlib import import_module
+
 ###################################################################################################
 ###################################################################################################
 
@@ -45,10 +47,10 @@ def progress_bar(iterable, progress, n_to_run):
 
         # Try loading the tqdm module
         try:
-            from tqdm import tqdm
+            tqdm = import_module(progress)
 
             # If tqdm loaded, apply the progress bar to the iterable
-            pbar = tqdm(iterable, desc=pbar_desc, total=n_to_run, dynamic_ncols=True)
+            pbar = tqdm.tqdm(iterable, desc=pbar_desc, total=n_to_run, dynamic_ncols=True)
 
         except ImportError:
 

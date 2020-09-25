@@ -1,7 +1,5 @@
 """Test functions to compute features across epoched data."""
 
-import time
-
 import numpy as np
 
 from pytest import mark, param
@@ -21,8 +19,8 @@ def test_compute_features_2d(sim_args, compute_features_kwargs_dtype,
     fs  = sim_args['fs']
     f_range = sim_args['f_range']
 
-    # return_samples is disregarded when used in compute_features_kwargs.
-    #   This variable is set directly in the function.
+    # return_samples is disregarded when used in compute_features_kwargs
+    #   this variable is set directly in the function
     compute_features_kwargs = {'center_extrema': 'peak', 'return_samples': False}
 
     if compute_features_kwargs_dtype == 'list' and compute_features_kwargs_error is False:
@@ -49,13 +47,13 @@ def test_compute_features_2d(sim_args, compute_features_kwargs_dtype,
                                             compute_features_kwargs=compute_features_kwargs)
 
     # Since the same signal is used, check that each df is the same
-    for df_features in features_seq:
+    for df_features in features_seq[1:]:
         assert df_features.equals(features_seq[0])
-    for df_features in features:
+    for df_features in features[1:]:
         assert df_features.equals(features[0])
-    for df_samples in samples_seq:
+    for df_samples in samples_seq[1:]:
         assert df_samples.equals(samples_seq[0])
-    for df_samples in samples:
+    for df_samples in samples[1:]:
         assert df_samples.equals(samples[0])
 
     # Assert that sequential and parallel processing is equivalent

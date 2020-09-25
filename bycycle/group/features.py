@@ -60,24 +60,17 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
     elif compute_features_kwargs is None:
         compute_features_kwargs = {}
 
-    # Remove return_samples from compute_features_kwargs
-    #   This kwarg is set directly in the function call
-    if isinstance(compute_features_kwargs, list):
+    # Drop `return_samples` argument, as this is set directly in the function call
+    compute_features_kwargs = [compute_features_kwargs] if \
+        isinstance(compute_features_kwargs, dict) else compute_features_kwargs
 
-        for kwargs in compute_features_kwargs:
-            if 'return_samples' in kwargs.keys():
-                kwargs.pop('return_samples')
-
-    elif (isinstance(compute_features_kwargs, dict) and
-         'return_samples' in compute_features_kwargs.keys()):
-
-        compute_features_kwargs.pop('return_samples')
+    [kwargs.pop('return_samples', None) for kwargs in compute_features_kwargs]
 
     n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
     with Pool(processes=n_jobs) as pool:
 
-        if isinstance(compute_features_kwargs, list):
+        if len(compute_features_kwargs) > 1:
             # Map iterable sigs and kwargs together
             mapping = pool.imap(partial(_proxy, fs=fs, f_range=f_range,
                                         return_samples=return_samples),
@@ -86,7 +79,8 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
         else:
             # Only map sigs, kwargs are the same for each mapping
             mapping = pool.imap(partial(compute_features, fs=fs, f_range=f_range,
-                                        return_samples=return_samples, **compute_features_kwargs),
+                                        return_samples=return_samples,
+                                        **compute_features_kwargs[0]),
                                 sigs)
 
         if return_samples is True:
