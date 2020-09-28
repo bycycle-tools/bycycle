@@ -52,6 +52,26 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
     - ``return_samples`` is controlled from the kwargs passed in this function. If
       ``return_samples`` is a key in ``compute_features_kwargs``, it's value will be ignored.
 
+    Examples
+    --------
+    Compute the features of a 2d array in parrallel using the same compute_features kwargs:
+
+    >>> import numpy as np
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sigs = np.array([sim_bursty_oscillation(10, fs, 10) for i in range(10)])
+    >>> compute_kwargs = {'burst_method': 'amp', 'threshold_kwargs':{'burst_fraction_threshold': 1}}
+    >>> df_features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False, n_jobs=2,
+    ...                                   compute_features_kwargs=compute_kwargs)
+
+    Compute the features of a 2d array in parallel using using individualized settings per signal to
+    examine the effect of various amplitude consistency thresholds:
+
+    >>> sigs =  np.array([sim_bursty_oscillation(10, fs, freq=10)] * 10)
+    >>> compute_kwargs = [{'threshold_kwargs': {'amp_consistency_threshold': thresh*.1}}
+    ...                   for thresh in range(1, 11)]
+    >>> df_features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False,
+    ...                                   n_jobs=2, compute_features_kwargs=compute_kwargs)
     """
 
     if isinstance(compute_features_kwargs, list) and len(compute_features_kwargs) != len(sigs):
@@ -140,6 +160,33 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None,
     - ``return_samples`` is controlled from the kwargs passed in this function. The
       ``return_samples`` value in ``compute_features_kwargs`` will be ignored.
 
+    Examples
+    --------
+    Compute the features of a 3d array, in parallel, with a shape of
+    (n_channels=2, n_epochs=3, n_signals=5000) using the same compute_features kwargs:
+
+    >>> import numpy as np
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sigs = np.array([[sim_bursty_oscillation(10, fs, freq=10) for epoch in range(3)]
+    ...                 for ch in range(2)])
+    >>> threshold_kwargs = {'amp_consistency_threshold': .5, 'period_consistency_threshold': .5,
+    ...                     'monotonicity_threshold': .8, 'min_n_cycles': 3}
+    >>> compute_feature_kwargs = {'threshold_kwargs': threshold_kwargs, 'center_extrema': 'trough'}
+    >>> features = compute_features_3d(sigs, fs, f_range= (8, 12), return_samples=False, n_jobs=2,
+    ...                                compute_features_kwargs=compute_feature_kwargs)
+
+    Compute the features of a 3d array, in parallel, with a shape of
+    (n_channels=2, n_epochs=3, n_signals=5000) using channel-specific compute_features kwargs:
+
+    >>> threshold_kwargs_ch1 = {'amp_consistency_threshold': .25, 'monotonicity_threshold': .25,
+    ...                         'period_consistency_threshold': .25, 'min_n_cycles': 3}
+    >>> threshold_kwargs_ch2 = {'amp_consistency_threshold': .5, 'monotonicity_threshold': .5,
+    ...                         'period_consistency_threshold': .5, 'min_n_cycles': 3}
+    >>> compute_kwargs = [{'threshold_kwargs': threshold_kwargs_ch1, 'center_extrema': 'trough'},
+    ...                   {'threshold_kwargs': threshold_kwargs_ch2, 'center_extrema': 'trough'}]
+    >>> features = compute_features_3d(sigs, fs, f_range= (8, 12), return_samples=False, n_jobs=2,
+    ...                                compute_features_kwargs=compute_kwargs)
     """
 
     # Convert list of kwargs to array to check dimensions

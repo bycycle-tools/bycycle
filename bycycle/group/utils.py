@@ -29,9 +29,26 @@ def progress_bar(iterable, progress, n_to_run):
 
     Notes
     -----
-    The explicit `n_to_run` input is required as tqdm requires this in the parallel case.
-    The `tqdm` object that is potentially returned acts the same as the underlying iterable,
-    with the addition of printing out progress every time items are requested.
+
+    - ``tqdm`` must be installed separately from bycycle.
+    - The explicit `n_to_run` input is required as tqdm requires this in the parallel case.
+      The `tqdm` object that is potentially returned acts the same as the underlying iterable,
+      with the addition of printing out progress every time items are requested.
+
+
+    Examples
+    --------
+    Use a ``tqdm`` progress bar, which must me installed separately from ``bycycle``,
+    when computing the features for 10 signals:
+
+    >>> from multiprocessing import Pool
+    >>> from functools import partial
+    >>> from bycycle.features import compute_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> sigs = [sim_bursty_oscillation(10, fs=500, freq=10)] * 10
+    >>> mapping = Pool(1).imap(partial(compute_features, fs=500, f_range=(8, 12),
+    ...                                return_samples=False), sigs)
+    >>> df_features = list(progress_bar(mapping, progress='tqdm', n_to_run=len(sigs)))
     """
 
     # Check progress specifier is okay

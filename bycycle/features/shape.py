@@ -77,6 +77,14 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         - Columns are slightly different depending on if ``center_extrema`` is set to 'peak' or
           'trough'.
 
+    Examples
+    --------
+    Compute shape features:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid ranges
@@ -157,6 +165,17 @@ def compute_durations(df_samples):
         Time between peak and next trough.
     time_trough : 1d array
         Time between peak and previous trough.
+
+    Examples
+    --------
+    Compute the durations of periods, peaks, and troughs:
+
+    >>> from bycycle.features import compute_cyclepoints
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))
+    >>> period, time_peak, time_trough = compute_durations(df_samples)
     """
 
     period = df_samples['sample_next_trough'] - df_samples['sample_last_trough']
@@ -182,6 +201,17 @@ def compute_extrema_voltage(df_samples, sig):
         Voltage at the peak.
     volt_trough : 1d array
         Voltage at the last trough.
+
+    Examples
+    --------
+    Compute the voltage at peaks and troughs:
+
+    >>> from bycycle.features import compute_cyclepoints
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))
+    >>> volt_peak, volt_trough = compute_extrema_voltage(df_samples, sig)
     """
 
     volt_peak = sig[df_samples['sample_peak']]
@@ -219,6 +249,16 @@ def compute_symmetry(df_samples, sig, period=None, time_peak=None, time_trough=N
         - time_rdsym : Fraction of cycle in the rise period.
         - time_ptsym : Fraction of cycle in the peak period.
 
+    Examples
+    --------
+    Compute cycle symmetry characteristics:
+
+    >>> from bycycle.features import compute_cyclepoints
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))
+    >>> sym_features = compute_symmetry(df_samples, sig)
     """
 
     # Determine rise and decay characteristics
@@ -268,6 +308,17 @@ def compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3):
     -------
     band_amp : 1d array
         Average analytic amplitude of the oscillation.
+
+    Examples
+    --------
+    Compute the mean amplitude for each cycle:
+
+    >>> from bycycle.features import compute_cyclepoints
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))
+    >>> band_amp = compute_band_amp(df_samples, sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid ranges

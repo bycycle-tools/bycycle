@@ -38,6 +38,17 @@ def find_zerox(sig, peaks, troughs):
       the peak and trough.
     - Burst detection should be used to restrict phase estimation to periods with oscillations
       present, in order to ignore periods of the signal in which estimation is poor.
+
+    Examples
+    --------
+    Find the rise and decay zero-crossings locations of a simulated signal:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.cyclepoints import find_extrema
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> peaks, troughs = find_extrema(sig, fs, f_range=(8, 12))
+    >>> rises, decays = find_zerox(sig, peaks, troughs)
     """
 
     # Calculate the number of rises and decays
@@ -72,6 +83,16 @@ def find_flank_zerox(sig, flank):
     -------
     zero_xs : 1d array
         Samples of the zero crossings.
+
+    Examples
+    --------
+    Find rising flanks in a filtered signal:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from neurodsp.filt import filter_signal
+    >>> sig = sim_bursty_oscillation(10, 500, freq=10)
+    >>> sig_filt = filter_signal(sig, 500, 'lowpass', 30)
+    >>> rises_flank = find_flank_zerox(sig_filt, 'rise')
     """
 
     assert flank in ['rise', 'decay']

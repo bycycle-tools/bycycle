@@ -38,6 +38,17 @@ def plot_feature_hist(feature, param_label, only_bursts=True, bins='auto', ax=No
     - ``xlim``: tuple of (float, float), default: None
     - ``fontsize``: float, default: 15
     - ``alpha``: float, default: .5
+
+    Examples
+    --------
+    Plot a histogram of each cycle's mean band amplitude:
+
+    >>> from bycycle.features import compute_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12), return_samples=False)
+    >>> plot_feature_hist(df_features, 'band_amp', only_bursts=False)
     """
 
     # Limit dataframe to bursts
@@ -94,6 +105,22 @@ def plot_feature_categorical(df_features, param_label, group_by=None, ax=None, *
     - ``ylabel``: str, default: ``param_label``
     - ``figsize``: tuple of (float, float), default: (10, 10)
     - ``fontsize``: float, default: 20
+
+    Examples
+    --------
+    Plot and compare the rise-decay times of two asine signals:
+
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from neurodsp.sim import sim_oscillation
+    >>> from bycycle.group import compute_features_2d
+    >>> fs = 500
+    >>> sigs = np.array([sim_oscillation(5, fs, 10, cycle='asine', rdsym=0.2),
+    ...                  sim_oscillation(5, fs, 10, cycle='asine', rdsym=0.8)])
+    >>> features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False, n_jobs=2)
+    >>> features[0]['group'], features[1]['group'] = 'low', 'high'
+    >>> df_features = pd.concat([features[0], features[1]])
+    >>> plot_feature_categorical(df_features, 'time_rdsym', group_by='group')
     """
 
     # Split features by group if specified

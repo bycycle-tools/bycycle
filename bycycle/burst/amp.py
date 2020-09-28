@@ -22,6 +22,19 @@ def detect_bursts_amp(df_features, burst_fraction_threshold=1, min_n_cycles=3):
     -------
     df_features : pandas.DataFrame
         Dataframe updated, with a additional column to indicate if the cycle is part of a burst.
+
+    Examples
+    --------
+    Apply thresholding for dual amplitude burst detection:
+
+    >>> from bycycle.features import compute_burst_features, compute_shape_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
+    >>> df_burst = compute_burst_features(df_shapes, df_samples, sig, burst_method='amp',
+    ...                                   burst_kwargs={'fs': fs, 'f_range': (8, 12)})
+    >>> df_burst = detect_bursts_amp(df_burst)
     """
 
     # Ensure arguments are within valid ranges

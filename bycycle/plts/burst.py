@@ -18,7 +18,7 @@ from bycycle.utils.checks import check_param
 ###################################################################################################
 
 @savefig
-def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_kwargs, xlim=None,
+def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs, xlim=None,
                               figsize=(15, 3), plot_only_result=False, interp=True):
     """Plot the cycle-by-cycle burst detection parameters and burst detection summary.
 
@@ -32,8 +32,8 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
         Time series to plot.
     fs : float
         Sampling rate, in Hz.
-    burst_detection_kwargs : dict
-        Burst parameter keys and threshold value pairs, as defined in the 'burst_detection_kwargs'
+    threshold_kwargs : dict
+        Burst parameter keys and threshold value pairs, as defined in the 'threshold_kwargs'
         argument of :func:`.compute_features`.
     xlim : tuple of (float, float), optional, default: None
         Start and stop times for plot.
@@ -60,6 +60,20 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
       - red: amp_consistency_threshold
       - yellow: period_consistency_threshold
       - green: monotonicity_threshold
+
+    Examples
+    --------
+    Plot the burst detection summary of a bursting signal:
+
+    >>> from bycycle.features import compute_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> threshold_kwargs = {'amp_fraction_threshold': 0., 'amp_consistency_threshold': .5,
+    ...                     'period_consistency_threshold': .5, 'monotonicity_threshold': .8}
+    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12),
+    ...                                            threshold_kwargs=threshold_kwargs)
+    >>> plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs)
     """
 
     # Ensure arguments are within valid range
@@ -76,10 +90,10 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
     _, side_e = get_extrema_df(df_samples)
 
     # Remove this kwarg since it isn't stored cycle by cycle in the df (nothing to plot)
-    if 'min_n_cycles' in burst_detection_kwargs.keys():
-        del burst_detection_kwargs['min_n_cycles']
+    if 'min_n_cycles' in threshold_kwargs.keys():
+        del threshold_kwargs['min_n_cycles']
 
-    n_kwargs = len(burst_detection_kwargs.keys())
+    n_kwargs = len(threshold_kwargs.keys())
 
     # Create figure and subplots
     if plot_only_result:
@@ -112,7 +126,7 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
     # Plot each burst param
     colors = cycle(['blue', 'red', 'yellow', 'green', 'cyan', 'magenta', 'orange'])
 
-    for idx, osc_key in enumerate(burst_detection_kwargs.keys()):
+    for idx, osc_key in enumerate(threshold_kwargs.keys()):
 
         column = osc_key.replace('_threshold', '')
 
@@ -121,7 +135,7 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
         # Highlight where a burst param falls below threshold
         for row_idx, cyc in df_samples.iterrows():
 
-            if df_features.iloc[row_idx][column] < burst_detection_kwargs[osc_key]:
+            if df_features.iloc[row_idx][column] < threshold_kwargs[osc_key]:
                 axes[0].axvspan(times[int(cyc['sample_last_' + side_e])],
                                 times[int(cyc['sample_next_' + side_e])],
                                 alpha=0.5, color=color, lw=0)
@@ -133,7 +147,7 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, burst_detection_
             xlabel = 'Time (s)' if idx == n_kwargs-1 else ''
 
             plot_burst_detect_param(df_features, df_samples, sig, fs, column,
-                                    burst_detection_kwargs[osc_key], figsize=figsize,
+                                    threshold_kwargs[osc_key], figsize=figsize,
                                     ax=axes[idx+1], xlim=xlim, xlabel=xlabel, ylabel=ylabel,
                                     color=color, interp=interp)
 
@@ -177,6 +191,20 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
     - ``color``: str, default: 'r'.
 
       - Note: ``color`` here is the fill color, rather than line color.
+
+    Examples
+    --------
+    Plot the monotonicity of a bursting signal:
+
+    >>> from bycycle.features import compute_features
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> threshold_kwargs = {'amp_fraction_threshold': 0., 'amp_consistency_threshold': .5,
+    ...                     'period_consistency_threshold': .5, 'monotonicity_threshold': .8}
+    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12),
+    ...                                            threshold_kwargs=threshold_kwargs)
+    >>> plot_burst_detect_param(df_features, df_samples, sig, fs, 'monotonicity', .8)
     """
 
     # Ensure arguments are within valid range

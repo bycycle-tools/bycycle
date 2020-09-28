@@ -30,6 +30,17 @@ def limit_df(df, fs, start=None, stop=None):
     -----
     Cycles, or rows in the `df`, are included if any segment of the cycle falls after the
     `stop` time or before the `end` time.
+
+    Examples
+    --------
+    Limit a samples dataframe to the first second of a simulated signal:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.features import compute_features
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> _, df_samples = compute_features(sig, fs, f_range=(8, 12))
+    >>> df_samples_limited = limit_df(df_samples, fs, start=0, stop=1)
     """
 
     # Ensure arguments are within valid range
@@ -70,6 +81,19 @@ def get_extrema_df(df):
         Center extrema, either 'peak' or 'trough'.
     side_e : str
         Side extrema, either 'peak' or 'trough'.
+
+    Examples
+    --------
+    Confirm that cycles are peak-centered:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.features import compute_features
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> _, df_samples = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
+    >>> center_e, side_e = get_extrema_df(df_samples)
+    >>> center_e
+    'peak'
     """
 
     center_e = 'peak' if 'sample_peak' in df.columns else 'trough'
@@ -92,6 +116,18 @@ def rename_extrema_df(center_extrema, df_samples, df_features):
     -------
     df_features, df_samples : pandas.DataFrames
         Updated dataframes.
+
+    Examples
+    --------
+    Convert the column labels of a peak-centered dataframe to a trough-centered dataframe:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.features import compute_features
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> sig = -sig  # invert the signal, flipping peaks and troughs
+    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
+    >>> df_features, df_samples = rename_extrema_df('trough', df_samples, df_features)
     """
 
     # Rename columns if they are actually trough-centered

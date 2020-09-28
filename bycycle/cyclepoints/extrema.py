@@ -42,6 +42,15 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
     -----
     This function assures that there are the same number of peaks and troughs
     if the first extrema is forced to be either peak or trough.
+
+    Examples
+    --------
+    Find the locations of peaks and burst in a signal:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> peaks, troughs = find_extrema(sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid range

@@ -20,6 +20,14 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     -------
     is_burst : 1d array
         Updated burst array.
+
+    Examples
+    --------
+    Remove bursts with less than 3 consectutive cycles:
+
+    >>> is_burst = np.array([False, True, True, False, True, True, True, True, False])
+    >>> check_min_burst_cycles(is_burst)
+    array([False, False, False, False,  True,  True,  True,  True, False])
     """
 
     # Ensure argument is within valid range
