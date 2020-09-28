@@ -131,17 +131,31 @@ def compute_amp_consistency(df_shape_features, df_samples):
 
     for cyc in range(1, cycles-1):
 
-        consist_current = np.min([rises[cyc], decays[cyc]]) / np.max([rises[cyc], decays[cyc]])
+        # Division by zero will return np.nan, supress warning.
+        with np.errstate(invalid='ignore', divide='ignore'):
 
-        if 'sample_peak' in df_samples.columns:
-            consist_last = np.min([rises[cyc], decays[cyc-1]]) / np.max([rises[cyc], decays[cyc-1]])
-            consist_next = np.min([rises[cyc+1], decays[cyc]]) / np.max([rises[cyc+1], decays[cyc]])
+            consist_current = np.min([rises[cyc], decays[cyc]]) / np.max([rises[cyc], decays[cyc]])
 
-        else:
-            consist_last = np.min([rises[cyc-1], decays[cyc]]) / np.max([rises[cyc-1], decays[cyc]])
-            consist_next = np.min([rises[cyc], decays[cyc+1]]) / np.max([rises[cyc], decays[cyc+1]])
+            if 'sample_peak' in df_samples.columns:
 
-        amp_consistency[cyc] = np.min([consist_current, consist_next, consist_last])
+                consist_last = np.min([rises[cyc], decays[cyc-1]]) / \
+                    np.max([rises[cyc], decays[cyc-1]])
+
+                consist_next = np.min([rises[cyc+1], decays[cyc]]) / \
+                    np.max([rises[cyc+1], decays[cyc]])
+
+            else:
+
+                consist_last = np.min([rises[cyc-1], decays[cyc]]) / \
+                    np.max([rises[cyc-1], decays[cyc]])
+
+                consist_next = np.min([rises[cyc], decays[cyc+1]]) / \
+                    np.max([rises[cyc], decays[cyc+1]])
+
+            if np.isnan([consist_current, consist_next, consist_last]).all():
+                amp_consistency[cyc] = np.nan
+            else:
+                amp_consistency[cyc] = np.nanmin([consist_current, consist_next, consist_last])
 
     return amp_consistency
 
@@ -200,12 +214,12 @@ def compute_monotonicity(df_samples, sig):
     for idx, row in df_samples.iterrows():
 
         if 'sample_peak' in df_samples.columns:
-            rise_period = sig[int(row['sample_last_trough']):int(row['sample_peak'])]
-            decay_period = sig[int(row['sample_peak']):int(row['sample_next_trough'])]
+            rise_period = sig[int(row['sample_last_trough']):int(row['sample_peak'])+1]
+            decay_period = sig[int(row['sample_peak']):int(row['sample_next_trough'])+1]
 
         else:
-            decay_period = sig[int(row['sample_last_peak']):int(row['sample_trough'])]
-            rise_period = sig[int(row['sample_trough']):int(row['sample_next_peak'])]
+            decay_period = sig[int(row['sample_last_peak']):int(row['sample_trough'])+1]
+            rise_period = sig[int(row['sample_trough']):int(row['sample_next_peak'])+1]
 
         decay_mono = np.mean(np.diff(decay_period) < 0)
         rise_mono = np.mean(np.diff(rise_period) > 0)
