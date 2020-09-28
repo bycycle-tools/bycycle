@@ -43,12 +43,12 @@ def compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs):
 
     Examples
     --------
-    Determine the signal indices of cyclepoints.
+    Compute the signal indices of cyclepoints:
 
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_samples = compute_cyclepoints(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid range

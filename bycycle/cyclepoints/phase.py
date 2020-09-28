@@ -42,13 +42,13 @@ def extrema_interpolated_phase(sig, peaks, troughs, rises=None, decays=None):
 
     Examples
     --------
-    Estimate phase from peaks and troughs.
+    Estimate phase from peaks and troughs:
 
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> from bycycle.cyclepoints import find_extrema
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> peaks, troughs = find_extrema(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> peaks, troughs = find_extrema(sig, fs, f_range=(8, 12))
     >>> pha = extrema_interpolated_phase(sig, peaks, troughs)
     """
 

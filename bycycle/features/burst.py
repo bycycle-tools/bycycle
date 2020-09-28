@@ -57,15 +57,15 @@ def compute_burst_features(df_shape_features, df_samples, sig,
 
     Examples
     --------
-    Determine burst features.
+    Compute burst features:
 
     >>> from bycycle.features import compute_shape_features
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
+    >>> fs  = 500
     >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
     >>> df_burst = compute_burst_features(df_shapes, df_samples, sig, burst_method='amp',
-    ...                                   burst_kwargs={'fs': fs, 'f_range': f_range})
+    ...                                   burst_kwargs={'fs': fs, 'f_range': (8, 12)})
     """
 
     df_burst_features = pd.DataFrame()
@@ -117,13 +117,13 @@ def compute_amp_fraction(df_shape_features):
 
     Examples
     --------
-    Determine amplitude fractions.
+    Compute amplitude fractions.
 
     >>> from bycycle.features import compute_shape_features
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, (8, 12))
     >>> amp_fraction = compute_amp_fraction(df_shapes)
     """
 
@@ -147,13 +147,13 @@ def compute_amp_consistency(df_shape_features, df_samples):
 
     Examples
     --------
-    Determine amplitude consistency.
+    Compute amplitude consistency:
 
     >>> from bycycle.features import compute_shape_features
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
     >>> amp_consistency = compute_amp_consistency(df_shapes, df_samples)
     """
 
@@ -209,13 +209,13 @@ def compute_period_consistency(df_shape_features):
 
     Examples
     --------
-    Determine period consistency.
+    Compute period consistency:
 
     >>> from bycycle.features import compute_shape_features
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
     >>> period_consistency = compute_period_consistency(df_shapes)
     """
 
@@ -253,13 +253,13 @@ def compute_monotonicity(df_samples, sig):
 
     Examples
     --------
-    Determine monotonicity.
+    Compute monotonicity:
 
     >>> from bycycle.features import compute_cyclepoints
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_samples = compute_cyclepoints(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))
     >>> montonicity = compute_monotonicity(df_samples, sig)
     """
 
@@ -320,14 +320,14 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
 
     Examples
     --------
-    Determine proportions of cycles that are bursting using dual amplitude thresholding.
+    Compute proportions of cycles that are bursting using dual amplitude thresholding:
 
     >>> from bycycle.features import compute_cyclepoints
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_samples = compute_cyclepoints(sig, fs, f_range)
-    >>> burst_fraction = compute_burst_fraction(df_samples, sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))
+    >>> burst_fraction = compute_burst_fraction(df_samples, sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid ranges

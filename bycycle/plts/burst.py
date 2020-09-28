@@ -63,15 +63,16 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs
 
     Examples
     --------
-    Plot the burst detection summary of a bursting signal.
+    Plot the burst detection summary of a bursting signal:
 
     >>> from bycycle.features import compute_features
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
     >>> threshold_kwargs = {'amp_fraction_threshold': 0., 'amp_consistency_threshold': .5,
     ...                     'period_consistency_threshold': .5, 'monotonicity_threshold': .8}
-    >>> df_features, df_samples = compute_features(sig, fs, f_range, threshold_kwargs=threshold_kwargs)
+    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12),
+    ...                                            threshold_kwargs=threshold_kwargs)
     >>> plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs)
     """
 
@@ -193,15 +194,16 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
 
     Examples
     --------
-    Plot the monotonicity of a bursting signal.
+    Plot the monotonicity of a bursting signal:
 
     >>> from bycycle.features import compute_features
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
     >>> threshold_kwargs = {'amp_fraction_threshold': 0., 'amp_consistency_threshold': .5,
     ...                     'period_consistency_threshold': .5, 'monotonicity_threshold': .8}
-    >>> df_features, df_samples = compute_features(sig, fs, f_range, threshold_kwargs=threshold_kwargs)
+    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12),
+    ...                                            threshold_kwargs=threshold_kwargs)
     >>> plot_burst_detect_param(df_features, df_samples, sig, fs, 'monotonicity', .8)
     """
 

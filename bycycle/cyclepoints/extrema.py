@@ -45,12 +45,12 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
 
     Examples
     --------
-    Find the locations of peaks and burst in a signal.
+    Find the locations of peaks and burst in a signal:
 
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> peaks, troughs = find_extrema(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> peaks, troughs = find_extrema(sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid range

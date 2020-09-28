@@ -25,15 +25,15 @@ def detect_bursts_amp(df_features, burst_fraction_threshold=1, min_n_cycles=3):
 
     Examples
     --------
-    Apply thresholding for dual amplitude burst detection.
+    Apply thresholding for dual amplitude burst detection:
 
     >>> from bycycle.features import compute_burst_features, compute_shape_features
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
     >>> df_burst = compute_burst_features(df_shapes, df_samples, sig, burst_method='amp',
-    ...                                   burst_kwargs={'fs': fs, 'f_range': f_range})
+    ...                                   burst_kwargs={'fs': fs, 'f_range': (8, 12)})
     >>> df_burst = detect_bursts_amp(df_burst)
     """
 

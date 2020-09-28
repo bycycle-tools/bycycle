@@ -98,12 +98,12 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
 
     Examples
     --------
-    Determine shape and burst features.
+    Compute shape and burst features:
 
     >>> from neurodsp.sim import sim_bursty_oscillation
-    >>> fs, f_range = 500, (8, 12)
-    >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_features, df_samples = compute_features(sig, fs, f_range)
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid range
