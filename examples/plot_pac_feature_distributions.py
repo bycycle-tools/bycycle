@@ -12,6 +12,7 @@ phase-amplitude coupling (PAC)
 # First let's import the packages we need. This example depends on the
 # pactools simulator to make pac and a spurious pac function from the
 # pactools spurious pac example.
+
 ####################################################################################################
 
 import numpy as np
@@ -55,7 +56,7 @@ sig_pac = simulate_pac(n_points=n_points, fs=fs, high_fq=high_fq, low_fq=low_fq,
 
 # Simulate 10 Hz spiking which couples to about 60 Hz
 spikes = sim_oscillation(n_seconds, fs, 10, cycle='gaussian', std=0.005)
-noise = normalize_variance(pink_noise(n_points, slope=1.), variance=.5, select_nonzero=False)
+noise = normalize_variance(pink_noise(n_points, slope=1.), variance=.5)
 sig_spurious_pac = spikes + noise
 
 # Simulate a sine wave that is the driver frequency
@@ -131,22 +132,22 @@ plot_time_series(time, sig_no_pac, title=titles[2], colors='C3', ax=axes[3], xli
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
-osc_kwargs = {'amplitude_fraction_threshold': 0.3,
-              'amplitude_consistency_threshold': 0.4,
-              'period_consistency_threshold': 0.5,
-              'monotonicity_threshold': 0.8,
-              'n_cycles_min': 3}
+threshold_kwargs = {'amp_fraction_threshold': 0.3,
+                    'amp_consistency_threshold': 0.4,
+                    'period_consistency_threshold': 0.5,
+                    'monotonicity_threshold': 0.8,
+                    'min_n_cycles': 3}
 
 # Cycle-by-cycle analysis
 dfs = dict()
 dfs['pac'] = compute_features(sig_pac, fs, f_beta, center_extrema='trough',
-                              burst_detection_kwargs=osc_kwargs, return_samples=False)
+                              threshold_kwargs=threshold_kwargs, return_samples=False)
 
 dfs['spurious'] = compute_features(sig_spurious_pac, fs, f_beta, center_extrema='trough',
-                                   burst_detection_kwargs=osc_kwargs, return_samples=False)
+                                   threshold_kwargs=threshold_kwargs, return_samples=False)
 
 dfs['no_pac'] = compute_features(sig_no_pac, fs, f_beta, center_extrema='trough',
-                                 burst_detection_kwargs=osc_kwargs, return_samples=False)
+                                 threshold_kwargs=threshold_kwargs, return_samples=False)
 
 
 ####################################################################################################
