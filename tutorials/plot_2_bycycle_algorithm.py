@@ -43,6 +43,7 @@ import matplotlib.pyplot as plt
 
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
+from neurodsp.sim import sim_combined
 
 from bycycle.features import compute_features
 from bycycle.cyclepoints import find_extrema, find_zerox
@@ -53,17 +54,22 @@ pd.options.display.max_columns = 10
 
 ####################################################################################################
 
-# Load data
-sig = np.load('data/ca1.npy') / 1000
-sig = sig[:125000]
+# Simulation settings
+n_seconds = 100
 fs = 1250
+components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1,
+                                         'cycle': 'asine', 'rdsym': 0.3},
+              'sim_powerlaw': {'f_range': (2, None)}}
+sig = sim_combined(n_seconds, fs, components=components, component_variances=(2, 1))
+
+# Filter settings
 f_theta = (4, 10)
 f_lowpass = 30
-n_seconds = .1
+n_seconds_filter = .1
 
 # Lowpass filter
 sig_low = filter_signal(sig, fs, 'lowpass', f_lowpass,
-                        n_seconds=n_seconds, remove_edges=False)
+                        n_seconds=n_seconds_filter, remove_edges=False)
 
 # Plot signal
 times = np.arange(0, len(sig)/fs, 1/fs)
@@ -134,7 +140,7 @@ plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
 # 3. Compute features of each cycle
 # ---------------------------------
 # After these 4 points of each cycle are localized, we compute some simple statistics for each
-# cycle. The main cycle-by-cycle function, :func:`~.compute_features`, returns a two dataframes:
+# cycle. The main cycle-by-cycle function, :func:`~.compute_features`, returns two dataframes:
 # one for cycle features and one for locating cyclepoints in the signal. Each entry or row in either
 # dataframe is a cycle and each column is a property of that cycle (see table below). The four
 # main features are:
@@ -204,10 +210,14 @@ df_samples
 # Load a simulated signal and apply a lowpass filter
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Load the signal
-sig = np.load('data/sim_bursting.npy')
+# Simulate a signal
+n_seconds = 10
 fs = 1000  # Sampling rate
 f_alpha = (8, 12)
+
+components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1},
+              'sim_powerlaw': {'f_range': (2, None)}}
+sig = sim_combined(n_seconds, fs, components=components, component_variances=(5, 1))
 
 # Apply a lowpass filter to remove high frequency power that interferes with extrema localization
 sig = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)

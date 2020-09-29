@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+from neurodsp.sim import sim_combined
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
@@ -37,9 +38,23 @@ pd.options.display.max_columns = 10
 
 ####################################################################################################
 
-# Load experimental data
-sigs = np.load('data/sim_experiment.npy')
-fs = 1000  # Sampling rate
+# Simulate experimental data
+n_seconds = 10
+fs = 1000
+n_subjects = 20
+sigs = np.zeros((n_subjects, int(fs * n_seconds)))
+
+for subject_idx in range(n_subjects):
+
+    # Manipulate the rise-decay symmetry between the two groups
+    rdsym = .35 if subject_idx <= int(n_subjects/2) else 0.5
+
+    components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .2,
+                                             'cycle': 'asine', 'rdsym': rdsym},
+                  'sim_powerlaw': {'f_range': (2, None)}}
+
+    sigs[subject_idx] = sim_combined(n_seconds, fs, components=components, component_variances=(3, 1))
+
 
 # Apply lowpass filter to each signal
 for idx in range(len(sigs)):
