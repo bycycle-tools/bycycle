@@ -8,17 +8,14 @@ from bycycle.cyclepoints import find_extrema
 
 from bycycle.cyclepoints.zerox import *
 
-# Set data path
-DATA_PATH = os.getcwd() + '/tutorials/data/'
-
 ###################################################################################################
 ###################################################################################################
 
-def test_find_zerox():
+def test_find_zerox(sim_stationary):
     """Test ability to find peaks and troughs."""
 
     # Load signal
-    sig = np.load(DATA_PATH + 'sim_stationary.npy')
+    sig = sim_stationary
 
     fs = 1000
     f_range = (6, 14)
