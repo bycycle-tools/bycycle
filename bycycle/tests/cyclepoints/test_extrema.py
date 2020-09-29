@@ -37,12 +37,12 @@ def test_find_extrema(first_extrema):
     minima = argrelextrema(sig, np.less)
 
     # Find peaks and troughs using bycycle and make sure match scipy
-    peaks, troughs = find_extrema(sig, fs, f_range, boundary=1, first_extrema=first_extrema)
+    peaks, troughs = find_extrema(sig, fs, f_range, first_extrema=first_extrema)
 
     if first_extrema == 'trough':
         assert len(peaks) == len(troughs)
         assert troughs[0] < peaks[0]
-        np.testing.assert_allclose(peaks, maxima[0])
+        np.testing.assert_allclose(peaks, maxima[0][:len(peaks)])
         np.testing.assert_allclose(troughs[:len(peaks)], minima[0][:len(peaks)])
     elif first_extrema == 'peak':
         assert peaks[0] < troughs[0]

@@ -3,6 +3,7 @@
 import numpy as np
 
 from neurodsp.filt import filter_signal
+from neurodsp.filt.fir import compute_filter_length
 
 from bycycle.utils.checks import check_param
 from bycycle.cyclepoints.zerox import find_flank_zerox
@@ -10,7 +11,7 @@ from bycycle.cyclepoints.zerox import find_flank_zerox
 ###################################################################################################
 ###################################################################################################
 
-def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_kwargs=None):
+def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak', filter_kwargs=None, pad=True):
     """Identify peaks and troughs in a time series.
 
     Parameters
@@ -21,13 +22,13 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range, in Hz, to narrowband filter the signal, used to find zero-crossings.
-    boundary : int, optional
+    boundary : int, optional, default: 0
         Number of samples from edge of the signal to ignore.
-    first_extrema: {'peak', 'trough', None}
+    first_extrema: {'peak', 'trough', None}, optional, default: 'peak'
         If 'peak', then force the output to begin with a peak and end in a trough.
         If 'trough', then force the output to begin with a trough and end in peak.
         If None, force nothing.
-    filter_kwargs : dict, optional
+    filter_kwargs : dict, optional, default: None
         Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`,
         such as 'n_cycles' or 'n_seconds' to control filter length.
 
@@ -51,18 +52,21 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
     if filter_kwargs is None:
         filter_kwargs = {}
 
-    # Default boundary value as 1 cycle length of low cutoff frequency
-    if boundary is None:
-        boundary = int(np.ceil(fs / float(f_range[0])))
-
     # Pad beginning of signal with zeros to prevent missing cyclepoints
-    pad_samples = int(fs)
-    sig_pad = np.zeros(len(sig) + pad_samples)
-    sig_pad[pad_samples:] = sig
+    if pad:
+        filt_len = compute_filter_length(fs, 'bandpass', f_range[0], f_range[1],
+                                         n_seconds=filter_kwargs.get('n_seconds', None),
+                                         n_cycles=filter_kwargs.get('n_cycles', 3))
+
+    else:
+        filt_len = 0
+
+    sig_pad = np.zeros(len(sig) + filt_len)
+    sig_pad[int(filt_len):] = sig
+
 
     # Narrowband filter signal
-    sig_filt = filter_signal(sig_pad, fs, 'bandpass', f_range,
-                             remove_edges=False, **filter_kwargs)
+    sig_filt = filter_signal(sig_pad, fs, 'bandpass', f_range, remove_edges=True, **filter_kwargs)
 
     # Find rising and decaying zero-crossings (narrowband)
     rise_xs = find_flank_zerox(sig_filt, 'rise')
@@ -97,8 +101,8 @@ def find_extrema(sig, fs, f_range, boundary=None, first_extrema='peak', filter_k
         troughs[t_idx] = np.argmin(sig_pad[last_decay:next_rise]) + last_decay
 
     # Remove padding
-    peaks = peaks - pad_samples
-    troughs = troughs- pad_samples
+    peaks = peaks - filt_len
+    troughs = troughs - filt_len
 
     # Remove peaks and troughs within the boundary limit
     peaks = peaks[np.logical_and(peaks > boundary, peaks < len(sig) - boundary)]

@@ -100,7 +100,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         raise ValueError('Parameter "center_extrema" must be either "peak" or "trough"')
 
     # For each cycle, identify the sample of each extrema and zero-crossing
-    df_samples = compute_cyclepoints(sig, fs, f_range, boundary=0, **find_extrema_kwargs)
+    df_samples = compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs)
 
     # Compute durations of period, peaks, and troughs
     period, time_peak, time_trough = compute_durations(df_samples)
