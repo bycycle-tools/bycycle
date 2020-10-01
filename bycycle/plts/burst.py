@@ -135,7 +135,8 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs
         # Highlight where a burst param falls below threshold
         for row_idx, cyc in df_samples.iterrows():
 
-            if df_features.iloc[row_idx][column] < threshold_kwargs[osc_key]:
+            if (df_features.iloc[row_idx][column] < threshold_kwargs[osc_key] and
+                    df_features.iloc[row_idx]['is_burst'] == False):
                 axes[0].axvspan(times[int(cyc['sample_last_' + side_e])],
                                 times[int(cyc['sample_next_' + side_e])],
                                 alpha=0.5, color=color, lw=0)
