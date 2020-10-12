@@ -31,6 +31,8 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak', filter_kwar
     filter_kwargs : dict, optional, default: None
         Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`,
         such as 'n_cycles' or 'n_seconds' to control filter length.
+    pad : bool, optional, default: True
+        Whether to pad ``sig`` with zeroes to prevent missed cyclepoints at the edges.
 
     Returns
     -------
@@ -63,7 +65,6 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak', filter_kwar
 
     sig_pad = np.zeros(len(sig) + filt_len)
     sig_pad[int(filt_len):] = sig
-
 
     # Narrowband filter signal
     sig_filt = filter_signal(sig_pad, fs, 'bandpass', f_range, remove_edges=True, **filter_kwargs)
