@@ -8,17 +8,14 @@ from bycycle.cyclepoints import find_extrema, find_zerox
 
 from bycycle.cyclepoints.phase import *
 
-# Set data path
-DATA_PATH = os.getcwd() + '/tutorials/data/'
-
 ###################################################################################################
 ###################################################################################################
 
-def test_extrema_interpolated_phase():
+def test_extrema_interpolated_phase(sim_stationary):
     """Test waveform phase estimate."""
 
     # Load signal
-    sig = np.load(DATA_PATH + 'sim_stationary.npy')
+    sig = sim_stationary
 
     fs = 1000
     f_range = (6, 14)

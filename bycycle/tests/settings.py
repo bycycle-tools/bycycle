@@ -8,7 +8,7 @@ import pkg_resources as pkg
 
 # Settings for test simulations
 N_SECONDS = 10
-FS = 500
+FS = 1000
 FREQ = 10
 F_RANGE = (6, 14)
 
