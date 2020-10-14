@@ -1,5 +1,6 @@
 """Compute cycle-by-cycle features."""
 
+import warnings
 import numpy as np
 import pandas as pd
 
@@ -96,6 +97,14 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - ``sample_last_trough`` : sample of the last trough
         - ``sample_next_trough`` : sample of the next trough
 
+    Examples
+    --------
+    Compute shape and burst features:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid range
@@ -112,6 +121,12 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
 
     if not isinstance(threshold_kwargs, dict):
         threshold_kwargs = {}
+        warnings.warn("""
+            No burst detection thresholds are provided. This is not recommended. Please
+            inspect your data and choose appropriate parameters for 'threshold_kwargs'.
+            Default burst detection parameters are likely not well suited for your
+            desired application.
+            """)
 
     # Ensure required kwargs are set for amplitude burst detection
     if burst_method == 'amp':
