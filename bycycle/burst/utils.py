@@ -1,5 +1,6 @@
 """Utilities for burst detection."""
 
+from copy import deepcopy
 import numpy as np
 from bycycle.utils.checks import check_param
 
@@ -88,6 +89,7 @@ def recompute_edges(df_features, threshold_kwargs):
     >>> df_features_edges = recompute_edges(df_features, threshold_kwargs)
     """
 
+    # Prevent circular import between burst.utils and burst.cycle
     from bycycle.burst import detect_bursts_cycles
 
     # Prevent overwriting the orignal dataframe
@@ -95,7 +97,7 @@ def recompute_edges(df_features, threshold_kwargs):
 
     # Identify all cycles where is_burst changes on the following cycle
     #   Use copy to keep dataframe columns unlinked
-    is_burst = df_features_edges.copy()['is_burst'].values
+    is_burst = deepcopy(df_features_edges['is_burst'].values)
     burst_edges = np.where(is_burst[1:] == ~is_burst[:-1])[0]
 
     # Adjust odd edges such that all edges fall on is_burst == False
@@ -113,9 +115,8 @@ def recompute_edges(df_features, threshold_kwargs):
     )
 
     # Confine recomputed is_burst to edges
-    is_burst_edges = is_burst.copy()
-    is_burst_edges[burst_edges] = df_features_edges.iloc[burst_edges]['is_burst'].values
+    is_burst[burst_edges] = df_features_edges.iloc[burst_edges]['is_burst'].values
 
-    df_features_edges['is_burst'] = is_burst_edges
+    df_features_edges['is_burst'] = is_burst
 
     return df_features_edges
