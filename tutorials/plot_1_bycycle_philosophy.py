@@ -24,12 +24,22 @@ transform. The latter is demonstrated below.
 import numpy as np
 import matplotlib.pyplot as plt
 
+from neurodsp.sim import sim_combined
+from neurodsp.utils import create_times
 from neurodsp.filt import filter_signal
 from neurodsp.timefrequency import amp_by_time, phase_by_time
 from neurodsp.plts import plot_time_series, plot_instantaneous_measure
 
-sig = np.load('data/sim_bursting_more_noise.npy')
-fs = 1000  # Sampling rate
+
+# Simulation settings
+n_seconds = 10
+fs = 1000
+components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1,
+                                         'cycle': 'asine', 'rdsym': 0.3},
+              'sim_powerlaw': {'f_range': (2, None)}}
+sig = sim_combined(n_seconds, fs, components=components, component_variances=(2, 1))
+
+# Filter settings
 f_alpha = (8, 12)
 n_seconds_filter = .5
 
@@ -39,7 +49,7 @@ theta_amp = amp_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
 theta_phase = phase_by_time(sig, fs, f_alpha, n_seconds=n_seconds_filter)
 
 # Plot signal
-times = np.arange(0, len(sig)/fs, 1/fs)
+times = create_times(n_seconds, fs)
 xlim = (2, 6)
 tidx = np.logical_and(times >= xlim[0], times < xlim[1])
 

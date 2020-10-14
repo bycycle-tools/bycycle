@@ -73,3 +73,12 @@ def check_dir():
     # Remake (empty) directories
     os.mkdir(BASE_TEST_FILE_PATH)
     os.mkdir(TEST_PLOTS_PATH)
+
+
+@pytest.fixture(scope='module')
+def sim_stationary():
+
+    sig = sim_oscillation(N_SECONDS, FS, FREQ, phase=0.15,
+                          cycle="asine", rdsym=.3)
+    yield sig
+

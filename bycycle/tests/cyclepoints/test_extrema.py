@@ -9,9 +9,6 @@ import pytest
 
 from bycycle.cyclepoints.extrema import *
 
-# Set data path
-DATA_PATH = os.getcwd() + '/tutorials/data/'
-
 ###################################################################################################
 ###################################################################################################
 
@@ -23,11 +20,11 @@ DATA_PATH = os.getcwd() + '/tutorials/data/'
         pytest.param('fail', marks=pytest.mark.xfail(raises=ValueError))
     ]
 )
-def test_find_extrema(first_extrema):
+def test_find_extrema(sim_stationary, first_extrema):
     """Test ability to find peaks and troughs."""
 
     # Load signal
-    sig = np.load(DATA_PATH + 'sim_stationary.npy')
+    sig = sim_stationary
 
     fs = 1000
     f_range = (6, 14)

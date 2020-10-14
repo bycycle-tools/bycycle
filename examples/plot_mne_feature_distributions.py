@@ -9,6 +9,7 @@ This example computes the distributions of bycycle features using MNE objects
 # -----------------------------
 #
 # First let's import the packages we need. This example depends on mne.
+
 ####################################################################################################
 
 import numpy as np
@@ -22,7 +23,7 @@ from neurodsp.plts import plot_time_series
 from bycycle.features import compute_features
 from bycycle.plts import plot_feature_hist
 
-###################################################################################################
+####################################################################################################
 
 # Frequencies of interest: the alpha band
 f_alpha = (8, 15)
@@ -76,11 +77,11 @@ plot_time_series(times, [sig * 1e6 for sig in sigs], labels=chs, title='EEG Sign
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
-osc_kwargs = {'amplitude_fraction_threshold': 0.3,
-              'amplitude_consistency_threshold': 0.4,
-              'period_consistency_threshold': 0.5,
-              'monotonicity_threshold': 0.8,
-              'n_cycles_min': 3}
+threshold_kwargs = {'amp_fraction_threshold': 0.3,
+                    'amp_consistency_threshold': 0.4,
+                    'period_consistency_threshold': 0.5,
+                    'monotonicity_threshold': 0.8,
+                    'min_n_cycles': 3}
 
 # Create a dictionary of cycle feature dataframes, corresponding to each channel
 dfs = dict()
@@ -88,7 +89,7 @@ dfs = dict()
 for sig, ch in zip(sigs, chs):
     # Cycle-by-cycle analysis
     dfs[ch] = compute_features(sig, fs, f_alpha, center_extrema='trough',
-                                burst_detection_kwargs=osc_kwargs, return_samples=False)
+                               threshold_kwargs=threshold_kwargs, return_samples=False)
 
 ####################################################################################################
 #

@@ -43,26 +43,33 @@ import matplotlib.pyplot as plt
 
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
+from neurodsp.sim import sim_combined
 
 from bycycle.features import compute_features
-from bycycle.cyclepoints import _fzerorise, _fzerofall, find_extrema, find_zerox
+from bycycle.cyclepoints import find_extrema, find_zerox
+from bycycle.cyclepoints.extrema import find_flank_zerox
 from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_array
 
 pd.options.display.max_columns = 10
 
 ####################################################################################################
 
-# Load data
-sig = np.load('data/ca1.npy') / 1000
-sig = sig[:125000]
+# Simulation settings
+n_seconds = 100
 fs = 1250
+components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1,
+                                         'cycle': 'asine', 'rdsym': 0.3},
+              'sim_powerlaw': {'f_range': (2, None)}}
+sig = sim_combined(n_seconds, fs, components=components, component_variances=(2, 1))
+
+# Filter settings
 f_theta = (4, 10)
 f_lowpass = 30
-n_seconds = .1
+n_seconds_filter = .1
 
 # Lowpass filter
 sig_low = filter_signal(sig, fs, 'lowpass', f_lowpass,
-                        n_seconds=n_seconds, remove_edges=False)
+                        n_seconds=n_seconds_filter, remove_edges=False)
 
 # Plot signal
 times = np.arange(0, len(sig)/fs, 1/fs)
@@ -88,8 +95,8 @@ sig_narrow = filter_signal(sig, fs, 'bandpass', f_theta,
                            n_seconds=n_seconds_theta, remove_edges=False)
 
 # Find rising and falling zerocrossings (narrowband)
-zerorise_narrow = _fzerorise(sig_narrow)
-zerofall_narrow = _fzerofall(sig_narrow)
+rise_xs = find_flank_zerox(sig_narrow, 'rise')
+decay_xs = find_flank_zerox(sig_narrow, 'decay')
 
 ####################################################################################################
 
@@ -105,7 +112,7 @@ plot_cyclepoints_array(sig_low, fs, peaks=peaks, troughs=troughs, xlim=(12, 15))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Plot frequency response of bandpass filter
-filter_signal(sig, fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
+sig_filt = filter_signal(sig, fs, 'bandpass', (4, 10), n_seconds=.75, plot_properties=True)
 
 ####################################################################################################
 #
@@ -133,10 +140,10 @@ plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
 # 3. Compute features of each cycle
 # ---------------------------------
 # After these 4 points of each cycle are localized, we compute some simple statistics for each
-# cycle. The main cycle-by-cycle function,  compute_features(), returns a table (pandas.DataFrame)
-# in which each entry is a cycle and each column is a property of that cycle (see table below).
-# There are columns to indicate where in the signal the cycle is located, but the four main features
-# are:
+# cycle. The main cycle-by-cycle function, :func:`~.compute_features`, returns two dataframes:
+# one for cycle features and one for locating cyclepoints in the signal. Each entry or row in either
+# dataframe is a cycle and each column is a property of that cycle (see table below). The four
+# main features are:
 #
 # - amplitude (volt_amp) - average voltage change of the rise and decay
 # - period (period) - time between consecutive troughs (or peaks, if default is changed)
@@ -148,8 +155,15 @@ plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
 
 ####################################################################################################
 
-df = compute_features(sig, fs, f_theta)
-df.head()
+df_features, df_samples = compute_features(sig, fs, f_theta)
+
+####################################################################################################
+
+df_features
+
+####################################################################################################
+
+df_samples
 
 ####################################################################################################
 #
@@ -196,10 +210,14 @@ df.head()
 # Load a simulated signal and apply a lowpass filter
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Load the signal
-sig = np.load('data/sim_bursting.npy')
+# Simulate a signal
+n_seconds = 10
 fs = 1000  # Sampling rate
 f_alpha = (8, 12)
+
+components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1},
+              'sim_powerlaw': {'f_range': (2, None)}}
+sig = sim_combined(n_seconds, fs, components=components, component_variances=(5, 1))
 
 # Apply a lowpass filter to remove high frequency power that interferes with extrema localization
 sig = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
@@ -230,15 +248,15 @@ sig = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 
 ####################################################################################################
 
-burst_kwargs = {'amp_fraction_threshold': 0,
-                'amp_consistency_threshold': .2,
-                'period_consistency_threshold': .45,
-                'monotonicity_threshold': .7,
-                'n_cycles_min': 3}
+threshold_kwargs = {'amp_fraction_threshold': 0,
+                    'amp_consistency_threshold': .2,
+                    'period_consistency_threshold': .45,
+                    'monotonicity_threshold': .7,
+                    'min_n_cycles': 3}
 
-df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
+df_features, df_samples = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
 
-plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
+plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -247,15 +265,15 @@ plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
 # These new burst detection thresholds seem to be set too high (too strict) as the algorithm is not
 # able to detect the bursts that are present.
 
-burst_kwargs = {'amp_fraction_threshold': 0,
-                'amp_consistency_threshold': .75,
-                'period_consistency_threshold': .7,
-                'monotonicity_threshold': .9,
-                'n_cycles_min': 3}
+threshold_kwargs = {'amp_fraction_threshold': 0,
+                    'amp_consistency_threshold': .75,
+                    'period_consistency_threshold': .7,
+                    'monotonicity_threshold': .9,
+                    'min_n_cycles': 3}
 
-df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
+df_features, df_samples = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
 
-plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
+plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -268,12 +286,12 @@ plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
 # Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove some false
 # positives that may occur, like that around 1.5 seconds.
 
-burst_kwargs = {'amp_fraction_threshold': .3,
-                'amp_consistency_threshold': .4,
-                'period_consistency_threshold': .5,
-                'monotonicity_threshold': .8,
-                'n_cycles_min': 3}
+threshold_kwargs = {'amp_fraction_threshold': .3,
+                    'amp_consistency_threshold': .4,
+                    'period_consistency_threshold': .5,
+                    'monotonicity_threshold': .8,
+                    'min_n_cycles': 3}
 
-df = compute_features(sig, fs, f_alpha, burst_detection_kwargs=burst_kwargs)
+df_features, df_samples = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
 
-plot_burst_detect_summary(df, sig, fs, burst_kwargs, xlim=None, figsize=(16, 3))
+plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs, figsize=(16, 3))

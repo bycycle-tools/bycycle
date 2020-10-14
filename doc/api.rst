@@ -24,6 +24,9 @@ Features Functions
    :toctree: generated/
 
    compute_features
+   compute_shape_features
+   compute_burst_features
+   compute_cyclepoints
 
 Segmentation Functions
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -59,6 +62,7 @@ Burst Detection Functions
     detect_bursts_dual_threshold
     recompute_edges
 
+
 Plotting Functions
 ==================
 
@@ -84,4 +88,5 @@ Utility Functions
 
     limit_df
     limit_signal
-    get_extrema
+    get_extrema_df
+    rename_extrema_df
