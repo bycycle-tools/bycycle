@@ -60,6 +60,8 @@ Burst Detection Functions
     detect_bursts_cycles
     detect_bursts_amp
     detect_bursts_dual_threshold
+    recompute_edges
+
 
 Plotting Functions
 ==================
