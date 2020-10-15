@@ -51,3 +51,33 @@ install:
 	git add .nojekyll && \
 	git commit -a -m 'Make install' && \
 	git push
+
+
+# Build multiple versions
+html-multi:
+	# Ensure each tag is a branch prior to running, example:
+	#   git branch v0.1.3 0.1.3
+
+	# Clean out existing build
+	make clean
+
+	# Setup html directory
+	mkdir -p _build/html_tmp
+
+	# Add versions to build here (must start with 'v')
+	for v in v0.1.3 v1.0.0rc; do \
+		mkdir -p _build/html_tmp/$$v; \
+		git checkout $$v; \
+		make html; \
+		rm -rf auto_examples; \
+		rm -rf auto_tutorials; \
+		rm -rf generated; \
+		rm -rf _build/doctrees; \
+		mv _build/html/* _build/html_tmp/$$v; \
+		rm -rf _build/html; \
+	done
+
+	# Finalize the tmp directory
+	mv _build/html_tmp _build/html
+
+
