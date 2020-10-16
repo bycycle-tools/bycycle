@@ -6,6 +6,8 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = bycycle
 SOURCEDIR     = .
 BUILDDIR      = _build
+STABLE 		  = v0.1.3
+DEVELOPMENT   = v1.0.0rc
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -52,32 +54,38 @@ install:
 	git commit -a -m 'Make install' && \
 	git push
 
-
 # Build multiple versions
 html-multi:
-	# Ensure each tag is a branch prior to running, example:
-	#   git branch v0.1.3 0.1.3
-
 	# Clean out existing build
 	make clean
-
-	# Setup html directory
-	mkdir -p _build/html_tmp
-
-	# Add versions to build here (must start with 'v')
-	for v in v0.1.3 v1.0.0rc; do \
-		mkdir -p _build/html_tmp/$$v; \
+	# Ensure navbar template exists
+	orig_branch=`git branch --show-current`
+	git checkout $(STABLE)
+	if [ ! -f _templates/navbar.html ]; then \
+		git checkout $(DEVELOPMENT) _templates/navbar.html -3; \
+		git commit -m "navbar updated"; \
+	fi
+	# Create the stable site
+	make html
+	# Cleanup stable build
+	rm -rf _build/doctrees
+	rm -rf auto_examples
+	rm -rf auto_tutorials
+	rm -rf generated
+	mv _build/* _build/html_stable
+	# Add versions to build here
+	for v in $(DEVELOPMENT); do \
 		git checkout $$v; \
 		make html; \
+		mkdir -p _build/html_stable/$$v; \
+		mv _build/html/* _build/html_stable/$$v; \
 		rm -rf auto_examples; \
 		rm -rf auto_tutorials; \
 		rm -rf generated; \
 		rm -rf _build/doctrees; \
-		mv _build/html/* _build/html_tmp/$$v; \
 		rm -rf _build/html; \
 	done
-
-	# Finalize the tmp directory
-	mv _build/html_tmp _build/html
-
-
+	# Move stable back to root reference
+	mv _build/html_stable _build/html
+	mkdir _build/html/$(STABLE)
+	cp _build/html/index.html _build/html/$(STABLE)
