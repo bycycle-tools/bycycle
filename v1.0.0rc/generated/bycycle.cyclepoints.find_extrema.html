@@ -75,8 +75,8 @@
               <span class="caret"></span>
             </button>
               <ul class="dropdown-menu" aria-labelledby="dLabelMore">
-                <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0 rc</a></li>
-                <li><a href="https://bycycle-tools.github.io/bycycle/v0.1.3/index.html">v0.1.3 (stable)</a></li>
+                <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v.1.0.0rc</a></li>
+                <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v0.1.3 (stable)</a></li>
               </ul>
             </li>
 
@@ -110,7 +110,7 @@
 <h1>bycycle.cyclepoints.find_extrema<a class="headerlink" href="#bycycle-cyclepoints-find-extrema" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="bycycle.cyclepoints.find_extrema">
-<code class="sig-prename descclassname">bycycle.cyclepoints.</code><code class="sig-name descname">find_extrema</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sig</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">boundary</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">first_extrema</span><span class="o">=</span><span class="default_value">'peak'</span></em>, <em class="sig-param"><span class="n">filter_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/cyclepoints/extrema.html#find_extrema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.cyclepoints.find_extrema" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bycycle.cyclepoints.</code><code class="sig-name descname">find_extrema</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sig</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">boundary</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">first_extrema</span><span class="o">=</span><span class="default_value">'peak'</span></em>, <em class="sig-param"><span class="n">filter_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pass_type</span><span class="o">=</span><span class="default_value">'bandpass'</span></em>, <em class="sig-param"><span class="n">pad</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/cyclepoints/extrema.html#find_extrema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.cyclepoints.find_extrema" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identify peaks and troughs in a time series.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -121,14 +121,18 @@
 </dd>
 <dt><strong>f_range</strong><span class="classifier">tuple of (float, float)</span></dt><dd><p>Frequency range, in Hz, to narrowband filter the signal, used to find zero-crossings.</p>
 </dd>
-<dt><strong>boundary</strong><span class="classifier">int, optional</span></dt><dd><p>Number of samples from edge of the signal to ignore.</p>
+<dt><strong>boundary</strong><span class="classifier">int, optional, default: 0</span></dt><dd><p>Number of samples from edge of the signal to ignore.</p>
 </dd>
-<dt><strong>first_extrema: {‘peak’, ‘trough’, None}</strong></dt><dd><p>If ‘peak’, then force the output to begin with a peak and end in a trough.
+<dt><strong>first_extrema: {‘peak’, ‘trough’, None}, optional, default: ‘peak’</strong></dt><dd><p>If ‘peak’, then force the output to begin with a peak and end in a trough.
 If ‘trough’, then force the output to begin with a trough and end in peak.
 If None, force nothing.</p>
 </dd>
-<dt><strong>filter_kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Keyword arguments to <code class="xref py py-func docutils literal notranslate"><span class="pre">filter_signal()</span></code>,
+<dt><strong>filter_kwargs</strong><span class="classifier">dict, optional, default: None</span></dt><dd><p>Keyword arguments to <code class="xref py py-func docutils literal notranslate"><span class="pre">filter_signal()</span></code>,
 such as ‘n_cycles’ or ‘n_seconds’ to control filter length.</p>
+</dd>
+<dt><strong>pass_type</strong><span class="classifier">str, optional, default: ‘bandpass’</span></dt><dd><p>Which kind of filter pass_type is consistent with the frequency definition provided.</p>
+</dd>
+<dt><strong>pad</strong><span class="classifier">bool, optional, default: True</span></dt><dd><p>Whether to pad <code class="docutils literal notranslate"><span class="pre">sig</span></code> with zeroes to prevent missed cyclepoints at the edges.</p>
 </dd>
 </dl>
 </dd>

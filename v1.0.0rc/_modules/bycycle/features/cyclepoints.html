@@ -75,8 +75,8 @@
               <span class="caret"></span>
             </button>
               <ul class="dropdown-menu" aria-labelledby="dLabelMore">
-                <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0 rc</a></li>
-                <li><a href="https://bycycle-tools.github.io/bycycle/v0.1.3/index.html">v0.1.3 (stable)</a></li>
+                <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v.1.0.0rc</a></li>
+                <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v0.1.3 (stable)</a></li>
               </ul>
             </li>
 
@@ -130,9 +130,8 @@
 <span class="sd">    f_range : tuple of (float, float)</span>
 <span class="sd">        Frequency range, in Hz, to narrowband filter the signal, used to find zero-crossings.</span>
 <span class="sd">    find_extrema_kwargs : dict, optional, default: None</span>
-<span class="sd">        Keyword arguments for function to find peaks and troughs (:func:`~.find_extrema`)</span>
-<span class="sd">        to change filter parameters or boundary. By default, it sets the filter length to three</span>
-<span class="sd">        cycles of the low cutoff frequency (``f_range[0]``).</span>
+<span class="sd">        Keyword arguments for the function to find peaks and troughs (:func:`~.find_extrema`)</span>
+<span class="sd">        that change filter parameters or boundary. By default, the boundary is set to zero.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
