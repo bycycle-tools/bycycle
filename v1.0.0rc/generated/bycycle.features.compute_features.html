@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bycycle.features.compute_features &#8212; bycycle 1.0.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0-dev</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../glossary.html">Glossary</a></li>
+                <li><a href="../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+            <li class="dropdown">
+              <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+              v1.0.0-dev
+              <span class="caret"></span>
+            </button>
+              <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+                <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0 rc</a></li>
+                <li><a href="https://bycycle-tools.github.io/bycycle/v0.1.3/index.html">v0.1.3 (stable)</a></li>
+              </ul>
+            </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="bycycle-features-compute-features">
+<h1>bycycle.features.compute_features<a class="headerlink" href="#bycycle-features-compute-features" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="bycycle.features.compute_features">
+<code class="sig-prename descclassname">bycycle.features.</code><code class="sig-name descname">compute_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sig</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">center_extrema</span><span class="o">=</span><span class="default_value">'peak'</span></em>, <em class="sig-param"><span class="n">burst_method</span><span class="o">=</span><span class="default_value">'cycles'</span></em>, <em class="sig-param"><span class="n">burst_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">threshold_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_samples</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/features/features.html#compute_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.features.compute_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute shape and burst features for each cycle.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sig</strong><span class="classifier">1d array</span></dt><dd><p>Time series.</p>
+</dd>
+<dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in Hz.</p>
+</dd>
+<dt><strong>f_range</strong><span class="classifier">tuple of (float, float)</span></dt><dd><p>Frequency range for narrowband signal of interest (Hz).</p>
+</dd>
+<dt><strong>center_extrema</strong><span class="classifier">{‘peak’, ‘trough’}</span></dt><dd><p>The center extrema in the cycle.</p>
+<ul class="simple">
+<li><p>‘peak’ : cycles are defined trough-to-trough</p></li>
+<li><p>‘trough’ : cycles are defined peak-to-peak</p></li>
+</ul>
+</dd>
+<dt><strong>burst_method</strong><span class="classifier">string, optional, default: ‘cycles’</span></dt><dd><p>Method for detecting bursts.</p>
+<ul class="simple">
+<li><p>‘cycles’: detect bursts based on the consistency of consecutive periods &amp; amplitudes</p></li>
+<li><p>‘amp’: detect bursts using an amplitude threshold</p></li>
+</ul>
+</dd>
+<dt><strong>burst_kwargs</strong><span class="classifier">dict, optional, default: None</span></dt><dd><p>Additional keyword arguments defined in <code class="xref py py-func docutils literal notranslate"><span class="pre">compute_burst_fraction()</span></code> for dual
+amplitude threshold burst detection (i.e. when burst_method == ‘amp’).</p>
+</dd>
+<dt><strong>threshold_kwargs</strong><span class="classifier">dict, optional, default: None</span></dt><dd><p>Feature thresholds for cycles to be considered bursts, matching keyword arguments for:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="bycycle.burst.detect_bursts_cycles.html#bycycle.burst.detect_bursts_cycles" title="bycycle.burst.detect_bursts_cycles"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_bursts_cycles()</span></code></a> for consistency burst detection
+(i.e. when burst_method == ‘cycles’)</p></li>
+<li><p><a class="reference internal" href="bycycle.burst.detect_bursts_amp.html#bycycle.burst.detect_bursts_amp" title="bycycle.burst.detect_bursts_amp"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_bursts_amp()</span></code></a> for  amplitude threshold burst detection
+(i.e. when burst_method == ‘amp’).</p></li>
+</ul>
+</dd>
+<dt><strong>find_extrema_kwargs</strong><span class="classifier">dict, optional, default: None</span></dt><dd><p>Keyword arguments for function to find peaks an troughs (<a class="reference internal" href="bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema" title="bycycle.cyclepoints.find_extrema"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_extrema()</span></code></a>)
+to change filter Parameters or boundary. By default, it sets the filter length to three
+cycles of the low cutoff frequency (<code class="docutils literal notranslate"><span class="pre">f_range[0]</span></code>).</p>
+</dd>
+<dt><strong>return_samples</strong><span class="classifier">bool, optional, default: True</span></dt><dd><p>Returns samples indices of cyclepoints used for determining features if True.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>df_features</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>A dataframe containing shape and burst features for each cycle. Columns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">period</span></code> : period of the cycle</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_decay</span></code> : time between peak and next trough</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_rise</span></code> : time between peak and previous trough</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_peak</span></code> : time between rise and decay zero-crosses</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_trough</span></code> : duration of previous trough estimated by zero-crossings</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volt_decay</span></code> : voltage change between peak and next trough</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volt_rise</span></code> : voltage change between peak and previous trough</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volt_amp</span></code> : average of rise and decay voltage</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volt_peak</span></code> : voltage at the peak</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volt_trough</span></code> : voltage at the last trough</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_rdsym</span></code> : fraction of cycle in the rise period</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_ptsym</span></code> : fraction of cycle in the peak period</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">band_amp</span></code> : average analytic amplitude of the oscillation.</p></li>
+</ul>
+<p>When consistency burst detection is used (i.e. burst_method == ‘cycles’):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">amp_fraction</span></code> : normalized amplitude</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">amp_consistency</span></code> : difference in the rise and decay voltage within a cycle</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">period_consistency</span></code> : difference between a cycle’s period and the period of the
+adjacent cycles</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">monotonicity</span></code> : fraction of instantaneous voltage changes between consecutive
+samples that are positive during the rise phase and negative during the decay phase</p></li>
+</ul>
+<p>When dual threshold burst detection is used (i.e. burst_method == ‘amp’):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">burst_fraction</span></code> : fraction of a cycle that is bursting</p></li>
+</ul>
+</dd>
+<dt><strong>df_samples</strong><span class="classifier">pandas.DataFrame, optional, default: True</span></dt><dd><p>An optionally returned dataframe containing cyclepoints for each cycle.
+Columns (listed for peak-centered cycles):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sample_peak</span></code> : sample of ‘sig’ at which the peak occurs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sample_zerox_decay</span></code> : sample of the decaying zero-crossing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sample_zerox_rise</span></code> : sample of the rising zero-crossing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sample_last_trough</span></code> : sample of the last trough</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sample_next_trough</span></code> : sample of the next trough</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Compute shape and burst features:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_bursty_oscillation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">sim_bursty_oscillation</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="examples-using-bycycle-features-compute-features">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">bycycle.features.compute_features</span></code><a class="headerlink" href="#examples-using-bycycle-features-compute-features" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="MNE Interface Cycle Feature Distributions"><div class="figure align-default" id="id1">
+<img alt="MNE Interface Cycle Feature Distributions" src="../_images/sphx_glr_plot_mne_feature_distributions_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_mne_feature_distributions.html#sphx-glr-auto-examples-plot-mne-feature-distributions-py"><span class="std std-ref">MNE Interface Cycle Feature Distributions</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="PAC Cycle Feature Distributions"><div class="figure align-default" id="id2">
+<img alt="PAC Cycle Feature Distributions" src="../_images/sphx_glr_plot_pac_feature_distributions_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_pac_feature_distributions.html#sphx-glr-auto-examples-plot-pac-feature-distributions-py"><span class="std std-ref">PAC Cycle Feature Distributions</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In the last tutorial notebook, I described the conventional approach for analyzing time-varying..."><div class="figure align-default" id="id3">
+<img alt="2. Cycle-by-cycle algorithm" src="../_images/sphx_glr_plot_2_bycycle_algorithm_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py"><span class="std std-ref">2. Cycle-by-cycle algorithm</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

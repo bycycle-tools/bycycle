@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bycycle.features.shape &#8212; bycycle 1.0.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html"><span><img src="../../../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0-dev</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../glossary.html">Glossary</a></li>
+                <li><a href="../../../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../../../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+            <li class="dropdown">
+              <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+              v1.0.0-dev
+              <span class="caret"></span>
+            </button>
+              <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+                <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0 rc</a></li>
+                <li><a href="https://bycycle-tools.github.io/bycycle/v0.1.3/index.html">v0.1.3 (stable)</a></li>
+              </ul>
+            </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for bycycle.features.shape</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Compute shape features for individual cycles.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">neurodsp.timefrequency</span> <span class="kn">import</span> <span class="n">amp_by_time</span>
+
+<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param</span>
+<span class="kn">from</span> <span class="nn">bycycle.utils</span> <span class="kn">import</span> <span class="n">rename_extrema_df</span>
+<span class="kn">from</span> <span class="nn">bycycle.features.cyclepoints</span> <span class="kn">import</span> <span class="n">compute_cyclepoints</span>
+
+<span class="c1">###################################################################################################</span>
+<span class="c1">###################################################################################################</span>
+
+<div class="viewcode-block" id="compute_shape_features"><a class="viewcode-back" href="../../../generated/bycycle.features.compute_shape_features.html#bycycle.features.compute_shape_features">[docs]</a><span class="k">def</span> <span class="nf">compute_shape_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span> <span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">n_cycles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute shape features for each cycle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series.</span>
+<span class="sd">    fs : float</span>
+<span class="sd">        Sampling rate, in Hz.</span>
+<span class="sd">    f_range : tuple of (float, float)</span>
+<span class="sd">        Frequency range for narrowband signal of interest (Hz).</span>
+<span class="sd">    center_extrema : {&#39;peak&#39;, &#39;trough&#39;}</span>
+<span class="sd">        The center extrema in the cycle.</span>
+
+<span class="sd">        - &#39;peak&#39; : cycles are defined trough-to-trough</span>
+<span class="sd">        - &#39;trough&#39; : cycles are defined peak-to-peak</span>
+
+<span class="sd">    find_extrema_kwargs : dict, optional, default: None</span>
+<span class="sd">        Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)</span>
+<span class="sd">        to change filter parameters or boundary. By default, it sets the filter length to three</span>
+<span class="sd">        cycles of the low cutoff frequency (``f_range[0]``).</span>
+<span class="sd">    n_cycles : int, optional, default: 3</span>
+<span class="sd">        Length of filter, in number of cycles, at the lower cutoff frequency.</span>
+<span class="sd">    return_samples : bool, optional, default: True</span>
+<span class="sd">        Returns samples indices of cyclepoints used for determining features if True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_shape_features : pandas.DataFrame</span>
+<span class="sd">        Dataframe containing cycle shape features. Each row is one cycle. Columns:</span>
+
+<span class="sd">        - ``period`` : period of the cycle</span>
+<span class="sd">        - ``time_decay`` : time between peak and next trough</span>
+<span class="sd">        - ``time_rise`` : time between peak and previous trough</span>
+<span class="sd">        - ``time_peak`` : time between rise and decay zero-crosses</span>
+<span class="sd">        - ``time_trough`` : duration of previous trough estimated by zero-crossings</span>
+<span class="sd">        - ``volt_decay`` : voltage change between peak and next trough</span>
+<span class="sd">        - ``volt_rise`` : voltage change between peak and previous trough</span>
+<span class="sd">        - ``volt_amp`` : average of rise and decay voltage</span>
+<span class="sd">        - ``volt_peak`` : voltage at the peak</span>
+<span class="sd">        - ``volt_trough`` : voltage at the last trough</span>
+<span class="sd">        - ``time_rdsym`` : fraction of cycle in the rise period</span>
+<span class="sd">        - ``time_ptsym`` : fraction of cycle in the peak period</span>
+<span class="sd">        - ``band_amp`` : average analytic amplitude of the oscillation</span>
+
+<span class="sd">    df_samples : pandas.DataFrame, optional, default: True</span>
+<span class="sd">        Dataframe containing sample indices of cyclepoints.</span>
+<span class="sd">        Columns (listed for peak-centered cycles):</span>
+
+<span class="sd">        - ``sample_peak`` : sample of &#39;sig&#39; at which the peak occurs</span>
+<span class="sd">        - ``sample_zerox_decay`` : sample of the decaying zero-crossing</span>
+<span class="sd">        - ``sample_zerox_rise`` : sample of the rising zero-crossing</span>
+<span class="sd">        - ``sample_last_trough`` : sample of the last trough</span>
+<span class="sd">        - ``sample_next_trough`` : sample of the next trough</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Peak vs trough centering</span>
+
+<span class="sd">        - By default, the first extrema analyzed will be a peak, and the final one a trough.</span>
+<span class="sd">        - In order to switch the preference, the signal is simply inverted and columns are renamed.</span>
+<span class="sd">        - Columns are slightly different depending on if ``center_extrema`` is set to &#39;peak&#39; or</span>
+<span class="sd">          &#39;trough&#39;.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute shape features:</span>
+
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure arguments are within valid ranges</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">,</span> <span class="s1">&#39;n_cycles&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+
+    <span class="c1"># Set defaults if user input is None</span>
+    <span class="k">if</span> <span class="n">find_extrema_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">find_extrema_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;filter_kwargs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span> <span class="n">n_cycles</span><span class="p">}}</span>
+
+    <span class="k">elif</span> <span class="s1">&#39;first_extrema&#39;</span> <span class="ow">in</span> <span class="n">find_extrema_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This function has been designed to assume that the first extrema &quot;</span>
+                         <span class="s2">&quot;identified will be a peak. This cannot be overwritten at this time.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Negate signal if set to analyze trough-centered cycles</span>
+    <span class="k">if</span> <span class="n">center_extrema</span> <span class="o">==</span> <span class="s1">&#39;peak&#39;</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">center_extrema</span> <span class="o">==</span> <span class="s1">&#39;trough&#39;</span><span class="p">:</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="o">-</span><span class="n">sig</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Parameter &quot;center_extrema&quot; must be either &quot;peak&quot; or &quot;trough&quot;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># For each cycle, identify the sample of each extrema and zero-crossing</span>
+    <span class="n">df_samples</span> <span class="o">=</span> <span class="n">compute_cyclepoints</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">find_extrema_kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Compute durations of period, peaks, and troughs</span>
+    <span class="n">period</span><span class="p">,</span> <span class="n">time_peak</span><span class="p">,</span> <span class="n">time_trough</span> <span class="o">=</span> <span class="n">compute_durations</span><span class="p">(</span><span class="n">df_samples</span><span class="p">)</span>
+
+    <span class="c1"># Compute extrema voltage</span>
+    <span class="n">volt_peak</span><span class="p">,</span> <span class="n">volt_trough</span> <span class="o">=</span> <span class="n">compute_extrema_voltage</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+
+    <span class="c1"># Compute rise-decay and peak-trough features and characteristics</span>
+    <span class="n">sym_features</span> <span class="o">=</span> <span class="n">compute_symmetry</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+                                    <span class="n">time_peak</span><span class="o">=</span><span class="n">time_peak</span><span class="p">,</span> <span class="n">time_trough</span><span class="o">=</span><span class="n">time_trough</span><span class="p">)</span>
+
+    <span class="c1"># Compute average oscillatory amplitude estimate during cycle</span>
+    <span class="n">band_amp</span> <span class="o">=</span> <span class="n">compute_band_amp</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">)</span>
+
+    <span class="c1"># Organize shape features into a dataframe</span>
+    <span class="n">shape_features</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">period</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;time_peak&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_peak</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;time_trough&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_trough</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;volt_peak&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">volt_peak</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;volt_trough&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">volt_trough</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;time_decay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;time_decay&#39;</span><span class="p">]</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;time_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;time_rise&#39;</span><span class="p">]</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;volt_decay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;volt_decay&#39;</span><span class="p">]</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;volt_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;volt_rise&#39;</span><span class="p">]</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;volt_amp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;volt_amp&#39;</span><span class="p">]</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;time_rdsym&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;time_rdsym&#39;</span><span class="p">]</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;time_ptsym&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;time_ptsym&#39;</span><span class="p">]</span>
+    <span class="n">shape_features</span><span class="p">[</span><span class="s1">&#39;band_amp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">band_amp</span>
+    <span class="n">df_shape_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">shape_features</span><span class="p">)</span>
+
+    <span class="c1"># Rename the dataframe if trough centered</span>
+    <span class="n">df_shape_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <span class="n">rename_extrema_df</span><span class="p">(</span><span class="n">center_extrema</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">df_shape_features</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_samples</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df_shape_features</span><span class="p">,</span> <span class="n">df_samples</span>
+
+    <span class="k">return</span> <span class="n">df_shape_features</span></div>
+
+
+<span class="k">def</span> <span class="nf">compute_durations</span><span class="p">(</span><span class="n">df_samples</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the time durations of periods, peaks, and troughs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    df_samples : pandas.DataFrame</span>
+<span class="sd">        Dataframe containing sample indices of cyclepoints.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    period : 1d array</span>
+<span class="sd">        The period of each cycle.</span>
+<span class="sd">    time_peak : 1d array</span>
+<span class="sd">        Time between peak and next trough.</span>
+<span class="sd">    time_trough : 1d array</span>
+<span class="sd">        Time between peak and previous trough.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute the durations of periods, peaks, and troughs:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_cyclepoints</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; period, time_peak, time_trough = compute_durations(df_samples)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">period</span> <span class="o">=</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_next_trough&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_last_trough&#39;</span><span class="p">]</span>
+    <span class="n">time_peak</span> <span class="o">=</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_zerox_decay&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_zerox_rise&#39;</span><span class="p">]</span>
+    <span class="n">time_trough</span> <span class="o">=</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_zerox_rise&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_last_zerox_decay&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">period</span><span class="p">,</span> <span class="n">time_peak</span><span class="p">,</span> <span class="n">time_trough</span>
+
+
+<span class="k">def</span> <span class="nf">compute_extrema_voltage</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the voltage of peaks and troughs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    df_samples : pandas.DataFrame</span>
+<span class="sd">        Dataframe containing sample indices of cyclepoints.</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    volt_peak : 1d array</span>
+<span class="sd">        Voltage at the peak.</span>
+<span class="sd">    volt_trough : 1d array</span>
+<span class="sd">        Voltage at the last trough.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute the voltage at peaks and troughs:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_cyclepoints</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; volt_peak, volt_trough = compute_extrema_voltage(df_samples, sig)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">volt_peak</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">]]</span>
+    <span class="n">volt_trough</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_last_trough&#39;</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">volt_peak</span><span class="p">,</span> <span class="n">volt_trough</span>
+
+
+<span class="k">def</span> <span class="nf">compute_symmetry</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_peak</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_trough</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute rise-decay and peak-trough characteristics.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    df_samples : pandas.DataFrame</span>
+<span class="sd">        Dataframe containing sample indices of cyclepoints.</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series.</span>
+<span class="sd">    period : 1d array, optional, default: None</span>
+<span class="sd">        The period of each cycle.</span>
+<span class="sd">    time_peak : 1d array, optional, default: None</span>
+<span class="sd">        Time between peak and next trough.</span>
+<span class="sd">    time_trough : 1d array, optional, default: None</span>
+<span class="sd">        Time between peak and previous trough</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sym_features : dict</span>
+<span class="sd">        Contains 1d arrays of symmetry features. Keys include:</span>
+
+<span class="sd">        - time_decay : Time between peak and next trough.</span>
+<span class="sd">        - time_rise : Time between peak and previous trough.</span>
+<span class="sd">        - volt_decay : Voltage change between peak and next trough.</span>
+<span class="sd">        - volt_rise : Voltage change between peak and previous trough.</span>
+<span class="sd">        - volt_amp : Average of rise and decay voltage.</span>
+<span class="sd">        - time_rdsym : Fraction of cycle in the rise period.</span>
+<span class="sd">        - time_ptsym : Fraction of cycle in the peak period.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute cycle symmetry characteristics:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_cyclepoints</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; sym_features = compute_symmetry(df_samples, sig)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Determine rise and decay characteristics</span>
+    <span class="n">sym_features</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">time_decay</span> <span class="o">=</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_next_trough&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">]</span>
+    <span class="n">time_rise</span> <span class="o">=</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_last_trough&#39;</span><span class="p">]</span>
+    <span class="n">volt_decay</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="n">sig</span><span class="p">[</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_next_trough&#39;</span><span class="p">]]</span>
+    <span class="n">volt_rise</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="n">sig</span><span class="p">[</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_last_trough&#39;</span><span class="p">]]</span>
+    <span class="n">volt_amp</span> <span class="o">=</span> <span class="p">(</span><span class="n">volt_decay</span> <span class="o">+</span> <span class="n">volt_rise</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># Compute rise-decay symmetry features</span>
+    <span class="k">if</span> <span class="n">period</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time_peak</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time_trough</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">period</span><span class="p">,</span> <span class="n">time_peak</span><span class="p">,</span> <span class="n">time_trough</span> <span class="o">=</span> <span class="n">compute_durations</span><span class="p">(</span><span class="n">df_samples</span><span class="p">)</span>
+
+    <span class="n">time_rdsym</span> <span class="o">=</span> <span class="n">time_rise</span> <span class="o">/</span> <span class="n">period</span>
+
+    <span class="c1"># Compute peak-trough symmetry features</span>
+    <span class="n">time_ptsym</span> <span class="o">=</span> <span class="n">time_peak</span> <span class="o">/</span> <span class="p">(</span><span class="n">time_peak</span> <span class="o">+</span> <span class="n">time_trough</span><span class="p">)</span>
+
+    <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;time_decay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_decay</span>
+    <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;time_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_rise</span>
+    <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;volt_decay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">volt_decay</span>
+    <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;volt_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">volt_rise</span>
+    <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;volt_amp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">volt_amp</span>
+    <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;time_rdsym&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_rdsym</span>
+    <span class="n">sym_features</span><span class="p">[</span><span class="s1">&#39;time_ptsym&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_ptsym</span>
+
+    <span class="k">return</span> <span class="n">sym_features</span>
+
+
+<span class="k">def</span> <span class="nf">compute_band_amp</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the average amplitude of each oscillation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series.</span>
+<span class="sd">    fs : float</span>
+<span class="sd">        Sampling rate, in Hz.</span>
+<span class="sd">    f_range : tuple of (float, float)</span>
+<span class="sd">        Frequency range for narrowband signal of interest (Hz).</span>
+<span class="sd">    n_cycles : int, optional, default: 3</span>
+<span class="sd">        Length of filter, in number of cycles, at the lower cutoff frequency.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    band_amp : 1d array</span>
+<span class="sd">        Average analytic amplitude of the oscillation.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute the mean amplitude for each cycle:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_cyclepoints</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; band_amp = compute_band_amp(df_samples, sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure arguments are within valid ranges</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">,</span> <span class="s1">&#39;n_cycles&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+
+    <span class="n">amp</span> <span class="o">=</span> <span class="n">amp_by_time</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">)</span>
+
+    <span class="n">troughs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_last_trough&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_next_trough&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="n">band_amp</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">amp</span><span class="p">[</span><span class="n">troughs</span><span class="p">[</span><span class="n">sig_idx</span><span class="p">]:</span><span class="n">troughs</span><span class="p">[</span><span class="n">sig_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span> <span class="k">for</span>
+                <span class="n">sig_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">]))]</span>
+
+    <span class="k">return</span> <span class="n">band_amp</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
