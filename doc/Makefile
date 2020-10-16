@@ -89,3 +89,25 @@ html-multi:
 	mv _build/html_stable _build/html
 	mkdir _build/html/$(STABLE)
 	cp _build/html/index.html _build/html/$(STABLE)
+
+# Build the multi-version html site, and push it to gh-pages branch of repo to deploy
+install-multi:
+	# Clean out existing build
+	make clean
+	# Clone, specifically, the gh-pages branch, putting it into '_build/gh_pages/'
+	#   --no-checkout just fetches the root folder without content
+	#   --depth 1 is a speed optimization since we don't need the history prior to the last commit
+	#   -b gh-pages fetches only the branch for the gh-pages
+	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/bycycle-tools/bycycle _build/gh_pages
+	# A .nojekyll file tells Github pages to bypass Jekyll processing
+	touch _build/gh_pages/.nojekyll
+	# Build the sphinx site
+	make html-multi
+	# Copy site into the gh-pages branch folder, then push to Github to deploy
+	cd _build/ && \
+	cp -r html/ gh_pages && \
+	cd gh_pages && \
+	git add * && \
+	git add .nojekyll && \
+	git commit -a -m 'Make install' && \
+	git push
