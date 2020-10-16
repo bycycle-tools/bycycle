@@ -325,7 +325,7 @@ def compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3):
     check_param(fs, 'fs', (0, np.inf))
     check_param(n_cycles, 'n_cycles', (0, np.inf))
 
-    amp = amp_by_time(sig, fs, f_range, n_cycles=n_cycles)
+    amp = amp_by_time(sig, fs, f_range, remove_edges=False, n_cycles=n_cycles)
 
     troughs = np.append(df_samples['sample_last_trough'].values[0],
                         df_samples['sample_next_trough'].values)
