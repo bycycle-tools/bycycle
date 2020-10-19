@@ -104,6 +104,6 @@ Note: These indices may be converted to time by multiplying by the sampling rate
     Sample Rise (``sample_zerox_rise``)
         Sample indices at which rising zero-crossings occur.
 
-    Sample Decay (`sample_zerox_decay``)
+    Sample Decay (``sample_zerox_decay``)
         Sample indices at which decaying zero-crossings occur.
 
