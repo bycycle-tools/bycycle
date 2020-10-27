@@ -39,8 +39,8 @@ def limit_df(df, fs, start=None, stop=None):
     >>> from bycycle.features import compute_features
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
-    >>> _, df_samples = compute_features(sig, fs, f_range=(8, 12))
-    >>> df_samples_limited = limit_df(df_samples, fs, start=0, stop=1)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12))
+    >>> df_features = limit_df(df_features, fs, start=0, stop=1)
     """
 
     # Ensure arguments are within valid range
@@ -90,8 +90,8 @@ def get_extrema_df(df):
     >>> from bycycle.features import compute_features
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
-    >>> _, df_samples = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
-    >>> center_e, side_e = get_extrema_df(df_samples)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
+    >>> center_e, side_e = get_extrema_df(df_features)
     >>> center_e
     'peak'
     """
@@ -102,19 +102,22 @@ def get_extrema_df(df):
     return center_e, side_e
 
 
-def rename_extrema_df(center_extrema, df_samples, df_features):
+def rename_extrema_df(center_extrema, df_features, return_samples=True):
     """Rename a dataframe based on the centered extrema.
 
     Parameters
     ----------
     center_extrema : {'trough', 'peak'}
         Which extrema is centered.
-    df_samples, df_features : pandas.DataFrames
-        ByCycle dataframes to rename, given the centered extrema.
+    df_shape_features : pandas.DataFrames
+        Bycycle dataframes to rename, given the centered extrema.
+    return_samples : bool, optional, default: True
+        Whether to rename sample columns if ``returns_samples`` is True when computing
+        ``df_shape_features`` using :func:`~.compute_shape_features`.
 
     Returns
     -------
-    df_features, df_samples : pandas.DataFrames
+    df_features : pandas.DataFrames
         Updated dataframes.
 
     Examples
@@ -126,18 +129,12 @@ def rename_extrema_df(center_extrema, df_samples, df_features):
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
     >>> sig = -sig  # invert the signal, flipping peaks and troughs
-    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
-    >>> df_features, df_samples = rename_extrema_df('trough', df_samples, df_features)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
+    >>> df_features = rename_extrema_df('trough', df_features)
     """
 
     # Rename columns if they are actually trough-centered
     if center_extrema == 'trough':
-
-        samples_rename_dict = {'sample_peak': 'sample_trough',
-                               'sample_zerox_decay': 'sample_zerox_rise',
-                               'sample_zerox_rise': 'sample_zerox_decay',
-                               'sample_last_trough': 'sample_last_peak',
-                               'sample_next_trough': 'sample_next_peak'}
 
         features_rename_dict = {'time_peak': 'time_trough',
                                 'time_trough': 'time_peak',
@@ -148,7 +145,6 @@ def rename_extrema_df(center_extrema, df_samples, df_features):
                                 'volt_rise': 'volt_decay',
                                 'volt_decay': 'volt_rise'}
 
-        df_samples.rename(columns=samples_rename_dict, inplace=True)
         df_features.rename(columns=features_rename_dict, inplace=True)
 
         # Need to reverse symmetry measures
@@ -157,4 +153,15 @@ def rename_extrema_df(center_extrema, df_samples, df_features):
         df_features['time_rdsym'] = 1 - df_features['time_rdsym']
         df_features['time_ptsym'] = 1 - df_features['time_ptsym']
 
-    return df_features, df_samples
+        if return_samples:
+
+            samples_rename_dict = {'sample_peak': 'sample_trough',
+                                   'sample_zerox_decay': 'sample_zerox_rise',
+                                   'sample_zerox_rise': 'sample_zerox_decay',
+                                   'sample_last_zerox_decay': 'sample_last_zerox_rise',
+                                   'sample_last_trough': 'sample_last_peak',
+                                   'sample_next_trough': 'sample_next_peak'}
+
+            df_features.rename(columns=samples_rename_dict, inplace=True)
+
+    return df_features

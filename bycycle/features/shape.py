@@ -6,14 +6,14 @@ import pandas as pd
 from neurodsp.timefrequency import amp_by_time
 
 from bycycle.utils.checks import check_param
-from bycycle.utils import rename_extrema_df
+from bycycle.utils import rename_extrema_df, check_param
 from bycycle.features.cyclepoints import compute_cyclepoints
 
 ###################################################################################################
 ###################################################################################################
 
-def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema_kwargs=None,
-                           n_cycles=3, return_samples=True):
+def compute_shape_features(sig, fs, f_range, center_extrema='peak',
+                           find_extrema_kwargs=None, n_cycles=3):
     """Compute shape features for each cycle.
 
     Parameters
@@ -36,8 +36,6 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         cycles of the low cutoff frequency (``f_range[0]``).
     n_cycles : int, optional, default: 3
         Length of filter, in number of cycles, at the lower cutoff frequency.
-    return_samples : bool, optional, default: True
-        Returns samples indices of cyclepoints used for determining features if True.
 
     Returns
     -------
@@ -57,11 +55,6 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
         - ``time_rdsym`` : fraction of cycle in the rise period
         - ``time_ptsym`` : fraction of cycle in the peak period
         - ``band_amp`` : average analytic amplitude of the oscillation
-
-    df_samples : pandas.DataFrame, optional, default: True
-        Dataframe containing sample indices of cyclepoints.
-        Columns (listed for peak-centered cycles):
-
         - ``sample_peak`` : sample of 'sig' at which the peak occurs
         - ``sample_zerox_decay`` : sample of the decaying zero-crossing
         - ``sample_zerox_rise`` : sample of the rising zero-crossing
@@ -84,7 +77,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
+    >>> df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid ranges
@@ -140,11 +133,10 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak', find_extrema
     shape_features['band_amp'] = band_amp
     df_shape_features = pd.DataFrame.from_dict(shape_features)
 
-    # Rename the dataframe if trough centered
-    df_shape_features, df_samples = rename_extrema_df(center_extrema, df_samples, df_shape_features)
+    df_shape_features = pd.concat((df_shape_features, df_samples), axis=1)
 
-    if return_samples:
-        return df_shape_features, df_samples
+    # Rename the dataframe if trough centered
+    df_shape_features = rename_extrema_df(center_extrema, df_shape_features)
 
     return df_shape_features
 

@@ -18,16 +18,15 @@ from bycycle.utils.checks import check_param
 ###################################################################################################
 
 @savefig
-def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs, xlim=None,
+def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
                               figsize=(15, 3), plot_only_result=False, interp=True):
     """Plot the cycle-by-cycle burst detection parameters and burst detection summary.
 
     Parameters
     ----------
     df_features : pandas.DataFrame
-        Dataframe output of :func:`~.compute_features`.
-    df_samples : pandas.DataFrame
-        Dataframe output of :func:`~.compute_cyclepoints`.
+        Dataframe output of :func:`~.compute_features`. The df must contain sample indices (i.e.
+        when ``return_samples = True``).
     sig : 1d array
         Time series to plot.
     fs : float
@@ -71,9 +70,8 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
     >>> threshold_kwargs = {'amp_fraction_threshold': 0., 'amp_consistency_threshold': .5,
     ...                     'period_consistency_threshold': .5, 'monotonicity_threshold': .8}
-    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12),
-    ...                                            threshold_kwargs=threshold_kwargs)
-    >>> plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs)
+    >>> df_features= compute_features(sig, fs, f_range=(8, 12), threshold_kwargs=threshold_kwargs)
+    >>> plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs)
     """
 
     # Ensure arguments are within valid range
@@ -87,7 +85,7 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs
     xlim = (times[0], times[-1]) if xlim is None else xlim
 
     # Determine if peak of troughs are the sides of an oscillation
-    _, side_e = get_extrema_df(df_samples)
+    _, side_e = get_extrema_df(df_features)
 
     # Remove this kwarg since it isn't stored cycle by cycle in the df (nothing to plot)
     if 'min_n_cycles' in threshold_kwargs.keys():
@@ -105,7 +103,7 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs
 
     # Determine which samples are defined as bursting
     is_osc = np.zeros(len(sig), dtype=bool)
-    df_osc = df_samples[df_features['is_burst']]
+    df_osc = df_features.loc[df_features['is_burst']]
 
     for _, cyc in df_osc.iterrows():
 
@@ -119,7 +117,7 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs
     plot_bursts(times, sig, is_osc, ax=axes[0], xlim=xlim, lw=2,
                 labels=['Signal', 'Bursts'], xlabel='', ylabel='')
 
-    plot_cyclepoints_df(df_samples, sig, fs, ax=axes[0], xlim=xlim, plot_zerox=False,
+    plot_cyclepoints_df(df_features, sig, fs, ax=axes[0], xlim=xlim, plot_zerox=False,
                         plot_sig=False, xlabel=xlabel, ylabel='Voltage\n(normalized)',
                         colors=['m', 'c'])
 
@@ -133,10 +131,9 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs
         color = next(colors)
 
         # Highlight where a burst param falls below threshold
-        for row_idx, cyc in df_samples.iterrows():
+        for row_idx, cyc in df_features.iterrows():
 
-            if (df_features.iloc[row_idx][column] < threshold_kwargs[osc_key] and
-                    df_features.iloc[row_idx]['is_burst'] == False):
+            if cyc[column] < threshold_kwargs[osc_key]:
                 axes[0].axvspan(times[int(cyc['sample_last_' + side_e])],
                                 times[int(cyc['sample_next_' + side_e])],
                                 alpha=0.5, color=color, lw=0)
@@ -147,14 +144,13 @@ def plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs
             ylabel = column.replace('_', ' ').capitalize()
             xlabel = 'Time (s)' if idx == n_kwargs-1 else ''
 
-            plot_burst_detect_param(df_features, df_samples, sig, fs, column,
-                                    threshold_kwargs[osc_key], figsize=figsize,
-                                    ax=axes[idx+1], xlim=xlim, xlabel=xlabel, ylabel=ylabel,
-                                    color=color, interp=interp)
+            plot_burst_detect_param(df_features, sig, fs, column, threshold_kwargs[osc_key],
+                                    figsize=figsize, ax=axes[idx+1], xlim=xlim, xlabel=xlabel,
+                                    ylabel=ylabel, color=color, interp=interp)
 
 
 @savefig
-def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thresh,
+def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
                             xlim=None, ax=None, interp=True, **kwargs):
     """Plot a burst detection parameter and threshold.
 
@@ -162,8 +158,6 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
     ----------
     df_features : pandas.DataFrame
         Dataframe output of :func:`~.compute_features`.
-    df_samples : pandas.DataFrame
-        Dataframe output of :func:`~.compute_shapes`.
     sig : 1d array
         Time series to plot.
     fs : float
@@ -203,9 +197,9 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
     >>> threshold_kwargs = {'amp_fraction_threshold': 0., 'amp_consistency_threshold': .5,
     ...                     'period_consistency_threshold': .5, 'monotonicity_threshold': .8}
-    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12),
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12),
     ...                                            threshold_kwargs=threshold_kwargs)
-    >>> plot_burst_detect_param(df_features, df_samples, sig, fs, 'monotonicity', .8)
+    >>> plot_burst_detect_param(df_features, sig, fs, 'monotonicity', .8)
     """
 
     # Ensure arguments are within valid range
@@ -225,12 +219,10 @@ def plot_burst_detect_param(df_features, df_samples, sig, fs, burst_param, thres
         fig, ax = plt.subplots(figsize=figsize)
 
     # Determine extrema strings
-    center_e, side_e = get_extrema_df(df_samples)
+    center_e, side_e = get_extrema_df(df_features)
 
     # Limit dataframe, sig and times
-    df = pd.concat([df_samples, df_features], axis=1)
-
-    df = limit_df(df, fs, start=xlim[0], stop=xlim[1])
+    df = limit_df(df_features, fs, start=xlim[0], stop=xlim[1])
 
     sig, times = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
 

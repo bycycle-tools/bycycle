@@ -103,17 +103,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
                                         **compute_features_kwargs[0]),
                                 sigs)
 
-        if return_samples is True:
-            df_features, df_samples = zip(*progress_bar(mapping, progress, len(sigs)))
-
-            df_features = list(df_features)
-            df_samples = list(df_samples)
-
-        else:
-            df_features = list(progress_bar(mapping, progress, len(sigs)))
-
-    if return_samples is True:
-        return df_features, df_samples
+        df_features = list(progress_bar(mapping, progress, len(sigs)))
 
     return df_features
 
@@ -231,16 +221,8 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None,
         compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
                             return_samples=return_samples, n_jobs=n_jobs, progress=progress)
 
-    if return_samples:
-
-        df_features, df_samples = df_features[0], df_features[1]
-        df_samples = _reshape_df(df_samples, sigs)
-
     # Reshape returned features to match the first two dimensions of sigs
     df_features = _reshape_df(df_features, sigs)
-
-    if return_samples:
-        return df_features, df_samples
 
     return df_features
 

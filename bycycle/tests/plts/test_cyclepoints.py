@@ -13,7 +13,7 @@ from bycycle.plts.cyclepoints import *
 @plot_test
 def test_plot_cyclepoints_df(sim_args):
 
-    plot_cyclepoints_df(sim_args['df_samples'], sim_args['sig'], sim_args['fs'], save_fig=True,
+    plot_cyclepoints_df(sim_args['df_features'], sim_args['sig'], sim_args['fs'], save_fig=True,
                         file_name='test_plot_cyclepoints_df', file_path=TEST_PLOTS_PATH)
 
 
