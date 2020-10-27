@@ -61,3 +61,17 @@ def test_rename_extrema_df(sim_args):
             df_features.pop(diff_col).values).all()
 
     assert (df_features.columns.values != df_features_renamed.columns.values).all()
+
+
+def test_split_samples_df(sim_args):
+
+    df_features = sim_args['df_features']
+
+    df_features, df_samples = split_samples_df(df_features)
+
+    # Ensure sample columns are isolated to df_samples
+    for col in df_features.columns:
+        assert "sample_" not in col
+
+    for col in df_samples.columns:
+        assert "sample_" in col

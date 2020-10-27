@@ -1,6 +1,7 @@
 """Utility functions for working with ByCycle DataFrames."""
 
 import numpy as np
+import pandas as pd
 
 from bycycle.utils.checks import check_param
 
@@ -165,3 +166,36 @@ def rename_extrema_df(center_extrema, df_features, return_samples=True):
             df_features.rename(columns=samples_rename_dict, inplace=True)
 
     return df_features
+
+
+def split_samples_df(df_features):
+    """Move cyclepoints sample indices columns to a separate dataframe.
+
+    Parameters
+    ----------
+    df_features : pandas.DataFrame
+        Dataframe output of :func:`~.compute_features` or :func`~.compute_shape_features`.
+
+    Returns
+    -------
+    df_features : pandas.DataFrame
+        A dataframe without sample indices columns removed.
+    df_samples : pandas.DataFrame
+        A dataframe only containing sample indices columns.
+
+    Examples
+    --------
+    Separate sample/signal indices into a separate dataframe:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.features import compute_features
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
+    >>> df_features, df_samples = split_samples_df(df_features)
+    """
+
+    df_samples = pd.concat([df_features.pop(col) for col in df_features.columns.values \
+        if "sample_" in col], axis=1)
+
+    return df_features, df_samples
