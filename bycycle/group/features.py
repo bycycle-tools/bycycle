@@ -1,17 +1,19 @@
 """Functions to compute features across 2 dimensional arrays of data."""
 
+import warnings
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
 import numpy as np
 
 from bycycle.features import compute_features
+from bycycle.burst import detect_bursts_cycles, detect_bursts_amp
 from bycycle.group.utils import progress_bar
 
 ###################################################################################################
 ###################################################################################################
 
-def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
+def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, global_features=False,
                         return_samples=True, n_jobs=-1, progress=None):
     """Compute shape and burst features for a 2 dimensional array of signals.
 
@@ -25,6 +27,9 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
         Frequency range for narrowband signal of interest, in Hz.
     compute_features_kwargs : dict or list of dict
         Keyword arguments used in :func:`~.compute_features`.
+    global_features : bool, optional default: False
+        Calculates features across a flattened, 1d array if True. This is recommended when working
+        with epoched data, i.e. (n_epochs, n_signals).
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
     n_jobs : int, optional, default: -1
@@ -37,14 +42,12 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
     df_features : list of pandas.DataFrame
         Dataframes containing shape and burst features for each cycle.
         Each dataframe is computed using the :func:`~.compute_features` function.
-    df_samples : list of pandas.DataFrame, optional
-        Dataframes containing cyclepoints for each cycle.
-        Only returned if ``return_samples`` is True.
-        Each dataframe is computed using the :func:`~.compute_features` function.
 
     Notes
     -----
 
+    - When ``global_features = True`` parallel computation may not be performed due to the
+      requirement of flattening the array in one dimension.
     - The order of ``df_features`` and ``df_samples`` corresponds to the order of ``sigs``.
     - If ``compute_features_kwargs`` is a dictionary, the same kwargs are applied applied across
       the first axis of ``sigs``. Otherwise, a list of dictionaries equal in length to the
@@ -54,18 +57,26 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
 
     Examples
     --------
-    Compute the features of a 2d array in parrallel using the same compute_features kwargs:
+    Compute the features of a 2d array containing epoched data:
 
     >>> import numpy as np
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs = 500
     >>> sigs = np.array([sim_bursty_oscillation(10, fs, 10) for i in range(10)])
     >>> compute_kwargs = {'burst_method': 'amp', 'threshold_kwargs':{'burst_fraction_threshold': 1}}
-    >>> df_features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False, n_jobs=2,
+    >>> df_features = compute_features_2d(sigs, fs, f_range=(8, 12), global_features=True,
+    ...                                   compute_features_kwargs=compute_kwargs)
+
+    Compute the features of a 2d array in parallel using the same compute_features kwargs. Note each
+    signal's features are computed separately in this case:
+
+    >>> compute_kwargs = {'burst_method': 'amp', 'threshold_kwargs':{'burst_fraction_threshold': 1}}
+    >>> df_features = compute_features_2d(sigs, fs, f_range=(8, 12), n_jobs=2,
     ...                                   compute_features_kwargs=compute_kwargs)
 
     Compute the features of a 2d array in parallel using using individualized settings per signal to
-    examine the effect of various amplitude consistency thresholds:
+    examine the effect of various amplitude consistency thresholds. This is recommended when working
+    with a signal of shape (n_channels, n_signals):
 
     >>> sigs =  np.array([sim_bursty_oscillation(10, fs, freq=10)] * 10)
     >>> compute_kwargs = [{'threshold_kwargs': {'amp_consistency_threshold': thresh*.1}}
@@ -88,22 +99,84 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
 
     n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
-    with Pool(processes=n_jobs) as pool:
 
-        if len(compute_features_kwargs) > 1:
-            # Map iterable sigs and kwargs together
-            mapping = pool.imap(partial(_proxy, fs=fs, f_range=f_range,
-                                        return_samples=return_samples),
-                                zip(sigs, compute_features_kwargs))
+    if global_features is False:
+        # Compute each signal's independently and in paralllel
 
-        else:
-            # Only map sigs, kwargs are the same for each mapping
-            mapping = pool.imap(partial(compute_features, fs=fs, f_range=f_range,
-                                        return_samples=return_samples,
-                                        **compute_features_kwargs[0]),
-                                sigs)
+        with Pool(processes=n_jobs) as pool:
 
-        df_features = list(progress_bar(mapping, progress, len(sigs)))
+            if len(compute_features_kwargs) > 1:
+                # Map iterable sigs and kwargs together
+                mapping = pool.imap(partial(_proxy, fs=fs, f_range=f_range,
+                                            return_samples=return_samples),
+                                    zip(sigs, compute_features_kwargs))
+
+            else:
+                # Only map sigs, kwargs are the same for each mapping
+                mapping = pool.imap(partial(compute_features, fs=fs, f_range=f_range,
+                                            return_samples=return_samples,
+                                            **compute_features_kwargs[0]),
+                                    sigs)
+
+            df_features = list(progress_bar(mapping, progress, len(sigs)))
+
+    else:
+
+        # Compute features after flattening the 2d array (i.e. calculated across 1d signal)
+        sig_flat = sigs.flatten()
+
+        center_extrema = compute_features_kwargs[0].pop('center_extrema', 'peak')
+
+        df_flat = compute_features(sig_flat, fs=fs, f_range=f_range, return_samples=True,
+                                   center_extrema=center_extrema, **compute_features_kwargs[0])
+
+        # Reshape the dataframe into original sigs shape
+        last_sample = 'sample_next_trough' if center_extrema == 'peak' else 'sample_next_peak'
+
+        df_features = []
+        sig_len = len(sigs[0])
+        last_idx = 0
+
+        for sig_idx in np.arange(sig_len, len(sig_flat) + sig_len, sig_len):
+
+            # Get the range for each df
+            idx_range = np.where((df_flat[last_sample].values <= sig_idx) & \
+                                (df_flat[last_sample].values > last_idx))[0]
+
+            df_single = df_flat.iloc[idx_range]
+            df_single.reset_index(drop=True, inplace=True)
+
+            # Shift sample indices
+            sample_cols = [col for col in df_single.columns if 'sample_' in col]
+
+            for col in sample_cols:
+                df_single[col] = df_single[col] - last_idx
+
+            last_idx = sig_idx
+
+            df_features.append(df_single)
+
+        # Apply different thresholds if specified
+        if len(compute_features_kwargs) > 0:
+
+            for idx, compute_kwargs in enumerate(compute_features_kwargs):
+
+                burst_method = compute_kwargs.pop('burst_method', 'cycles')
+                thresholds = compute_kwargs.pop('threshold_kwargs', {})
+
+                compute_kwargs_next = compute_kwargs.pop('center_extrema', None)
+                if idx > 0 and not compute_kwargs_next and compute_kwargs_next != center_extrema:
+
+                    warnings.warn('''
+                        The same center extrema must be used when using global_features with a list
+                        of compute_features_kwargs. Using the first center_extrema: {extrema}.
+                        '''.format(extrema=center_extrema))
+
+                if burst_method == 'cycles':
+                    df_features[idx] = detect_bursts_cycles(df_features[idx], **thresholds)
+
+                elif burst_method == 'amp':
+                    df_features[idx] = detect_bursts_amp(df_features[idx], **thresholds)
 
     return df_features
 

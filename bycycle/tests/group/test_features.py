@@ -1,6 +1,7 @@
 """Test functions to compute features across epoched data."""
 
 import numpy as np
+import pandas as pd
 
 from pytest import mark, param
 
@@ -11,8 +12,9 @@ from bycycle.group.features import compute_features_2d, compute_features_3d
 
 @mark.parametrize("compute_features_kwargs_error", [False, param(True, marks=mark.xfail)])
 @mark.parametrize("compute_features_kwargs_dtype", ['dict', 'list', None])
+@mark.parametrize("global_features", [True, False])
 def test_compute_features_2d(sim_args, compute_features_kwargs_dtype,
-                             compute_features_kwargs_error):
+                             compute_features_kwargs_error, global_features):
 
     n_sigs = 5
     sigs = np.array([sim_args['sig']] * n_sigs)
@@ -30,30 +32,35 @@ def test_compute_features_2d(sim_args, compute_features_kwargs_dtype,
     elif compute_features_kwargs_dtype == None:
          compute_features_kwargs = None
 
-    # Test returning only features, without samples
-    features = compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=False,
-                                   compute_features_kwargs=compute_features_kwargs)
-
-    for df_features in features:
-        assert df_features.equals(features[0])
-
     # Sequential processing check
-    features_seq =  compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=True,
-                                        compute_features_kwargs=compute_features_kwargs)
+    features_seq = compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=True,
+                                       compute_features_kwargs=compute_features_kwargs,
+                                       global_features=global_features)
 
     # Parallel processing check
-    features = compute_features_2d(sigs, fs, f_range, n_jobs=-1, return_samples=True,
-                                   compute_features_kwargs=compute_features_kwargs)
+    if global_features is False:
 
-    # Since the same signal is used, check that each df is the same
-    for df_features in features_seq[1:]:
-        assert df_features.equals(features_seq[0])
-    for df_features in features[1:]:
-        assert df_features.equals(features[0])
+        features = compute_features_2d(sigs, fs, f_range, n_jobs=-1, return_samples=True,
+                                    compute_features_kwargs=compute_features_kwargs)
 
-    # Assert that sequential and parallel processing is equivalent
-    for idx, df_features in enumerate(features):
-        assert df_features.equals(features_seq[idx])
+
+        # Assert that sequential and parallel processing is equivalent
+        for idx, df_features in enumerate(features):
+            assert df_features.equals(features_seq[idx])
+
+    elif global_features is True:
+
+        # When using global features, edge artifacts will exist in the first/last df
+        for df_features in features_seq[2:-1]:
+
+            # This fixes float precision issues with band_amp
+            pd.testing.assert_frame_equal(features_seq[1], df_features)
+
+
+        # Edge artifacts will cause the first/last dataframes to differ
+        assert not features_seq[0].equals(features_seq[-1])
+        assert not features_seq[0].equals(features_seq[1])
+        assert not features_seq[-1].equals(features_seq[1])
 
 
 @mark.parametrize("compute_features_kwargs_error", [False, param(True, marks=mark.xfail)])
