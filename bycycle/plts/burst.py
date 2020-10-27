@@ -70,7 +70,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
     >>> threshold_kwargs = {'amp_fraction_threshold': 0., 'amp_consistency_threshold': .5,
     ...                     'period_consistency_threshold': .5, 'monotonicity_threshold': .8}
-    >>> df_features= compute_features(sig, fs, f_range=(8, 12), threshold_kwargs=threshold_kwargs)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12), threshold_kwargs=threshold_kwargs)
     >>> plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs)
     """
 

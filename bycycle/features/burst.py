@@ -133,8 +133,7 @@ def compute_amp_consistency(df_shape_features):
     Parameters
     ----------
     df_shape_features : pandas.DataFrame
-        Shape features for each cycle, determined using :func:`~.compute_shape_features` with
-        ``return_samples=True``.
+        Shape features for each cycle, determined using :func:`~.compute_shape_features`.
     df_samples : pandas.DataFrame
         Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
 
@@ -142,10 +141,6 @@ def compute_amp_consistency(df_shape_features):
     -------
     amp_consist : 1d array
         The amplitude consistency of each cycle.
-
-    Notes
-    -----
-    This function requires the input dataframe to contain sample indices of cyclepoints.
 
     Examples
     --------
@@ -243,7 +238,7 @@ def compute_monotonicity(df_samples, sig):
 
     Parameters
     ----------
-    df_samples: pandas.DataFrame
+    df_samples : pandas.DataFrame
         Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
     sig : 1d array
         Time series.
