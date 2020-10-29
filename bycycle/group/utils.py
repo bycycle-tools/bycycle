@@ -1,6 +1,7 @@
 """Functions to compute features across epoched data."""
 
 from importlib import import_module
+import numpy as np
 
 ###################################################################################################
 ###################################################################################################
@@ -81,3 +82,72 @@ def progress_bar(iterable, progress, n_to_run):
         pbar = iterable
 
     return pbar
+
+
+def check_kwargs_shape(sigs, compute_features_kwargs, axis):
+    """Raise an error when compute_features_kwargs and the shape of sigs mismatch.
+
+    Parameters
+    ----------
+    sigs : 3d array
+        Voltage time series, with 3d shape, i.e. (n_channels, n_epochs, n_samples).
+    compute_features_kwargs : dict or 1d list of dict or 2d list of dict
+        Keyword arguments used in :func:`~.compute_features`.
+    axis : int or tuple or None, {0, 1, (0, 1), None}
+        Which axes to calculate features across.
+
+    Raises
+    ------
+    ValueError
+        If the shape compute_features_kwargs and sigs are not compatible.
+    """
+
+    kwargs = compute_features_kwargs
+
+    # Don't raise error when kwargs is None or a dict
+    if isinstance(kwargs, dict) or kwargs is None:
+        return
+
+    # Ensure kwargs match to sigs
+    kwargs_dim0 = np.shape(kwargs)[0]
+    kwargs_dim1 = np.shape(kwargs)[1] if kwargs.ndim == 2 else None
+
+    sigs_dim0 = np.shape(sigs)[0]
+    sigs_dim1 = np.shape(sigs)[1]
+
+    # Check dims when kwargs is an array
+    if axis == 0 and kwargs.ndim == 1 and kwargs_dim0 != sigs_dim0:
+        axis_str = 'first'
+
+    elif axis == 1 and kwargs.ndim == 1 and kwargs_dim0 != sigs_dim1:
+        axis_str = 'second'
+
+    elif axis == (0, 1) and kwargs.ndim == 1 and sigs.ndim == 3 \
+        and kwargs_dim0 != int(sigs_dim0 * sigs_dim1):
+        axis_str = 'sum of the first and second'
+
+    elif axis == (0, 1) and kwargs.ndim == 2 and \
+        (kwargs_dim0 != sigs_dim0 or kwargs_dim1 != sigs_dim1):
+        axis_str = 'first and second'
+
+    elif axis == None and kwargs.ndim == 1 and sigs.ndim == 3 \
+        and kwargs_dim0 != int(sigs_dim0 * sigs_dim1):
+        axis_str = 'sum of the first and second'
+
+    elif axis == None and kwargs.ndim == 1 and sigs.ndim == 2 \
+        and kwargs_dim0 != sigs_dim0:
+        axis_str = 'sum of the first and second'
+
+    elif axis == None and kwargs.ndim == 2 and \
+        (kwargs_dim0 != sigs_dim0 or kwargs_dim1 != sigs_dim1):
+        axis_str = 'first and second'
+
+    else:
+        return
+
+    error_str = """
+        When compute_features_kwargs is a {dim}d list and axis = {axis_int}, its length must be
+        equal to the {axis_str} dimension of sigs.
+    """.format(dim=kwargs.ndim, axis_int=axis, axis_str=axis_str)
+
+    raise ValueError(error_str)
