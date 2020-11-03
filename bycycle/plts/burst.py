@@ -1,5 +1,6 @@
 """Plot burst detection parameters."""
 
+from os import environ
 from itertools import cycle
 
 import numpy as np
@@ -148,6 +149,9 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
                                     figsize=figsize, ax=axes[idx+1], xlim=xlim, xlabel=xlabel,
                                     ylabel=ylabel, color=color, interp=interp)
 
+    # Use show method if in ipython
+    plt.show() if environ['_'].endswith('ipython') else None
+
 
 @savefig
 def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
@@ -266,3 +270,6 @@ def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
             ax.axvspan(times[int(cyc['sample_last_' + side_e])],
                        times[int(cyc['sample_next_' + side_e])],
                        alpha=0.5, color=color, lw=0)
+
+    # Use show method if in ipython
+    plt.show() if environ['_'].endswith('ipython') else None

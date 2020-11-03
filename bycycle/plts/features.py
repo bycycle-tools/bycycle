@@ -1,5 +1,6 @@
 """Plot cycle features."""
 
+from os import environ
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -78,6 +79,9 @@ def plot_feature_hist(feature, param_label, only_bursts=True, bins='auto', ax=No
 
     if 'label' in kwargs:
         ax.legend(fontsize=fontsize)
+
+    # Use show method if in ipython
+    plt.show() if environ['_'].endswith('ipython') else None
 
 
 @savefig
@@ -158,3 +162,6 @@ def plot_feature_categorical(df_features, param_label, group_by=None, ax=None, *
     # Hide the right and top spines
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
+
+    # Use show method if in ipython
+    plt.show() if environ['_'].endswith('ipython') else None

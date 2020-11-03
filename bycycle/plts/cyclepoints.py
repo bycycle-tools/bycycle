@@ -1,5 +1,6 @@
 """Plot extrema and zero-crossings."""
 
+from os import environ
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -78,6 +79,9 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
 
     plot_cyclepoints_array(sig, fs, peaks=peaks, troughs=troughs, rises=rises,
                            decays=decays, plot_sig=plot_sig, xlim=xlim, ax=ax, **kwargs)
+
+    # Use show method if in ipython
+    plt.show() if environ['_'].endswith('ipython') else None
 
 
 @savefig
@@ -175,3 +179,6 @@ def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays
 
     plot_time_series(x_values, y_values, ax=ax, xlabel=xlabel, ylabel=ylabel,
                      colors=colors, marker='o', ls='', **kwargs)
+
+    # Use show method if in ipython
+    plt.show() if environ['_'].endswith('ipython') else None
