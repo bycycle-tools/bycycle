@@ -71,8 +71,8 @@ def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
-    >>> df_burst = compute_burst_features(df_shapes, df_samples, sig)
+    >>> df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))
+    >>> df_burst = compute_burst_features(df_shapes, sig)
     >>> df_burst = detect_bursts_cycles(df_burst)
     """
 

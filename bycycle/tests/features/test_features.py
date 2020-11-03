@@ -38,16 +38,10 @@ def test_compute_features(sim_args, return_samples, burst_method):
 
     if return_samples:
 
-        df_features, df_samples = df_features[0], df_features[1]
-        assert len(df_features) == len(df_samples)
+        sample_cols = [col for col in list(df_features.columns) if "sample_" in col]
+        assert len(sample_cols) == 6
 
     # Assert that np.nan isn't in dataframe columns
     for _, column in df_features.iteritems():
 
         assert not np.isnan(column[1:-1]).any()
-
-    if return_samples:
-
-        for _, row in df_samples.iterrows():
-
-            assert not np.isnan(row).any()

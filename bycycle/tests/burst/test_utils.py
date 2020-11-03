@@ -44,8 +44,7 @@ def test_recompute_edges(sim_args_comb):
     sig_force_recomp[:int(fs *  n_seconds)] = sig
     sig_force_recomp[int(fs * n_seconds) + fs:] = sig
 
-    df_features = compute_features(sig, fs, f_range, threshold_kwargs=threshold_kwargs,
-                                   return_samples=False)
+    df_features = compute_features(sig, fs, f_range, threshold_kwargs=threshold_kwargs)
 
     # Update thresholds to give all edge cycles is_burst = True, except for the first and
     #   last cycles, since these cycles contain np.nan values for consistency measures
