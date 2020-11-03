@@ -28,10 +28,6 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     compute_features_kwargs : dict or list of dict
         Keyword arguments used in :func:`~.compute_features`.
     axis : {0, None}, optional, default: 0
-        Which axes to calculate features across. Features are computed for each signal independently
-        by default. When ``axis = None``, features are computed across a flattened array
-        (recommended when the 2d array was recorded continuously, i.e. (n_epochs, n_signals)).
-    axis : {0, None}, optional, default: 0
         Which axes to calculate features across:
 
         - ``axis = 0`` : Features are computed for each signal independently
@@ -100,15 +96,8 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
 
     check_kwargs_shape(sigs, kwargs, axis)
 
-    # Convert kwargs to a list of dict
     kwargs = {} if kwargs is None else kwargs
-    if isinstance(kwargs, dict):
-        kwargs = [kwargs]
-    elif isinstance(kwargs, np.ndarray):
-        kwargs = list(kwargs)
-
-    kwargs = {} if kwargs is None else kwargs
-    kwargs = [kwargs] if isinstance(kwargs, dict) else kwargs
+    kwargs = [kwargs] if isinstance(kwargs, dict) else list(kwargs)
 
     # Drop return_samples argument, as it is set directly in the function call
     for kwarg in kwargs:
@@ -164,7 +153,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
             sample_cols = [col for col in df_single.columns if 'sample_' in col]
 
             for col in sample_cols:
-                df_single[col] = df_single[col] - last_idx
+                df_single[col] = df_single[col] - first_idx
 
             df_features.append(df_single)
 
@@ -175,10 +164,10 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
 
                 burst_method = compute_kwargs.pop('burst_method', 'cycles')
                 thresholds = compute_kwargs.pop('threshold_kwargs', {})
-                compute_kwargs_next = compute_kwargs.pop('center_extrema', None)
+                center_extrema_next = compute_kwargs.pop('center_extrema', None)
 
-                if idx > 0 and compute_kwargs_next is not None \
-                    and compute_kwargs_next != center_extrema:
+                if idx > 0 and center_extrema_next is not None \
+                    and center_extrema_next != center_extrema:
 
                     warnings.warn('''
                         The same center extrema must be used when axis is None and
@@ -245,7 +234,7 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
       dimensions of ``sigs`` may also be used to applied unique parameters to each signal.
     - ``return_samples`` is controlled from the kwargs passed in this function. The
       ``return_samples`` value in ``compute_features_kwargs`` will be ignored.
-    - When ``global_features = True`` parallel computation may not be performed due to the
+    - When ``axis = None`` parallel computation may not be performed due to the
       requirement of flattening the array into one dimension.
 
     Examples
@@ -288,55 +277,62 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     kwargs = list(kwargs.flatten()) if isinstance(kwargs, np.ndarray) else kwargs
 
     # Compute features
+    df_features = np.zeros((np.shape(sigs)[0], np.shape(sigs)[1])).tolist()
+
     if axis == 0:
         # Independently across the first axis
         for sig_idx in range(np.shape(sigs)[0]):
 
-            kwargs_single = kwargs[sig_idx] if isinstance(kwargs, list) else kwargs
+            kwargs_2d = kwargs[sig_idx] if isinstance(kwargs, list) else kwargs
 
-            df_single = compute_features_2d(sigs[sig_idx], fs, f_range,
-                                            compute_features_kwargs=kwargs_single,
-                                            return_samples=return_samples, n_jobs=n_jobs,
-                                            progress=progress)
+            df_2d = compute_features_2d(sigs[sig_idx], fs, f_range,
+                                        compute_features_kwargs=kwargs_2d,
+                                        return_samples=return_samples, n_jobs=n_jobs,
+                                        progress=progress)
 
-            df_features.append(df_single)
+            df_features[sig_idx] = df_2d
 
     elif axis == 1:
         # Independently across the second axis
         for sig_idx in range(np.shape(sigs)[1]):
 
-            kwargs_single = kwargs[sig_idx] if isinstance(kwargs, list) else kwargs
+            kwargs_2d = kwargs[sig_idx] if isinstance(kwargs, list) else kwargs
 
-            df_single = compute_features_2d(sigs[:, sig_idx], fs, f_range,
-                                            compute_features_kwargs=kwargs_single,
-                                            return_samples=return_samples, n_jobs=n_jobs,
-                                            progress=progress)
+            df_2d = compute_features_2d(sigs[:, sig_idx], fs, f_range,
+                                        compute_features_kwargs=kwargs_2d,
+                                        return_samples=return_samples, n_jobs=n_jobs,
+                                        progress=progress)
 
-            df_features.append(df_single)
+            # Reshape
+            for dim0_idx, df in enumerate(df_2d):
+                df_features[dim0_idx][sig_idx] = df
 
     elif axis == (0, 1):
-        # Independently across the first two axes (for each signal)
+        # Independently across the first two axes (i.e. for each signal)
         sigs_2d = sigs.reshape(np.shape(sigs)[0]*np.shape(sigs)[1], np.shape(sigs)[2])
 
-        df_features = compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
-                                          return_samples=return_samples, n_jobs=n_jobs,
-                                          progress=progress, axis=0)
+        df_2d = compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
+                                    return_samples=return_samples, n_jobs=n_jobs,
+                                    progress=progress, axis=0)
 
     elif axis == None:
         # Dependently across a flatten signal
         sigs_2d = sigs.reshape(np.shape(sigs)[0]*np.shape(sigs)[1], np.shape(sigs)[2])
 
-        df_features = compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
-                                          return_samples=return_samples, n_jobs=n_jobs,
-                                          progress=progress, axis=None)
+        df_2d = compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
+                                    return_samples=return_samples, n_jobs=n_jobs,
+                                    progress=progress, axis=None)
 
     else:
 
         raise ValueError("The axis kwarg must be either 0, 1, (0, 1) or None.")
 
-    if axis == 0 or axis == 1:
+    if axis == (0, 1) or axis == None:
 
-        df_features = _reshape_df(df_features, sigs)
+         # Reshape
+         for dim0_idx in range(np.shape(sigs)[0]):
+            for dim1_idx in range(np.shape(sigs)[1]):
+                df_features[dim0_idx][dim1_idx] = df_2d[dim0_idx + dim1_idx]
 
     return df_features
 
@@ -347,19 +343,3 @@ def _proxy(args, fs=None, f_range=None, return_samples=None):
     sig, kwargs = args[0], args[1:]
     return compute_features(sig, fs=fs, f_range=f_range,
                             return_samples=return_samples, **kwargs[0])
-
-
-def _reshape_df(df_features, sigs_3d):
-    """Reshape a list of dataframes."""
-
-    df_reshape = []
-
-    dim_b = np.shape(sigs_3d)[1]
-
-    max_idx = [i for i in range(dim_b, len(df_features)*dim_b, dim_b)]
-    min_idx = [i for i in range(0, len(df_features), dim_b)]
-
-    for lower, upper in zip(min_idx, max_idx):
-        df_reshape.append(df_features[lower:upper])
-
-    return df_reshape

@@ -89,8 +89,8 @@ def check_kwargs_shape(sigs, compute_features_kwargs, axis):
 
     Parameters
     ----------
-    sigs : 3d array
-        Voltage time series, with 3d shape, i.e. (n_channels, n_epochs, n_samples).
+    sigs : 2d or 3d array
+        Voltage time series.
     compute_features_kwargs : dict or 1d list of dict or 2d list of dict
         Keyword arguments used in :func:`~.compute_features`.
     axis : int or tuple or None, {0, 1, (0, 1), None}
@@ -141,6 +141,9 @@ def check_kwargs_shape(sigs, compute_features_kwargs, axis):
     elif axis == None and kwargs.ndim == 2 and \
         (kwargs_dim0 != sigs_dim0 or kwargs_dim1 != sigs_dim1):
         axis_str = 'first and second'
+
+    elif axis == (0, 1) and kwargs.ndim == 1 and sigs.ndim == 2:
+        raise ValueError("When axis = (0, 1), a 3-dimensional signal is required.")
 
     else:
         return
