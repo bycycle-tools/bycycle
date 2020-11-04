@@ -11,78 +11,67 @@ from bycycle.group.features import compute_features_2d, compute_features_3d
 ###################################################################################################
 ###################################################################################################
 
-@mark.parametrize("compute_features_kwargs_dtype", ['dict', 'list', None])
+@mark.parametrize("kwargs_dtype", ['dict', 'list_cycles', 'list_amp', None])
 @mark.parametrize("axis", [0, None, param(1, marks=mark.xfail)])
-def test_compute_features_2d(sim_args, compute_features_kwargs_dtype, axis):
+def test_compute_features_2d(sim_args, kwargs_dtype, axis):
 
     n_sigs = 5
     sigs = np.array([sim_args['sig']] * n_sigs)
     fs  = sim_args['fs']
     f_range = sim_args['f_range']
 
-    # Note: return_samples is disregarded when used in compute_features_kwargs
-    #   this variable is set directly in the function
+    # Return_samples is disregarded when used in compute_features_kwargs
     compute_features_kwargs = {'center_extrema': 'peak', 'return_samples': False}
 
-    if compute_features_kwargs_dtype == 'list':
+    # Update kwargs based on data type
+    if kwargs_dtype == 'list_cycles' or kwargs_dtype == 'list_amp':
+
         compute_features_kwargs = [compute_features_kwargs] * n_sigs
 
         # Raise center extrema mistmatch warning
-        compute_features_kwargs[1] =  {'center_extrema': 'trough', 'return_samples': False}
+        compute_features_kwargs[1] = {'center_extrema': 'trough', 'return_samples': False}
 
-    elif compute_features_kwargs_dtype == None:
+        # Update kwargs to include burst_method
+        burst_method = 'amp' if kwargs_dtype == 'list_amp' else 'cycles'
+
+        compute_features_kwargs = [dict(kwargs, burst_method=burst_method) for kwargs in \
+                compute_features_kwargs]
+
+    elif kwargs_dtype == None:
          compute_features_kwargs = None
 
-    # Sequential processing check
+    # Sequential processing
+    features_seq = compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=True,
+                                       compute_features_kwargs=compute_features_kwargs,
+                                       axis=axis)
 
-    def _none_check(features_seq):
+    # Parallel processing (assuming >1 job is available)
+    if axis == 0:
 
-        # When using global features, edge artifacts will exist in the first/last df
+        features_par = compute_features_2d(sigs, fs, f_range, n_jobs=-1, return_samples=True,
+                                           compute_features_kwargs=compute_features_kwargs)
+
+        # Compare sequential and parallel processing dfs
+        for idx, df_par in enumerate(features_par):
+            assert df_par.equals(features_seq[idx])
+
+    if axis == None:
+
+        # Asserts sequential dfs are equal (except first and last)
         for df_features in features_seq[2:-1]:
 
-            # This fixes float precision issues with band_amp
             pd.testing.assert_frame_equal(features_seq[1], df_features)
 
-
-        # Edge artifacts will cause the first/last dataframes to differ
+        # Edge artifacts will cause the first/last dataframes to differ when flattened
         assert not features_seq[0].equals(features_seq[-1])
         assert not features_seq[0].equals(features_seq[1])
         assert not features_seq[-1].equals(features_seq[1])
 
-
-    if axis == None and compute_features_kwargs_dtype == 'list':
-
-        for burst_method in ['cycles', 'amp']:
-
-            compute_features_kwargs = [dict(kwargs, burst_method=burst_method) for kwargs in \
-                compute_features_kwargs]
-
-            features_seq = compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=True,
-                                               compute_features_kwargs=compute_features_kwargs,
-                                               axis=axis)
-
-            _none_check(features_seq)
-
     else:
 
-        features_seq = compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=True,
-                                           compute_features_kwargs=compute_features_kwargs,
-                                           axis=axis)
-
-    # Parallel processing check
-    if axis == 0:
-
-        features = compute_features_2d(sigs, fs, f_range, n_jobs=-1, return_samples=True,
-                                       compute_features_kwargs=compute_features_kwargs)
-
-
-        # Assert that sequential and parallel processing is equivalent
-        for idx, df_features in enumerate(features):
-            assert df_features.equals(features_seq[idx])
-
-    elif axis is None and  compute_features_kwargs_dtype != 'list':
-
-        _none_check(features_seq)
+        # All dfs will be equal when computed independently
+        for df_seq in features_seq[1:]:
+            features_seq[0].equals(df_seq)
 
 
 @mark.parametrize("return_samples", [True, False])
