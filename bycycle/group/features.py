@@ -111,7 +111,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
 
             if len(kwargs) > 1:
                 # Map iterable sigs and kwargs together
-                mapping = pool.imap(partial(_proxy, fs=fs, f_range=f_range,
+                mapping = pool.imap(partial(_proxy_2d, fs=fs, f_range=f_range,
                                             return_samples=return_samples),
                                     zip(sigs, kwargs))
 
@@ -205,11 +205,13 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
 
 
         - ``axis = 0`` : Features are computed for each signal independently
-          across the zeroth axis, i.e. across channels in (n_channels, n_epochs, n_timepoints).
+          across the first axis, i.e. across channels in (n_channels, n_epochs, n_timepoints).
         - ``axis = 1`` (default) : Features are computed for each signal independently
-          across the first axis, i.e. across channels in (n_epochs, n_channels, n_timepoints).
+          across the second axis, i.e. across channels in (n_epochs, n_channels, n_timepoints).
         - ``axis = None`` : Features are computed across a flattened 1d array, this is typically
           not recommended unless the 3d array was recored continuously.
+        - ``axis = (0, 1)`` : Features are computed independently for each signal, across the first
+          and second axes. This is analogous to ``axis = 0`` in :func:`~.compute_features_2d`.
 
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
@@ -274,42 +276,43 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     kwargs = np.array(kwargs) if isinstance(kwargs, list) else kwargs
 
     check_kwargs_shape(sigs, kwargs, axis)
-    kwargs = list(kwargs.flatten()) if isinstance(kwargs, np.ndarray) else kwargs
+    kwargs = list(kwargs.flatten()) if isinstance(kwargs, np.ndarray) else [kwargs]
 
     # Compute features
     df_features = np.zeros((np.shape(sigs)[0], np.shape(sigs)[1])).tolist()
 
     if axis == 0:
         # Independently across the first axis
-        for sig_idx in range(np.shape(sigs)[0]):
+        kwargs = kwargs * np.shape(sigs)[0] if len(kwargs) == 1 else kwargs
 
-            kwargs_2d = kwargs[sig_idx] if isinstance(kwargs, list) else kwargs
+        with Pool(processes=n_jobs) as pool:
 
-            df_2d = compute_features_2d(sigs[sig_idx], fs, f_range,
-                                        compute_features_kwargs=kwargs_2d,
-                                        return_samples=return_samples, n_jobs=n_jobs,
-                                        progress=progress)
+            mapping = pool.imap(partial(_proxy_3d, fs=fs, f_range=f_range,
+                                        return_samples=return_samples),
+                                zip(sigs, kwargs))
 
-            df_features[sig_idx] = df_2d
+            df_features = list(progress_bar(mapping, progress, len(sigs)))
 
     elif axis == 1:
         # Independently across the second axis
-        for sig_idx in range(np.shape(sigs)[1]):
+        sigs_swap = np.swapaxes(sigs, 0, 1)
+        kwargs = kwargs * np.shape(sigs_swap)[0] if len(kwargs) == 1 else kwargs
 
-            kwargs_2d = kwargs[sig_idx] if isinstance(kwargs, list) else kwargs
+        with Pool(processes=n_jobs) as pool:
 
-            df_2d = compute_features_2d(sigs[:, sig_idx], fs, f_range,
-                                        compute_features_kwargs=kwargs_2d,
-                                        return_samples=return_samples, n_jobs=n_jobs,
-                                        progress=progress)
+            mapping = pool.imap(partial(_proxy_3d, fs=fs, f_range=f_range,
+                                        return_samples=return_samples),
+                                zip(sigs_swap, kwargs))
 
-            # Reshape
-            for dim0_idx, df in enumerate(df_2d):
-                df_features[dim0_idx][sig_idx] = df
+            df_features = list(progress_bar(mapping, progress, len(sigs_swap)))
+
+        # Swap the first two axes to return original shape
+        df_features = [list(dfs) for dfs in zip(*df_features)]
 
     elif axis == (0, 1):
         # Independently across the first two axes (i.e. for each signal)
         sigs_2d = sigs.reshape(np.shape(sigs)[0]*np.shape(sigs)[1], np.shape(sigs)[2])
+        kwargs = kwargs[0] if len(kwargs) == 1 else kwargs
 
         df_2d = compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
                                     return_samples=return_samples, n_jobs=n_jobs,
@@ -318,6 +321,7 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     elif axis == None:
         # Dependently across a flatten signal
         sigs_2d = sigs.reshape(np.shape(sigs)[0]*np.shape(sigs)[1], np.shape(sigs)[2])
+        kwargs = kwargs[0] if len(kwargs) == 1 else kwargs
 
         df_2d = compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
                                     return_samples=return_samples, n_jobs=n_jobs,
@@ -337,9 +341,17 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     return df_features
 
 
-def _proxy(args, fs=None, f_range=None, return_samples=None):
-    """Proxy function to map kwargs and sigs together."""
+def _proxy_2d(args, fs=None, f_range=None, return_samples=None):
+    """Proxy function to map kwargs and 2d sigs together."""
 
     sig, kwargs = args[0], args[1:]
     return compute_features(sig, fs=fs, f_range=f_range,
                             return_samples=return_samples, **kwargs[0])
+
+def _proxy_3d(args, fs=None, f_range=None, return_samples=None):
+    """Proxy function to map kwargs and 3d sigs together."""
+
+    sigs, kwargs = args[0], args[1]
+
+    return compute_features_2d(sigs, fs=fs, f_range=f_range, return_samples=return_samples,
+                               compute_features_kwargs=kwargs, axis=None)

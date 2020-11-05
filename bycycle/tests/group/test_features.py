@@ -93,11 +93,29 @@ def test_compute_features_3d(sim_args, return_samples, axis):
         compute_features_3d(sigs_3d, fs, f_range, compute_features_kwargs=compute_features_kwargs,
                             return_samples=return_samples, n_jobs=-1, progress=None, axis=axis)
 
-    # Check lengths
     assert len(df_features) == dim1
     assert len(df_features[0]) == dim2
 
-    # Check equal values, skipping the first and last dfs
-    for row_idx, col_idx in list(product(range(0, dim1), range(0, dim2)))[2:-1]:
-        pd.testing.assert_frame_equal(df_features[row_idx][col_idx], df_features[0][1])
+    if axis == 0:
+        # Dataframes will be equal across the first axis
+        for row_idx in range(0, dim1):
+            for col_idx in range(dim2):
+                assert df_features[0][col_idx].equals(df_features[row_idx][col_idx])
 
+    elif axis == 1:
+        # Dataframes will be equal across the second axis
+        for row_idx in range(dim1):
+            for col_idx in range(1, dim2):
+                assert df_features[row_idx][0].equals(df_features[row_idx][col_idx])
+
+    elif axis == (0, 1):
+        # Dataframes will all be equal
+        for row_idx in range(dim1):
+            for col_idx in range(dim2):
+                if row_idx != 0 and col_idx != 0:
+                    assert df_features[0][0].equals(df_features[row_idx][col_idx])
+
+    elif axis == None:
+        # Dataframes will be equal, except the first and last dfs (edge artifacts)
+        for row_idx, col_idx in list(product(range(0, dim1), range(0, dim2)))[2:-1]:
+            pd.testing.assert_frame_equal(df_features[row_idx][col_idx], df_features[0][1])
