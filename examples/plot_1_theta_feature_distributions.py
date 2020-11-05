@@ -1,6 +1,6 @@
 """
-Theta oscillation cycle feature distributions
-=============================================
+1. Theta oscillation cycle feature distributions
+================================================
 This tutorial computes the distributions of cycle features for two recordings
 """
 
