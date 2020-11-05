@@ -1,6 +1,7 @@
 """Functions to compute features across 2 dimensional arrays of data."""
 
 import warnings
+from copy import deepcopy
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
@@ -91,7 +92,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     """
 
     # Check compute_features_kwargs
-    kwargs = compute_features_kwargs
+    kwargs = deepcopy(compute_features_kwargs)
     kwargs = np.array(kwargs) if isinstance(kwargs, list) else kwargs
 
     check_kwargs_shape(sigs, kwargs, axis)
@@ -272,7 +273,7 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     df_features = []
 
     # Convert list of kwargs to array to check dimensions
-    kwargs = compute_features_kwargs
+    kwargs = deepcopy(compute_features_kwargs)
     kwargs = np.array(kwargs) if isinstance(kwargs, list) else kwargs
 
     check_kwargs_shape(sigs, kwargs, axis)
