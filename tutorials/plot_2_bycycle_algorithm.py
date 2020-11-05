@@ -47,7 +47,7 @@ from neurodsp.sim import sim_combined
 
 from bycycle.features import compute_features
 from bycycle.cyclepoints import find_extrema, find_zerox
-from bycycle.cyclepoints.extrema import find_flank_zerox
+from bycycle.cyclepoints.zerox import find_flank_zerox
 from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_array
 
 pd.options.display.max_columns = 10
