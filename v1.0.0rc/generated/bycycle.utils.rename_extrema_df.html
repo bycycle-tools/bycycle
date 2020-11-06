@@ -110,20 +110,23 @@
 <h1>bycycle.utils.rename_extrema_df<a class="headerlink" href="#bycycle-utils-rename-extrema-df" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="bycycle.utils.rename_extrema_df">
-<code class="sig-prename descclassname">bycycle.utils.</code><code class="sig-name descname">rename_extrema_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">center_extrema</span></em>, <em class="sig-param"><span class="n">df_samples</span></em>, <em class="sig-param"><span class="n">df_features</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/utils/dataframes.html#rename_extrema_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.utils.rename_extrema_df" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bycycle.utils.</code><code class="sig-name descname">rename_extrema_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">center_extrema</span></em>, <em class="sig-param"><span class="n">df_features</span></em>, <em class="sig-param"><span class="n">return_samples</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/utils/dataframes.html#rename_extrema_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.utils.rename_extrema_df" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rename a dataframe based on the centered extrema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>center_extrema</strong><span class="classifier">{‘trough’, ‘peak’}</span></dt><dd><p>Which extrema is centered.</p>
 </dd>
-<dt><strong>df_samples, df_features</strong><span class="classifier">pandas.DataFrames</span></dt><dd><p>ByCycle dataframes to rename, given the centered extrema.</p>
+<dt><strong>df_shape_features</strong><span class="classifier">pandas.DataFrames</span></dt><dd><p>Bycycle dataframes to rename, given the centered extrema.</p>
+</dd>
+<dt><strong>return_samples</strong><span class="classifier">bool, optional, default: True</span></dt><dd><p>Whether to rename sample columns if <code class="docutils literal notranslate"><span class="pre">returns_samples</span></code> is True when computing
+<code class="docutils literal notranslate"><span class="pre">df_shape_features</span></code> using <a class="reference internal" href="bycycle.features.compute_shape_features.html#bycycle.features.compute_shape_features" title="bycycle.features.compute_shape_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_shape_features()</span></code></a>.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>df_features, df_samples</strong><span class="classifier">pandas.DataFrames</span></dt><dd><p>Updated dataframes.</p>
+<dt><strong>df_features</strong><span class="classifier">pandas.DataFrames</span></dt><dd><p>Updated dataframes.</p>
 </dd>
 </dl>
 </dd>
@@ -135,8 +138,8 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">sim_bursty_oscillation</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="o">-</span><span class="n">sig</span>  <span class="c1"># invert the signal, flipping peaks and troughs</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <span class="n">rename_extrema_df</span><span class="p">(</span><span class="s1">&#39;trough&#39;</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">df_features</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df_features</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df_features</span> <span class="o">=</span> <span class="n">rename_extrema_df</span><span class="p">(</span><span class="s1">&#39;trough&#39;</span><span class="p">,</span> <span class="n">df_features</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

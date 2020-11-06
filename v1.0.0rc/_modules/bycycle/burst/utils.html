@@ -188,12 +188,14 @@
 <span class="sd">    --------</span>
 <span class="sd">    Lower the amplitude consistency threshold to zero for cycles on the edges of bursts:</span>
 
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_combined</span>
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_features</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_combined(n_seconds=4, fs=1000, components={&#39;sim_bursty_oscillation&#39;: {&#39;freq&#39;: 10},</span>
 <span class="sd">    ...                                                      &#39;sim_powerlaw&#39;: {&#39;exp&#39;: 2}})</span>
 <span class="sd">    &gt;&gt;&gt; threshold_kwargs = {&#39;amp_fraction_threshold&#39;: 0., &#39;amp_consistency_threshold&#39;: .5,</span>
 <span class="sd">    ...                     &#39;period_consistency_threshold&#39;: .5, &#39;monotonicity_threshold&#39;: .4,</span>
 <span class="sd">    ...                     &#39;min_n_cycles&#39;: 3}</span>
-<span class="sd">    &gt;&gt;&gt; df_features, _ = compute_features(sig, fs=1000, f_range=(8, 12), threshold_kwargs=threshold_kwargs)</span>
+<span class="sd">    &gt;&gt;&gt; df_features = compute_features(sig, fs=1000, f_range=(8, 12), threshold_kwargs=threshold_kwargs)</span>
 <span class="sd">    &gt;&gt;&gt; threshold_kwargs[&#39;amp_consistency_threshold&#39;] = 0</span>
 <span class="sd">    &gt;&gt;&gt; df_features_edges = recompute_edges(df_features, threshold_kwargs)</span>
 <span class="sd">    &quot;&quot;&quot;</span>

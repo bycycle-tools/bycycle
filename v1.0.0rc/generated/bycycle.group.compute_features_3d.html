@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bycycle.group.features.compute_features_3d &#8212; bycycle 1.0.0rc1 documentation</title>
+    <title>bycycle.group.compute_features_3d &#8212; bycycle 1.0.0rc1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -106,16 +106,16 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="bycycle-group-features-compute-features-3d">
-<h1>bycycle.group.features.compute_features_3d<a class="headerlink" href="#bycycle-group-features-compute-features-3d" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="bycycle-group-compute-features-3d">
+<h1>bycycle.group.compute_features_3d<a class="headerlink" href="#bycycle-group-compute-features-3d" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="bycycle.group.features.compute_features_3d">
-<code class="sig-prename descclassname">bycycle.group.features.</code><code class="sig-name descname">compute_features_3d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigs</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">compute_features_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_samples</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">progress</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/group/features.html#compute_features_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.group.features.compute_features_3d" title="Permalink to this definition">¶</a></dt>
+<dt id="bycycle.group.compute_features_3d">
+<code class="sig-prename descclassname">bycycle.group.</code><code class="sig-name descname">compute_features_3d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigs</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">compute_features_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">return_samples</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">progress</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/group/features.html#compute_features_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.group.compute_features_3d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute shape and burst features for a 3 dimensional array of signals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>sigs</strong><span class="classifier">3d array</span></dt><dd><p>Voltage time series, with shape [n_groups, n_signals, n_points].</p>
+<dt><strong>sigs</strong><span class="classifier">3d array</span></dt><dd><p>Voltage time series, with 3d shape, i.e. (n_channels, n_epochs, n_samples).</p>
 </dd>
 <dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in Hz.</p>
 </dd>
@@ -123,11 +123,23 @@
 </dd>
 <dt><strong>compute_features_kwargs</strong><span class="classifier">dict or 1d list of dict or 2d list of dict</span></dt><dd><p>Keyword arguments used in <a class="reference internal" href="bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a>.</p>
 </dd>
+<dt><strong>axis</strong><span class="classifier">{0, 1, None}, optional, default: 1</span></dt><dd><p>Which axes to calculate features across:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">0</span></code> : Features are computed for each signal independently
+across the first axis, i.e. across channels in (n_channels, n_epochs, n_timepoints).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">1</span></code> (default) : Features are computed for each signal independently
+across the second axis, i.e. across channels in (n_epochs, n_channels, n_timepoints).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">None</span></code> : Features are computed across a flattened 1d array, this is typically
+not recommended unless the 3d array was recored continuously.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">(0,</span> <span class="pre">1)</span></code> : Features are computed independently for each signal, across the first
+and second axes. This is analogous to <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">0</span></code> in <a class="reference internal" href="bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features_2d()</span></code></a>.</p></li>
+</ul>
+</dd>
 <dt><strong>return_samples</strong><span class="classifier">bool, optional, default: True</span></dt><dd><p>Whether to return a dataframe of cyclepoint sample indices.</p>
 </dd>
 <dt><strong>n_jobs</strong><span class="classifier">int, optional, default: -1</span></dt><dd><p>The number of jobs, one per cpu, to compute features in parallel.</p>
 </dd>
-<dt><strong>progress: {None, ‘tqdm’, ‘tqdm.notebook’}, optional, default: None</strong></dt><dd><p>Specify whether to display a progress bar. Use ‘tqdm’ if installed.</p>
+<dt><strong>progress</strong><span class="classifier">{None, ‘tqdm’, ‘tqdm.notebook’}, optional, default: None</span></dt><dd><p>Specify whether to display a progress bar. Use ‘tqdm’ if installed.</p>
 </dd>
 </dl>
 </dd>
@@ -136,22 +148,20 @@
 <dt><strong>df_features</strong><span class="classifier">list of pandas.DataFrame</span></dt><dd><p>Dataframes containing shape and burst features for each cycle.
 Each dataframe is computed using the <a class="reference internal" href="bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a> function.</p>
 </dd>
-<dt><strong>df_samples</strong><span class="classifier">list of pandas.DataFrame, optional</span></dt><dd><p>Dataframes containing cyclepoints for each cycle.
-Only returned if <code class="docutils literal notranslate"><span class="pre">return_samples</span></code> is True.
-Each dataframe is computed using the <a class="reference internal" href="bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a> function.</p>
-</dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <ul class="simple">
-<li><p>The order of <code class="docutils literal notranslate"><span class="pre">df_features</span></code> and <code class="docutils literal notranslate"><span class="pre">df_samples</span></code> corresponds to the order of <code class="docutils literal notranslate"><span class="pre">sigs</span></code>.</p></li>
+<li><p>The order of <code class="docutils literal notranslate"><span class="pre">df_features</span></code> corresponds to the order of <code class="docutils literal notranslate"><span class="pre">sigs</span></code>.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">compute_features_kwargs</span></code> is a dictionary, the same kwargs are applied applied across
 all signals. A 1d list, equal in length to the first dimensions of sigs, may be applied to
 each set of signals along the first dimensions. A 2d list, the same shape as the first two
 dimensions of <code class="docutils literal notranslate"><span class="pre">sigs</span></code> may also be used to applied unique parameters to each signal.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">return_samples</span></code> is controlled from the kwargs passed in this function. The
 <code class="docutils literal notranslate"><span class="pre">return_samples</span></code> value in <code class="docutils literal notranslate"><span class="pre">compute_features_kwargs</span></code> will be ignored.</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">None</span></code> parallel computation may not be performed due to the
+requirement of flattening the array into one dimension.</p></li>
 </ul>
 <p class="rubric">Examples</p>
 <p>Compute the features of a 3d array, in parallel, with a shape of
@@ -165,7 +175,7 @@ dimensions of <code class="docutils literal notranslate"><span class="pre">sigs<
 <span class="gp">... </span>                    <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">compute_feature_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;threshold_kwargs&#39;</span><span class="p">:</span> <span class="n">threshold_kwargs</span><span class="p">,</span> <span class="s1">&#39;center_extrema&#39;</span><span class="p">:</span> <span class="s1">&#39;trough&#39;</span><span class="p">}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">features</span> <span class="o">=</span> <span class="n">compute_features_3d</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="gp">... </span>                               <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_feature_kwargs</span><span class="p">)</span>
+<span class="gp">... </span>                               <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_feature_kwargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Compute the features of a 3d array, in parallel, with a shape of
@@ -182,7 +192,14 @@ dimensions of <code class="docutils literal notranslate"><span class="pre">sigs<
 </div>
 </dd></dl>
 
-<div style='clear:both'></div></div>
+<div class="section" id="examples-using-bycycle-group-compute-features-3d">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">bycycle.group.compute_features_3d</span></code><a class="headerlink" href="#examples-using-bycycle-group-compute-features-3d" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="For 2D arrays:"><div class="figure align-default" id="id1">
+<img alt="2. 2D and 3D Signals" src="../_images/sphx_glr_plot_2_multidim_sigs_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_2_multidim_sigs.html#sphx-glr-auto-examples-plot-2-multidim-sigs-py"><span class="std std-ref">2. 2D and 3D Signals</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
 
 
     </div>

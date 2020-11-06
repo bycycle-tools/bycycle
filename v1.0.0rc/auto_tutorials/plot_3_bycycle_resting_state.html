@@ -130,7 +130,7 @@ oscillatory input (measured by its symmetry).</p>
 <span class="kn">from</span> <span class="nn">neurodsp.filt</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a>
 <span class="kn">from</span> <span class="nn">neurodsp.plts</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a>
 
-<span class="kn">from</span> <span class="nn">bycycle.group</span> <span class="kn">import</span> <span class="n">compute_features_2d</span>
+<span class="kn">from</span> <span class="nn">bycycle.group</span> <span class="kn">import</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a>
 <span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">,</span> <a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_columns</span> <span class="o">=</span> <span class="mi">10</span>
@@ -186,8 +186,8 @@ oscillatory input (measured by its symmetry).</p>
 <span class="c1"># Compute features for each signal</span>
 <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;threshold_kwargs&#39;</span><span class="p">:</span> <span class="n">threshold_kwargs</span><span class="p">}</span>
 
-<span class="n">df_features_list</span><span class="p">,</span> <span class="n">df_samples_list</span> <span class="o">=</span> \
-    <span class="n">compute_features_2d</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_features_kwargs</span><span class="p">)</span>
+<span class="n">df_features_list</span> <span class="o">=</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span>
+                                       <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_features_kwargs</span><span class="p">)</span>
 
 <span class="c1"># Add group and subject ids to dataframes</span>
 <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;patient&#39;</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_signals</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;control&#39;</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_signals</span><span class="p">)]</span>
@@ -222,14 +222,14 @@ oscillatory input (measured by its symmetry).</p>
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>period</th>
-      <th>time_peak</th>
-      <th>time_trough</th>
-      <th>volt_peak</th>
-      <th>volt_trough</th>
-      <th>...</th>
+      <th>amp_fraction</th>
+      <th>amp_consistency</th>
       <th>period_consistency</th>
       <th>monotonicity</th>
+      <th>period</th>
+      <th>...</th>
+      <th>sample_last_trough</th>
+      <th>sample_next_trough</th>
       <th>is_burst</th>
       <th>group</th>
       <th>subject_id</th>
@@ -238,77 +238,77 @@ oscillatory input (measured by its symmetry).</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>163</td>
-      <td>64</td>
-      <td>67</td>
-      <td>0.592201</td>
-      <td>-1.272024</td>
-      <td>...</td>
+      <td>0.191919</td>
       <td>NaN</td>
-      <td>0.819432</td>
+      <td>NaN</td>
+      <td>0.741338</td>
+      <td>116</td>
+      <td>...</td>
+      <td>70</td>
+      <td>186</td>
       <td>False</td>
       <td>control</td>
       <td>0</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>75</td>
-      <td>38</td>
-      <td>65</td>
-      <td>1.260706</td>
-      <td>-1.056683</td>
-      <td>...</td>
-      <td>0.460123</td>
+      <td>0.626263</td>
+      <td>0.411700</td>
+      <td>0.793103</td>
       <td>1.000000</td>
+      <td>92</td>
+      <td>...</td>
+      <td>186</td>
+      <td>278</td>
       <td>False</td>
       <td>control</td>
       <td>0</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>93</td>
-      <td>41</td>
-      <td>33</td>
-      <td>1.237767</td>
-      <td>0.295237</td>
-      <td>...</td>
-      <td>0.602151</td>
+      <td>0.959596</td>
+      <td>0.569322</td>
+      <td>0.893204</td>
       <td>1.000000</td>
-      <td>False</td>
+      <td>103</td>
+      <td>...</td>
+      <td>278</td>
+      <td>381</td>
+      <td>True</td>
       <td>control</td>
       <td>0</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>56</td>
-      <td>26</td>
-      <td>50</td>
-      <td>0.206486</td>
-      <td>-0.473294</td>
-      <td>...</td>
-      <td>0.533333</td>
+      <td>0.979798</td>
+      <td>0.707388</td>
+      <td>0.867925</td>
       <td>1.000000</td>
-      <td>False</td>
+      <td>106</td>
+      <td>...</td>
+      <td>381</td>
+      <td>487</td>
+      <td>True</td>
       <td>control</td>
       <td>0</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>105</td>
-      <td>58</td>
-      <td>34</td>
-      <td>-0.006706</td>
-      <td>-0.815868</td>
+      <td>0.797980</td>
+      <td>0.705421</td>
+      <td>0.847826</td>
+      <td>1.000000</td>
+      <td>92</td>
       <td>...</td>
-      <td>0.533333</td>
-      <td>0.847222</td>
-      <td>False</td>
+      <td>487</td>
+      <td>579</td>
+      <td>True</td>
       <td>control</td>
       <td>0</td>
     </tr>
   </tbody>
 </table>
-<p>5 rows × 20 columns</p>
+<p>5 rows × 26 columns</p>
 </div>
 <br />
 <br /></div>
@@ -317,8 +317,8 @@ oscillatory input (measured by its symmetry).</p>
 <p>These burst detection parameters seem appropriate because they mostly restrict the analysis to
 periods of the signal that appear to be bursting. This was confirmed by looking at a few different
 signal segments from a few subjects.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">df_samples_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sigs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fs</span><span class="p">,</span>
-                          <span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sigs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fs</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="p">,</span>
+                          <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
 <img alt="plot 3 bycycle resting state" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_bycycle_resting_state_002.png" />
@@ -367,181 +367,181 @@ but not the other features</p>
       <th>0</th>
       <td>control</td>
       <td>0</td>
-      <td>3.089148</td>
-      <td>100.466667</td>
-      <td>0.453289</td>
-      <td>0.517542</td>
+      <td>3.367473</td>
+      <td>99.962963</td>
+      <td>0.419588</td>
+      <td>0.512469</td>
     </tr>
     <tr>
       <th>1</th>
       <td>control</td>
       <td>1</td>
-      <td>3.472532</td>
-      <td>100.500000</td>
-      <td>0.420548</td>
-      <td>0.493862</td>
+      <td>2.941586</td>
+      <td>98.760870</td>
+      <td>0.421749</td>
+      <td>0.515488</td>
     </tr>
     <tr>
       <th>2</th>
       <td>control</td>
       <td>2</td>
-      <td>3.236036</td>
-      <td>101.200000</td>
-      <td>0.406527</td>
-      <td>0.494772</td>
+      <td>3.165250</td>
+      <td>103.920000</td>
+      <td>0.441981</td>
+      <td>0.502393</td>
     </tr>
     <tr>
       <th>3</th>
       <td>control</td>
       <td>3</td>
-      <td>3.538765</td>
-      <td>113.000000</td>
-      <td>0.470003</td>
-      <td>0.500195</td>
+      <td>3.464969</td>
+      <td>98.500000</td>
+      <td>0.420177</td>
+      <td>0.491110</td>
     </tr>
     <tr>
       <th>4</th>
       <td>control</td>
       <td>4</td>
-      <td>3.150304</td>
-      <td>100.588235</td>
-      <td>0.442850</td>
-      <td>0.481317</td>
+      <td>3.047604</td>
+      <td>97.647059</td>
+      <td>0.450721</td>
+      <td>0.504615</td>
     </tr>
     <tr>
       <th>5</th>
       <td>control</td>
       <td>5</td>
-      <td>3.905533</td>
-      <td>99.600000</td>
-      <td>0.413985</td>
-      <td>0.498019</td>
+      <td>3.387226</td>
+      <td>101.371429</td>
+      <td>0.417247</td>
+      <td>0.502266</td>
     </tr>
     <tr>
       <th>6</th>
       <td>control</td>
       <td>6</td>
-      <td>3.007394</td>
-      <td>107.038462</td>
-      <td>0.449837</td>
-      <td>0.508104</td>
+      <td>3.421850</td>
+      <td>100.088235</td>
+      <td>0.419402</td>
+      <td>0.506907</td>
     </tr>
     <tr>
       <th>7</th>
       <td>control</td>
       <td>7</td>
-      <td>1.732339</td>
-      <td>100.800000</td>
-      <td>0.570252</td>
-      <td>0.526094</td>
+      <td>3.112859</td>
+      <td>102.400000</td>
+      <td>0.438774</td>
+      <td>0.498277</td>
     </tr>
     <tr>
       <th>8</th>
       <td>control</td>
       <td>8</td>
-      <td>3.307804</td>
-      <td>101.851852</td>
-      <td>0.393818</td>
-      <td>0.513047</td>
+      <td>3.088168</td>
+      <td>100.913043</td>
+      <td>0.433988</td>
+      <td>0.528569</td>
     </tr>
     <tr>
       <th>9</th>
       <td>control</td>
       <td>9</td>
-      <td>3.406371</td>
-      <td>100.857143</td>
-      <td>0.421301</td>
-      <td>0.477161</td>
+      <td>3.226736</td>
+      <td>100.233333</td>
+      <td>0.403319</td>
+      <td>0.496858</td>
     </tr>
     <tr>
       <th>10</th>
       <td>patient</td>
       <td>10</td>
-      <td>3.008404</td>
-      <td>110.812500</td>
-      <td>0.433987</td>
-      <td>0.510941</td>
+      <td>3.614160</td>
+      <td>100.280000</td>
+      <td>0.408052</td>
+      <td>0.496487</td>
     </tr>
     <tr>
       <th>11</th>
       <td>patient</td>
       <td>11</td>
-      <td>2.887618</td>
-      <td>97.166667</td>
-      <td>0.489610</td>
-      <td>0.497196</td>
+      <td>3.079194</td>
+      <td>102.312500</td>
+      <td>0.478694</td>
+      <td>0.513789</td>
     </tr>
     <tr>
       <th>12</th>
       <td>patient</td>
       <td>12</td>
-      <td>3.262634</td>
-      <td>102.324324</td>
-      <td>0.485359</td>
-      <td>0.495139</td>
+      <td>3.285278</td>
+      <td>98.406250</td>
+      <td>0.487911</td>
+      <td>0.475946</td>
     </tr>
     <tr>
       <th>13</th>
       <td>patient</td>
       <td>13</td>
-      <td>3.094918</td>
-      <td>105.750000</td>
-      <td>0.507016</td>
-      <td>0.499505</td>
+      <td>3.177906</td>
+      <td>105.586207</td>
+      <td>0.510835</td>
+      <td>0.517685</td>
     </tr>
     <tr>
       <th>14</th>
       <td>patient</td>
       <td>14</td>
-      <td>3.203696</td>
-      <td>106.444444</td>
-      <td>0.499758</td>
-      <td>0.489692</td>
+      <td>3.916808</td>
+      <td>96.714286</td>
+      <td>0.464814</td>
+      <td>0.495587</td>
     </tr>
     <tr>
       <th>15</th>
       <td>patient</td>
       <td>15</td>
-      <td>4.481624</td>
-      <td>100.285714</td>
-      <td>0.501446</td>
-      <td>0.493283</td>
+      <td>3.463715</td>
+      <td>99.571429</td>
+      <td>0.512988</td>
+      <td>0.511131</td>
     </tr>
     <tr>
       <th>16</th>
       <td>patient</td>
       <td>16</td>
-      <td>3.228587</td>
-      <td>103.558824</td>
-      <td>0.496887</td>
-      <td>0.507685</td>
+      <td>2.969226</td>
+      <td>103.341463</td>
+      <td>0.501442</td>
+      <td>0.505206</td>
     </tr>
     <tr>
       <th>17</th>
       <td>patient</td>
       <td>17</td>
-      <td>3.943847</td>
-      <td>103.846154</td>
-      <td>0.504964</td>
-      <td>0.491555</td>
+      <td>3.594066</td>
+      <td>101.200000</td>
+      <td>0.474779</td>
+      <td>0.492678</td>
     </tr>
     <tr>
       <th>18</th>
       <td>patient</td>
       <td>18</td>
-      <td>2.915544</td>
-      <td>100.781250</td>
-      <td>0.504307</td>
-      <td>0.532483</td>
+      <td>3.327316</td>
+      <td>99.900000</td>
+      <td>0.477371</td>
+      <td>0.478656</td>
     </tr>
     <tr>
       <th>19</th>
       <td>patient</td>
       <td>19</td>
-      <td>3.317577</td>
-      <td>104.600000</td>
-      <td>0.480174</td>
-      <td>0.531485</td>
+      <td>3.579234</td>
+      <td>101.480000</td>
+      <td>0.478958</td>
+      <td>0.492808</td>
     </tr>
   </tbody>
 </table>
@@ -583,13 +583,13 @@ but not the other features</p>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/rph/Projects/bycycle/.env/lib/python3.8/site-packages/scipy/stats/stats.py:7012: DeprecationWarning: Calling `mannwhitneyu` without specifying `alternative` is deprecated.
   warnings.warn(&quot;Calling `mannwhitneyu` without specifying &quot;
-Amplitude            difference between groups, U=  46, p=0.39567
-Period (ms)          difference between groups, U=  38, p=0.19234
-Rise-Decay Symmetry  difference between groups, U=  14, p=0.00364
-Peak-Trough Symmetry difference between groups, U=  48, p=0.45486
+Amplitude            difference between groups, U=  31, p=0.08099
+Period (ms)          difference between groups, U=  45, p=0.36686
+Rise-Decay Symmetry  difference between groups, U=   9, p=0.00110
+Peak-Trough Symmetry difference between groups, U=  34, p=0.12066
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.027 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.944 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-3-bycycle-resting-state-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/a420da27baa2092e3a432c04209f31d2/plot_3_bycycle_resting_state.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_3_bycycle_resting_state.py</span></code></a></p>

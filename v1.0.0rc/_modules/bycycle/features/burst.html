@@ -118,16 +118,13 @@
 <span class="c1">###################################################################################################</span>
 <span class="c1">###################################################################################################</span>
 
-<div class="viewcode-block" id="compute_burst_features"><a class="viewcode-back" href="../../../generated/bycycle.features.compute_burst_features.html#bycycle.features.compute_burst_features">[docs]</a><span class="k">def</span> <span class="nf">compute_burst_features</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span>
-                           <span class="n">burst_method</span><span class="o">=</span><span class="s1">&#39;cycles&#39;</span><span class="p">,</span> <span class="n">burst_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_burst_features"><a class="viewcode-back" href="../../../generated/bycycle.features.compute_burst_features.html#bycycle.features.compute_burst_features">[docs]</a><span class="k">def</span> <span class="nf">compute_burst_features</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">burst_method</span><span class="o">=</span><span class="s1">&#39;cycles&#39;</span><span class="p">,</span> <span class="n">burst_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute burst features for each cycle.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    df_shape_features : pandas.DataFrame</span>
 <span class="sd">        Shape parameters for each cycle, determined using :func:`~.compute_shape_features`.</span>
-<span class="sd">    df_samples : pandas.DataFrame</span>
-<span class="sd">        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.</span>
 <span class="sd">    sig : 1d array</span>
 <span class="sd">        Voltage time series used for determining monotonicity.</span>
 <span class="sd">    burst_method : string, optional, default: &#39;cycles&#39;</span>
@@ -172,8 +169,8 @@
 <span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
 <span class="sd">    &gt;&gt;&gt; fs  = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, 10)</span>
-<span class="sd">    &gt;&gt;&gt; df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))</span>
-<span class="sd">    &gt;&gt;&gt; df_burst = compute_burst_features(df_shapes, df_samples, sig, burst_method=&#39;amp&#39;,</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; df_burst = compute_burst_features(df_shapes, sig, burst_method=&#39;amp&#39;,</span>
 <span class="sd">    ...                                   burst_kwargs={&#39;fs&#39;: fs, &#39;f_range&#39;: (8, 12)})</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -187,10 +184,10 @@
         <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;amp_fraction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_amp_fraction</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
 
         <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;amp_consistency&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                <span class="n">compute_amp_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">)</span>
+                <span class="n">compute_amp_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
 
         <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;period_consistency&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_period_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
-        <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;monotonicity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_monotonicity</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+        <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;monotonicity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_monotonicity</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 
     <span class="c1"># Use dual threshold burst detection</span>
     <span class="k">elif</span> <span class="n">burst_method</span> <span class="o">==</span> <span class="s1">&#39;amp&#39;</span><span class="p">:</span>
@@ -203,7 +200,7 @@
                              <span class="s2">&quot;when &#39;burst_method&#39; is &#39;amp&#39;.&quot;</span><span class="p">)</span>
 
         <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;burst_fraction&#39;</span><span class="p">]</span> <span class="o">=</span> \
-            <span class="n">compute_burst_fraction</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">burst_kwargs</span><span class="p">)</span>
+            <span class="n">compute_burst_fraction</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">burst_kwargs</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unrecognized &#39;burst_method&#39;.&quot;</span><span class="p">)</span>
@@ -232,14 +229,14 @@
 <span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
 <span class="sd">    &gt;&gt;&gt; fs = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
-<span class="sd">    &gt;&gt;&gt; df_shapes, df_samples = compute_shape_features(sig, fs, (8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, (8, 12))</span>
 <span class="sd">    &gt;&gt;&gt; amp_fraction = compute_amp_fraction(df_shapes)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">df_shape_features</span><span class="p">[</span><span class="s1">&#39;volt_amp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">compute_amp_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">compute_amp_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute amplitude consistency for each cycle.</span>
 
 <span class="sd">    Parameters</span>
@@ -262,8 +259,8 @@
 <span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
 <span class="sd">    &gt;&gt;&gt; fs = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
-<span class="sd">    &gt;&gt;&gt; df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))</span>
-<span class="sd">    &gt;&gt;&gt; amp_consistency = compute_amp_consistency(df_shapes, df_samples)</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; amp_consistency = compute_amp_consistency(df_shapes)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Compute amplitude consistency</span>
@@ -279,7 +276,7 @@
 
             <span class="n">consist_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span>
 
-            <span class="k">if</span> <span class="s1">&#39;sample_peak&#39;</span> <span class="ow">in</span> <span class="n">df_samples</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;sample_peak&#39;</span> <span class="ow">in</span> <span class="n">df_shape_features</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
 
                 <span class="n">consist_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="o">/</span> \
                     <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
@@ -324,7 +321,7 @@
 <span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
 <span class="sd">    &gt;&gt;&gt; fs = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
-<span class="sd">    &gt;&gt;&gt; df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))</span>
 <span class="sd">    &gt;&gt;&gt; period_consistency = compute_period_consistency(df_shapes)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

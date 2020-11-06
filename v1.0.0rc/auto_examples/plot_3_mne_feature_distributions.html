@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MNE Interface Cycle Feature Distributions &#8212; bycycle 1.0.0rc1 documentation</title>
+    <title>3. MNE Interface Cycle Feature Distributions &#8212; bycycle 1.0.0rc1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -108,10 +108,10 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-mne-feature-distributions-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-3-mne-feature-distributions-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="mne-interface-cycle-feature-distributions">
-<span id="sphx-glr-auto-examples-plot-mne-feature-distributions-py"></span><h1>MNE Interface Cycle Feature Distributions<a class="headerlink" href="#mne-interface-cycle-feature-distributions" title="Permalink to this headline">¶</a></h1>
+<span id="sphx-glr-auto-examples-plot-3-mne-feature-distributions-py"></span><h1>3. MNE Interface Cycle Feature Distributions<a class="headerlink" href="#mne-interface-cycle-feature-distributions" title="Permalink to this headline">¶</a></h1>
 <p>This example computes the distributions of bycycle features using MNE objects</p>
 <div class="section" id="import-packages-and-load-data">
 <h2>Import Packages and Load Data<a class="headerlink" href="#import-packages-and-load-data" title="Permalink to this headline">¶</a></h2>
@@ -124,7 +124,7 @@
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">pick_channels</span>
 
 <span class="kn">from</span> <span class="nn">neurodsp.plts</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a>
-<span class="kn">from</span> <span class="nn">bycycle.features</span> <span class="kn">import</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a>
+<span class="kn">from</span> <span class="nn">bycycle.group</span> <span class="kn">import</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a>
 <span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_feature_hist.html#bycycle.plts.plot_feature_hist" title="bycycle.plts.plot_feature_hist" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_hist</span></a>
 </pre></div>
 </div>
@@ -164,7 +164,7 @@ data.</p>
 <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="p">[</span><span class="n">sig</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">sigs</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">chs</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;EEG Signal&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="EEG Signal" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_mne_feature_distributions_001.png" />
+<img alt="EEG Signal" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_mne_feature_distributions_001.png" />
 </div>
 <div class="section" id="compute-cycle-by-cycle-features">
 <h3>Compute cycle-by-cycle features<a class="headerlink" href="#compute-cycle-by-cycle-features" title="Permalink to this headline">¶</a></h3>
@@ -178,12 +178,12 @@ cycle features of the three signals.</p>
                     <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
 
 <span class="c1"># Create a dictionary of cycle feature dataframes, corresponding to each channel</span>
-<span class="n">dfs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;trough&#39;</span><span class="p">)</span>
 
-<span class="k">for</span> <span class="n">sig</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">chs</span><span class="p">):</span>
-    <span class="c1"># Cycle-by-cycle analysis</span>
-    <span class="n">dfs</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;trough&#39;</span><span class="p">,</span>
-                               <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">dfs</span> <span class="o">=</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                          <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="n">ch</span><span class="p">:</span> <span class="n">df</span> <span class="k">for</span> <span class="n">df</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">chs</span><span class="p">)}</span>
 </pre></div>
 </div>
 </div>
@@ -215,14 +215,14 @@ so this is not unexpected.</p>
                       <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Peak-trough asymmetry&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
 </div>
-<img alt="plot mne feature distributions" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_mne_feature_distributions_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.996 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-mne-feature-distributions-py">
+<img alt="plot 3 mne feature distributions" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_mne_feature_distributions_002.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.985 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-3-mne-feature-distributions-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/9910f4a9ce68c828cca311d0d23650eb/plot_mne_feature_distributions.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_mne_feature_distributions.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/fbaec333aab0403a821111a15c28a3ac/plot_3_mne_feature_distributions.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_3_mne_feature_distributions.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/6743f2afad90f3038e69b44ddabc4128/plot_mne_feature_distributions.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_mne_feature_distributions.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/612d6e75b6d1e95705ae01d156c726b2/plot_3_mne_feature_distributions.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_3_mne_feature_distributions.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>

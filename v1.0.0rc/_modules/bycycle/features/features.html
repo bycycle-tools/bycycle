@@ -183,7 +183,7 @@
 <span class="sd">        - ``time_ptsym`` : fraction of cycle in the peak period</span>
 <span class="sd">        - ``band_amp`` : average analytic amplitude of the oscillation.</span>
 
-<span class="sd">        When consistency burst detection is used (i.e. burst_method == &#39;cycles&#39;):</span>
+<span class="sd">        When consistency burst detection is used (i.e. burst_method = &#39;cycles&#39;):</span>
 
 <span class="sd">        - ``amp_fraction`` : normalized amplitude</span>
 <span class="sd">        - ``amp_consistency`` : difference in the rise and decay voltage within a cycle</span>
@@ -192,13 +192,11 @@
 <span class="sd">        - ``monotonicity`` : fraction of instantaneous voltage changes between consecutive</span>
 <span class="sd">          samples that are positive during the rise phase and negative during the decay phase</span>
 
-<span class="sd">        When dual threshold burst detection is used (i.e. burst_method == &#39;amp&#39;):</span>
+<span class="sd">        When dual threshold burst detection is used (i.e. burst_method = &#39;amp&#39;):</span>
 
 <span class="sd">        - ``burst_fraction`` : fraction of a cycle that is bursting</span>
 
-<span class="sd">    df_samples : pandas.DataFrame, optional, default: True</span>
-<span class="sd">        An optionally returned dataframe containing cyclepoints for each cycle.</span>
-<span class="sd">        Columns (listed for peak-centered cycles):</span>
+<span class="sd">        When cyclepoints are returned (i.e. deafault, return_samples = True)</span>
 
 <span class="sd">        - ``sample_peak`` : sample of &#39;sig&#39; at which the peak occurs</span>
 <span class="sd">        - ``sample_zerox_decay`` : sample of the decaying zero-crossing</span>
@@ -213,16 +211,15 @@
 <span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
 <span class="sd">    &gt;&gt;&gt; fs = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
-<span class="sd">    &gt;&gt;&gt; df_features, df_samples = compute_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; df_features = compute_features(sig, fs, f_range=(8, 12))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Ensure arguments are within valid range</span>
     <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
 
     <span class="c1"># Compute shape features for each cycle.</span>
-    <span class="n">df_shape_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> \
-        <span class="n">compute_shape_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="n">center_extrema</span><span class="p">,</span>
-                               <span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="n">find_extrema_kwargs</span><span class="p">)</span>
+    <span class="n">df_shape_features</span> <span class="o">=</span> <span class="n">compute_shape_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="n">center_extrema</span><span class="p">,</span>
+                                               <span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="n">find_extrema_kwargs</span><span class="p">)</span>
 
     <span class="c1"># Ensure kwargs are a dictionaries</span>
     <span class="k">if</span> <span class="n">burst_method</span> <span class="o">==</span> <span class="s1">&#39;amp&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">burst_kwargs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -243,12 +240,11 @@
         <span class="n">burst_kwargs</span><span class="p">[</span><span class="s1">&#39;f_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_range</span>
 
     <span class="c1"># Compute burst features for each cycle</span>
-    <span class="n">df_burst_features</span> <span class="o">=</span> <span class="n">compute_burst_features</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span>
-                                               <span class="n">burst_method</span><span class="o">=</span><span class="n">burst_method</span><span class="p">,</span>
+    <span class="n">df_burst_features</span> <span class="o">=</span> <span class="n">compute_burst_features</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">burst_method</span><span class="o">=</span><span class="n">burst_method</span><span class="p">,</span>
                                                <span class="n">burst_kwargs</span><span class="o">=</span><span class="n">burst_kwargs</span><span class="p">)</span>
 
     <span class="c1"># Concatenate shape and burst features</span>
-    <span class="n">df_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">df_burst_features</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">df_burst_features</span><span class="p">,</span> <span class="n">df_shape_features</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Define whether or not each cycle is part of a burst</span>
     <span class="k">if</span> <span class="n">burst_method</span> <span class="o">==</span> <span class="s1">&#39;cycles&#39;</span><span class="p">:</span>
@@ -259,8 +255,9 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid argument for &quot;burst_method&quot;.&#39;</span>
                          <span class="s1">&#39;Either &quot;cycles&quot; or &quot;amp&quot; must be specified.&quot;&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">return_samples</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span>
+    <span class="k">if</span> <span class="n">return_samples</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">sample_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df_features</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;sample_&#39;</span><span class="p">)]</span>
+        <span class="n">df_features</span> <span class="o">=</span> <span class="n">df_features</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">sample_columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">df_features</span></div>
 </pre></div>

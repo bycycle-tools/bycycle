@@ -117,8 +117,6 @@
 <dd class="field-odd"><dl class="simple">
 <dt><strong>df_features</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>Dataframe output of <a class="reference internal" href="bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a>.</p>
 </dd>
-<dt><strong>df_samples</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>Dataframe output of <code class="xref py py-func docutils literal notranslate"><span class="pre">compute_shapes()</span></code>.</p>
-</dd>
 <dt><strong>sig</strong><span class="classifier">1d array</span></dt><dd><p>Time series to plot.</p>
 </dd>
 <dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in Hz.</p>
@@ -159,9 +157,9 @@ than <code class="docutils literal notranslate"><span class="pre">thresh</span><
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">sim_bursty_oscillation</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">threshold_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;amp_fraction_threshold&#39;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s1">&#39;amp_consistency_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
 <span class="gp">... </span>                    <span class="s1">&#39;period_consistency_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df_features</span> <span class="o">=</span> <span class="n">compute_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
 <span class="gp">... </span>                                           <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_burst_detect_param</span><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;monotonicity&#39;</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_burst_detect_param</span><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;monotonicity&#39;</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

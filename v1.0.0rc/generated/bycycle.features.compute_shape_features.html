@@ -110,7 +110,7 @@
 <h1>bycycle.features.compute_shape_features<a class="headerlink" href="#bycycle-features-compute-shape-features" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="bycycle.features.compute_shape_features">
-<code class="sig-prename descclassname">bycycle.features.</code><code class="sig-name descname">compute_shape_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sig</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">center_extrema</span><span class="o">=</span><span class="default_value">'peak'</span></em>, <em class="sig-param"><span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_cycles</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">return_samples</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/features/shape.html#compute_shape_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.features.compute_shape_features" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bycycle.features.</code><code class="sig-name descname">compute_shape_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sig</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">center_extrema</span><span class="o">=</span><span class="default_value">'peak'</span></em>, <em class="sig-param"><span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_cycles</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/features/shape.html#compute_shape_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.features.compute_shape_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute shape features for each cycle.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -133,8 +133,6 @@ cycles of the low cutoff frequency (<code class="docutils literal notranslate"><
 </dd>
 <dt><strong>n_cycles</strong><span class="classifier">int, optional, default: 3</span></dt><dd><p>Length of filter, in number of cycles, at the lower cutoff frequency.</p>
 </dd>
-<dt><strong>return_samples</strong><span class="classifier">bool, optional, default: True</span></dt><dd><p>Returns samples indices of cyclepoints used for determining features if True.</p>
-</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -154,11 +152,6 @@ cycles of the low cutoff frequency (<code class="docutils literal notranslate"><
 <li><p><code class="docutils literal notranslate"><span class="pre">time_rdsym</span></code> : fraction of cycle in the rise period</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">time_ptsym</span></code> : fraction of cycle in the peak period</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">band_amp</span></code> : average analytic amplitude of the oscillation</p></li>
-</ul>
-</dd>
-<dt><strong>df_samples</strong><span class="classifier">pandas.DataFrame, optional, default: True</span></dt><dd><p>Dataframe containing sample indices of cyclepoints.
-Columns (listed for peak-centered cycles):</p>
-<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">sample_peak</span></code> : sample of ‘sig’ at which the peak occurs</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sample_zerox_decay</span></code> : sample of the decaying zero-crossing</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sample_zerox_rise</span></code> : sample of the rising zero-crossing</p></li>
@@ -184,7 +177,7 @@ Columns (listed for peak-centered cycles):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_bursty_oscillation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">sim_bursty_oscillation</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df_shapes</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <span class="n">compute_shape_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df_shapes</span> <span class="o">=</span> <span class="n">compute_shape_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd></dl>

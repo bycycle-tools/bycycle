@@ -110,6 +110,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Utility functions for working with ByCycle DataFrames.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param</span>
 
@@ -148,8 +149,8 @@
 <span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_features</span>
 <span class="sd">    &gt;&gt;&gt; fs = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
-<span class="sd">    &gt;&gt;&gt; _, df_samples = compute_features(sig, fs, f_range=(8, 12))</span>
-<span class="sd">    &gt;&gt;&gt; df_samples_limited = limit_df(df_samples, fs, start=0, stop=1)</span>
+<span class="sd">    &gt;&gt;&gt; df_features = compute_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; df_features = limit_df(df_features, fs, start=0, stop=1)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Ensure arguments are within valid range</span>
@@ -199,8 +200,8 @@
 <span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_features</span>
 <span class="sd">    &gt;&gt;&gt; fs = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
-<span class="sd">    &gt;&gt;&gt; _, df_samples = compute_features(sig, fs, f_range=(8, 12), center_extrema=&#39;peak&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; center_e, side_e = get_extrema_df(df_samples)</span>
+<span class="sd">    &gt;&gt;&gt; df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema=&#39;peak&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; center_e, side_e = get_extrema_df(df_features)</span>
 <span class="sd">    &gt;&gt;&gt; center_e</span>
 <span class="sd">    &#39;peak&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -211,19 +212,22 @@
     <span class="k">return</span> <span class="n">center_e</span><span class="p">,</span> <span class="n">side_e</span></div>
 
 
-<div class="viewcode-block" id="rename_extrema_df"><a class="viewcode-back" href="../../../generated/bycycle.utils.rename_extrema_df.html#bycycle.utils.rename_extrema_df">[docs]</a><span class="k">def</span> <span class="nf">rename_extrema_df</span><span class="p">(</span><span class="n">center_extrema</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">df_features</span><span class="p">):</span>
+<div class="viewcode-block" id="rename_extrema_df"><a class="viewcode-back" href="../../../generated/bycycle.utils.rename_extrema_df.html#bycycle.utils.rename_extrema_df">[docs]</a><span class="k">def</span> <span class="nf">rename_extrema_df</span><span class="p">(</span><span class="n">center_extrema</span><span class="p">,</span> <span class="n">df_features</span><span class="p">,</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Rename a dataframe based on the centered extrema.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    center_extrema : {&#39;trough&#39;, &#39;peak&#39;}</span>
 <span class="sd">        Which extrema is centered.</span>
-<span class="sd">    df_samples, df_features : pandas.DataFrames</span>
-<span class="sd">        ByCycle dataframes to rename, given the centered extrema.</span>
+<span class="sd">    df_shape_features : pandas.DataFrames</span>
+<span class="sd">        Bycycle dataframes to rename, given the centered extrema.</span>
+<span class="sd">    return_samples : bool, optional, default: True</span>
+<span class="sd">        Whether to rename sample columns if ``returns_samples`` is True when computing</span>
+<span class="sd">        ``df_shape_features`` using :func:`~.compute_shape_features`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    df_features, df_samples : pandas.DataFrames</span>
+<span class="sd">    df_features : pandas.DataFrames</span>
 <span class="sd">        Updated dataframes.</span>
 
 <span class="sd">    Examples</span>
@@ -235,18 +239,12 @@
 <span class="sd">    &gt;&gt;&gt; fs = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
 <span class="sd">    &gt;&gt;&gt; sig = -sig  # invert the signal, flipping peaks and troughs</span>
-<span class="sd">    &gt;&gt;&gt; df_features, df_samples = compute_features(sig, fs, f_range=(8, 12), center_extrema=&#39;peak&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; df_features, df_samples = rename_extrema_df(&#39;trough&#39;, df_samples, df_features)</span>
+<span class="sd">    &gt;&gt;&gt; df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema=&#39;peak&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; df_features = rename_extrema_df(&#39;trough&#39;, df_features)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Rename columns if they are actually trough-centered</span>
     <span class="k">if</span> <span class="n">center_extrema</span> <span class="o">==</span> <span class="s1">&#39;trough&#39;</span><span class="p">:</span>
-
-        <span class="n">samples_rename_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_trough&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;sample_zerox_decay&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_zerox_rise&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;sample_zerox_rise&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_zerox_decay&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;sample_last_trough&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_last_peak&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;sample_next_trough&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_next_peak&#39;</span><span class="p">}</span>
 
         <span class="n">features_rename_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time_peak&#39;</span><span class="p">:</span> <span class="s1">&#39;time_trough&#39;</span><span class="p">,</span>
                                 <span class="s1">&#39;time_trough&#39;</span><span class="p">:</span> <span class="s1">&#39;time_peak&#39;</span><span class="p">,</span>
@@ -257,7 +255,6 @@
                                 <span class="s1">&#39;volt_rise&#39;</span><span class="p">:</span> <span class="s1">&#39;volt_decay&#39;</span><span class="p">,</span>
                                 <span class="s1">&#39;volt_decay&#39;</span><span class="p">:</span> <span class="s1">&#39;volt_rise&#39;</span><span class="p">}</span>
 
-        <span class="n">df_samples</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">samples_rename_dict</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">df_features</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">features_rename_dict</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Need to reverse symmetry measures</span>
@@ -266,7 +263,51 @@
         <span class="n">df_features</span><span class="p">[</span><span class="s1">&#39;time_rdsym&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">df_features</span><span class="p">[</span><span class="s1">&#39;time_rdsym&#39;</span><span class="p">]</span>
         <span class="n">df_features</span><span class="p">[</span><span class="s1">&#39;time_ptsym&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">df_features</span><span class="p">[</span><span class="s1">&#39;time_ptsym&#39;</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span></div>
+        <span class="k">if</span> <span class="n">return_samples</span><span class="p">:</span>
+
+            <span class="n">samples_rename_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_trough&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;sample_zerox_decay&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_zerox_rise&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;sample_zerox_rise&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_zerox_decay&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;sample_last_zerox_decay&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_last_zerox_rise&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;sample_last_trough&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_last_peak&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;sample_next_trough&#39;</span><span class="p">:</span> <span class="s1">&#39;sample_next_peak&#39;</span><span class="p">}</span>
+
+            <span class="n">df_features</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">samples_rename_dict</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df_features</span></div>
+
+
+<span class="k">def</span> <span class="nf">split_samples_df</span><span class="p">(</span><span class="n">df_features</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Move cyclepoints sample indices columns to a separate dataframe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_features : pandas.DataFrame</span>
+<span class="sd">        Dataframe output of :func:`~.compute_features` or :func`~.compute_shape_features`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_features : pandas.DataFrame</span>
+<span class="sd">        A dataframe without sample indices columns removed.</span>
+<span class="sd">    df_samples : pandas.DataFrame</span>
+<span class="sd">        A dataframe only containing sample indices columns.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Separate sample/signal indices into a separate dataframe:</span>
+
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_features</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema=&#39;peak&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; df_features, df_samples = split_samples_df(df_features)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df_samples</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_features</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df_features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span> \
+        <span class="k">if</span> <span class="s2">&quot;sample_&quot;</span> <span class="ow">in</span> <span class="n">col</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span>
 </pre></div>
 
     </div>

@@ -151,7 +151,7 @@ plot the filtered signal in comparison to the original signal.</p>
 
 <span class="kn">from</span> <span class="nn">bycycle.features</span> <span class="kn">import</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a>
 <span class="kn">from</span> <span class="nn">bycycle.cyclepoints</span> <span class="kn">import</span> <a href="../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema" title="bycycle.cyclepoints.find_extrema" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_extrema</span></a><span class="p">,</span> <a href="../generated/bycycle.cyclepoints.find_zerox.html#bycycle.cyclepoints.find_zerox" title="bycycle.cyclepoints.find_zerox" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_zerox</span></a>
-<span class="kn">from</span> <span class="nn">bycycle.cyclepoints.extrema</span> <span class="kn">import</span> <span class="n">find_flank_zerox</span>
+<span class="kn">from</span> <span class="nn">bycycle.cyclepoints.zerox</span> <span class="kn">import</span> <span class="n">find_flank_zerox</span>
 <span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">,</span> <a href="../generated/bycycle.plts.plot_cyclepoints_array.html#bycycle.plts.plot_cyclepoints_array" title="bycycle.plts.plot_cyclepoints_array" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_cyclepoints_array</span></a>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_columns</span> <span class="o">=</span> <span class="mi">10</span>
@@ -240,10 +240,10 @@ however, this is rare, and most of these cycles should be removed by burst detec
 <div class="section" id="compute-features-of-each-cycle">
 <h2>3. Compute features of each cycle<a class="headerlink" href="#compute-features-of-each-cycle" title="Permalink to this headline">¶</a></h2>
 <p>After these 4 points of each cycle are localized, we compute some simple statistics for each
-cycle. The main cycle-by-cycle function, <a class="reference internal" href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a>, returns two dataframes:
-one for cycle features and one for locating cyclepoints in the signal. Each entry or row in either
-dataframe is a cycle and each column is a property of that cycle (see table below). The four
-main features are:</p>
+cycle. The main cycle-by-cycle function, <a class="reference internal" href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a>, returns a dataframe
+containing cycle features and sample locations of cyclepoints in the signal. Each entry or row
+in either dataframe is a cycle and each column is a property of that cycle (see table below). The
+four main features are:</p>
 <ul class="simple">
 <li><p>amplitude (volt_amp) - average voltage change of the rise and decay</p></li>
 <li><p>period (period) - time between consecutive troughs (or peaks, if default is changed)</p></li>
@@ -252,11 +252,11 @@ main features are:</p>
 </ul>
 <p>Note that a warning appears here because no burst detection parameters are provided. This is
 addressed in <a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#determine-parts-of-signal-in-oscillatory-burst">section #4</a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_theta</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df_features</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_theta</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/rph/Projects/bycycle/bycycle/features/features.py:124: UserWarning:
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/rph/Projects/bycycle/bycycle/features/features.py:121: UserWarning:
             No burst detection thresholds are provided. This is not recommended. Please
             inspect your data and choose appropriate parameters for &#39;threshold_kwargs&#39;.
             Default burst detection parameters are likely not well suited for your
@@ -286,253 +286,89 @@ addressed in <a class="reference external" href="https://bycycle-tools.github.io
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>period</th>
-      <th>time_peak</th>
-      <th>time_trough</th>
-      <th>volt_peak</th>
-      <th>volt_trough</th>
-      <th>...</th>
       <th>amp_fraction</th>
       <th>amp_consistency</th>
       <th>period_consistency</th>
       <th>monotonicity</th>
+      <th>period</th>
+      <th>...</th>
+      <th>sample_zerox_decay</th>
+      <th>sample_zerox_rise</th>
+      <th>sample_last_trough</th>
+      <th>sample_next_trough</th>
       <th>is_burst</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>147</td>
-      <td>50</td>
-      <td>74</td>
-      <td>2.226129</td>
-      <td>-1.588771</td>
-      <td>...</td>
-      <td>0.722573</td>
+      <td>0.269279</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>0.638889</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>136</td>
-      <td>57</td>
-      <td>75</td>
-      <td>1.648148</td>
-      <td>-1.190644</td>
+      <td>0.642262</td>
+      <td>181</td>
       <td>...</td>
-      <td>0.592686</td>
-      <td>0.752352</td>
-      <td>0.838235</td>
-      <td>0.673295</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>114</td>
-      <td>51</td>
-      <td>71</td>
-      <td>1.891069</td>
-      <td>-2.125076</td>
-      <td>...</td>
-      <td>0.762926</td>
-      <td>0.851887</td>
-      <td>0.808511</td>
-      <td>0.792586</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>141</td>
-      <td>64</td>
-      <td>67</td>
-      <td>1.824683</td>
-      <td>-1.530233</td>
-      <td>...</td>
-      <td>0.683480</td>
-      <td>0.905738</td>
-      <td>0.808511</td>
-      <td>0.707447</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>120</td>
-      <td>70</td>
-      <td>65</td>
-      <td>1.764942</td>
-      <td>-1.879385</td>
-      <td>...</td>
-      <td>0.779319</td>
-      <td>0.866974</td>
-      <td>0.758333</td>
-      <td>0.678964</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>788</th>
-      <td>97</td>
-      <td>49</td>
-      <td>44</td>
-      <td>1.164924</td>
-      <td>-1.934080</td>
-      <td>...</td>
-      <td>0.575032</td>
-      <td>0.695876</td>
-      <td>0.678322</td>
-      <td>0.758730</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>789</th>
-      <td>135</td>
-      <td>49</td>
-      <td>80</td>
-      <td>2.686951</td>
-      <td>-2.317678</td>
-      <td>...</td>
-      <td>0.934426</td>
-      <td>0.695876</td>
-      <td>0.718519</td>
-      <td>0.725626</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>790</th>
-      <td>113</td>
-      <td>56</td>
-      <td>67</td>
-      <td>1.882020</td>
-      <td>-1.203013</td>
-      <td>...</td>
-      <td>0.583859</td>
-      <td>0.759365</td>
-      <td>0.768707</td>
-      <td>0.707143</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>791</th>
-      <td>147</td>
-      <td>60</td>
-      <td>70</td>
-      <td>2.993691</td>
-      <td>-1.626049</td>
-      <td>...</td>
-      <td>0.981084</td>
-      <td>0.698590</td>
-      <td>0.693878</td>
-      <td>0.755000</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>792</th>
+      <td>194</td>
       <td>102</td>
-      <td>53</td>
-      <td>70</td>
-      <td>1.427356</td>
-      <td>-2.203008</td>
-      <td>...</td>
-      <td>0.634300</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.670871</td>
+      <td>42</td>
+      <td>223</td>
       <td>False</td>
-    </tr>
-  </tbody>
-</table>
-<p>793 rows × 18 columns</p>
-</div>
-<br />
-<br /><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df_samples</span>
-</pre></div>
-</div>
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>sample_peak</th>
-      <th>sample_last_zerox_decay</th>
-      <th>sample_zerox_decay</th>
-      <th>sample_zerox_rise</th>
-      <th>sample_last_trough</th>
-      <th>sample_next_trough</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>272</td>
-      <td>176</td>
-      <td>300</td>
-      <td>250</td>
-      <td>200</td>
-      <td>347</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>395</td>
-      <td>300</td>
-      <td>432</td>
-      <td>375</td>
-      <td>347</td>
-      <td>483</td>
+      <td>0.446271</td>
+      <td>0.799900</td>
+      <td>0.831050</td>
+      <td>0.625268</td>
+      <td>182</td>
+      <td>...</td>
+      <td>381</td>
+      <td>332</td>
+      <td>223</td>
+      <td>405</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>518</td>
-      <td>432</td>
-      <td>554</td>
-      <td>503</td>
-      <td>483</td>
-      <td>597</td>
+      <td>0.500632</td>
+      <td>0.836365</td>
+      <td>0.765734</td>
+      <td>0.628293</td>
+      <td>219</td>
+      <td>...</td>
+      <td>565</td>
+      <td>477</td>
+      <td>405</td>
+      <td>624</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>644</td>
-      <td>554</td>
-      <td>685</td>
-      <td>621</td>
-      <td>597</td>
-      <td>738</td>
+      <td>0.547408</td>
+      <td>0.438824</td>
+      <td>0.531469</td>
+      <td>0.537161</td>
+      <td>286</td>
+      <td>...</td>
+      <td>855</td>
+      <td>746</td>
+      <td>624</td>
+      <td>910</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>791</td>
-      <td>685</td>
-      <td>820</td>
-      <td>750</td>
-      <td>738</td>
-      <td>858</td>
+      <td>0.142857</td>
+      <td>0.372798</td>
+      <td>0.531469</td>
+      <td>0.667483</td>
+      <td>152</td>
+      <td>...</td>
+      <td>985</td>
+      <td>923</td>
+      <td>910</td>
+      <td>1062</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>...</th>
@@ -542,55 +378,85 @@ addressed in <a class="reference external" href="https://bycycle-tools.github.io
       <td>...</td>
       <td>...</td>
       <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>786</th>
+      <td>0.427307</td>
+      <td>0.610836</td>
+      <td>0.609302</td>
+      <td>0.619376</td>
+      <td>215</td>
+      <td>...</td>
+      <td>124426</td>
+      <td>124327</td>
+      <td>124253</td>
+      <td>124468</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>787</th>
+      <td>0.720607</td>
+      <td>0.741410</td>
+      <td>0.609302</td>
+      <td>0.710988</td>
+      <td>131</td>
+      <td>...</td>
+      <td>124577</td>
+      <td>124499</td>
+      <td>124468</td>
+      <td>124599</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>788</th>
-      <td>124391</td>
-      <td>124334</td>
-      <td>124427</td>
-      <td>124378</td>
-      <td>124364</td>
-      <td>124461</td>
+      <td>0.932996</td>
+      <td>0.697374</td>
+      <td>0.896296</td>
+      <td>0.682955</td>
+      <td>135</td>
+      <td>...</td>
+      <td>124682</td>
+      <td>124628</td>
+      <td>124599</td>
+      <td>124734</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>789</th>
-      <td>124530</td>
-      <td>124427</td>
-      <td>124556</td>
-      <td>124507</td>
-      <td>124461</td>
-      <td>124596</td>
+      <td>0.577750</td>
+      <td>0.697374</td>
+      <td>0.896296</td>
+      <td>0.696402</td>
+      <td>121</td>
+      <td>...</td>
+      <td>124808</td>
+      <td>124744</td>
+      <td>124734</td>
+      <td>124855</td>
+      <td>False</td>
     </tr>
     <tr>
       <th>790</th>
-      <td>124646</td>
-      <td>124556</td>
-      <td>124679</td>
-      <td>124623</td>
-      <td>124596</td>
-      <td>124709</td>
-    </tr>
-    <tr>
-      <th>791</th>
-      <td>124781</td>
-      <td>124679</td>
-      <td>124809</td>
-      <td>124749</td>
-      <td>124709</td>
-      <td>124856</td>
-    </tr>
-    <tr>
-      <th>792</th>
-      <td>124915</td>
-      <td>124809</td>
-      <td>124932</td>
-      <td>124879</td>
-      <td>124856</td>
-      <td>124958</td>
+      <td>0.757269</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.695196</td>
+      <td>123</td>
+      <td>...</td>
+      <td>124923</td>
+      <td>124869</td>
+      <td>124855</td>
+      <td>124978</td>
+      <td>False</td>
     </tr>
   </tbody>
 </table>
-<p>793 rows × 6 columns</p>
+<p>791 rows × 24 columns</p>
 </div>
 <br />
 <br /></div>
@@ -678,9 +544,9 @@ of the signal that do not have much apparent oscillatory burst are still labeled
                     <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">7</span><span class="p">,</span>
                     <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
 
-<span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">)</span>
+<span class="n">df_features</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">)</span>
 
-<a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
 <img alt="plot 2 bycycle algorithm" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_bycycle_algorithm_005.png" />
@@ -695,9 +561,9 @@ able to detect the bursts that are present.</p>
                     <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span>
                     <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
 
-<span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">)</span>
+<span class="n">df_features</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">)</span>
 
-<a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
 <img alt="plot 2 bycycle algorithm" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_bycycle_algorithm_006.png" />
@@ -715,13 +581,13 @@ positives that may occur, like that around 1.5 seconds.</p>
                     <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span>
                     <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
 
-<span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">)</span>
+<span class="n">df_features</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">)</span>
 
-<a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
 <img alt="plot 2 bycycle algorithm" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_bycycle_algorithm_007.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.564 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.500 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-2-bycycle-algorithm-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/038cf1e17c69d46556b38dbfaa9e4add/plot_2_bycycle_algorithm.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_2_bycycle_algorithm.py</span></code></a></p>

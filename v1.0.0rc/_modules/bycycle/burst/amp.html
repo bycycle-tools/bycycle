@@ -140,8 +140,8 @@
 <span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
 <span class="sd">    &gt;&gt;&gt; fs = 500</span>
 <span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
-<span class="sd">    &gt;&gt;&gt; df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))</span>
-<span class="sd">    &gt;&gt;&gt; df_burst = compute_burst_features(df_shapes, df_samples, sig, burst_method=&#39;amp&#39;,</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; df_burst = compute_burst_features(df_shapes, sig, burst_method=&#39;amp&#39;,</span>
 <span class="sd">    ...                                   burst_kwargs={&#39;fs&#39;: fs, &#39;f_range&#39;: (8, 12)})</span>
 <span class="sd">    &gt;&gt;&gt; df_burst = detect_bursts_amp(df_burst)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
