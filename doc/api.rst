@@ -31,7 +31,7 @@ Feature Functions
 Group Feature Functions
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. currentmodule:: bycycle.group.features
+.. currentmodule:: bycycle.group
 
 .. autosummary::
    :toctree: generated/
