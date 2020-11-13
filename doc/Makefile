@@ -6,7 +6,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = bycycle
 SOURCEDIR     = .
 BUILDDIR      = _build
-STABLE 		  = v0.1.3
+STABLE        = v0.1.3
 DEVELOPMENT   = v1.0.0rc
 
 # Put it first so that "make" without argument is like "make help".
