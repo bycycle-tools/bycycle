@@ -242,8 +242,8 @@ def _reshape_df(df_features, sigs_3d):
 
     dim_b = np.shape(sigs_3d)[1]
 
-    max_idx = [i for i in range(dim_b, len(df_features)*dim_b, dim_b)]
-    min_idx = [i for i in range(0, len(df_features), dim_b)]
+    max_idx = list(ange(dim_b, len(df_features)*dim_b, dim_b))
+    min_idx = list(range(0, len(df_features), dim_b))
 
     for lower, upper in zip(min_idx, max_idx):
         df_reshape.append(df_features[lower:upper])

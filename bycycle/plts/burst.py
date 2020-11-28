@@ -3,7 +3,6 @@
 from itertools import cycle
 
 import numpy as np
-import pandas as pd
 from scipy.stats import zscore
 import matplotlib.pyplot as plt
 
@@ -131,7 +130,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
         color = next(colors)
 
         # Highlight where a burst param falls below threshold
-        for row_idx, cyc in df_features.iterrows():
+        for _, cyc in df_features.iterrows():
 
             if cyc[column] < threshold_kwargs[osc_key]:
                 axes[0].axvspan(times[int(cyc['sample_last_' + side_e])],

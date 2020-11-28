@@ -5,7 +5,6 @@ import pandas as pd
 
 from neurodsp.timefrequency import amp_by_time
 
-from bycycle.utils.checks import check_param
 from bycycle.utils import rename_extrema_df, check_param
 from bycycle.features.cyclepoints import compute_cyclepoints
 

@@ -107,7 +107,7 @@ def recompute_edges(df_features, threshold_kwargs):
                             enumerate(burst_edges)])
 
     # Recompute is_burst
-    df_features_edges =  detect_bursts_cycles(
+    df_features_edges = detect_bursts_cycles(
         df_features_edges,
         amp_fraction_threshold=threshold_kwargs['amp_fraction_threshold'],
         amp_consistency_threshold=threshold_kwargs['amp_consistency_threshold'],
