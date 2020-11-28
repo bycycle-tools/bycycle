@@ -37,11 +37,10 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema):
     sample_cols = [col for col in list(df_shapes.columns) if "sample_" in col]
     assert len(sample_cols) == 6
 
-    # Assert that np.nan isn't dataframe(s), with the exception of the first and last row
+    # Assert that np.nan isn't in dataframe(s), with the exception of the first and last row
     for idx, row in df_shapes.iterrows():
 
         assert not np.isnan(row[1:-1]).any()
-
 
     # Check inverted signal gives appropriately opposite data
     extrema_opp = 'trough' if center_extrema == 'peak' else 'peak'

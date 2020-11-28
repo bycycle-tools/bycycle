@@ -16,7 +16,7 @@ def test_compute_features_2d(sim_args, compute_features_kwargs_dtype,
 
     n_sigs = 5
     sigs = np.array([sim_args['sig']] * n_sigs)
-    fs  = sim_args['fs']
+    fs = sim_args['fs']
     f_range = sim_args['f_range']
 
     # return_samples is disregarded when used in compute_features_kwargs
@@ -27,8 +27,8 @@ def test_compute_features_2d(sim_args, compute_features_kwargs_dtype,
         compute_features_kwargs = [compute_features_kwargs] * n_sigs
     elif compute_features_kwargs_dtype == 'list' and compute_features_kwargs_error is True:
         compute_features_kwargs = [compute_features_kwargs] * 2
-    elif compute_features_kwargs_dtype == None:
-         compute_features_kwargs = None
+    elif compute_features_kwargs_dtype is None:
+        compute_features_kwargs = None
 
     # Test returning only features, without samples
     features = compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=False,
@@ -38,8 +38,8 @@ def test_compute_features_2d(sim_args, compute_features_kwargs_dtype,
         assert df_features.equals(features[0])
 
     # Sequential processing check
-    features_seq =  compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=True,
-                                        compute_features_kwargs=compute_features_kwargs)
+    features_seq = compute_features_2d(sigs, fs, f_range, n_jobs=1, return_samples=True,
+                                       compute_features_kwargs=compute_features_kwargs)
 
     # Parallel processing check
     features = compute_features_2d(sigs, fs, f_range, n_jobs=-1, return_samples=True,
@@ -100,7 +100,6 @@ def test_compute_features_3d(sim_args, compute_features_kwargs_error,
     elif compute_features_kwargs_dtype == None:
         compute_features_kwargs = None
 
-
     df_features = \
         compute_features_3d(sigs_3d, fs, f_range, compute_features_kwargs=compute_features_kwargs,
                             return_samples=return_samples, n_jobs=-1, progress=None)
@@ -114,4 +113,3 @@ def test_compute_features_3d(sim_args, compute_features_kwargs_error,
         for col_idx in range(dim2):
 
             assert df_features[row_idx][col_idx].equals(df_features[0][0])
-

@@ -1,7 +1,6 @@
 """Tests for utils.dataframe."""
 
 from copy import deepcopy
-import numpy as np
 import pandas as pd
 
 from bycycle.utils.dataframes import *

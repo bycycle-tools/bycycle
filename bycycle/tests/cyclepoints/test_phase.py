@@ -1,7 +1,5 @@
 """Tests for cyclepoints.phase."""
 
-import os
-
 import numpy as np
 
 from bycycle.cyclepoints import find_extrema, find_zerox
@@ -14,7 +12,6 @@ from bycycle.cyclepoints.phase import *
 def test_extrema_interpolated_phase(sim_stationary):
     """Test waveform phase estimate."""
 
-    # Load signal
     sig = sim_stationary
 
     fs = 1000

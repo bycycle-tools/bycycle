@@ -1,9 +1,5 @@
 """Tests for cyclepoints.zerox."""
 
-import os
-
-import numpy as np
-
 from bycycle.cyclepoints import find_extrema
 
 from bycycle.cyclepoints.zerox import *
@@ -14,7 +10,6 @@ from bycycle.cyclepoints.zerox import *
 def test_find_zerox(sim_stationary):
     """Test ability to find peaks and troughs."""
 
-    # Load signal
     sig = sim_stationary
 
     fs = 1000
