@@ -10,7 +10,7 @@ from bycycle.cyclepoints import find_extrema, find_zerox
 ###################################################################################################
 
 def compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs):
-    """Compute sample indices for cyclepoints.
+    """Compute sample indices of cyclepoints.
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ def compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs):
 
     Returns
     -------
-    df_samples : pandas.DataFrame, optional, default: False
+    df_samples : pandas.DataFrame
         Dataframe containing sample indices of cyclepoints.
         Columns (listed for peak-centered cycles):
 
@@ -34,7 +34,7 @@ def compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs):
         - ``troughs`` :  signal indices of oscillatory troughs
         - ``rises`` : signal indices of oscillatory rising zero-crossings
         - ``decays`` : signal indices of oscillatory decaying zero-crossings
-        - ``sample_peak`` : sample of 'sig' at which the peak occurs
+        - ``sample_peak`` : sample at which the peak occurs
         - ``sample_zerox_decay`` : sample of the decaying zero-crossing
         - ``sample_zerox_rise`` : sample of the rising zero-crossing
         - ``sample_last_trough`` : sample of the last trough

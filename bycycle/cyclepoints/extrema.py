@@ -35,7 +35,7 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak',
     pass_type : str, optional, default: 'bandpass'
         Which kind of filter pass_type is consistent with the frequency definition provided.
     pad : bool, optional, default: True
-        Whether to pad ``sig`` with zeroes to prevent missed cyclepoints at the edges.
+        Whether to pad ``sig`` with zeros to prevent missed cyclepoints at the edges.
 
     Returns
     -------

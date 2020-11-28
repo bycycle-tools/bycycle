@@ -24,7 +24,7 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
 
     Examples
     --------
-    Remove bursts with less than 3 consectutive cycles:
+    Remove bursts with less than 3 consecutive cycles:
 
     >>> is_burst = np.array([False, True, True, False, True, True, True, True, False])
     >>> check_min_burst_cycles(is_burst)
@@ -94,7 +94,7 @@ def recompute_edges(df_features, threshold_kwargs):
     # Prevent circular import between burst.utils and burst.cycle
     from bycycle.burst import detect_bursts_cycles
 
-    # Prevent overwriting the orignal dataframe
+    # Prevent overwriting the original dataframe
     df_features_edges = df_features.copy()
 
     # Identify all cycles where is_burst changes on the following cycle

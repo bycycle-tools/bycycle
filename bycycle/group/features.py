@@ -28,9 +28,9 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
     n_jobs : int, optional, default: -1
-        The number of jobs, one per cpu, to compute features in parallel.
-    progress: {None, 'tqdm', 'tqdm.notebook'}, optional, default: None
-        Specify whether to display a progress bar. Use 'tqdm' if installed.
+        The number of jobs, one per CPU, to compute features in parallel.
+    progress : {None, 'tqdm', 'tqdm.notebook'}, optional, default: None
+        Specify whether to display a progress bar. Uses 'tqdm', if installed.
 
     Returns
     -------
@@ -54,7 +54,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
 
     Examples
     --------
-    Compute the features of a 2d array in parrallel using the same compute_features kwargs:
+    Compute the features of a 2d array in parallel using the same compute_features kwargs:
 
     >>> import numpy as np
     >>> from neurodsp.sim import sim_bursty_oscillation
@@ -125,9 +125,9 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None,
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
     n_jobs : int, optional, default: -1
-        The number of jobs, one per cpu, to compute features in parallel.
-    progress: {None, 'tqdm', 'tqdm.notebook'}, optional, default: None
-        Specify whether to display a progress bar. Use 'tqdm' if installed.
+        The number of jobs, one per CPU, to compute features in parallel.
+    progress : {None, 'tqdm', 'tqdm.notebook'}, optional, default: None
+        Specify whether to display a progress bar. Uses 'tqdm', if installed.
 
     Returns
     -------

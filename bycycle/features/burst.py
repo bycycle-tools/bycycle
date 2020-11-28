@@ -18,7 +18,7 @@ def compute_burst_features(df_shape_features, sig, burst_method='cycles', burst_
         Shape parameters for each cycle, determined using :func:`~.compute_shape_features`.
     sig : 1d array
         Voltage time series used for determining monotonicity.
-    burst_method : string, optional, default: 'cycles'
+    burst_method : {'cycles', 'amp'}
         Method for detecting bursts.
 
         - 'cycles': detect bursts based on the consistency of consecutive periods & amplitudes
@@ -45,8 +45,8 @@ def compute_burst_features(df_shape_features, sig, burst_method='cycles', burst_
         - ``amp_consistency`` : difference in the rise and decay voltage within a cycle
         - ``period_consistency`` : difference between a cycle’s period and the period of the
           adjacent cycles
-        - ``monotonicity`` : fraction of instantaneous voltage changes between consecutive
-          samples that are positive during the rise phase and negative during the decay phase
+        - ``monotonicity`` : fraction of monotonic voltage changes in rise and decay phases
+          (positive going in rise and negative going in decay)
 
         When dual threshold burst detection is used (i.e. burst_method == 'amp'):
 
@@ -162,7 +162,7 @@ def compute_amp_consistency(df_shape_features):
 
     for cyc in range(1, cycles-1):
 
-        # Division by zero will return np.nan, supress warning.
+        # Division by zero will return np.nan, suppress warning.
         with np.errstate(invalid='ignore', divide='ignore'):
 
             consist_current = np.min([rises[cyc], decays[cyc]]) / np.max([rises[cyc], decays[cyc]])
@@ -257,7 +257,7 @@ def compute_monotonicity(df_samples, sig):
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
     >>> df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))
-    >>> montonicity = compute_monotonicity(df_samples, sig)
+    >>> monotonicity = compute_monotonicity(df_samples, sig)
     """
 
     # Compute monotonicity
