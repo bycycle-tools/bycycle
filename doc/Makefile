@@ -6,8 +6,9 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = bycycle
 SOURCEDIR     = .
 BUILDDIR      = _build
-STABLE        = v0.1.3
-DEVELOPMENT   = v1.0.0rc
+STABLE        = 0.1.3
+DEVELOPMENT   = 1.0.0rc1
+RECENT		  = ""
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -57,35 +58,61 @@ install:
 # Build multiple versions
 html-multi:
 	# Clean out existing build
+	$(eval current_branch := $(shell git branch -l | grep "\*" | sed "s/.* //" ))
 	make clean
+	# Create clean remote
+	git remote remove upstream_temp || true
+	git remote add upstream_temp https://github.com/bycycle-tools/bycycle.git
+	git fetch upstream_temp --tags
+	# Create clean branches
+	git branch -D v$(STABLE) || true
+	git branch v$(STABLE) tags/$(STABLE)
+	git branch -D v$(DEVELOPMENT) || true
+	git branch v$(DEVELOPMENT) tags/$(DEVELOPMENT)
+	# Delete below after mergings PRs
+	git remote remove ryan || true
+	git remote add ryan https://github.com/ryanhammonds/bycycle.git
+	git fetch ryan parallel
+	git fetch ryan doc
+	git checkout v$(DEVELOPMENT)
+	git merge ryan/parallel ryan/doc -m "merge open prs"
+	# Checkout the stable release tag
+	git checkout v$(STABLE)
 	# Ensure navbar template exists
-	git checkout $(STABLE)
 	if [ ! -f _templates/navbar.html ]; then \
-		git checkout $(DEVELOPMENT) _templates/navbar.html -3; \
+		git checkout v$(DEVELOPMENT) _templates/navbar.html -3; \
 		git commit -m "navbar updated"; \
 	fi
 	# Create the stable site
 	make html
-	# Cleanup stable build
 	rm -rf _build/doctrees
 	rm -rf auto_examples
 	rm -rf auto_tutorials
 	rm -rf generated
 	mv _build/* _build/html_stable
-	# Add versions to build here
-	for v in $(DEVELOPMENT); do \
-		git checkout $$v; \
+	git checkout $(current_branch)
+	git branch -D v$(STABLE)
+	# Build develompent and recent sites
+	$(eval BUILDS := $(DEVELOPMENT) $(RECENT))
+	for v in $(BUILDS); do \
+		if [ -z $$v ]; then continue; fi; \
+		if [ $$v = $(DEVELOPMENT) ]; then git branch -D v$$v || true; git branch v$$v tags/$$v; fi;\
+		git checkout v$$v; \
 		make html; \
-		mkdir -p _build/html_stable/$$v; \
-		mv _build/html/* _build/html_stable/$$v; \
+		mkdir -p _build/html_stable/v$$v; \
+		mv _build/html/* _build/html_stable/v$$v; \
 		rm -rf auto_examples; \
 		rm -rf auto_tutorials; \
 		rm -rf generated; \
 		rm -rf _build/doctrees; \
 		rm -rf _build/html; \
+		git checkout $(current_branch);\
+		git branch -D v$$v; \
 	done
 	# Move stable back to root reference
 	mv _build/html_stable _build/html
+	# Remove the temporary remote
+	git remote remove upstream_temp
 
 # Build the multi-version html site, and push it to gh-pages branch of repo to deploy
 install-multi:
