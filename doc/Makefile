@@ -8,7 +8,7 @@ SOURCEDIR     = .
 BUILDDIR      = _build
 STABLE        = 0.1.3
 DEVELOPMENT   = 1.0.0rc1
-RECENT		  = ""
+RECENT        = ""
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -85,10 +85,7 @@ html-multi:
 	fi
 	# Create the stable site
 	make html
-	rm -rf _build/doctrees
-	rm -rf auto_examples
-	rm -rf auto_tutorials
-	rm -rf generated
+	rm -rf _build/doctrees auto_examples auto_tutorials generated
 	mv _build/* _build/html_stable
 	git checkout $(current_branch)
 	git branch -D v$(STABLE)
@@ -101,11 +98,7 @@ html-multi:
 		make html; \
 		mkdir -p _build/html_stable/v$$v; \
 		mv _build/html/* _build/html_stable/v$$v; \
-		rm -rf auto_examples; \
-		rm -rf auto_tutorials; \
-		rm -rf generated; \
-		rm -rf _build/doctrees; \
-		rm -rf _build/html; \
+		rm -rf auto_examples auto_tutorials generated _build/doctrees _build/html; \
 		git checkout $(current_branch);\
 		git branch -D v$$v; \
 	done
