@@ -1,6 +1,9 @@
 """
 2. 2D and 3D Signals
 ====================
+
+Compute bycycle features for 2D and 3D organizations of timeseries.
+
 Bycycle supports computing features for 2D and 3D arrays of signals, using
 :func:`~.compute_features_2d` or :func:`~.compute_features_3d`. These signals may be organized in a
 variety of ways, such as (n_epochs, n_timepoints), (n_channels, n_timepoints), or

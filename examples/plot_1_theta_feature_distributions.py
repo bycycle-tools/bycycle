@@ -1,7 +1,8 @@
 """
 1. Theta oscillation cycle feature distributions
 ================================================
-This tutorial computes the distributions of cycle features for two recordings
+
+Compute and compare the distributions of bycycle features for two recordings.
 """
 
 ####################################################################################################

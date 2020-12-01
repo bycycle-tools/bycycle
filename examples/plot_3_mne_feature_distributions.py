@@ -1,7 +1,8 @@
 """
 3. MNE Interface Cycle Feature Distributions
 ============================================
-This example computes the distributions of bycycle features using MNE objects
+
+Compute bycycle feature distributions using MNE objects.
 """
 
 ####################################################################################################

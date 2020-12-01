@@ -2,6 +2,8 @@
 2. Cycle-by-cycle algorithm
 ===========================
 
+Demonstration of the cycle-by-cycle approach.
+
 In the last tutorial notebook, I described the conventional approach for analyzing time-varying
 properties of neural oscillations, and in this notebook, we will go over our alternative approach.
 The fundamental goal of this approach is to characterize neural oscillations directly in the time
