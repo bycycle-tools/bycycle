@@ -75,7 +75,8 @@ html-multi:
 	git fetch ryan parallel
 	git fetch ryan doc
 	git checkout v$(DEVELOPMENT)
-	git merge ryan/parallel ryan/doc -m "merge open prs"
+	git merge ryan/parallel -m "merge open prs"
+	git merge ryan/doc -m "merge open prs"
 	# Checkout the stable release tag
 	git checkout v$(STABLE)
 	# Ensure navbar template exists
@@ -93,7 +94,7 @@ html-multi:
 	$(eval BUILDS := $(DEVELOPMENT) $(RECENT))
 	for v in $(BUILDS); do \
 		if [ -z $$v ]; then continue; fi; \
-		if [ $$v = $(DEVELOPMENT) ]; then git branch -D v$$v || true; git branch v$$v tags/$$v; fi;\
+		if [ ! $$v = $(DEVELOPMENT) ]; then git branch -D v$$v || true; git branch v$$v tags/$$v; fi;\
 		git checkout v$$v; \
 		make html; \
 		mkdir -p _build/html_stable/v$$v; \
