@@ -18,38 +18,64 @@ equivalent to those with older versions, with a few minor exceptions.
 Code Oraganization
 ~~~~~~~~~~~~~~~~~~
 
-- Increased modularity.
+- The module has been re-organized to increase modularity. Sub-folders and files are now organized
+  as:
 
-  - burst: ``burst.amp``, ``burst.cycle``, ``burst.dualthresh``, ``burst.utils``
-  - cyclepoints: ``cyclepoints.extrema``, ``cyclepoints.zerox``, ``cyclepoints.phase``
-  - features: ``features.features``, ``features.burst``, ``features.shape``, ``features.cyclepoints``
-  - The dataframe output returned from ``compute_features`` now returns:
+  - bycycle/burst/
 
-    1. ``df_features``: burst/shape cycle features.
-    2. ``df_samples``: cyclepoint locations as signal indices.
+    - amp.py : detects burst using a dual amplitude threshold method.
+    - cycle.py : detects burst using cycle-by-cycle.
+    - dualthresh.py : alias to the neurodsp function.
+    - utils.py : enforces miniumum consecutive cycles for burst detection and allows cycles on the
+      edges of burst to be recomputed with new thresholds.
 
-- Neurodsp dependency.
+  - bycycle/cyclepoints/
+
+    - extrema.py : identify peak and trough locations in a time series.
+    - phase.py : esimates the instantaneous phase of a time series.
+    - zerox.py : identify the rise and decay zero-crossing in a time series.
+
+  - bycycle/features/
+
+    - burst.py : compute features directly use in burst detection.
+    - cyclepoints.py : organizes the locations of extrema and zero-crossings for each cycle into a
+      dataframe.
+    - features.py : compute burst, shape, and cyclepoint features.
+    - shape.py : compute shape features required to compute burst features.
+
+  - bycycle/group/
+
+    - features.py : compute features for 2D and 3D array of time series.
+    - utils.py : create a progress bar for parallel computations.
+
+  - bycycle/plts/
+
+    - burst.py : plot burst detection parameters
+    - cyclepoints.py : plot extrema and zero-crossings.
+    - features.py : plot cycle features.
+
+  - bycycle/utils/
+
+    - checks.py : alias to neurodsp paramter check function.
+    - dataframes.py : dataframe manipulation helper functions.
+    - timeseries.py : timeseries manipulation helper functions.
+
+- Add neurodsp dependency.
 
   - `filt.py` and `sim.py` have been replaced with equivalent neurodsp functions.
 
 Naming Updates
 ~~~~~~~~~~~~~~
 
-- Consistency with neurodsp and PEP8 compliance:
+- The following argument and variables names have been changed throughout the module:
 
   - x -> sig
   - N_cycles_min -> min_n_cycles
   - Fs -> fs
-
-- PEP8
-
   - Ps -> ps
   - Ts -> ts
   - zeroriseN -> rise_xs
   - zerofallN -> decay_xs
-
-- Consistency between burst detection kwargs and dataframe column names:
-
   - amplitude_fraction_threshold -> amp_fraction_threshold
   - amplitude_consistency_threshold -> amp_consistency_threshold
 
@@ -80,5 +106,4 @@ Documentation
 
 The 1.X.X series comes with an updated documentation site.
 
-As well as updating the tutorials, API list, and other existing documentation, there are
-also (upcoming) new materials.
+This includes new tutorials, examples, API list, and updates to pre-existing documentation.
