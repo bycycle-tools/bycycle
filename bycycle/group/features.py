@@ -308,5 +308,5 @@ def _proxy_3d(args, fs=None, f_range=None, return_samples=None):
 
     sigs, kwargs = args[0], args[1]
 
-    return compute_features_2d(sigs, fs=fs, f_range=f_range, return_samples=return_samples,
-                               compute_features_kwargs=kwargs, axis=None)
+    return compute_features_2d(sigs, fs, f_range, compute_features_kwargs=kwargs, axis=None,
+                               return_samples=return_samples)
