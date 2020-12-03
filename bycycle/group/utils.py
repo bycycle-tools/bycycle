@@ -93,7 +93,7 @@ def check_kwargs_shape(sigs, compute_features_kwargs, axis):
         Voltage time series.
     compute_features_kwargs : dict or 1d list of dict or 2d list of dict
         Keyword arguments used in :func:`~.compute_features`.
-    axis : int or tuple or None, {0, 1, (0, 1), None}
+    axis : {None, 0, 1, 2}
         Which axes to calculate features across.
 
     Raises
@@ -113,43 +113,32 @@ def check_kwargs_shape(sigs, compute_features_kwargs, axis):
     kwargs_dim1 = np.shape(kwargs)[1] if kwargs.ndim == 2 else None
 
     sigs_dim0 = np.shape(sigs)[0]
-    sigs_dim1 = np.shape(sigs)[1]
+    sigs_dim1 = np.shape(sigs)[1] if sigs.ndim == 3 else None
 
-    # Check dims when kwargs is an array
-    if axis == 0 and kwargs.ndim == 1 and kwargs_dim0 != sigs_dim0:
+    # 2D checks
+    if axis != 2 and kwargs_dim1 is not None:
+        raise ValueError("When compute_features_kwargs is a 2d list, axis must be 2.")
+    elif axis == 0 and sigs_dim1 is None:
+        raise ValueError("When sigs is 2D, axis must be either 0 or None.")
+    elif (axis == 1 or axis == None) and sigs_dim1 is None and kwargs_dim0 != sigs_dim0:
+        axis_str = "zeroth"
+
+    # 3D checks
+    elif axis == None and sigs_dim1 is not None:
+        raise ValueError("When sigs is 3D, axis must be either 0, 1, or 2.")
+    elif axis == 0 and kwargs_dim0 != sigs_dim0:
+        axis_str = 'zeroth'
+    elif axis == 1 and sigs_dim1 is not None and kwargs_dim0 != sigs_dim1:
         axis_str = 'first'
-
-    elif axis == 1 and kwargs.ndim == 1 and kwargs_dim0 != sigs_dim1:
-        axis_str = 'second'
-
-    elif axis == (0, 1) and kwargs.ndim == 1 and sigs.ndim == 3 \
-        and kwargs_dim0 != int(sigs_dim0 * sigs_dim1):
-        axis_str = 'sum of the first and second'
-
-    elif axis == (0, 1) and kwargs.ndim == 2 and \
-        (kwargs_dim0 != sigs_dim0 or kwargs_dim1 != sigs_dim1):
-        axis_str = 'first and second'
-
-    elif axis == None and kwargs.ndim == 1 and sigs.ndim == 3 \
-        and kwargs_dim0 != int(sigs_dim0 * sigs_dim1):
-        axis_str = 'sum of the first and second'
-
-    elif axis == None and kwargs.ndim == 1 and sigs.ndim == 2 \
-        and kwargs_dim0 != sigs_dim0:
-        axis_str = 'sum of the first and second'
-
-    elif axis == None and kwargs.ndim == 2 and \
-        (kwargs_dim0 != sigs_dim0 or kwargs_dim1 != sigs_dim1):
-        axis_str = 'first and second'
-
-    elif axis == (0, 1) and kwargs.ndim == 1 and sigs.ndim == 2:
-        raise ValueError("When axis = (0, 1), a 3-dimensional signal is required.")
-
+    elif axis == 2 and (kwargs_dim0 != sigs_dim0 or kwargs_dim1 != sigs_dim1):
+        axis_str = 'sum of the zeroth and first'
+    elif axis == 2 and kwargs_dim1 is None:
+        raise ValueError("When axis=2, compute_features_kwargs must be a 2d list.")
     else:
         return
 
     error_str = """
-        When compute_features_kwargs is a {dim}d list and axis = {axis_int}, its length must be
+        When compute_features_kwargs is a {dim}d list and axis={axis_int}, its length must be
         equal to the {axis_str} dimension of sigs.
     """.format(dim=kwargs.ndim, axis_int=axis, axis_str=axis_str)
 
