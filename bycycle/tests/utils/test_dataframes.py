@@ -1,7 +1,6 @@
 """Tests for utils.dataframe."""
 
 from copy import deepcopy
-import numpy as np
 import pandas as pd
 
 from bycycle.utils.dataframes import *
@@ -67,7 +66,7 @@ def test_split_samples_df(sim_args):
 
     df_features = sim_args['df_features']
 
-    df_features, df_samples = split_samples_df(df_features)
+    df_features, df_samples = split_samples_df(df_features.copy())
 
     # Ensure sample columns are isolated to df_samples
     for col in df_features.columns:
@@ -75,3 +74,25 @@ def test_split_samples_df(sim_args):
 
     for col in df_samples.columns:
         assert "sample_" in col
+
+
+def test_drop_samples_df(sim_args):
+
+    df_features = sim_args['df_features']
+
+    df_features = drop_samples_df(df_features.copy())
+
+    for col in df_features.columns:
+        assert "sample_" not in col
+
+
+def test_epoch_df(sim_args):
+
+    sig = sim_args['sig']
+    df_features = sim_args['df_features']
+    epoch_len = sim_args['fs']
+
+    print(df_features.columns)
+    dfs_features = epoch_df(df_features, len(sig), epoch_len)
+
+    assert len(dfs_features) == int(len(sig) / epoch_len)

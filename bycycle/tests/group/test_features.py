@@ -12,7 +12,7 @@ from bycycle.group.features import compute_features_2d, compute_features_3d
 ###################################################################################################
 
 @mark.parametrize("kwargs_dtype", ['dict', 'list_cycles', 'list_amp', None])
-@mark.parametrize("axis", [0, None, param(1, marks=mark.xfail)])
+@mark.parametrize("axis", [None, 1, param(2, marks=mark.xfail)])
 def test_compute_features_2d(sim_args, kwargs_dtype, axis):
 
     n_sigs = 5
@@ -46,7 +46,7 @@ def test_compute_features_2d(sim_args, kwargs_dtype, axis):
                                        axis=axis)
 
     # Parallel processing (assuming >1 job is available)
-    if axis == 0:
+    if axis == 1:
 
         features_par = compute_features_2d(sigs, fs, f_range, n_jobs=-1, return_samples=True,
                                            compute_features_kwargs=compute_features_kwargs)
@@ -67,15 +67,9 @@ def test_compute_features_2d(sim_args, kwargs_dtype, axis):
         assert not features_seq[0].equals(features_seq[1])
         assert not features_seq[-1].equals(features_seq[1])
 
-    else:
-
-        # All dfs will be equal when computed independently
-        for df_seq in features_seq[1:]:
-            features_seq[0].equals(df_seq)
-
 
 @mark.parametrize("return_samples", [True, False])
-@mark.parametrize("axis", [0, 1, (0, 1), None, param(2, marks=mark.xfail)])
+@mark.parametrize("axis", [0, 1, 2, param(3, marks=mark.xfail)])
 def test_compute_features_3d(sim_args, return_samples, axis):
 
     dim1 = 3
@@ -114,8 +108,3 @@ def test_compute_features_3d(sim_args, return_samples, axis):
             for col_idx in range(dim2):
                 if row_idx != 0 and col_idx != 0:
                     assert df_features[0][0].equals(df_features[row_idx][col_idx])
-
-    elif axis == None:
-        # Dataframes will be equal, except the first and last dfs (edge artifacts)
-        for row_idx, col_idx in list(product(range(0, dim1), range(0, dim2)))[2:-1]:
-            pd.testing.assert_frame_equal(df_features[row_idx][col_idx], df_features[0][1])

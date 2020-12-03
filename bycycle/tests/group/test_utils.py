@@ -1,6 +1,6 @@
 """Test group utility functions."""
 
-from pytest import mark, param
+import pytest
 import numpy as np
 
 from bycycle.group.utils import progress_bar, check_kwargs_shape
@@ -8,7 +8,8 @@ from bycycle.group.utils import progress_bar, check_kwargs_shape
 ###################################################################################################
 ###################################################################################################
 
-@mark.parametrize("progress", [None, 'tqdm', param('invalid', marks=mark.xfail)])
+@pytest.mark.parametrize("progress", [None, 'tqdm', pytest.param('invalid',
+                                                                 marks=pytest.mark.xfail)])
 def test_progress_bar(progress):
 
     n_iterations = 10
@@ -19,10 +20,10 @@ def test_progress_bar(progress):
     assert len(pbar) == n_iterations
 
 
-@mark.parametrize("axis", [0, 1, (0, 1), None, param(2, marks=mark.xfail)])
-@mark.parametrize("kwargs_ndim", [1, 2])
-@mark.parametrize("sigs_ndim", [2, 3])
-@mark.parametrize("mismatch", [True, False])
+@pytest.mark.parametrize("axis", [0, 1, 2, None, pytest.param(2, marks=pytest.mark.xfail)])
+@pytest.mark.parametrize("kwargs_ndim", [1, 2])
+@pytest.mark.parametrize("sigs_ndim", [2, 3])
+@pytest.mark.parametrize("mismatch", [True, False])
 def test_check_kwargs_shape(sim_args, axis, kwargs_ndim, sigs_ndim, mismatch):
 
     sigs = np.array([sim_args['sig']] * 2)
@@ -31,15 +32,16 @@ def test_check_kwargs_shape(sim_args, axis, kwargs_ndim, sigs_ndim, mismatch):
 
     kwargs = [{'center_extrema': 'peak'}]
 
-    # Cases that will pass
-    if ((axis == 0 or axis == 1) and kwargs_ndim == 1 and sigs_ndim == 3) or \
-       (axis == None and kwargs_ndim == 1 and sigs_ndim == 2):
+    # 2D cases that will pass
+    if (sigs_ndim == 2 and axis == 1 and kwargs_ndim == 1) or \
+       (sigs_ndim == 2 and axis == None and kwargs_ndim == 1):
         kwargs = kwargs * 2
-    elif (axis == (0, 1) or axis == None) and kwargs_ndim == 1 and sigs_ndim == 3:
-        kwargs = kwargs * 4
-    elif (axis == (0, 1) or axis == None) and kwargs_ndim == 2 and sigs_ndim == 3:
-        kwargs = kwargs * 2
-        kwargs = [kwargs] * 2
+    # 3D cases that will pass
+    elif (sigs_ndim == 3 and axis == 0 and kwargs_ndim == 1) or \
+         (sigs_ndim == 3 and axis == 1 and kwargs_ndim == 1):
+        kwargs =  kwargs * 2
+    elif sigs_ndim == 3 and axis == 2 and kwargs_ndim == 2:
+        kwargs = [kwargs * 2] * 2
     else:
         mismatch = True
 
