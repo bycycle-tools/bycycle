@@ -194,7 +194,7 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
         Whether to return a dataframe of cyclepoint sample indices.
     n_jobs : int, optional, default: -1
         The number of jobs, one per cpu, to compute features in parallel.
-    progress : {None, 'tqdm', 'tqdm.notebook'}, optional, default: None
+    progress : {None, 'tqdm', 'tqdm.notebook'}
         Specify whether to display a progress bar. Use 'tqdm' if installed.
 
     Returns
