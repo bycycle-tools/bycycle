@@ -69,7 +69,7 @@ def test_compute_features_2d(sim_args, kwargs_dtype, axis):
 
 
 @mark.parametrize("return_samples", [True, False])
-@mark.parametrize("axis", [0, 1, 2, param(3, marks=mark.xfail)])
+@mark.parametrize("axis", [0, 1, (0, 1), param(3, marks=mark.xfail)])
 def test_compute_features_3d(sim_args, return_samples, axis):
 
     dim1 = 3

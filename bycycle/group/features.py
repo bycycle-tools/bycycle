@@ -179,7 +179,7 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
         Frequency range for narrowband signal of interest, in Hz.
     compute_features_kwargs : dict or 1d list of dict or 2d list of dict
         Keyword arguments used in :func:`~.compute_features`.
-    axis : {0, 1, 2}
+    axis : {0, 1, (0, 1)}
         Which axes to calculate features across:
 
 
@@ -187,7 +187,7 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
           across the zeroth axis, i.e. across channels in (n_channels, n_epochs, n_samples).
         - ``axis = 1`` : Features are computed for each signal independently
           across the firt axis, i.e. across channels in (n_epochs, n_channels, n_samples).
-        - ``axis = 2`` : Features are computed independently for each signal. This is analogous to
+        - ``axis = (0, 1)`` : Features are computed independently for each signal. This is analogous to
           ``axis = 1`` in :func:`~.compute_features_2d`.
 
     return_samples : bool, optional, default: True
@@ -271,7 +271,7 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
         # Swap the first two axes to return original shape
         dfs_features = [list(dfs) for dfs in zip(*dfs_features)] if axis == 1 else dfs_features
 
-    elif axis == 2:
+    elif axis == (0, 1):
         # Independently across the first two axes (i.e. for each signal)
         sigs_2d = sigs.reshape(np.shape(sigs)[0]*np.shape(sigs)[1], np.shape(sigs)[2])
         kwargs = kwargs[0] if len(kwargs) == 1 else kwargs
@@ -282,9 +282,9 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
 
     else:
 
-        raise ValueError("The axis kwarg must be either 0, 1, or 2.")
+        raise ValueError("The axis kwarg must be either 0, 1, or (0, 1).")
 
-    if axis == 2:
+    if axis == (0, 1):
 
         dfs_features = np.zeros((np.shape(sigs)[0], np.shape(sigs)[1])).tolist()
 
