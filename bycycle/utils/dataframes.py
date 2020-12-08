@@ -1,5 +1,7 @@
 """Utility functions for working with ByCycle DataFrames."""
 
+from itertools import product
+
 import numpy as np
 import pandas as pd
 
@@ -265,4 +267,58 @@ def epoch_df(df_features, sig_len, epoch_len):
         dfs_features.append(df_single)
 
     return dfs_features
+
+
+def flatten_dfs(dfs_features, labels, column_name='Label'):
+    """Flatten a list of dataframes into a single dataframe with a group column(s).
+
+    Parameters
+    ----------
+    dfs_features : 1D or 2D list of pd.DataFrames
+        List of dataframes returned from `~.compute_features_2D` or `~.compute_features_3D`.
+    labels : 1D or 2D list
+        List of group labels to append to the final dataframe.
+    column_name : str, optional, default: 'Label'
+        The name of the column used to identify sub-dataframes.
+
+    Returns
+    -------
+    df_features : pd.DataFrame
+        A single dataframe containing 1 or 2 group columns.
+    """
+
+    labels = np.array(labels) if isinstance(labels, list) else labels
+    labels = labels.flatten()
+
+    if isinstance(dfs_features[0], pd.DataFrame):
+
+        if len(labels) != len(dfs_features):
+            raise ValueError("The labels and dfs_features must be the same size.")
+
+        # Add labels
+        for idx, df in enumerate(dfs_features):
+            df[column_name] = labels[idx]
+
+        # Flatten
+        df_features = pd.concat(dfs_features, axis=0)
+
+    elif isinstance(dfs_features[0][0], pd.DataFrame):
+
+        dim0_len = len(dfs_features)
+        dim1_len = len(dfs_features[0])
+
+        if len(labels) != dim0_len * dim1_len:
+            raise ValueError("The labels and dfs_features must be the same size.")
+
+        # Add labels
+        for idx, (dim0, dim1) in enumerate(product(range(dim0_len), range(dim1_len))):
+            dfs_features[dim0][dim1][column_name] = labels[idx]
+
+        # Flatten
+        df_features = pd.concat([df for dfs in dfs_features for df in dfs])
+
+    return df_features
+
+
+
 

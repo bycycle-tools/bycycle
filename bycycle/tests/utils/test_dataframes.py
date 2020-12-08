@@ -1,6 +1,10 @@
 """Tests for utils.dataframe."""
 
 from copy import deepcopy
+
+from pytest import mark, param
+
+import numpy as np
 import pandas as pd
 
 from bycycle.utils.dataframes import *
@@ -96,3 +100,26 @@ def test_epoch_df(sim_args):
     dfs_features = epoch_df(df_features, len(sig), epoch_len)
 
     assert len(dfs_features) == int(len(sig) / epoch_len)
+
+
+@mark.parametrize("mismatch", [False, param(True, marks=mark.xfail)])
+@mark.parametrize("ndim", [2, 3])
+def test_flatten_dfs(sim_args, mismatch, ndim):
+
+    df_features_orig = sim_args['df_features']
+
+    if ndim == 2:
+        dfs_features = [df_features_orig.copy(), df_features_orig.copy()]
+        labels = ['A', 'B']
+    elif ndim == 3:
+        dfs_features = [[df_features_orig.copy(), df_features_orig.copy()],
+                        [df_features_orig.copy(), df_features_orig.copy()]]
+        labels = [['CH00_EP00', 'CH00_EP01'], ['CH01_EP00', 'CH01_EP01']]
+
+    if mismatch:
+        labels = ['A']
+
+    df_features = flatten_dfs(dfs_features, labels)
+
+    assert 'Label' in df_features.columns
+    assert (np.unique(df_features['Label'].values) == np.array(labels).flatten()).all()
