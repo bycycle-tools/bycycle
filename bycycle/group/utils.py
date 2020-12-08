@@ -111,35 +111,39 @@ def check_kwargs_shape(sigs, compute_features_kwargs, axis):
     # Ensure kwargs match to sigs
     kwargs_dim0 = np.shape(kwargs)[0]
     kwargs_dim1 = np.shape(kwargs)[1] if kwargs.ndim == 2 else None
+    if kwargs.ndim == 3:
+        raise ValueError("compute_features_kwargs must be 1D or 2D.")
 
+    # Sig checks
     sigs_dim0 = np.shape(sigs)[0]
     sigs_dim1 = np.shape(sigs)[1] if sigs.ndim == 3 else None
 
     # 2D checks
-    if axis != 2 and kwargs_dim1 is not None:
-        raise ValueError("When compute_features_kwargs is a 2d list, axis must be 2.")
-    elif axis == 0 and sigs_dim1 is None:
-        raise ValueError("When sigs is 2D, axis must be either 0 or None.")
-    elif (axis == 1 or axis == None) and sigs_dim1 is None and kwargs_dim0 != sigs_dim0:
-        axis_str = "zeroth"
+    if sigs_dim1 == None and (axis==0 or axis==None) and kwargs_dim0 != sigs_dim0:
+        kwargs_shape = (sigs_dim0,)
+    elif sigs_dim1 == None and (axis==0 or axis==None) and kwargs_dim1 is not None:
+        kwargs_shape = (sigs_dim0,)
 
     # 3D checks
-    elif axis == None and sigs_dim1 is not None:
-        raise ValueError("When sigs is 3D, axis must be either 0, 1, or 2.")
-    elif axis == 0 and kwargs_dim0 != sigs_dim0:
-        axis_str = 'zeroth'
-    elif axis == 1 and sigs_dim1 is not None and kwargs_dim0 != sigs_dim1:
-        axis_str = 'first'
-    elif axis == 2 and (kwargs_dim0 != sigs_dim0 or kwargs_dim1 != sigs_dim1):
-        axis_str = 'sum of the zeroth and first'
-    elif axis == 2 and kwargs_dim1 is None:
-        raise ValueError("When axis=2, compute_features_kwargs must be a 2d list.")
+    elif sigs_dim1 != None and axis==0 and kwargs_dim0 != sigs_dim0:
+        kwargs_shape = (sigs_dim0,)
+    elif sigs_dim1 != None and axis==1 and kwargs_dim0 != sigs_dim1:
+        kwargs_shape = (sigs_dim1,)
+    elif sigs_dim1 != None and axis==(0,1) and (kwargs_dim0!=sigs_dim0 or kwargs_dim1!=sigs_dim1):
+        kwargs_shape = (sigs_dim0, sigs_dim1)
+
+    # Axis checks
+    elif sigs_dim1 == None and (axis != 0 and axis != None):
+        raise ValueError("When sigs is 2D, axis must be either {0, None}.")
+    elif sigs_dim1 != None and (axis != 0 and axis != 1 and axis != (0, 1)):
+        raise ValueError("When sigs is 3D, axis must be either {0, 1, (0, 1)}")
     else:
         return
 
     error_str = """
-        When compute_features_kwargs is a {dim}d list and axis={axis_int}, its length must be
-        equal to the {axis_str} dimension of sigs.
-    """.format(dim=kwargs.ndim, axis_int=axis, axis_str=axis_str)
+    When sigs is {sigs_str}D and axis is {axis_str}, compute_features_kwargs must be {kwargs_dim}D
+    with a shape equal to {kwargs_shape}.
+    """.format(sigs_str=str(sigs.ndim), axis_str=str(axis),
+               kwargs_dim=str(kwargs.ndim), kwargs_shape=str(kwargs_shape))
 
     raise ValueError(error_str)

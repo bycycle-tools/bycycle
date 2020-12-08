@@ -12,7 +12,7 @@ from bycycle.group.features import compute_features_2d, compute_features_3d
 ###################################################################################################
 
 @mark.parametrize("kwargs_dtype", ['dict', 'list_cycles', 'list_amp', None])
-@mark.parametrize("axis", [None, 1, param(2, marks=mark.xfail)])
+@mark.parametrize("axis", [None, 0, param(2, marks=mark.xfail)])
 def test_compute_features_2d(sim_args, kwargs_dtype, axis):
 
     n_sigs = 5
@@ -46,7 +46,7 @@ def test_compute_features_2d(sim_args, kwargs_dtype, axis):
                                        axis=axis)
 
     # Parallel processing (assuming >1 job is available)
-    if axis == 1:
+    if axis == 0:
 
         features_par = compute_features_2d(sigs, fs, f_range, n_jobs=-1, return_samples=True,
                                            compute_features_kwargs=compute_features_kwargs)

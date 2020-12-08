@@ -160,7 +160,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
                     dfs_features[idx] = detect_bursts_amp(dfs_features[idx], **thresholds)
 
     else:
-        raise ValueError("The axis kwarg must be either 1 or None.")
+        raise ValueError("The axis kwarg must be either 0 or None.")
 
     return dfs_features
 
@@ -278,7 +278,7 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
 
         df_2d = compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
                                     return_samples=return_samples, n_jobs=n_jobs,
-                                    progress=progress, axis=1)
+                                    progress=progress, axis=0)
 
     else:
 
