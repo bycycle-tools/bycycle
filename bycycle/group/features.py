@@ -15,7 +15,7 @@ from bycycle.utils.dataframes import epoch_df
 ###################################################################################################
 ###################################################################################################
 
-def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=1,
+def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
                         return_samples=True, n_jobs=-1, progress=None):
     """Compute shape and burst features for a 2 dimensional array of signals.
 
@@ -32,7 +32,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=1,
     axis : {0, None}
         Which axes to calculate features across:
 
-        - ``axis=1`` : Features are computed for each signal independently
+        - ``axis=0`` : Features are computed for each signal independently
           across the first axis, i.e. for each channels in (n_channels, n_samples).
         - ``axis=None`` : Features are computed across a flattened 1d array, i.e. across flatten
           epochs in (n_epochs, n_samples).
@@ -71,7 +71,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=1,
     >>> fs = 500
     >>> sigs = np.array([sim_bursty_oscillation(10, fs, 10) for i in range(10)])
     >>> compute_kwargs = {'burst_method': 'amp', 'threshold_kwargs':{'burst_fraction_threshold': 1}}
-    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), axis=1,
+    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), axis=0,
     ...                                   compute_features_kwargs=compute_kwargs)
 
     Compute the features of a 2d array in parallel using the same compute_features kwargs. Note each
@@ -88,7 +88,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=1,
     >>> compute_kwargs = [{'threshold_kwargs': {'amp_consistency_threshold': thresh*.1}}
     ...                   for thresh in range(1, 11)]
     >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False,
-    ...                                   n_jobs=2, compute_features_kwargs=compute_kwargs, axis=1)
+    ...                                   n_jobs=2, compute_features_kwargs=compute_kwargs, axis=0)
     """
 
     # Check compute_features_kwargs
@@ -106,7 +106,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=1,
 
     n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
-    if axis == 1:
+    if axis == 0:
         # Compute each signal independently and in paralllel
         with Pool(processes=n_jobs) as pool:
 
