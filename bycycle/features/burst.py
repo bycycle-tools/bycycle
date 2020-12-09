@@ -9,16 +9,13 @@ from bycycle.burst import detect_bursts_dual_threshold
 ###################################################################################################
 ###################################################################################################
 
-def compute_burst_features(df_shape_features, df_samples, sig,
-                           burst_method='cycles', burst_kwargs=None):
+def compute_burst_features(df_shape_features, sig, burst_method='cycles', burst_kwargs=None):
     """Compute burst features for each cycle.
 
     Parameters
     ----------
     df_shape_features : pandas.DataFrame
         Shape parameters for each cycle, determined using :func:`~.compute_shape_features`.
-    df_samples : pandas.DataFrame
-        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
     sig : 1d array
         Voltage time series used for determining monotonicity.
     burst_method : string, optional, default: 'cycles'
@@ -63,8 +60,8 @@ def compute_burst_features(df_shape_features, df_samples, sig,
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs  = 500
     >>> sig = sim_bursty_oscillation(10, fs, 10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
-    >>> df_burst = compute_burst_features(df_shapes, df_samples, sig, burst_method='amp',
+    >>> df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))
+    >>> df_burst = compute_burst_features(df_shapes, sig, burst_method='amp',
     ...                                   burst_kwargs={'fs': fs, 'f_range': (8, 12)})
     """
 
@@ -78,10 +75,10 @@ def compute_burst_features(df_shape_features, df_samples, sig,
         df_burst_features['amp_fraction'] = compute_amp_fraction(df_shape_features)
 
         df_burst_features['amp_consistency'] = \
-                compute_amp_consistency(df_shape_features, df_samples)
+                compute_amp_consistency(df_shape_features)
 
         df_burst_features['period_consistency'] = compute_period_consistency(df_shape_features)
-        df_burst_features['monotonicity'] = compute_monotonicity(df_samples, sig)
+        df_burst_features['monotonicity'] = compute_monotonicity(df_shape_features, sig)
 
     # Use dual threshold burst detection
     elif burst_method == 'amp':
@@ -94,7 +91,7 @@ def compute_burst_features(df_shape_features, df_samples, sig,
                              "when 'burst_method' is 'amp'.")
 
         df_burst_features['burst_fraction'] = \
-            compute_burst_fraction(df_samples, sig, fs, f_range, **burst_kwargs)
+            compute_burst_fraction(df_shape_features, sig, fs, f_range, **burst_kwargs)
 
     else:
         raise ValueError("Unrecognized 'burst_method'.")
@@ -123,14 +120,14 @@ def compute_amp_fraction(df_shape_features):
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, (8, 12))
+    >>> df_shapes = compute_shape_features(sig, fs, (8, 12))
     >>> amp_fraction = compute_amp_fraction(df_shapes)
     """
 
     return df_shape_features['volt_amp'].rank() / len(df_shape_features)
 
 
-def compute_amp_consistency(df_shape_features, df_samples):
+def compute_amp_consistency(df_shape_features):
     """Compute amplitude consistency for each cycle.
 
     Parameters
@@ -153,8 +150,8 @@ def compute_amp_consistency(df_shape_features, df_samples):
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
-    >>> amp_consistency = compute_amp_consistency(df_shapes, df_samples)
+    >>> df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))
+    >>> amp_consistency = compute_amp_consistency(df_shapes)
     """
 
     # Compute amplitude consistency
@@ -170,7 +167,7 @@ def compute_amp_consistency(df_shape_features, df_samples):
 
             consist_current = np.min([rises[cyc], decays[cyc]]) / np.max([rises[cyc], decays[cyc]])
 
-            if 'sample_peak' in df_samples.columns:
+            if 'sample_peak' in df_shape_features.columns:
 
                 consist_last = np.min([rises[cyc], decays[cyc-1]]) / \
                     np.max([rises[cyc], decays[cyc-1]])
@@ -215,7 +212,7 @@ def compute_period_consistency(df_shape_features):
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
-    >>> df_shapes, df_samples = compute_shape_features(sig, fs, f_range=(8, 12))
+    >>> df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))
     >>> period_consistency = compute_period_consistency(df_shapes)
     """
 

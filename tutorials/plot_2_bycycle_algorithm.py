@@ -142,10 +142,10 @@ plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
 # 3. Compute features of each cycle
 # ---------------------------------
 # After these 4 points of each cycle are localized, we compute some simple statistics for each
-# cycle. The main cycle-by-cycle function, :func:`~.compute_features`, returns two dataframes:
-# one for cycle features and one for locating cyclepoints in the signal. Each entry or row in either
-# dataframe is a cycle and each column is a property of that cycle (see table below). The four
-# main features are:
+# cycle. The main cycle-by-cycle function, :func:`~.compute_features`, returns a dataframe
+# containing cycle features and sample locations of cyclepoints in the signal. Each entry or row
+# in either dataframe is a cycle and each column is a property of that cycle (see table below). The
+# four main features are:
 #
 # - amplitude (volt_amp) - average voltage change of the rise and decay
 # - period (period) - time between consecutive troughs (or peaks, if default is changed)
@@ -157,15 +157,11 @@ plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
 
 ####################################################################################################
 
-df_features, df_samples = compute_features(sig, fs, f_theta)
+df_features = compute_features(sig, fs, f_theta)
 
 ####################################################################################################
 
 df_features
-
-####################################################################################################
-
-df_samples
 
 ####################################################################################################
 #
@@ -256,9 +252,9 @@ threshold_kwargs = {'amp_fraction_threshold': 0,
                     'monotonicity_threshold': .7,
                     'min_n_cycles': 3}
 
-df_features, df_samples = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
+df_features = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
 
-plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs, figsize=(16, 3))
+plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -273,9 +269,9 @@ threshold_kwargs = {'amp_fraction_threshold': 0,
                     'monotonicity_threshold': .9,
                     'min_n_cycles': 3}
 
-df_features, df_samples = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
+df_features = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
 
-plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs, figsize=(16, 3))
+plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -294,6 +290,6 @@ threshold_kwargs = {'amp_fraction_threshold': .3,
                     'monotonicity_threshold': .8,
                     'min_n_cycles': 3}
 
-df_features, df_samples = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
+df_features = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
 
-plot_burst_detect_summary(df_features, df_samples, sig, fs, threshold_kwargs, figsize=(16, 3))
+plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, figsize=(16, 3))

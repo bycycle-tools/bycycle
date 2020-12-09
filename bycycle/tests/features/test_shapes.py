@@ -4,8 +4,6 @@ import pytest
 
 import numpy as np
 
-from bycycle.cyclepoints import find_extrema, find_zerox
-
 from bycycle.features.shape import *
 
 ###################################################################################################
@@ -24,41 +22,31 @@ from bycycle.features.shape import *
         pytest.param(None, marks=pytest.mark.xfail)
     ]
 )
-@pytest.mark.parametrize("return_samples", [True, False])
-def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, return_samples):
+def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema):
 
     sig = sim_args['sig']
     fs = sim_args['fs']
     f_range = sim_args['f_range']
 
-    outs = compute_shape_features(sig, fs, f_range,
-                                  center_extrema=center_extrema,
-                                  find_extrema_kwargs=find_extrema_kwargs,
-                                  return_samples=return_samples)
+    df_shapes = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
+                                       find_extrema_kwargs=find_extrema_kwargs)
 
-    if return_samples:
-        df_shapes, df_samples = outs
-        assert len(df_shapes) == len(df_samples)
-
-    else:
-        df_shapes = outs
+    # Ensure sample columns are returned
+    sample_cols = [col for col in list(df_shapes.columns) if "sample_" in col]
+    assert len(sample_cols) == 6
 
     # Assert that np.nan isn't dataframe(s), with the exception of the first and last row
     for idx, row in df_shapes.iterrows():
 
         assert not np.isnan(row[1:-1]).any()
 
-        if return_samples:
-
-            assert not np.isnan(df_samples.iloc[idx]).any()
 
     # Check inverted signal gives appropriately opposite data
     extrema_opp = 'trough' if center_extrema == 'peak' else 'peak'
 
     df_opp = compute_shape_features(-sig, fs, f_range,
                                     center_extrema=extrema_opp,
-                                    find_extrema_kwargs=find_extrema_kwargs,
-                                    return_samples=False)
+                                    find_extrema_kwargs=find_extrema_kwargs)
 
     cols_peak = ['time_peak', 'time_rise', 'volt_rise',
                  'volt_amp', 'period', 'time_rdsym', 'time_ptsym']
@@ -78,18 +66,18 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema, r
 
 def test_compute_durations(sim_args):
 
-    df_samples = sim_args['df_samples']
-    period, time_peak, time_trough = compute_durations(df_samples)
+    df_shapes = sim_args['df_shapes']
+    period, time_peak, time_trough = compute_durations(df_shapes)
 
     assert ((time_trough + time_peak) == period).all()
 
 
 def test_compute_extrema_voltage(sim_args):
 
-    df_samples = sim_args['df_samples']
+    df_shapes = sim_args['df_shapes']
     sig = sim_args['sig']
 
-    volt_peaks, volt_troughs = compute_extrema_voltage(df_samples, sig)
+    volt_peaks, volt_troughs = compute_extrema_voltage(df_shapes, sig)
 
     for idx, volt_peak in enumerate(volt_peaks):
         assert volt_peak > volt_troughs[idx]
@@ -98,14 +86,14 @@ def test_compute_extrema_voltage(sim_args):
 @pytest.mark.parametrize("recompute", [True, False])
 def test_compute_symmetry(sim_args, recompute):
 
-    df_samples = sim_args['df_samples']
+    df_shapes = sim_args['df_shapes']
     sig = sim_args['sig']
 
     if recompute:
-        sym_features = compute_symmetry(df_samples, sig)
+        sym_features = compute_symmetry(df_shapes, sig)
     else:
-        period, time_peak, time_trough = compute_durations(df_samples)
-        sym_features = compute_symmetry(df_samples, sig, period=period,
+        period, time_peak, time_trough = compute_durations(df_shapes)
+        sym_features = compute_symmetry(df_shapes, sig, period=period,
                                         time_peak=time_peak, time_trough=time_trough)
 
     # This is the case for only simulated sine waves
@@ -121,12 +109,12 @@ def test_compute_symmetry(sim_args, recompute):
 
 def test_compute_band_amp(sim_args):
 
-    df_samples = sim_args['df_samples']
+    df_shapes = sim_args['df_shapes']
     sig = sim_args['sig']
     fs = sim_args['fs']
     f_range = sim_args['f_range']
 
-    band_amp = compute_band_amp(df_samples, sig, fs, f_range)
+    band_amp = compute_band_amp(df_shapes, sig, fs, f_range)
 
     for amp in band_amp[:-1]:
-        np.testing.assert_allclose(amp, band_amp[0], rtol=1e-3)
+        np.testing.assert_allclose(amp, band_amp[0], rtol=1e-1)

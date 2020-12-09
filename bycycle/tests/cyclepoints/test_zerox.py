@@ -1,9 +1,5 @@
 """Tests for cyclepoints.zerox."""
 
-import os
-
-import numpy as np
-
 from bycycle.cyclepoints import find_extrema
 
 from bycycle.cyclepoints.zerox import *

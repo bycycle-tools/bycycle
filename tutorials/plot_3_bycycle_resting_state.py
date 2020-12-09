@@ -90,8 +90,7 @@ threshold_kwargs = {'amp_fraction_threshold': .2,
 # Compute features for each signal
 compute_features_kwargs={'threshold_kwargs': threshold_kwargs}
 
-df_features_list, df_samples_list = \
-    compute_features_2d(sigs, fs, f_alpha, compute_features_kwargs=compute_features_kwargs)
+df_features_list = compute_features_2d(sigs, fs, f_alpha, compute_features_kwargs)
 
 # Add group and subject ids to dataframes
 groups = ['patient' if idx >= int(n_signals/2) else 'control' for idx in range(n_signals)]
@@ -117,8 +116,8 @@ df_features.head()
 # periods of the signal that appear to be bursting. This was confirmed by looking at a few different
 # signal segments from a few subjects.
 
-plot_burst_detect_summary(df_features_list[1], df_samples_list[1], sigs[1], fs,
-                          threshold_kwargs, xlim=(0, 5), figsize=(16, 3))
+plot_burst_detect_summary(df_features_list[0], sigs[0], fs, threshold_kwargs,
+                          xlim=(0, 5), figsize=(16, 3))
 
 ####################################################################################################
 #

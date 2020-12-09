@@ -25,9 +25,9 @@ def sim_args():
 
     sig = sim_oscillation(N_SECONDS, FS, FREQ)
 
-    df_shapes, df_samples = compute_shape_features(sig, FS, F_RANGE, return_samples=True)
-    df_burst = compute_burst_features(df_shapes, df_samples, sig)
-    df_features, df_samples = compute_features(sig, FS, F_RANGE, return_samples=True)
+    df_shapes = compute_shape_features(sig, FS, F_RANGE)
+    df_burst = compute_burst_features(df_shapes, sig)
+    df_features = compute_features(sig, FS, F_RANGE)
 
     threshold_kwargs = {'amp_fraction_threshold': 0.,
                         'amp_consistency_threshold': .5,
@@ -36,8 +36,7 @@ def sim_args():
                         'min_n_cycles': 3}
 
     yield {'sig': sig, 'fs': FS, 'f_range': F_RANGE, 'df_features': df_features,
-           'df_shapes': df_shapes, 'df_burst': df_burst, 'df_samples': df_samples,
-           'threshold_kwargs': threshold_kwargs}
+           'df_shapes': df_shapes, 'df_burst': df_burst, 'threshold_kwargs': threshold_kwargs}
 
 
 @pytest.fixture(scope='module')
@@ -47,9 +46,9 @@ def sim_args_comb():
 
     sig = sim_combined(N_SECONDS, FS, components=components)
 
-    df_shapes, df_samples = compute_shape_features(sig, FS, F_RANGE, return_samples=True)
-    df_burst = compute_burst_features(df_shapes, df_samples, sig)
-    df_features, df_samples = compute_features(sig, FS, F_RANGE, return_samples=True)
+    df_shapes = compute_shape_features(sig, FS, F_RANGE)
+    df_burst = compute_burst_features(df_shapes, sig)
+    df_features = compute_features(sig, FS, F_RANGE)
 
     threshold_kwargs = {'amp_fraction_threshold': 0.,
                         'amp_consistency_threshold': .5,
@@ -58,8 +57,7 @@ def sim_args_comb():
                         'min_n_cycles': 3}
 
     yield {'sig': sig, 'fs': FS, 'f_range': F_RANGE, 'df_features': df_features,
-           'df_shapes': df_shapes, 'df_burst': df_burst, 'df_samples': df_samples,
-           'threshold_kwargs': threshold_kwargs}
+           'df_shapes': df_shapes, 'df_burst': df_burst, 'threshold_kwargs': threshold_kwargs}
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -81,4 +79,3 @@ def sim_stationary():
     sig = sim_oscillation(N_SECONDS, FS, FREQ, phase=0.15,
                           cycle="asine", rdsym=.3)
     yield sig
-

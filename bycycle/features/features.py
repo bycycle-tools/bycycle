@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 
 from bycycle.utils.checks import check_param
+from bycycle.utils.dataframes import drop_samples_df
 from bycycle.features.shape import compute_shape_features
 from bycycle.features.burst import compute_burst_features
 from bycycle.burst import detect_bursts_cycles, detect_bursts_amp
@@ -39,14 +40,14 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
 
     burst_kwargs : dict, optional, default: None
         Additional keyword arguments defined in :func:`~.compute_burst_fraction` for dual
-        amplitude threshold burst detection (i.e. when burst_method == 'amp').
+        amplitude threshold burst detection (i.e. when burst_method='amp').
     threshold_kwargs : dict, optional, default: None
         Feature thresholds for cycles to be considered bursts, matching keyword arguments for:
 
         - :func:`~.detect_bursts_cycles` for consistency burst detection
-          (i.e. when burst_method == 'cycles')
+          (i.e. when burst_method='cycles')
         - :func:`~.detect_bursts_amp` for  amplitude threshold burst detection
-          (i.e. when burst_method == 'amp').
+          (i.e. when burst_method='amp').
 
     find_extrema_kwargs : dict, optional, default: None
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
@@ -74,7 +75,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - ``time_ptsym`` : fraction of cycle in the peak period
         - ``band_amp`` : average analytic amplitude of the oscillation.
 
-        When consistency burst detection is used (i.e. burst_method == 'cycles'):
+        When consistency burst detection is used (i.e. burst_method='cycles'):
 
         - ``amp_fraction`` : normalized amplitude
         - ``amp_consistency`` : difference in the rise and decay voltage within a cycle
@@ -83,13 +84,11 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - ``monotonicity`` : fraction of instantaneous voltage changes between consecutive
           samples that are positive during the rise phase and negative during the decay phase
 
-        When dual threshold burst detection is used (i.e. burst_method == 'amp'):
+        When dual threshold burst detection is used (i.e. burst_method='amp'):
 
         - ``burst_fraction`` : fraction of a cycle that is bursting
 
-    df_samples : pandas.DataFrame, optional, default: True
-        An optionally returned dataframe containing cyclepoints for each cycle.
-        Columns (listed for peak-centered cycles):
+        When cyclepoints are returned (i.e. default, return_samples=True)
 
         - ``sample_peak`` : sample of 'sig' at which the peak occurs
         - ``sample_zerox_decay`` : sample of the decaying zero-crossing
@@ -104,16 +103,15 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs = 500
     >>> sig = sim_bursty_oscillation(10, fs, freq=10)
-    >>> df_features, df_samples = compute_features(sig, fs, f_range=(8, 12))
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12))
     """
 
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
 
     # Compute shape features for each cycle.
-    df_shape_features, df_samples = \
-        compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
-                               find_extrema_kwargs=find_extrema_kwargs)
+    df_shape_features = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
+                                               find_extrema_kwargs=find_extrema_kwargs)
 
     # Ensure kwargs are a dictionaries
     if burst_method == 'amp' and not isinstance(burst_kwargs, dict):
@@ -134,12 +132,11 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         burst_kwargs['f_range'] = f_range
 
     # Compute burst features for each cycle
-    df_burst_features = compute_burst_features(df_shape_features, df_samples, sig,
-                                               burst_method=burst_method,
+    df_burst_features = compute_burst_features(df_shape_features, sig, burst_method=burst_method,
                                                burst_kwargs=burst_kwargs)
 
     # Concatenate shape and burst features
-    df_features = pd.concat((df_shape_features, df_burst_features), axis=1)
+    df_features = pd.concat((df_burst_features, df_shape_features), axis=1)
 
     # Define whether or not each cycle is part of a burst
     if burst_method == 'cycles':
@@ -150,7 +147,6 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         raise ValueError('Invalid argument for "burst_method".'
                          'Either "cycles" or "amp" must be specified."')
 
-    if return_samples:
-        return df_features, df_samples
+    df_features = drop_samples_df(df_features) if return_samples is False else df_features
 
     return df_features
