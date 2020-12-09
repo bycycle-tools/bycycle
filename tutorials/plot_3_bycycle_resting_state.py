@@ -2,6 +2,8 @@
 3. Cycle-by-cycle analysis of resting state data
 ================================================
 
+Simulated experiment using the cycle-by-cycle approach.
+
 Say we ran an experiment and want to compare subjects' resting state data for some reason. Maybe we
 want to study age, gender, disease state, or something. This has often been done to study
 differences in oscillatory power or coupling between groups of people. In this notebook, we will run
@@ -11,7 +13,6 @@ In this example, we have 20 subjects (10 patients, 10 control), and we for some 
 that their alpha oscillations may be systematically different. For example, (excessive hand waving)
 we think the patient group should have more top-down input that increases the synchrony in the
 oscillatory input (measured by its symmetry).
-
 """
 
 ####################################################################################################

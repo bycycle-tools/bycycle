@@ -2,6 +2,8 @@
 2. Cycle-by-cycle algorithm
 ===========================
 
+Demonstration of the cycle-by-cycle approach.
+
 In the last tutorial notebook, I described the conventional approach for analyzing time-varying
 properties of neural oscillations, and in this notebook, we will go over our alternative approach.
 The fundamental goal of this approach is to characterize neural oscillations directly in the time
@@ -47,7 +49,7 @@ from neurodsp.sim import sim_combined
 
 from bycycle.features import compute_features
 from bycycle.cyclepoints import find_extrema, find_zerox
-from bycycle.cyclepoints.extrema import find_flank_zerox
+from bycycle.cyclepoints.zerox import find_flank_zerox
 from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_array
 
 pd.options.display.max_columns = 10

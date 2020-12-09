@@ -2,6 +2,8 @@
 1. Cycle-by-cycle philosophy
 ============================
 
+Motivations behind the cycle-by-cycle approach.
+
 Neural signals, like the example shown below, are analyzed in order to extract information about
 brain activity. Basically, we process these signals in order to extract features that will hopefully
 correlate with a behavior, pathology, or something else.
@@ -13,7 +15,6 @@ and phase.
 The conventional approach to analyzing these properties as a function of time is to only study a
 narrowband signal by applying a wavelet transform or bandpass filtering followed by the Hilbert
 transform. The latter is demonstrated below.
-
 """
 
 ###################################################################################################

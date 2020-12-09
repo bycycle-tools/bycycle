@@ -25,9 +25,11 @@ bycycle - cycle-by-cycle analysis of neural oscillations
 .. |Publication| image:: https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue
 .. _Publication: https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019
 
-NOTE: `ByCycle` is currently under-going a major new version update. 
+NOTE: `ByCycle` is currently under-going a major new version update.
 
-The development version in this repository is no longer compatible with prior releases. 
+Check the `changelog <https://bycycle-tools.github.io/bycycle/v1.0.0rc/changelog.html>`_ for notes on updating to the new version.
+
+The development version in this repository is no longer compatible with prior releases.
 
 Overview
 --------
@@ -99,7 +101,7 @@ To install the latest stable release, you can use pip:
 .. code-block:: shell
 
     $ pip install bycycle
-    
+
 ByCycle can also be installed with conda, from the conda-forge channel:
 
 .. code-block:: shell
@@ -129,8 +131,8 @@ To install an editable, development version, move into the directory you cloned 
     $ pip install -e .
 
 
-Usage
------
+Quickstart
+----------
 
 The main function in ``bycycle`` is ``compute_features``, which takes a time series and some
 parameters as inputs and returns a table of features for each cycle. Consider having a 1-dimensional
@@ -140,20 +142,15 @@ with the following:
 
 .. code-block:: python
 
-    from bycycle.filt import lowpass_filter
+    from neurodsp.sim import sim_bursty_oscillation
     from bycycle.features import compute_features
-
-    sig_filt = lowpass_filter(sig, fs, f_lowpass, n_seconds=n_seconds, remove_edge_artifacts=False)
 
     fs = 1000
     f_range = (8, 12)
-    df = compute_features(sig_filt, fs, f_range)
 
+    sig = sim_bursty_oscillation(10, fs, freq=10)
+    df_features = compute_features(sig, fs, f_range)
 
-Note that a lowpass filter is applied in order to remove high-frequency power that may interfere
-with extrema localization. (see section 0 of the
-`algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_
-for more details).
 
 It's necessary to note that the above ``compute_features`` command used default parameters to
 localize extrema and detect bursts of oscillations. However, it is important to knowledgeably select
@@ -163,45 +160,36 @@ The following example and text go over the different potential parameter changes
 
 .. code-block:: python
 
-    burst_kwargs = {'amplitude_fraction_threshold': .2,
-                    'amplitude_consistency_threshold': .5,
-                    'period_consistency_threshold': .5,
-                    'monotonicity_threshold': .8,
-                    'n_cycles_min': 3}
+    threshold_kwargs = {'amp_fraction_threshold': .2,
+                        'amp_consistency_threshold': .5,
+                        'period_consistency_threshold': .5,
+                        'monotonicity_threshold': .8,
+                        'min_n_cycles': 3}
 
     narrowband_kwargs = {'n_seconds': .5}
 
-    df = compute_features(sig, fs, f_range,
-                          center_extrema='T',
-                          burst_detection_method='cycles',
-                          burst_detection_kwargs=burst_kwargs,
-                          find_extrema_kwargs={'filter_kwargs': narrowband_kwargs},
-                          hilbert_increase_N=True)
+    df = compute_features(sig, fs, f_range, center_extrema='trough',
+                          burst_method='cycles', threshold_kwargs=threshold_kwargs,
+                          find_extrema_kwargs={'filter_kwargs': narrowband_kwargs})
 
 
 - **center_extrema** determines how the cycles are segmented. 'T' indicates the center extrema is \
   a trough, so cycles are segmented peak-to-peak.
-- **burst_detection_method** selects which method for burst detection is used. The 'cycles' option \
+- **burst_method** selects which method for burst detection is used. The 'cycles' option \
   uses features of adjacent cycles in order to detect bursts (e.g. period consistency, see next \
   item). The 'amp' option uses an amplitude threshold to determine the cycles that are part of an \
   oscillatory burst.
-- **burst_detection_kwargs** set the keyword arguments for the burst detection function. For the \
+- **threshold_kwargs** set the keyword arguments for the burst detection functions. For the \
   ``cycles`` method, there are 5 keyword arguments (see the end of the \
   `algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_ \
   for advice on choosing these parameters).
 - **find_extrema_kwargs** set the keyword arguments for the function used to localize peaks and \
   troughs. Most notably, you can change the duration of the bandpass filter (``N_seconds``) used \
   during extrema localization (see section 1 of the \
-  `algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_).
-- **hilbert_increase_N** is a boolean indicator of whether or not to zeropad the signal to bypass \
-  complications that ``scipy.signal.hilbert()`` has with some long signal durations. Try setting \
-  this parameter to `True` if this function is taking a long time to run. Note the Hilbert \
-  Transform is used to compute the `band_amp` feature of each cycle, which is the average analytic \
-  amplitude of the frequency of interest in that cycle. This is complementary to the `volt_amp` \
-  measure, and may be desired for some burst detection applications.
+  `algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py>`_)
 
-Output
-------
+DataFrame Output
+~~~~~~~~~~~~~~~~
 
 The output of ``bycycle`` is a ``pandas.DataFrame``, a table like the one shown below (with many
 columns, so it is split into two images).
@@ -231,19 +219,7 @@ The features in this table can then go on to be analyzed, as demonstrated in the
 and the `data example <https://bycycle-tools.github.io/bycycle/auto_examples/plot_theta_feature_distributions.html#sphx-glr-auto-examples-plot-theta-feature-distributions-py>`_.
 For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording, shown below.
 
-Rdsym Distribution:
-~~~~~~~~~~~~~~~~~~~
-
-.. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/rdsym_distribution.png
-
-|
-
-The plot below indicates in red the cycles of the signal that were identified as part of an
-oscillatory burst.
-
 Burst Detection Results
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/bursts_detected.png
-
-|
