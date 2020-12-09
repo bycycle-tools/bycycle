@@ -69,14 +69,6 @@ html-multi:
 	git branch v$(STABLE) tags/$(STABLE)
 	git branch -D v$(DEVELOPMENT) || true
 	git branch v$(DEVELOPMENT) tags/$(DEVELOPMENT)
-	# Delete below after mergings PRs
-	git remote remove ryan || true
-	git remote add ryan https://github.com/ryanhammonds/bycycle.git
-	git fetch ryan parallel
-	git fetch ryan doc
-	git checkout v$(DEVELOPMENT)
-	git merge ryan/parallel -m "merge open prs"
-	git merge ryan/doc -m "merge open prs"
 	# Checkout the stable release tag
 	git checkout v$(STABLE)
 	# Ensure navbar template exists
