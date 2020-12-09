@@ -25,7 +25,7 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak',
         Frequency range, in Hz, to narrowband filter the signal, used to find zero-crossings.
     boundary : int, optional, default: 0
         Number of samples from edge of the signal to ignore.
-    first_extrema: {'peak', 'trough', None}, optional, default: 'peak'
+    first_extrema: {'peak', 'trough', None}
         If 'peak', then force the output to begin with a peak and end in a trough.
         If 'trough', then force the output to begin with a trough and end in peak.
         If None, force nothing.
@@ -119,7 +119,7 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak',
     peaks = peaks - int(np.ceil(filt_len/2))
     troughs = troughs - int(np.ceil(filt_len/2))
 
-    # Remove peaks and troughs within the boundary limit
+    # Remove peaks and trough outside the boundary limit
     peaks = peaks[np.logical_and(peaks > boundary, peaks < sig_len - boundary)]
     troughs = troughs[np.logical_and(troughs > boundary, troughs < sig_len - boundary)]
 

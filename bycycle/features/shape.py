@@ -30,8 +30,8 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak',
         - 'trough' : cycles are defined peak-to-peak
 
     find_extrema_kwargs : dict, optional, default: None
-        Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
-        to change filter parameters or boundary. By default, it sets the filter length to three
+        Keyword arguments for function to find peaks and troughs (:func:`~.find_extrema`)
+        to change filter parameters or boundary. By default, the filter length is set to three
         cycles of the low cutoff frequency (``f_range[0]``).
     n_cycles : int, optional, default: 3
         Length of filter, in number of cycles, at the lower cutoff frequency.

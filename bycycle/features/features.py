@@ -51,7 +51,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
 
     find_extrema_kwargs : dict, optional, default: None
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
-        to change filter Parameters or boundary. By default, it sets the filter length to three
+        to change filter parameters or boundary. By default, the filter length is set to three
         cycles of the low cutoff frequency (``f_range[0]``).
     return_samples : bool, optional, default: True
         Returns samples indices of cyclepoints used for determining features if True.
@@ -109,7 +109,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
 
-    # Compute shape features for each cycle.
+    # Compute shape features for each cycle
     df_shape_features = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
                                                find_extrema_kwargs=find_extrema_kwargs)
 

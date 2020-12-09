@@ -19,7 +19,7 @@ def compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs):
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
-        Frequency range, in Hz, to narrowband filter the signal, used to find zero-crossings.
+        Frequency range, in Hz, to narrowband filter the signal. Used to find zero-crossings.
     find_extrema_kwargs : dict, optional, default: None
         Keyword arguments for the function to find peaks and troughs (:func:`~.find_extrema`)
         that change filter parameters or boundary. By default, the boundary is set to zero.

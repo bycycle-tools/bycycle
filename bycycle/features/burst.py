@@ -294,14 +294,13 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     fs : float
         Sampling rate, Hz.
     f_range : tuple of (float, float)
-        Frequency range (Hz) for oscillator of interest.
+        Frequency range (Hz) for oscillaton of interest.
     amp_threshes : tuple (low, high), optional, default: (1, 2)
         Threshold values for determining timing of bursts.
         These values are in units of amplitude (or power, if specified) normalized to
         the median amplitude (value 1).
     min_n_cycles : int, optional, default: 3
-        Minimum number of cycles to be identified as truly oscillating needed in a row in
-        order for them to remain identified as truly oscillating.
+        Minimum number of consecutive cycles to be identified as an oscillation.
     filter_kwargs : dict, optional, default: None
         Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`.
 
