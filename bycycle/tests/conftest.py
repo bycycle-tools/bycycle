@@ -79,4 +79,3 @@ def sim_stationary():
     sig = sim_oscillation(N_SECONDS, FS, FREQ, phase=0.15,
                           cycle="asine", rdsym=.3)
     yield sig
-

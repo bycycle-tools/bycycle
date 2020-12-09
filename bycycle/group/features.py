@@ -1,51 +1,61 @@
 """Functions to compute features across 2 dimensional arrays of data."""
 
+import warnings
+from copy import deepcopy
 from functools import partial
 from multiprocessing import Pool, cpu_count
 
 import numpy as np
 
 from bycycle.features import compute_features
-from bycycle.group.utils import progress_bar
+from bycycle.burst import detect_bursts_cycles, detect_bursts_amp
+from bycycle.group.utils import progress_bar, check_kwargs_shape
+from bycycle.utils.dataframes import epoch_df
 
 ###################################################################################################
 ###################################################################################################
 
-def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
+def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
                         return_samples=True, n_jobs=-1, progress=None):
     """Compute shape and burst features for a 2 dimensional array of signals.
 
     Parameters
     ----------
     sigs : 2d array
-        Voltage time series, with shape [n_signals, n_points].
+        Voltage time series, i.e. (n_channels, n_samples) or (n_epochs, n_samples).
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest, in Hz.
     compute_features_kwargs : dict or list of dict
         Keyword arguments used in :func:`~.compute_features`.
+    axis : {0, None}
+        Which axes to calculate features across:
+
+        - ``axis=1`` : Iterates over each row/signal in an array independently (i.e. for each
+          channel in (n_channels, n_timepoints)).
+        - ``axis=None`` : Flattens rows/signals prior to computing features (i.e. across flatten
+          epochs in (n_epochs, n_timepoints)).
+
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
     n_jobs : int, optional, default: -1
         The number of jobs, one per cpu, to compute features in parallel.
-    progress: {None, 'tqdm', 'tqdm.notebook'}, optional, default: None
+    progress: {None, 'tqdm', 'tqdm.notebook'}
         Specify whether to display a progress bar. Use 'tqdm' if installed.
 
     Returns
     -------
-    df_features : list of pandas.DataFrame
+    dfs_features : list of pandas.DataFrame
         Dataframes containing shape and burst features for each cycle.
-        Each dataframe is computed using the :func:`~.compute_features` function.
-    df_samples : list of pandas.DataFrame, optional
-        Dataframes containing cyclepoints for each cycle.
-        Only returned if ``return_samples`` is True.
         Each dataframe is computed using the :func:`~.compute_features` function.
 
     Notes
     -----
 
-    - The order of ``df_features`` and ``df_samples`` corresponds to the order of ``sigs``.
+    - When ``axis=None`` parallel computation may not be performed due to the requirement of
+      flattening the array into one dimension.
+    - The order of ``dfs_features`` corresponds to the order of ``sigs``.
     - If ``compute_features_kwargs`` is a dictionary, the same kwargs are applied applied across
       the first axis of ``sigs``. Otherwise, a list of dictionaries equal in length to the
       first axis of ``sigs`` is required to apply unique kwargs to each signal.
@@ -54,14 +64,21 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
 
     Examples
     --------
-    Compute the features of a 2d array in parrallel using the same compute_features kwargs:
+    Compute the features of a 2d array (n_epochs=10, n_samples=5000) containing epoched data:
 
     >>> import numpy as np
     >>> from neurodsp.sim import sim_bursty_oscillation
     >>> fs = 500
     >>> sigs = np.array([sim_bursty_oscillation(10, fs, 10) for i in range(10)])
     >>> compute_kwargs = {'burst_method': 'amp', 'threshold_kwargs':{'burst_fraction_threshold': 1}}
-    >>> df_features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False, n_jobs=2,
+    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), axis=0,
+    ...                                   compute_features_kwargs=compute_kwargs)
+
+    Compute the features of a 2d array in parallel using the same compute_features kwargs. Note each
+    signal features are computed separately in this case, recommended for (n_channels, n_samples):
+
+    >>> compute_kwargs = {'burst_method': 'amp', 'threshold_kwargs':{'burst_fraction_threshold': 1}}
+    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), n_jobs=2, axis=None,
     ...                                   compute_features_kwargs=compute_kwargs)
 
     Compute the features of a 2d array in parallel using using individualized settings per signal to
@@ -70,79 +87,125 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None,
     >>> sigs =  np.array([sim_bursty_oscillation(10, fs, freq=10)] * 10)
     >>> compute_kwargs = [{'threshold_kwargs': {'amp_consistency_threshold': thresh*.1}}
     ...                   for thresh in range(1, 11)]
-    >>> df_features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False,
-    ...                                   n_jobs=2, compute_features_kwargs=compute_kwargs)
+    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False,
+    ...                                   n_jobs=2, compute_features_kwargs=compute_kwargs, axis=0)
     """
 
-    if isinstance(compute_features_kwargs, list) and len(compute_features_kwargs) != len(sigs):
-        raise ValueError("When compute_features_kwargs is a list, it's length must be equal to "
-                         "sigs. Use a dictionary when applying the same kwargs to each signal.")
-    elif compute_features_kwargs is None:
-        compute_features_kwargs = {}
+    # Check compute_features_kwargs
+    kwargs = deepcopy(compute_features_kwargs)
+    kwargs = np.array(kwargs) if isinstance(kwargs, list) else kwargs
 
-    # Drop `return_samples` argument, as this is set directly in the function call
-    compute_features_kwargs = [compute_features_kwargs] if \
-        isinstance(compute_features_kwargs, dict) else compute_features_kwargs
+    check_kwargs_shape(sigs, kwargs, axis)
 
-    [kwargs.pop('return_samples', None) for kwargs in compute_features_kwargs]
+    kwargs = {} if kwargs is None else kwargs
+    kwargs = [kwargs] if isinstance(kwargs, dict) else list(kwargs)
+
+    # Drop return_samples argument, as it is set directly in the function call
+    for kwarg in kwargs:
+        kwarg.pop('return_samples', None)
 
     n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
-    with Pool(processes=n_jobs) as pool:
+    if axis == 0:
+        # Compute each signal independently and in paralllel
+        with Pool(processes=n_jobs) as pool:
 
-        if len(compute_features_kwargs) > 1:
-            # Map iterable sigs and kwargs together
-            mapping = pool.imap(partial(_proxy, fs=fs, f_range=f_range,
-                                        return_samples=return_samples),
-                                zip(sigs, compute_features_kwargs))
+            if len(kwargs) > 1:
+                # Map iterable sigs and kwargs together
+                mapping = pool.imap(partial(_proxy_2d, fs=fs, f_range=f_range,
+                                            return_samples=return_samples),
+                                    zip(sigs, kwargs))
 
-        else:
-            # Only map sigs, kwargs are the same for each mapping
-            mapping = pool.imap(partial(compute_features, fs=fs, f_range=f_range,
-                                        return_samples=return_samples,
-                                        **compute_features_kwargs[0]),
-                                sigs)
+            else:
+                # Only map sigs, kwargs are the same for each mapping
+                mapping = pool.imap(partial(compute_features, fs=fs, f_range=f_range,
+                                            return_samples=return_samples,
+                                            **kwargs[0]),
+                                    sigs)
 
-        df_features = list(progress_bar(mapping, progress, len(sigs)))
+            dfs_features = list(progress_bar(mapping, progress, len(sigs)))
 
-    return df_features
+    elif axis is None:
+        # Compute features after flattening the 2d array (i.e. calculated across a 1d signal)
+        sig_flat = sigs.flatten()
+
+        center_extrema = kwargs[0].pop('center_extrema', 'peak')
+
+        df_flat = compute_features(sig_flat, fs=fs, f_range=f_range, return_samples=True,
+                                   center_extrema=center_extrema, **kwargs[0])
+
+        dfs_features = epoch_df(df_flat, len(sig_flat), len(sigs[0]))
+
+         # Apply different thresholds if specified
+        if len(kwargs) > 0:
+
+            for idx, compute_kwargs in enumerate(kwargs):
+
+                burst_method = compute_kwargs.pop('burst_method', 'cycles')
+                thresholds = compute_kwargs.pop('threshold_kwargs', {})
+                center_extrema_next = compute_kwargs.pop('center_extrema', None)
+
+                if idx > 0 and center_extrema_next is not None \
+                    and center_extrema_next != center_extrema:
+
+                    warnings.warn('''
+                        The same center extrema must be used when axis is None and
+                        compute_features_kwargs is a list. Proceeding using the first
+                        center_extrema: {extrema}.'''.format(extrema=center_extrema))
+
+                if burst_method == 'cycles':
+                    dfs_features[idx] = detect_bursts_cycles(dfs_features[idx], **thresholds)
+
+                elif burst_method == 'amp':
+                    dfs_features[idx] = detect_bursts_amp(dfs_features[idx], **thresholds)
+
+    else:
+        raise ValueError("The axis kwarg must be either 0 or None.")
+
+    return dfs_features
 
 
-def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None,
+def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
                         return_samples=True, n_jobs=-1, progress=None):
     """Compute shape and burst features for a 3 dimensional array of signals.
 
     Parameters
     ----------
     sigs : 3d array
-        Voltage time series, with shape [n_groups, n_signals, n_points].
+        Voltage time series, with 3d shape, i.e. (n_channels, n_epochs, n_samples).
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest, in Hz.
     compute_features_kwargs : dict or 1d list of dict or 2d list of dict
         Keyword arguments used in :func:`~.compute_features`.
+    axis : {0, 1, (0, 1)}
+        Which axes to calculate features across:
+
+        - ``axis=0`` : Iterates over 2D slices along the zeroth dimension, (i.e. for each channel in
+          (n_channels, n_epochs, n_timepoints)).
+        - ``axis=1`` : Iterates over 2D slices along the first dimension (i.e. across flatten epochs
+          in (n_epochs, n_timepoints)).
+        - ``axis=(0, 1)`` : Iterates over 1D slices along the zeroth and first dimension (i.e across
+          each signal independently in (n_participants, n_channels, n_timepoints)).
+
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
     n_jobs : int, optional, default: -1
         The number of jobs, one per cpu, to compute features in parallel.
-    progress: {None, 'tqdm', 'tqdm.notebook'}, optional, default: None
+    progress : {None, 'tqdm', 'tqdm.notebook'}
         Specify whether to display a progress bar. Use 'tqdm' if installed.
 
     Returns
     -------
-    df_features : list of pandas.DataFrame
+    dfs_features : list of pandas.DataFrame
         Dataframes containing shape and burst features for each cycle.
-        Each dataframe is computed using the :func:`~.compute_features` function.
-    df_samples : list of pandas.DataFrame, optional
-        Dataframes containing cyclepoints for each cycle.
-        Only returned if ``return_samples`` is True.
         Each dataframe is computed using the :func:`~.compute_features` function.
 
     Notes
     -----
 
-    - The order of ``df_features`` and ``df_samples`` corresponds to the order of ``sigs``.
+    - The order of ``dfs_features`` corresponds to the order of ``sigs``.
     - If ``compute_features_kwargs`` is a dictionary, the same kwargs are applied applied across
       all signals. A 1d list, equal in length to the first dimensions of sigs, may be applied to
       each set of signals along the first dimensions. A 2d list, the same shape as the first two
@@ -163,8 +226,9 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None,
     >>> threshold_kwargs = {'amp_consistency_threshold': .5, 'period_consistency_threshold': .5,
     ...                     'monotonicity_threshold': .8, 'min_n_cycles': 3}
     >>> compute_feature_kwargs = {'threshold_kwargs': threshold_kwargs, 'center_extrema': 'trough'}
-    >>> features = compute_features_3d(sigs, fs, f_range= (8, 12), return_samples=False, n_jobs=2,
-    ...                                compute_features_kwargs=compute_feature_kwargs)
+    >>> features = compute_features_3d(sigs, fs, f_range= (8, 12),
+    ...                                compute_features_kwargs=compute_feature_kwargs, axis=0,
+    ...                                n_jobs=2)
 
     Compute the features of a 3d array, in parallel, with a shape of
     (n_channels=2, n_epochs=3, n_signals=5000) using channel-specific compute_features kwargs:
@@ -175,77 +239,71 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None,
     ...                         'period_consistency_threshold': .5, 'min_n_cycles': 3}
     >>> compute_kwargs = [{'threshold_kwargs': threshold_kwargs_ch1, 'center_extrema': 'trough'},
     ...                   {'threshold_kwargs': threshold_kwargs_ch2, 'center_extrema': 'trough'}]
-    >>> features = compute_features_3d(sigs, fs, f_range= (8, 12), return_samples=False, n_jobs=2,
-    ...                                compute_features_kwargs=compute_kwargs)
+    >>> features = compute_features_3d(sigs, fs, f_range= (8, 12),
+    ...                                compute_features_kwargs=compute_kwargs, axis=0, n_jobs=2)
     """
-
-    # Convert list of kwargs to array to check dimensions
-    kwargs = compute_features_kwargs
-
-    if isinstance(kwargs, list):
-        kwargs = np.array(kwargs)
-    elif kwargs is None:
-        kwargs = {}
-
-    # Ensure compute_features corresponds to sigs
-    if isinstance(kwargs, np.ndarray):
-
-        if kwargs.ndim == 1 and np.shape(kwargs)[0] != np.shape(sigs)[0]:
-
-            raise ValueError("When compute_features_kwargs is a 1d list, it's length must "
-                             "be equal to the first dimension of sigs. Use a dictionary "
-                             "when applying the same kwargs to each signal.")
-
-        elif ((kwargs.ndim == 2 and np.shape(kwargs)[0] != np.shape(sigs)[0]) or
-              (kwargs.ndim == 2 and np.shape(kwargs)[1] != np.shape(sigs)[1])):
-
-            raise ValueError("When compute_features_kwargs is a 2d list, it's shape must "
-                             "be equal to the shape of the first two dimensions of sigs. "
-                             "Use a dictionary when applying the same kwargs to each signal.")
 
     n_jobs = cpu_count() if n_jobs == -1 else n_jobs
 
-    # Reshape sigs into 2d aray
-    sigs_2d = sigs.reshape(np.shape(sigs)[0]*np.shape(sigs)[1], np.shape(sigs)[2])
+    # Convert list of kwargs to array to check dimensions
+    kwargs = deepcopy(compute_features_kwargs)
+    kwargs = np.array(kwargs) if isinstance(kwargs, list) else kwargs
 
-    # Reshape kwargs
-    if isinstance(kwargs, np.ndarray) and kwargs.ndim == 1:
-        # Repeat each kwargs for each signal along the second dimension
-        kwargs = np.array([[kwarg]*np.shape(sigs)[1] for kwarg in kwargs])
+    check_kwargs_shape(sigs, kwargs, axis)
+    kwargs = list(kwargs.flatten()) if isinstance(kwargs, np.ndarray) else [kwargs]
 
-    # Flatten kwargs
-    if isinstance(kwargs, np.ndarray):
-        kwargs = list(kwargs.flatten())
+    if axis in [0, 1]:
+        # Independently across 2d slices along either the zeroth or first axis
+        sigs = np.swapaxes(sigs, 0, 1) if axis == 1 else sigs
+        kwargs = kwargs * np.shape(sigs)[0] if len(kwargs) == 1 else kwargs
 
-    df_features = \
-        compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
-                            return_samples=return_samples, n_jobs=n_jobs, progress=progress)
+        with Pool(processes=n_jobs) as pool:
 
-    # Reshape returned features to match the first two dimensions of sigs
-    df_features = _reshape_df(df_features, sigs)
+            mapping = pool.imap(partial(_proxy_3d, fs=fs, f_range=f_range,
+                                        return_samples=return_samples),
+                                zip(sigs, kwargs))
 
-    return df_features
+            dfs_features = list(progress_bar(mapping, progress, len(sigs)))
+
+        # Swap the first two axes to return original shape
+        dfs_features = [list(dfs) for dfs in zip(*dfs_features)] if axis == 1 else dfs_features
+
+    elif axis == (0, 1):
+        # Independently across the first two axes (i.e. for each signal)
+        sigs_2d = sigs.reshape(np.shape(sigs)[0]*np.shape(sigs)[1], np.shape(sigs)[2])
+        kwargs = kwargs[0] if len(kwargs) == 1 else kwargs
+
+        df_2d = compute_features_2d(sigs_2d, fs, f_range, compute_features_kwargs=kwargs,
+                                    return_samples=return_samples, n_jobs=n_jobs,
+                                    progress=progress, axis=0)
+
+    else:
+
+        raise ValueError("The axis kwarg must be either 0, 1, or (0, 1).")
+
+    if axis == (0, 1):
+
+        dfs_features = np.zeros((np.shape(sigs)[0], np.shape(sigs)[1])).tolist()
+
+        # Reshape
+        for dim0_idx in range(np.shape(sigs)[0]):
+            for dim1_idx in range(np.shape(sigs)[1]):
+                dfs_features[dim0_idx][dim1_idx] = df_2d[dim0_idx + dim1_idx]
+
+    return dfs_features
 
 
-def _proxy(args, fs=None, f_range=None, return_samples=None):
-    """Proxy function to map kwargs and sigs together."""
+def _proxy_2d(args, fs=None, f_range=None, return_samples=None):
+    """Proxy function to map kwargs and 2d sigs together."""
 
     sig, kwargs = args[0], args[1:]
     return compute_features(sig, fs=fs, f_range=f_range,
                             return_samples=return_samples, **kwargs[0])
 
+def _proxy_3d(args, fs=None, f_range=None, return_samples=None):
+    """Proxy function to map kwargs and 3d sigs together."""
 
-def _reshape_df(df_features, sigs_3d):
-    """Reshape a list of dataframes."""
+    sigs, kwargs = args[0], args[1]
 
-    df_reshape = []
-
-    dim_b = np.shape(sigs_3d)[1]
-
-    max_idx = [i for i in range(dim_b, len(df_features)*dim_b, dim_b)]
-    min_idx = [i for i in range(0, len(df_features), dim_b)]
-
-    for lower, upper in zip(min_idx, max_idx):
-        df_reshape.append(df_features[lower:upper])
-
-    return df_reshape
+    return compute_features_2d(sigs, fs, f_range, compute_features_kwargs=kwargs, axis=None,
+                               return_samples=return_samples)

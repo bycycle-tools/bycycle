@@ -1,6 +1,9 @@
 """Tests for utils.dataframe."""
 
 from copy import deepcopy
+
+import pytest
+
 import numpy as np
 import pandas as pd
 
@@ -67,7 +70,7 @@ def test_split_samples_df(sim_args):
 
     df_features = sim_args['df_features']
 
-    df_features, df_samples = split_samples_df(df_features)
+    df_features, df_samples = split_samples_df(df_features.copy())
 
     # Ensure sample columns are isolated to df_samples
     for col in df_features.columns:
@@ -75,3 +78,48 @@ def test_split_samples_df(sim_args):
 
     for col in df_samples.columns:
         assert "sample_" in col
+
+
+def test_drop_samples_df(sim_args):
+
+    df_features = sim_args['df_features']
+
+    df_features = drop_samples_df(df_features.copy())
+
+    for col in df_features.columns:
+        assert "sample_" not in col
+
+
+def test_epoch_df(sim_args):
+
+    sig = sim_args['sig']
+    df_features = sim_args['df_features']
+    epoch_len = sim_args['fs']
+
+    print(df_features.columns)
+    dfs_features = epoch_df(df_features, len(sig), epoch_len)
+
+    assert len(dfs_features) == int(len(sig) / epoch_len)
+
+
+@pytest.mark.parametrize("mismatch", [False, pytest.param(True, marks=pytest.mark.xfail)])
+@pytest.mark.parametrize("ndim", [2, 3])
+def test_flatten_dfs(sim_args, mismatch, ndim):
+
+    df_features_orig = sim_args['df_features']
+
+    if ndim == 2:
+        dfs_features = [df_features_orig.copy(), df_features_orig.copy()]
+        labels = ['A', 'B']
+    elif ndim == 3:
+        dfs_features = [[df_features_orig.copy(), df_features_orig.copy()],
+                        [df_features_orig.copy(), df_features_orig.copy()]]
+        labels = [['CH00_EP00', 'CH00_EP01'], ['CH01_EP00', 'CH01_EP01']]
+
+    if mismatch:
+        labels = ['A']
+
+    df_features = flatten_dfs(dfs_features, labels)
+
+    assert 'Label' in df_features.columns
+    assert (np.unique(df_features['Label'].values) == np.array(labels).flatten()).all()
