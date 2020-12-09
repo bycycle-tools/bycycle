@@ -1,0 +1,15 @@
+
+{% extends "!navbar.html" %}
+
+{% block navbartoc %}
+            <li class="dropdown">
+              <button type="button" class="btn btn-{% if (build_dev_html|tobool) %}danger{% else %}primary{% endif %} btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+              v{{ release }}
+              <span class="caret"></span>
+            </button>
+              <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+                <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0rc</a></li>
+                <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v0.1.3(stable)</a></li>
+              </ul>
+            </li>
+{% endblock %}
