@@ -7,7 +7,7 @@ SPHINXPROJ    = bycycle
 SOURCEDIR     = .
 BUILDDIR      = _build
 STABLE        = 0.1.3
-DEVELOPMENT   = 1.0.0rc1
+DEVELOPMENT   = 1.0.0rc2
 RECENT        = ""
 
 # Put it first so that "make" without argument is like "make help".
