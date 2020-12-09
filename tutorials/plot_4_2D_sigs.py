@@ -9,7 +9,6 @@ Signals may be organized in a different ways, including (n_epochs, n_timepoints)
 (n_channels, n_timepoints). The difference between these organizataions is that continuity is
 preserved across epochs, but not across channels. The ``axis`` argument is used to specificy either
 continuous (``axis=None``) and non-continuous (``axis=0``) recordings.
-
 """
 
 ####################################################################################################
@@ -54,8 +53,8 @@ print(np.shape(arr.flatten()))
 # --------------------------------------------
 # The features for a 2d array with a (n_epochs, n_timepoints) organization will be computed here.
 # This is an example of when using ``axis = None`` is appropriate, assuming each epoch was recorded
-# continuously. Data will be simulated to produce to alternating epoch types (rest and task)
-# with varying rise-decay symmetries.
+# continuously. Data will be simulated to produce to rest and task epochs with varying rise-decay
+# symmetries.
 
 ####################################################################################################
 
