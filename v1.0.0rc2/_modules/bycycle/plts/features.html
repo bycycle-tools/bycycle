@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bycycle.plts.features &#8212; bycycle 1.0.0rc2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html"><span><img src="../../../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0rc2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../glossary.html">Glossary</a></li>
+                <li><a href="../../../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../../../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+  <li class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+    v1.0.0rc2
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0rc</a></li>
+      <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v0.1.3(stable)</a></li>
+    </ul>
+  </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for bycycle.plts.features</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Plot cycle features.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">neurodsp.plts.utils</span> <span class="kn">import</span> <span class="n">savefig</span>
+
+<span class="c1">###################################################################################################</span>
+<span class="c1">###################################################################################################</span>
+
+<div class="viewcode-block" id="plot_feature_hist"><a class="viewcode-back" href="../../../generated/bycycle.plts.plot_feature_hist.html#bycycle.plts.plot_feature_hist">[docs]</a><span class="nd">@savefig</span>
+<span class="k">def</span> <span class="nf">plot_feature_hist</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">param_label</span><span class="p">,</span> <span class="n">only_bursts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot a histogram for a cycle feature.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    feature : pandas.DataFrame or 1d array</span>
+<span class="sd">        Dataframe output from :func:`~.compute_features` or a 1d array.</span>
+<span class="sd">    param_label : str</span>
+<span class="sd">        Column name of the parameter of interest in ``df_features``.</span>
+<span class="sd">    only_burst : bool, optional, default: True</span>
+<span class="sd">        Whether to limit cycles to only those that are bursting.</span>
+<span class="sd">    bins : int or string, optional, default: &#39;auto&#39;</span>
+<span class="sd">        The number of bins or binning strategy, as specified in `matplotlib.pyplot.hist`.</span>
+<span class="sd">    ax : matplotlib.Axes, optional</span>
+<span class="sd">        Figure axes upon which to plot.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass into `matplotlib.pyplot.hist`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Default keyword arguments include:</span>
+
+<span class="sd">    - ``xlabel``: str, default: ``param_label``</span>
+<span class="sd">    - ``figsize``: tuple of (float, float), default: (10, 10)</span>
+<span class="sd">    - ``color``: str, default: &#39;k&#39;</span>
+<span class="sd">    - ``xlim``: tuple of (float, float), default: None</span>
+<span class="sd">    - ``fontsize``: float, default: 15</span>
+<span class="sd">    - ``alpha``: float, default: .5</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plot a histogram of each cycle&#39;s mean band amplitude:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_features</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_features = compute_features(sig, fs, f_range=(8, 12), return_samples=False)</span>
+<span class="sd">    &gt;&gt;&gt; plot_feature_hist(df_features, &#39;band_amp&#39;, only_bursts=False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Limit dataframe to bursts</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="n">only_bursts</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">feature</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;is_burst&#39;</span><span class="p">]][</span><span class="n">param_label</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="n">only_bursts</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">feature</span> <span class="o">=</span> <span class="n">feature</span><span class="p">[</span><span class="n">param_label</span><span class="p">]</span>
+
+    <span class="c1"># Default keyword args</span>
+    <span class="n">figsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;figsize&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">xlabel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;xlabel&#39;</span><span class="p">,</span> <span class="n">param_label</span><span class="p">)</span>
+    <span class="n">xlim</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;xlim&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">fontsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;fontsize&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+
+    <span class="c1"># Axis style</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;# cycles&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">xlim</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_feature_categorical"><a class="viewcode-back" href="../../../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical">[docs]</a><span class="nd">@savefig</span>
+<span class="k">def</span> <span class="nf">plot_feature_categorical</span><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">param_label</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot a cycle feature by one or more categories.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_features : pandas.DataFrame</span>
+<span class="sd">        Dataframe output from :func:`~.compute_features`.</span>
+<span class="sd">    param_label : str</span>
+<span class="sd">        Column name of the parameter of interest in ``df_features``.</span>
+<span class="sd">    group_by : str, optional</span>
+<span class="sd">        Dataframe column name of a grouping variable to split plotting by.</span>
+<span class="sd">    ax : matplotlib.Axes, optional</span>
+<span class="sd">        Figure axes upon which to plot.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass into `matplotlib.pyplot.scatter`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Default keyword arguments include:</span>
+
+<span class="sd">    - ``xlabel``: list, default: [1, 2, 3...]</span>
+<span class="sd">    - ``ylabel``: str, default: ``param_label``</span>
+<span class="sd">    - ``figsize``: tuple of (float, float), default: (10, 10)</span>
+<span class="sd">    - ``fontsize``: float, default: 20</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plot and compare the rise-decay times of two asine signals:</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; from bycycle.group import compute_features_2d</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sigs = np.array([sim_oscillation(5, fs, 10, cycle=&#39;asine&#39;, rdsym=0.2),</span>
+<span class="sd">    ...                  sim_oscillation(5, fs, 10, cycle=&#39;asine&#39;, rdsym=0.8)])</span>
+<span class="sd">    &gt;&gt;&gt; features = compute_features_2d(sigs, fs, f_range=(8, 12), return_samples=False, n_jobs=2)</span>
+<span class="sd">    &gt;&gt;&gt; features[0][&#39;group&#39;], features[1][&#39;group&#39;] = &#39;low&#39;, &#39;high&#39;</span>
+<span class="sd">    &gt;&gt;&gt; df_features = pd.concat([features[0], features[1]])</span>
+<span class="sd">    &gt;&gt;&gt; plot_feature_categorical(df_features, &#39;time_rdsym&#39;, group_by=&#39;group&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Split features by group if specified</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="n">df_features</span><span class="p">[</span><span class="n">param_label</span><span class="p">]]</span>
+
+    <span class="k">if</span> <span class="n">group_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df_features</span><span class="p">[</span><span class="n">group_by</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">):</span>
+            <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_features</span><span class="p">[</span><span class="n">df_features</span><span class="p">[</span><span class="n">group_by</span><span class="p">]</span> <span class="o">==</span> <span class="n">group</span><span class="p">][</span><span class="n">param_label</span><span class="p">])</span>
+
+    <span class="c1"># Add random variance along x-axis</span>
+    <span class="n">x_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">)]</span>
+
+    <span class="c1"># Default keyword args</span>
+    <span class="n">figsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;figsize&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">ylabel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;ylabel&#39;</span><span class="p">,</span> <span class="n">param_label</span><span class="p">)</span>
+    <span class="n">xlabel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;xlabel&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">))])</span>
+    <span class="n">fontsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;fontsize&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_values</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">feature</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Plot styling</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="o">+.</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">))])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+
+    <span class="c1"># Hide the right and top spines</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

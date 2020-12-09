@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4. Running Bycycle on 2D Arrays &#8212; bycycle 1.0.0rc2 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0rc2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../glossary.html">Glossary</a></li>
+                <li><a href="index.html">Tutorial</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+  <li class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+    v1.0.0rc2
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0rc</a></li>
+      <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v0.1.3(stable)</a></li>
+    </ul>
+  </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-tutorials-plot-4-2d-sigs-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="running-bycycle-on-2d-arrays">
+<span id="sphx-glr-auto-tutorials-plot-4-2d-sigs-py"></span><h1>4. Running Bycycle on 2D Arrays<a class="headerlink" href="#running-bycycle-on-2d-arrays" title="Permalink to this headline">¶</a></h1>
+<p>Compute bycycle features for 2D organizations of timeseries.</p>
+<p>Bycycle supports computing the features of 2D signals using <a class="reference internal" href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features_2d()</span></code></a>.
+Signals may be organized in a different ways, including (n_epochs, n_timepoints) or
+(n_channels, n_timepoints). The difference between these organizataions is that continuity is
+preserved across epochs, but not across channels. The <code class="docutils literal notranslate"><span class="pre">axis</span></code> argument is used to specificy either
+continuous (<code class="docutils literal notranslate"><span class="pre">axis=None</span></code>) and non-continuous (<code class="docutils literal notranslate"><span class="pre">axis=0</span></code>) recordings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_combined.html#neurodsp.sim.sim_combined" title="neurodsp.sim.sim_combined" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_combined</span></a>
+<span class="kn">from</span> <span class="nn">bycycle.group</span> <span class="kn">import</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a>
+<span class="kn">from</span> <span class="nn">bycycle.utils</span> <span class="kn">import</span> <a href="../generated/bycycle.utils.flatten_dfs.html#bycycle.utils.flatten_dfs" title="bycycle.utils.flatten_dfs" class="sphx-glr-backref-module-bycycle-utils sphx-glr-backref-type-py-function"><span class="n">flatten_dfs</span></a>
+<span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a>
+</pre></div>
+</div>
+<div class="section" id="the-axis-argument">
+<h2>The <code class="docutils literal notranslate"><span class="pre">axis</span></code> Argument<a class="headerlink" href="#the-axis-argument" title="Permalink to this headline">¶</a></h2>
+<p>Here, we will show how the axis arguments works. The axis argument be may specified as:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis=0</span></code> : Iterates over each row/signal in an array independently (i.e. for each channel
+in (n_channels, n_timepoints)).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis=None</span></code> : Flattens rows/signals prior to computing features (i.e. across flatten epochs
+in (n_epochs, n_timepoints)).</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">dim0_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">arr</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;axis=0&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">dim0</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim0_len</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">dim0</span><span class="p">]))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">axis=None&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>axis=0
+(4,)
+(4,)
+(4,)
+
+axis=None
+(12,)
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-1-2d-array-n-epochs-n-timepoints">
+<h2>Example 1. 2D Array (n_epochs, n_timepoints)<a class="headerlink" href="#example-1-2d-array-n-epochs-n-timepoints" title="Permalink to this headline">¶</a></h2>
+<p>The features for a 2d array with a (n_epochs, n_timepoints) organization will be computed here.
+This is an example of when using <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">=</span> <span class="pre">None</span></code> is appropriate, assuming each epoch was recorded
+continuously. Data will be simulated to produce to rest and task epochs with varying rise-decay
+symmetries.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation settings</span>
+<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="n">freq</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">f_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+<span class="n">n_epochs</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># Define rdsym values for rest and task trials</span>
+<span class="n">rdsym_rest</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">rdsym_task</span> <span class="o">=</span> <span class="mf">0.75</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate timeseries</span>
+<span class="n">sigs_rest</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_seconds</span><span class="o">*</span><span class="n">fs</span><span class="p">))</span>
+<span class="n">sigs_task</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_seconds</span><span class="o">*</span><span class="n">fs</span><span class="p">))</span>
+
+<span class="c1"># Rest epoch</span>
+<span class="n">sim_components_rest</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sim_powerlaw&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">exponent</span><span class="o">=-</span><span class="mi">2</span><span class="p">),</span>
+                       <span class="s1">&#39;sim_bursty_oscillation&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="s1">&#39;asine&#39;</span><span class="p">,</span>
+                                                      <span class="n">enter_burst</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">rdsym</span><span class="o">=</span><span class="n">rdsym_rest</span><span class="p">)}</span>
+
+<span class="c1"># Task epoch</span>
+<span class="n">sim_components_task</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sim_powerlaw&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">exponent</span><span class="o">=-</span><span class="mi">2</span><span class="p">),</span>
+                       <span class="s1">&#39;sim_bursty_oscillation&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="s1">&#39;asine&#39;</span><span class="p">,</span>
+                                                      <span class="n">enter_burst</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">rdsym</span><span class="o">=</span><span class="n">rdsym_task</span><span class="p">)}</span>
+
+<span class="k">for</span> <span class="n">ep_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
+    <span class="n">sigs_rest</span><span class="p">[</span><span class="n">ep_idx</span><span class="p">]</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_combined.html#neurodsp.sim.sim_combined" title="neurodsp.sim.sim_combined" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_combined</span></a><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">sim_components_rest</span><span class="p">)</span>
+    <span class="n">sigs_task</span><span class="p">[</span><span class="n">ep_idx</span><span class="p">]</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_combined.html#neurodsp.sim.sim_combined" title="neurodsp.sim.sim_combined" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_combined</span></a><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">sim_components_task</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute features with default bycycle thresholds</span>
+<span class="n">thresholds</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">amp_fraction_threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">amp_consistency_threshold</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span>
+                  <span class="n">period_consistency_threshold</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">monotonicity_threshold</span><span class="o">=.</span><span class="mi">8</span><span class="p">,</span>
+                  <span class="n">min_n_cycles</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">compute_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;burst_method&#39;</span><span class="p">:</span> <span class="s1">&#39;cycles&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold_kwargs&#39;</span><span class="p">:</span> <span class="n">thresholds</span><span class="p">}</span>
+
+<span class="n">dfs_task</span> <span class="o">=</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a><span class="p">(</span><span class="n">sigs_task</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_kwargs</span><span class="p">,</span>
+                               <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">dfs_rest</span> <span class="o">=</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a><span class="p">(</span><span class="n">sigs_rest</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_kwargs</span><span class="p">,</span>
+                               <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Merge into a single dataframe</span>
+<span class="n">df_task</span> <span class="o">=</span> <a href="../generated/bycycle.utils.flatten_dfs.html#bycycle.utils.flatten_dfs" title="bycycle.utils.flatten_dfs" class="sphx-glr-backref-module-bycycle-utils sphx-glr-backref-type-py-function"><span class="n">flatten_dfs</span></a><span class="p">(</span><span class="n">dfs_task</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;task&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs_task</span><span class="p">),</span> <span class="s1">&#39;Epoch&#39;</span><span class="p">)</span>
+<span class="n">df_rest</span> <span class="o">=</span> <a href="../generated/bycycle.utils.flatten_dfs.html#bycycle.utils.flatten_dfs" title="bycycle.utils.flatten_dfs" class="sphx-glr-backref-module-bycycle-utils sphx-glr-backref-type-py-function"><span class="n">flatten_dfs</span></a><span class="p">(</span><span class="n">dfs_rest</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;rest&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs_rest</span><span class="p">),</span> <span class="s1">&#39;Epoch&#39;</span><span class="p">)</span>
+
+<span class="c1"># Limit to bursting cycles</span>
+<span class="n">df_task_bursts</span> <span class="o">=</span> <span class="n">df_task</span><span class="p">[</span><span class="n">df_task</span><span class="p">[</span><span class="s1">&#39;is_burst&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">]</span>
+<span class="n">df_rest_bursts</span> <span class="o">=</span> <span class="n">df_rest</span><span class="p">[</span><span class="n">df_rest</span><span class="p">[</span><span class="s1">&#39;is_burst&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">]</span>
+
+<span class="n">df_bursts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_task_bursts</span><span class="p">,</span> <span class="n">df_rest_bursts</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Plot</span>
+<a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a><span class="p">(</span><span class="n">df_bursts</span><span class="p">,</span> <span class="s1">&#39;time_rdsym&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;Epoch&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Rise-Decay Symmetry&#39;</span><span class="p">,</span>
+                         <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Rest&#39;</span><span class="p">,</span> <span class="s1">&#39;Task&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<img alt="plot 4 2D sigs" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_4_2D_sigs_001.png" />
+</div>
+<div class="section" id="example-2-2d-array-n-copies-n-timepoints">
+<h2>Example 2. 2D Array (n_copies, n_timepoints)<a class="headerlink" href="#example-2-2d-array-n-copies-n-timepoints" title="Permalink to this headline">¶</a></h2>
+<p>In this example, we will compute features for a 2D array in which we have organized multiple
+copies of the same signal. Since continutity is not preserved, <code class="docutils literal notranslate"><span class="pre">axis=0</span></code> is appropriate. This
+allows for the exploration of different thresholds while taking advantage of parallel processing.
+This example also shows how a list of dictionaries may be used to pass unique
+<code class="docutils literal notranslate"><span class="pre">compute_features_kwargs`</span></code> to each signal.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate a timeseries</span>
+<span class="n">n_copies</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">sim_components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sim_powerlaw&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">exponent</span><span class="o">=-</span><span class="mi">2</span><span class="p">),</span>
+                  <span class="s1">&#39;sim_bursty_oscillation&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">)}</span>
+
+<span class="n">sig</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_combined.html#neurodsp.sim.sim_combined" title="neurodsp.sim.sim_combined" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_combined</span></a><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">sim_components</span><span class="p">)</span>
+
+<span class="n">sigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sig</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_copies</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Step through amp_consistency thresholds by 0.25</span>
+<span class="n">thresholds</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">amp_fraction_threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">amp_consistency_threshold</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span>
+                  <span class="n">period_consistency_threshold</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">monotonicity_threshold</span><span class="o">=.</span><span class="mi">8</span><span class="p">,</span>
+                  <span class="n">min_n_cycles</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">amp_consist_threshes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">25</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">75</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]</span>
+
+<span class="n">compute_kwargs</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;threshold_kwargs&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">amp_consistency_threshold</span><span class="o">=</span><span class="n">thresh</span><span class="p">)}</span>
+                  <span class="k">for</span> <span class="n">thresh</span> <span class="ow">in</span> <span class="n">amp_consist_threshes</span><span class="p">]</span>
+
+<span class="c1"># Compute features</span>
+<span class="n">dfs_features</span> <span class="o">=</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_kwargs</span><span class="p">,</span>
+                                   <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="s2">&quot;tqdm&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing Bycycle Features:   0%|          | 0/5 [00:00&lt;?, ?it/s]
+Computing Bycycle Features: 100%|##########| 5/5 [00:00&lt;00:00, 103.29it/s]
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the number of detected burst at each threshold</span>
+<span class="n">n_bursts</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">dfs_features</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;is_burst&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_copies</span><span class="p">)]</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">amp_consist_threshes</span><span class="p">,</span> <span class="n">n_bursts</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Amplitude Consistency Threshold&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Number of Bursts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="plot 4 2D sigs" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_4_2D_sigs_002.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Number of Bursts&#39;)
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.791 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-4-2d-sigs-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/88e78ffb038f8524e45a36cb73406d38/plot_4_2D_sigs.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_4_2D_sigs.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/df4193faac26a1691f75880974944963/plot_4_2D_sigs.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_4_2D_sigs.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

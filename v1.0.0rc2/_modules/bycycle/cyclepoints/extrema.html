@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bycycle.cyclepoints.extrema &#8212; bycycle 1.0.0rc2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html"><span><img src="../../../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0rc2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../glossary.html">Glossary</a></li>
+                <li><a href="../../../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../../../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+  <li class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+    v1.0.0rc2
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0rc</a></li>
+      <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v0.1.3(stable)</a></li>
+    </ul>
+  </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for bycycle.cyclepoints.extrema</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Find extrema for individual cycles.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">neurodsp.filt</span> <span class="kn">import</span> <span class="n">filter_signal</span>
+<span class="kn">from</span> <span class="nn">neurodsp.filt.fir</span> <span class="kn">import</span> <span class="n">compute_filter_length</span>
+
+<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param</span>
+<span class="kn">from</span> <span class="nn">bycycle.cyclepoints.zerox</span> <span class="kn">import</span> <span class="n">find_flank_zerox</span>
+
+<span class="c1">###################################################################################################</span>
+<span class="c1">###################################################################################################</span>
+
+<div class="viewcode-block" id="find_extrema"><a class="viewcode-back" href="../../../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema">[docs]</a><span class="k">def</span> <span class="nf">find_extrema</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">first_extrema</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span>
+                 <span class="n">filter_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pass_type</span><span class="o">=</span><span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Identify peaks and troughs in a time series.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series.</span>
+<span class="sd">    fs : float</span>
+<span class="sd">        Sampling rate, in Hz.</span>
+<span class="sd">    f_range : tuple of (float, float)</span>
+<span class="sd">        Frequency range, in Hz, to narrowband filter the signal, used to find zero-crossings.</span>
+<span class="sd">    boundary : int, optional, default: 0</span>
+<span class="sd">        Number of samples from edge of the signal to ignore.</span>
+<span class="sd">    first_extrema: {&#39;peak&#39;, &#39;trough&#39;, None}</span>
+<span class="sd">        If &#39;peak&#39;, then force the output to begin with a peak and end in a trough.</span>
+<span class="sd">        If &#39;trough&#39;, then force the output to begin with a trough and end in peak.</span>
+<span class="sd">        If None, force nothing.</span>
+<span class="sd">    filter_kwargs : dict, optional, default: None</span>
+<span class="sd">        Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`,</span>
+<span class="sd">        such as &#39;n_cycles&#39; or &#39;n_seconds&#39; to control filter length.</span>
+<span class="sd">    pass_type : str, optional, default: &#39;bandpass&#39;</span>
+<span class="sd">        Which kind of filter pass_type is consistent with the frequency definition provided.</span>
+<span class="sd">    pad : bool, optional, default: True</span>
+<span class="sd">        Whether to pad ``sig`` with zeros to prevent missed cyclepoints at the edges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    peaks : 1d array</span>
+<span class="sd">        Indices at which oscillatory peaks occur in the input ``sig``.</span>
+<span class="sd">    troughs : 1d array</span>
+<span class="sd">        Indices at which oscillatory troughs occur in the input ``sig``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function assures that there are the same number of peaks and troughs</span>
+<span class="sd">    if the first extrema is forced to be either peak or trough.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Find the locations of peaks and burst in a signal:</span>
+
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; peaks, troughs = find_extrema(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure arguments are within valid range</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+
+    <span class="c1"># Set default filtering parameters</span>
+    <span class="k">if</span> <span class="n">filter_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filter_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Get the original signal and filter lengths</span>
+    <span class="n">sig_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+    <span class="n">filt_len</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Pad beginning of signal with zeros to prevent missing cyclepoints</span>
+    <span class="k">if</span> <span class="n">pad</span><span class="p">:</span>
+
+        <span class="n">filt_len</span> <span class="o">=</span> <span class="n">compute_filter_length</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">pass_type</span><span class="p">,</span> <span class="n">f_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">f_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                         <span class="n">n_seconds</span><span class="o">=</span><span class="n">filter_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_seconds&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                         <span class="n">n_cycles</span><span class="o">=</span><span class="n">filter_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># Pad the signal</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">filt_len</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Narrowband filter signal</span>
+    <span class="n">sig_filt</span> <span class="o">=</span> <span class="n">filter_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">pass_type</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">remove_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">filter_kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Find rising and decaying zero-crossings (narrowband)</span>
+    <span class="n">rise_xs</span> <span class="o">=</span> <span class="n">find_flank_zerox</span><span class="p">(</span><span class="n">sig_filt</span><span class="p">,</span> <span class="s1">&#39;rise&#39;</span><span class="p">)</span>
+    <span class="n">decay_xs</span> <span class="o">=</span> <span class="n">find_flank_zerox</span><span class="p">(</span><span class="n">sig_filt</span><span class="p">,</span> <span class="s1">&#39;decay&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Compute number of peaks and troughs</span>
+    <span class="k">if</span> <span class="n">rise_xs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">decay_xs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">n_peaks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rise_xs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">n_troughs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">decay_xs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_peaks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rise_xs</span><span class="p">)</span>
+        <span class="n">n_troughs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">decay_xs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1"># Calculate peak samples</span>
+    <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_peaks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">p_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_peaks</span><span class="p">):</span>
+
+        <span class="c1"># Calculate the sample range between the most recent zero rise and the next zero decay</span>
+        <span class="n">last_rise</span> <span class="o">=</span> <span class="n">rise_xs</span><span class="p">[</span><span class="n">p_idx</span><span class="p">]</span>
+        <span class="n">next_decay</span> <span class="o">=</span> <span class="n">decay_xs</span><span class="p">[</span><span class="n">decay_xs</span> <span class="o">&gt;</span> <span class="n">last_rise</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Identify time of peak</span>
+        <span class="n">peaks</span><span class="p">[</span><span class="n">p_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">sig</span><span class="p">[</span><span class="n">last_rise</span><span class="p">:</span><span class="n">next_decay</span><span class="p">])</span> <span class="o">+</span> <span class="n">last_rise</span>
+
+    <span class="c1"># Calculate trough samples</span>
+    <span class="n">troughs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_troughs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_troughs</span><span class="p">):</span>
+
+        <span class="c1"># Calculate the sample range between the most recent zero decay and the next zero rise</span>
+        <span class="n">last_decay</span> <span class="o">=</span> <span class="n">decay_xs</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
+        <span class="n">next_rise</span> <span class="o">=</span> <span class="n">rise_xs</span><span class="p">[</span><span class="n">rise_xs</span> <span class="o">&gt;</span> <span class="n">last_decay</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Identify time of trough</span>
+        <span class="n">troughs</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">sig</span><span class="p">[</span><span class="n">last_decay</span><span class="p">:</span><span class="n">next_rise</span><span class="p">])</span> <span class="o">+</span> <span class="n">last_decay</span>
+
+    <span class="c1"># Remove padding</span>
+    <span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">filt_len</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">troughs</span> <span class="o">=</span> <span class="n">troughs</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">filt_len</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># Remove peaks and trough outside the boundary limit</span>
+    <span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="n">boundary</span><span class="p">,</span> <span class="n">peaks</span> <span class="o">&lt;</span> <span class="n">sig_len</span> <span class="o">-</span> <span class="n">boundary</span><span class="p">)]</span>
+    <span class="n">troughs</span> <span class="o">=</span> <span class="n">troughs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">troughs</span> <span class="o">&gt;</span> <span class="n">boundary</span><span class="p">,</span> <span class="n">troughs</span> <span class="o">&lt;</span> <span class="n">sig_len</span> <span class="o">-</span> <span class="n">boundary</span><span class="p">)]</span>
+
+    <span class="c1"># Force the first extrema to be as desired &amp; assure equal # of peaks and troughs</span>
+    <span class="k">if</span> <span class="n">first_extrema</span> <span class="o">==</span> <span class="s1">&#39;peak&#39;</span><span class="p">:</span>
+        <span class="n">troughs</span> <span class="o">=</span> <span class="n">troughs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">peaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">troughs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">troughs</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">peaks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">troughs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">peaks</span>
+    <span class="k">elif</span> <span class="n">first_extrema</span> <span class="o">==</span> <span class="s1">&#39;trough&#39;</span><span class="p">:</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">troughs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">peaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">peaks</span>
+        <span class="n">troughs</span> <span class="o">=</span> <span class="n">troughs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">troughs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">peaks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">troughs</span>
+    <span class="k">elif</span> <span class="n">first_extrema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Parameter &quot;first_extrema&quot; is invalid&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

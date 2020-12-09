@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog &#8212; bycycle 1.0.0rc2 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html"><span><img src="_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0rc2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="api.html">API</a></li>
+                <li><a href="glossary.html">Glossary</a></li>
+                <li><a href="auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+  <li class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+    v1.0.0rc2
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li><a href="https://bycycle-tools.github.io/bycycle/v1.0.0rc/index.html">v1.0.0rc</a></li>
+      <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v0.1.3(stable)</a></li>
+    </ul>
+  </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>1.0.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Warning: the 1.0.0 is a breaking release from the beta 0.X.X series.</p>
+<p>As compared to the prior series (0.X.X), some names and module organizations have changed. This
+means existing code that uses Bycycle may no longer work as currently written with the new version,
+and may need updating. You should update to the new version when you are ready to update your code
+to reflect the new changes.</p>
+<p>Note that the main changes are in code organization, some names, and the addition of many new
+features. The algorithm itself has not changed, and results from the new version should be roughly
+equivalent to those with older versions, with a few minor exceptions.</p>
+<div class="section" id="code-oraganization">
+<h3>Code Oraganization<a class="headerlink" href="#code-oraganization" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The module has been re-organized to increase modularity. Sub-folders and files are now organized
+as:</p>
+<ul>
+<li><p>bycycle/burst/</p>
+<ul>
+<li><p>amp.py : detects burst using a dual amplitude threshold method.</p></li>
+<li><p>cycle.py : detects burst using cycle-by-cycle.</p></li>
+<li><p>dualthresh.py : alias to the neurodsp function.</p></li>
+<li><p>utils.py : enforces miniumum consecutive cycles for burst detection and allows cycles on the
+edges of burst to be recomputed with new thresholds.</p></li>
+</ul>
+</li>
+<li><p>bycycle/cyclepoints/</p>
+<ul>
+<li><p>extrema.py : identify peak and trough locations in a time series.</p></li>
+<li><p>phase.py : esimates the instantaneous phase of a time series.</p></li>
+<li><p>zerox.py : identify the rise and decay zero-crossing in a time series.</p></li>
+</ul>
+</li>
+<li><p>bycycle/features/</p>
+<ul>
+<li><p>burst.py : compute features directly use in burst detection.</p></li>
+<li><p>cyclepoints.py : organizes the locations of extrema and zero-crossings for each cycle into a
+dataframe.</p></li>
+<li><p>features.py : compute burst, shape, and cyclepoint features.</p></li>
+<li><p>shape.py : compute shape features required to compute burst features.</p></li>
+</ul>
+</li>
+<li><p>bycycle/group/</p>
+<ul>
+<li><p>features.py : compute features for 2D and 3D array of time series.</p></li>
+<li><p>utils.py : create a progress bar for parallel computations.</p></li>
+</ul>
+</li>
+<li><p>bycycle/plts/</p>
+<ul>
+<li><p>burst.py : plot burst detection parameters</p></li>
+<li><p>cyclepoints.py : plot extrema and zero-crossings.</p></li>
+<li><p>features.py : plot cycle features.</p></li>
+</ul>
+</li>
+<li><p>bycycle/utils/</p>
+<ul>
+<li><p>checks.py : alias to neurodsp paramter check function.</p></li>
+<li><p>dataframes.py : dataframe manipulation helper functions.</p></li>
+<li><p>timeseries.py : timeseries manipulation helper functions.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Add neurodsp dependency.</p>
+<ul>
+<li><p><cite>filt.py</cite> and <cite>sim.py</cite> have been replaced with equivalent neurodsp functions.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="naming-updates">
+<h3>Naming Updates<a class="headerlink" href="#naming-updates" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The following argument and variables names have been changed throughout the module:</p>
+<ul>
+<li><p>x -&gt; sig</p></li>
+<li><p>N_cycles_min -&gt; min_n_cycles</p></li>
+<li><p>Fs -&gt; fs</p></li>
+<li><p>Ps -&gt; ps</p></li>
+<li><p>Ts -&gt; ts</p></li>
+<li><p>zeroriseN -&gt; rise_xs</p></li>
+<li><p>zerofallN -&gt; decay_xs</p></li>
+<li><p>amplitude_fraction_threshold -&gt; amp_fraction_threshold</p></li>
+<li><p>amplitude_consistency_threshold -&gt; amp_consistency_threshold</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="code-updates">
+<h3>Code Updates<a class="headerlink" href="#code-updates" title="Permalink to this headline">¶</a></h3>
+<p>The 1.X.X series adds a large number of code updates &amp; additions, including:</p>
+<ul class="simple">
+<li><p>Parallel processing for 2D and 3D numpy arrays (<code class="docutils literal notranslate"><span class="pre">bycycle.group</span></code>):</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_features_2d</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_features_3d</span></code></p></li>
+</ul>
+</li>
+<li><p>New plottings functions (<code class="docutils literal notranslate"><span class="pre">bycycle.plts</span></code>):</p>
+<ul>
+<li><p>burst: <code class="docutils literal notranslate"><span class="pre">plot_burst_detect_summary</span></code>, <code class="docutils literal notranslate"><span class="pre">plot_burst_detect_param</span></code></p></li>
+<li><p>cyclepoints: <code class="docutils literal notranslate"><span class="pre">plot_cyclepoints_df</span></code>, <code class="docutils literal notranslate"><span class="pre">plot_cyclepoints_array</span></code></p></li>
+<li><p>features: <code class="docutils literal notranslate"><span class="pre">plot_feature_hist</span></code>, <code class="docutils literal notranslate"><span class="pre">plot_feature_categorical</span></code></p></li>
+</ul>
+</li>
+<li><p>Bug fixes:</p>
+<ul>
+<li><p>Missing cyclepoints at the beginning/end of a signal.</p></li>
+<li><p>Monotonicity computation didn’t include all points in a cycle.</p></li>
+<li><p>Zero-crossing off-by-one error when a signal crossed at exactly zero.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>The 1.X.X series comes with an updated documentation site.</p>
+<p>This includes new tutorials, examples, API list, and updates to pre-existing documentation.</p>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2020, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
