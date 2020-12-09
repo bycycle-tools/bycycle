@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 
-from pytest import mark, param
+import pytest
 
 import numpy as np
 import pandas as pd
@@ -102,8 +102,8 @@ def test_epoch_df(sim_args):
     assert len(dfs_features) == int(len(sig) / epoch_len)
 
 
-@mark.parametrize("mismatch", [False, param(True, marks=mark.xfail)])
-@mark.parametrize("ndim", [2, 3])
+@pytest.mark.parametrize("mismatch", [False, pytest.param(True, marks=pytest.mark.xfail)])
+@pytest.mark.parametrize("ndim", [2, 3])
 def test_flatten_dfs(sim_args, mismatch, ndim):
 
     df_features_orig = sim_args['df_features']

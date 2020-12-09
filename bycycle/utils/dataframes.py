@@ -215,6 +215,17 @@ def drop_samples_df(df_features):
     -------
     df_features : pandas.DataFrame
         A dataframe without sample indices columns removed.
+
+    Examples
+    --------
+    Drop cyclepoint sample columns from a dataframe:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.features import compute_features
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
+    >>> df_features = drop_samples_df(df_features)
     """
 
     sample_columns = [col for col in df_features.columns if col.startswith('sample_')]
@@ -239,6 +250,17 @@ def epoch_df(df_features, sig_len, epoch_len):
     -------
     dfs_features : list of pd.DataFrame
         A list of features dataframes that have been epoched.
+
+    Examples
+    --------
+    Epoch a dataframe in 1 seconds intervals:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.features import compute_features
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
+    >>> dfs_features = epoch_df(df_features, len(sig), fs)
     """
 
     # Reshape the dataframe into original sigs shape
@@ -285,6 +307,19 @@ def flatten_dfs(dfs_features, labels, column_name='Label'):
     -------
     df_features : pd.DataFrame
         A single dataframe containing 1 or 2 group columns.
+
+    Examples
+    --------
+    Flatten an epoched a dataframe:
+
+    >>> from neurodsp.sim import sim_bursty_oscillation
+    >>> from bycycle.features import compute_features
+    >>> from bycycle.utils.dataframes import epoch_df
+    >>> fs = 500
+    >>> sig = sim_bursty_oscillation(10, fs, freq=10)
+    >>> df_features = compute_features(sig, fs, f_range=(8, 12), center_extrema='peak')
+    >>> dfs_features = epoch_df(df_features, len(sig), fs)
+    >>> df_features = flatten_dfs(dfs_features, ["{sec}s".format(sec=sec) for sec in range(10)])
     """
 
     labels = np.array(labels) if isinstance(labels, list) else labels
@@ -318,7 +353,3 @@ def flatten_dfs(dfs_features, labels, column_name='Label'):
         df_features = pd.concat([df for dfs in dfs_features for df in dfs])
 
     return df_features
-
-
-
-

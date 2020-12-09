@@ -1,7 +1,5 @@
 """Tests for cyclepoints.extrema."""
 
-import os
-
 import numpy as np
 from scipy.signal import argrelextrema
 
@@ -51,7 +49,3 @@ def test_find_extrema(sim_args, first_extrema):
         assert len(peaks) == len(troughs)
         np.testing.assert_equal(peaks, maxima[0])
         np.testing.assert_equal(troughs, minima[0])
-
-
-
-

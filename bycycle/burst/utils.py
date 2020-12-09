@@ -4,8 +4,8 @@ from copy import deepcopy
 import numpy as np
 from bycycle.utils.checks import check_param
 
-###################################################################################################
-###################################################################################################
+####################################################################################################
+####################################################################################################
 
 def check_min_burst_cycles(is_burst, min_n_cycles=3):
     """Enforce minimum number of consecutive cycles to be considered a burst.
@@ -86,7 +86,8 @@ def recompute_edges(df_features, threshold_kwargs):
     >>> threshold_kwargs = {'amp_fraction_threshold': 0., 'amp_consistency_threshold': .5,
     ...                     'period_consistency_threshold': .5, 'monotonicity_threshold': .4,
     ...                     'min_n_cycles': 3}
-    >>> df_features = compute_features(sig, fs=1000, f_range=(8, 12), threshold_kwargs=threshold_kwargs)
+    >>> df_features = compute_features(sig, fs=1000, f_range=(8, 12),
+    ...                                threshold_kwargs=threshold_kwargs)
     >>> threshold_kwargs['amp_consistency_threshold'] = 0
     >>> df_features_edges = recompute_edges(df_features, threshold_kwargs)
     """
@@ -107,7 +108,7 @@ def recompute_edges(df_features, threshold_kwargs):
                             enumerate(burst_edges)])
 
     # Recompute is_burst
-    df_features_edges =  detect_bursts_cycles(
+    df_features_edges = detect_bursts_cycles(
         df_features_edges,
         amp_fraction_threshold=threshold_kwargs['amp_fraction_threshold'],
         amp_consistency_threshold=threshold_kwargs['amp_consistency_threshold'],

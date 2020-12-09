@@ -93,7 +93,7 @@ def check_kwargs_shape(sigs, compute_features_kwargs, axis):
         Voltage time series.
     compute_features_kwargs : dict or 1d list of dict or 2d list of dict
         Keyword arguments used in :func:`~.compute_features`.
-    axis : {None, 0, 1, 2}
+    axis : {None, 0, 1, (0, 1)}
         Which axes to calculate features across.
 
     Raises
@@ -119,23 +119,23 @@ def check_kwargs_shape(sigs, compute_features_kwargs, axis):
     sigs_dim1 = np.shape(sigs)[1] if sigs.ndim == 3 else None
 
     # 2D checks
-    if sigs_dim1 == None and (axis==0 or axis==None) and kwargs_dim0 != sigs_dim0:
+    if sigs_dim1 == None and axis in [0, None] and kwargs_dim0 != sigs_dim0:
         kwargs_shape = (sigs_dim0,)
-    elif sigs_dim1 == None and (axis==0 or axis==None) and kwargs_dim1 is not None:
+    elif sigs_dim1 == None and axis in [0, None] and kwargs_dim1 is not None:
         kwargs_shape = (sigs_dim0,)
 
     # 3D checks
-    elif sigs_dim1 != None and axis==0 and kwargs_dim0 != sigs_dim0:
+    elif sigs_dim1 != None and axis == 0 and kwargs_dim0 != sigs_dim0:
         kwargs_shape = (sigs_dim0,)
-    elif sigs_dim1 != None and axis==1 and kwargs_dim0 != sigs_dim1:
+    elif sigs_dim1 != None and axis == 1 and kwargs_dim0 != sigs_dim1:
         kwargs_shape = (sigs_dim1,)
-    elif sigs_dim1 != None and axis==(0,1) and (kwargs_dim0!=sigs_dim0 or kwargs_dim1!=sigs_dim1):
+    elif sigs_dim1 != None and axis == (0,1) and (kwargs_dim0!=sigs_dim0 or kwargs_dim1!=sigs_dim1):
         kwargs_shape = (sigs_dim0, sigs_dim1)
 
     # Axis checks
-    elif sigs_dim1 == None and (axis != 0 and axis != None):
+    elif sigs_dim1 == None and axis not in [0, None]:
         raise ValueError("When sigs is 2D, axis must be either {0, None}.")
-    elif sigs_dim1 != None and (axis != 0 and axis != 1 and axis != (0, 1)):
+    elif sigs_dim1 != None and axis not in [0, 1, (0, 1)]:
         raise ValueError("When sigs is 3D, axis must be either {0, 1, (0, 1)}")
     else:
         return

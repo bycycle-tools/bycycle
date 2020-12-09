@@ -32,10 +32,10 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     axis : {0, None}
         Which axes to calculate features across:
 
-        - ``axis=0`` : Features are computed for each signal independently
-          across the first axis, i.e. for each channels in (n_channels, n_samples).
-        - ``axis=None`` : Features are computed across a flattened 1d array, i.e. across flatten
-          epochs in (n_epochs, n_samples).
+        - ``axis=1`` : Iterates over each row/signal in an array independently (i.e. for each
+          channel in (n_channels, n_timepoints)).
+        - ``axis=None`` : Flattens rows/signals prior to computing features (i.e. across flatten
+          epochs in (n_epochs, n_timepoints)).
 
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
@@ -182,13 +182,12 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     axis : {0, 1, (0, 1)}
         Which axes to calculate features across:
 
-
-        - ``axis = 0`` : Features are computed for each signal independently
-          across the zeroth axis, i.e. across channels in (n_channels, n_epochs, n_samples).
-        - ``axis = 1`` : Features are computed for each signal independently
-          across the firt axis, i.e. across channels in (n_epochs, n_channels, n_samples).
-        - ``axis = (0, 1)`` : Features are computed independently for each signal. This is analogous to
-          ``axis = 1`` in :func:`~.compute_features_2d`.
+        - ``axis=0`` : Iterates over 2D slices along the zeroth dimension, (i.e. for each channel in
+          (n_channels, n_epochs, n_timepoints)).
+        - ``axis=1`` : Iterates over 2D slices along the first dimension (i.e. across flatten epochs
+          in (n_epochs, n_timepoints)).
+        - ``axis=(0, 1)`` : Iterates over 1D slices along the zeroth and first dimension (i.e across
+          each signal independently in (n_participants, n_channels, n_timepoints)).
 
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
@@ -213,8 +212,6 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
       dimensions of ``sigs`` may also be used to applied unique parameters to each signal.
     - ``return_samples`` is controlled from the kwargs passed in this function. The
       ``return_samples`` value in ``compute_features_kwargs`` will be ignored.
-    - When ``axis = None`` parallel computation may not be performed due to the
-      requirement of flattening the array into one dimension.
 
     Examples
     --------

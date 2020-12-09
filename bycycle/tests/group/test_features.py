@@ -4,15 +4,14 @@ from itertools import product
 import numpy as np
 import pandas as pd
 
-from pytest import mark, param
-
+import pytest
 from bycycle.group.features import compute_features_2d, compute_features_3d
 
 ###################################################################################################
 ###################################################################################################
 
-@mark.parametrize("kwargs_dtype", ['dict', 'list_cycles', 'list_amp', None])
-@mark.parametrize("axis", [None, 0, param(2, marks=mark.xfail)])
+@pytest.mark.parametrize("kwargs_dtype", ['dict', 'list_cycles', 'list_amp', None])
+@pytest.mark.parametrize("axis", [None, 0, pytest.param(2, marks=pytest.mark.xfail)])
 def test_compute_features_2d(sim_args, kwargs_dtype, axis):
 
     n_sigs = 5
@@ -68,8 +67,8 @@ def test_compute_features_2d(sim_args, kwargs_dtype, axis):
         assert not features_seq[-1].equals(features_seq[1])
 
 
-@mark.parametrize("return_samples", [True, False])
-@mark.parametrize("axis", [0, 1, (0, 1), param(3, marks=mark.xfail)])
+@pytest.mark.parametrize("return_samples", [True, False])
+@pytest.mark.parametrize("axis", [0, 1, (0, 1), pytest.param(3, marks=pytest.mark.xfail)])
 def test_compute_features_3d(sim_args, return_samples, axis):
 
     dim1 = 3
