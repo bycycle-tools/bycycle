@@ -97,7 +97,11 @@ Utility Functions
 .. autosummary::
     :toctree: generated/
 
-    limit_df
     limit_signal
+    limit_df
     get_extrema_df
     rename_extrema_df
+    split_samples_df
+    drop_samples_df
+    epoch_df
+    flatten_dfs
