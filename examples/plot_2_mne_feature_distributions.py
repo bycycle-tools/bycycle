@@ -1,7 +1,8 @@
 """
-MNE Interface Cycle Feature Distributions
-=========================================
-This example computes the distributions of bycycle features using MNE objects
+3. MNE Interface Cycle Feature Distributions
+============================================
+
+Compute bycycle feature distributions using MNE objects.
 """
 
 ####################################################################################################
@@ -20,7 +21,7 @@ from mne.datasets import sample
 from mne import pick_channels
 
 from neurodsp.plts import plot_time_series
-from bycycle.features import compute_features
+from bycycle.group import compute_features_2d
 from bycycle.plts import plot_feature_hist
 
 ####################################################################################################
@@ -84,12 +85,12 @@ threshold_kwargs = {'amp_fraction_threshold': 0.3,
                     'min_n_cycles': 3}
 
 # Create a dictionary of cycle feature dataframes, corresponding to each channel
-dfs = dict()
+kwargs = dict(threshold_kwargs=threshold_kwargs, center_extrema='trough')
 
-for sig, ch in zip(sigs, chs):
-    # Cycle-by-cycle analysis
-    dfs[ch] = compute_features(sig, fs, f_alpha, center_extrema='trough',
-                               threshold_kwargs=threshold_kwargs, return_samples=False)
+dfs = compute_features_2d(sigs, fs, f_alpha, axis=0,
+                          compute_features_kwargs=kwargs)
+
+dfs = {ch: df for df, ch in zip(dfs, chs)}
 
 ####################################################################################################
 #

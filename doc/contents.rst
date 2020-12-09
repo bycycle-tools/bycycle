@@ -8,3 +8,4 @@ Table of Contents
     glossary.rst
     auto_tutorials/index.rst
     auto_examples/index.rst
+    changelog.rst

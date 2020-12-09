@@ -1,8 +1,8 @@
 """
-PAC Cycle Feature Distributions
-===============================
-This example computes the distributions of bycycle for simulated
-phase-amplitude coupling (PAC)
+4. PAC Cycle Feature Distributions
+==================================
+
+Compute bycycle features for simulated phase-amplitude coupled (PAC) data.
 """
 
 ####################################################################################################

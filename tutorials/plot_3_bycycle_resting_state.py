@@ -2,6 +2,8 @@
 3. Cycle-by-cycle analysis of resting state data
 ================================================
 
+Simulated experiment using the cycle-by-cycle approach.
+
 Say we ran an experiment and want to compare subjects' resting state data for some reason. Maybe we
 want to study age, gender, disease state, or something. This has often been done to study
 differences in oscillatory power or coupling between groups of people. In this notebook, we will run
@@ -11,7 +13,6 @@ In this example, we have 20 subjects (10 patients, 10 control), and we for some 
 that their alpha oscillations may be systematically different. For example, (excessive hand waving)
 we think the patient group should have more top-down input that increases the synchrony in the
 oscillatory input (measured by its symmetry).
-
 """
 
 ####################################################################################################
@@ -89,8 +90,7 @@ threshold_kwargs = {'amp_fraction_threshold': .2,
 # Compute features for each signal
 compute_features_kwargs={'threshold_kwargs': threshold_kwargs}
 
-df_features_list = compute_features_2d(sigs, fs, f_alpha,
-                                       compute_features_kwargs=compute_features_kwargs)
+df_features_list = compute_features_2d(sigs, fs, f_alpha, compute_features_kwargs)
 
 # Add group and subject ids to dataframes
 groups = ['patient' if idx >= int(n_signals/2) else 'control' for idx in range(n_signals)]
@@ -116,7 +116,7 @@ df_features.head()
 # periods of the signal that appear to be bursting. This was confirmed by looking at a few different
 # signal segments from a few subjects.
 
-plot_burst_detect_summary(df_features_list[1], sigs[0], fs, threshold_kwargs,
+plot_burst_detect_summary(df_features_list[0], sigs[0], fs, threshold_kwargs,
                           xlim=(0, 5), figsize=(16, 3))
 
 ####################################################################################################

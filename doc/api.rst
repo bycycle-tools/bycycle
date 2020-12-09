@@ -15,8 +15,8 @@ API reference for the bycyle module.
 Cycle-by-cycle
 ===============
 
-Features Functions
-~~~~~~~~~~~~~~~~~~
+Feature Functions
+~~~~~~~~~~~~~~~~~
 
 .. currentmodule:: bycycle.features
 
@@ -27,6 +27,17 @@ Features Functions
    compute_shape_features
    compute_burst_features
    compute_cyclepoints
+
+Group Feature Functions
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. currentmodule:: bycycle.group
+
+.. autosummary::
+   :toctree: generated/
+
+   compute_features_2d
+   compute_features_3d
 
 Segmentation Functions
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +97,11 @@ Utility Functions
 .. autosummary::
     :toctree: generated/
 
-    limit_df
     limit_signal
+    limit_df
     get_extrema_df
     rename_extrema_df
+    split_samples_df
+    drop_samples_df
+    epoch_df
+    flatten_dfs

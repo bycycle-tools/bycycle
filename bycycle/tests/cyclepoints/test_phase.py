@@ -3,7 +3,6 @@
 import numpy as np
 
 from bycycle.cyclepoints import find_extrema, find_zerox
-
 from bycycle.cyclepoints.phase import *
 
 ###################################################################################################

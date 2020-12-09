@@ -1,6 +1,7 @@
 """Functions to compute features across epoched data."""
 
 from importlib import import_module
+import numpy as np
 
 ###################################################################################################
 ###################################################################################################
@@ -81,3 +82,68 @@ def progress_bar(iterable, progress, n_to_run):
         pbar = iterable
 
     return pbar
+
+
+def check_kwargs_shape(sigs, compute_features_kwargs, axis):
+    """Raise an error when compute_features_kwargs and the shape of sigs mismatch.
+
+    Parameters
+    ----------
+    sigs : 2d or 3d array
+        Voltage time series.
+    compute_features_kwargs : dict or 1d list of dict or 2d list of dict
+        Keyword arguments used in :func:`~.compute_features`.
+    axis : {None, 0, 1, (0, 1)}
+        Which axes to calculate features across.
+
+    Raises
+    ------
+    ValueError
+        If the shape compute_features_kwargs and sigs are not compatible.
+    """
+
+    kwargs = compute_features_kwargs
+
+    # Don't raise error when kwargs is None or a dict
+    if isinstance(kwargs, dict) or kwargs is None:
+        return
+
+    # Ensure kwargs match to sigs
+    kwargs_dim0 = np.shape(kwargs)[0]
+    kwargs_dim1 = np.shape(kwargs)[1] if kwargs.ndim == 2 else None
+    if kwargs.ndim == 3:
+        raise ValueError("compute_features_kwargs must be 1D or 2D.")
+
+    # Sig checks
+    sigs_dim0 = np.shape(sigs)[0]
+    sigs_dim1 = np.shape(sigs)[1] if sigs.ndim == 3 else None
+
+    # 2D checks
+    if sigs_dim1 == None and axis in [0, None] and kwargs_dim0 != sigs_dim0:
+        kwargs_shape = (sigs_dim0,)
+    elif sigs_dim1 == None and axis in [0, None] and kwargs_dim1 is not None:
+        kwargs_shape = (sigs_dim0,)
+
+    # 3D checks
+    elif sigs_dim1 != None and axis == 0 and kwargs_dim0 != sigs_dim0:
+        kwargs_shape = (sigs_dim0,)
+    elif sigs_dim1 != None and axis == 1 and kwargs_dim0 != sigs_dim1:
+        kwargs_shape = (sigs_dim1,)
+    elif sigs_dim1 != None and axis == (0,1) and (kwargs_dim0!=sigs_dim0 or kwargs_dim1!=sigs_dim1):
+        kwargs_shape = (sigs_dim0, sigs_dim1)
+
+    # Axis checks
+    elif sigs_dim1 == None and axis not in [0, None]:
+        raise ValueError("When sigs is 2D, axis must be either {0, None}.")
+    elif sigs_dim1 != None and axis not in [0, 1, (0, 1)]:
+        raise ValueError("When sigs is 3D, axis must be either {0, 1, (0, 1)}")
+    else:
+        return
+
+    error_str = """
+    When sigs is {sigs_str}D and axis is {axis_str}, compute_features_kwargs must be {kwargs_dim}D
+    with a shape equal to {kwargs_shape}.
+    """.format(sigs_str=str(sigs.ndim), axis_str=str(axis),
+               kwargs_dim=str(kwargs.ndim), kwargs_shape=str(kwargs_shape))
+
+    raise ValueError(error_str)
