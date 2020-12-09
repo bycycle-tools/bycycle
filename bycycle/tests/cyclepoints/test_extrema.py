@@ -22,10 +22,9 @@ from bycycle.tests.settings import FS, F_RANGE
 def test_find_extrema(sim_args, first_extrema):
     """Test ability to find peaks and troughs."""
 
-    # Load signal
     sig = sim_args['sig']
 
-    # find local maxima and minima using scipy
+    # Find local maxima and minima using scipy
     maxima = argrelextrema(sig, np.greater)
     minima = argrelextrema(sig, np.less)
 
@@ -40,8 +39,8 @@ def test_find_extrema(sim_args, first_extrema):
         #   trough is forced as the first extrema.
         np.testing.assert_equal(peaks, maxima[0][1:])
 
-        # When first_extrema is trough, the last extrema must be a peak. This leads to a missing
-        #   last trough.
+        # When first_extrema is trough, the last extrema must be a peak
+        #   This leads to a missing last trough
         np.testing.assert_equal(troughs, minima[0][:-1])
 
     elif first_extrema == 'peak':

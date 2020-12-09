@@ -32,7 +32,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     axis : {0, None}
         Which axes to calculate features across:
 
-        - ``axis=1`` : Iterates over each row/signal in an array independently (i.e. for each
+        - ``axis=0`` : Iterates over each row/signal in an array independently (i.e. for each
           channel in (n_channels, n_timepoints)).
         - ``axis=None`` : Flattens rows/signals prior to computing features (i.e. across flatten
           epochs in (n_epochs, n_timepoints)).
@@ -40,9 +40,9 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
     n_jobs : int, optional, default: -1
-        The number of jobs, one per cpu, to compute features in parallel.
-    progress: {None, 'tqdm', 'tqdm.notebook'}
-        Specify whether to display a progress bar. Use 'tqdm' if installed.
+        The number of jobs to compute features in parallel.
+    progress : {None, 'tqdm', 'tqdm.notebook'}
+        Specify whether to display a progress bar. Uses 'tqdm', if installed.
 
     Returns
     -------
@@ -53,9 +53,10 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     Notes
     -----
 
+    - The order of ``dfs_features`` corresponds to the order of ``sigs``. This list of dataframes
+      may be reorganized into a single dataframe using :func:`~.flatten_dfs`.
     - When ``axis=None`` parallel computation may not be performed due to the requirement of
       flattening the array into one dimension.
-    - The order of ``dfs_features`` corresponds to the order of ``sigs``.
     - If ``compute_features_kwargs`` is a dictionary, the same kwargs are applied applied across
       the first axis of ``sigs``. Otherwise, a list of dictionaries equal in length to the
       first axis of ``sigs`` is required to apply unique kwargs to each signal.
@@ -71,14 +72,14 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     >>> fs = 500
     >>> sigs = np.array([sim_bursty_oscillation(10, fs, 10) for i in range(10)])
     >>> compute_kwargs = {'burst_method': 'amp', 'threshold_kwargs':{'burst_fraction_threshold': 1}}
-    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), axis=0,
+    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), axis=None,
     ...                                   compute_features_kwargs=compute_kwargs)
 
     Compute the features of a 2d array in parallel using the same compute_features kwargs. Note each
     signal features are computed separately in this case, recommended for (n_channels, n_samples):
 
     >>> compute_kwargs = {'burst_method': 'amp', 'threshold_kwargs':{'burst_fraction_threshold': 1}}
-    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), n_jobs=2, axis=None,
+    >>> dfs_features = compute_features_2d(sigs, fs, f_range=(8, 12), n_jobs=2, axis=0,
     ...                                   compute_features_kwargs=compute_kwargs)
 
     Compute the features of a 2d array in parallel using using individualized settings per signal to
@@ -185,16 +186,16 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
         - ``axis=0`` : Iterates over 2D slices along the zeroth dimension, (i.e. for each channel in
           (n_channels, n_epochs, n_timepoints)).
         - ``axis=1`` : Iterates over 2D slices along the first dimension (i.e. across flatten epochs
-          in (n_epochs, n_timepoints)).
-        - ``axis=(0, 1)`` : Iterates over 1D slices along the zeroth and first dimension (i.e across
+          in (n_epochs, n_channels, n_timepoints)).
+        - ``axis=(0, 1)`` : Iterates over 1D slices along the zeroth and first dimensions (i.e across
           each signal independently in (n_participants, n_channels, n_timepoints)).
 
     return_samples : bool, optional, default: True
         Whether to return a dataframe of cyclepoint sample indices.
     n_jobs : int, optional, default: -1
-        The number of jobs, one per cpu, to compute features in parallel.
+        The number of jobs to compute features in parallel.
     progress : {None, 'tqdm', 'tqdm.notebook'}
-        Specify whether to display a progress bar. Use 'tqdm' if installed.
+        Specify whether to display a progress bar. Uses 'tqdm' if installed.
 
     Returns
     -------
@@ -205,7 +206,8 @@ def compute_features_3d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
     Notes
     -----
 
-    - The order of ``dfs_features`` corresponds to the order of ``sigs``.
+    - The order of ``dfs_features`` corresponds to the order of ``sigs``. This list of dataframes
+      may be reorganized into a single dataframe using :func:`~.flatten_dfs`.
     - If ``compute_features_kwargs`` is a dictionary, the same kwargs are applied applied across
       all signals. A 1d list, equal in length to the first dimensions of sigs, may be applied to
       each set of signals along the first dimensions. A 2d list, the same shape as the first two
@@ -297,6 +299,7 @@ def _proxy_2d(args, fs=None, f_range=None, return_samples=None):
     """Proxy function to map kwargs and 2d sigs together."""
 
     sig, kwargs = args[0], args[1:]
+
     return compute_features(sig, fs=fs, f_range=f_range,
                             return_samples=return_samples, **kwargs[0])
 

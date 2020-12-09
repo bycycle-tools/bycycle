@@ -1,6 +1,7 @@
 """Test group utility functions."""
 
 import pytest
+
 import numpy as np
 
 from bycycle.group.utils import progress_bar, check_kwargs_shape

@@ -10,7 +10,6 @@ from bycycle.cyclepoints.zerox import *
 def test_find_zerox(sim_stationary):
     """Test ability to find peaks and troughs."""
 
-    # Load signal
     sig = sim_stationary
 
     fs = 1000

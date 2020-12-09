@@ -32,7 +32,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - 'peak' : cycles are defined trough-to-trough
         - 'trough' : cycles are defined peak-to-peak
 
-    burst_method : string, optional, default: 'cycles'
+    burst_method : {'cycles', 'amp'}
         Method for detecting bursts.
 
         - 'cycles': detect bursts based on the consistency of consecutive periods & amplitudes
@@ -51,7 +51,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
 
     find_extrema_kwargs : dict, optional, default: None
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
-        to change filter Parameters or boundary. By default, it sets the filter length to three
+        to change filter parameters or boundary. By default, the filter length is set to three
         cycles of the low cutoff frequency (``f_range[0]``).
     return_samples : bool, optional, default: True
         Returns samples indices of cyclepoints used for determining features if True.
@@ -73,7 +73,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - ``volt_trough`` : voltage at the last trough
         - ``time_rdsym`` : fraction of cycle in the rise period
         - ``time_ptsym`` : fraction of cycle in the peak period
-        - ``band_amp`` : average analytic amplitude of the oscillation.
+        - ``band_amp`` : average analytic amplitude of the oscillation
 
         When consistency burst detection is used (i.e. burst_method='cycles'):
 
@@ -81,8 +81,8 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         - ``amp_consistency`` : difference in the rise and decay voltage within a cycle
         - ``period_consistency`` : difference between a cycle’s period and the period of the
           adjacent cycles
-        - ``monotonicity`` : fraction of instantaneous voltage changes between consecutive
-          samples that are positive during the rise phase and negative during the decay phase
+        - ``monotonicity`` : fraction of monotonic voltage changes in rise and decay phases
+          (positive going in rise and negative going in decay)
 
         When dual threshold burst detection is used (i.e. burst_method='amp'):
 
@@ -90,7 +90,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
 
         When cyclepoints are returned (i.e. default, return_samples=True)
 
-        - ``sample_peak`` : sample of 'sig' at which the peak occurs
+        - ``sample_peak`` : sample at which the peak occurs
         - ``sample_zerox_decay`` : sample of the decaying zero-crossing
         - ``sample_zerox_rise`` : sample of the rising zero-crossing
         - ``sample_last_trough`` : sample of the last trough
@@ -109,7 +109,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
     # Ensure arguments are within valid range
     check_param(fs, 'fs', (0, np.inf))
 
-    # Compute shape features for each cycle.
+    # Compute shape features for each cycle
     df_shape_features = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,
                                                find_extrema_kwargs=find_extrema_kwargs)
 

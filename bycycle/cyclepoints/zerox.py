@@ -29,7 +29,7 @@ def find_zerox(sig, peaks, troughs):
     Notes
     -----
     - Zero-crossings are defined as when the voltage crosses midway between one extrema and
-      the next - for example, a 'rise' is halfway from the trough to the peak.
+      the next. For example, a 'rise' is halfway from the trough to the peak.
     - If this halfway voltage is crossed at multiple times, the temporal median is taken
       as the zero-crossing.
     - Sometimes, due to noise in estimating peaks and troughs when the oscillation
@@ -70,7 +70,7 @@ def find_zerox(sig, peaks, troughs):
 
 
 def find_flank_zerox(sig, flank):
-    """Find zero-crossings on rising or decay flanks of a filtered signal.
+    """Find zero-crossings on rising or decaying flanks of a filtered signal.
 
     Parameters
     ----------

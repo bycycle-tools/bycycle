@@ -30,8 +30,8 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak',
         - 'trough' : cycles are defined peak-to-peak
 
     find_extrema_kwargs : dict, optional, default: None
-        Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
-        to change filter parameters or boundary. By default, it sets the filter length to three
+        Keyword arguments for function to find peaks and troughs (:func:`~.find_extrema`)
+        to change filter parameters or boundary. By default, the filter length is set to three
         cycles of the low cutoff frequency (``f_range[0]``).
     n_cycles : int, optional, default: 3
         Length of filter, in number of cycles, at the lower cutoff frequency.
@@ -54,7 +54,7 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak',
         - ``time_rdsym`` : fraction of cycle in the rise period
         - ``time_ptsym`` : fraction of cycle in the peak period
         - ``band_amp`` : average analytic amplitude of the oscillation
-        - ``sample_peak`` : sample of 'sig' at which the peak occurs
+        - ``sample_peak`` : sample at which the peak occurs
         - ``sample_zerox_decay`` : sample of the decaying zero-crossing
         - ``sample_zerox_rise`` : sample of the rising zero-crossing
         - ``sample_last_trough`` : sample of the last trough
@@ -62,12 +62,11 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak',
 
     Notes
     -----
-    Peak vs trough centering
+    Peak vs trough centering:
 
         - By default, the first extrema analyzed will be a peak, and the final one a trough.
         - In order to switch the preference, the signal is simply inverted and columns are renamed.
-        - Columns are slightly different depending on if ``center_extrema`` is set to 'peak' or
-          'trough'.
+        - Columns are slightly different dependent on ``center_extrema`` being 'peak' or 'trough'.
 
     Examples
     --------
@@ -232,13 +231,13 @@ def compute_symmetry(df_samples, sig, period=None, time_peak=None, time_trough=N
     sym_features : dict
         Contains 1d arrays of symmetry features. Keys include:
 
-        - time_decay : Time between peak and next trough.
-        - time_rise : Time between peak and previous trough.
-        - volt_decay : Voltage change between peak and next trough.
-        - volt_rise : Voltage change between peak and previous trough.
-        - volt_amp : Average of rise and decay voltage.
-        - time_rdsym : Fraction of cycle in the rise period.
-        - time_ptsym : Fraction of cycle in the peak period.
+        - time_decay : time between peak and next trough
+        - time_rise : time between peak and previous trough
+        - volt_decay : voltage change between peak and next trough
+        - volt_rise : voltage change between peak and previous trough
+        - volt_amp : average of rise and decay voltage
+        - time_rdsym : fraction of cycle in the rise period
+        - time_ptsym : fraction of cycle in the peak period
 
     Examples
     --------

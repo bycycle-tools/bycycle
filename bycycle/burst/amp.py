@@ -7,7 +7,7 @@ from bycycle.burst.utils import check_min_burst_cycles
 ###################################################################################################
 
 def detect_bursts_amp(df_features, burst_fraction_threshold=1, min_n_cycles=3):
-    """Detect bursts based on an amplitude thresholding.
+    """Detect bursts based on amplitude thresholding.
 
     Parameters
     ----------

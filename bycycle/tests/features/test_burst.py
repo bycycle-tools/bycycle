@@ -29,8 +29,8 @@ def test_compute_burst_features(sim_args, dual_thresh, center_e):
 
     if dual_thresh:
 
-        # Use dual threshold burst detecion.
-        burst_detection_kwargs =  {'fs': sim_args['fs'], 'f_range': sim_args['f_range']}
+        # Use dual threshold burst detecion
+        burst_detection_kwargs = {'fs': sim_args['fs'], 'f_range': sim_args['f_range']}
 
         df_burst_features = compute_burst_features(df_shape_features, sig, burst_method='amp',
                                                    burst_kwargs=burst_detection_kwargs)

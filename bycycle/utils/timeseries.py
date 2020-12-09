@@ -37,7 +37,6 @@ def limit_signal(times, sig, start=None, stop=None):
     >>> sig = sim_bursty_oscillation(n_seconds=10, fs=500, freq=10)
     >>> times = create_times(n_seconds=10, fs=500)
     >>> sig, times = limit_signal(times, sig, start=0, stop=1)
-
     """
 
     # Ensure arguments are within valid range

@@ -19,7 +19,7 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
 
     Parameters
     ----------
-    df_samples: pandas.DataFrame
+    df_samples : pandas.DataFrame
         Dataframe output of :func:`~.compute_cyclepoints`.
     sig : 1d array
         Time series to plot.

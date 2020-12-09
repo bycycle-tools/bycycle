@@ -150,7 +150,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
 
 @savefig
 def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
-                            xlim=None, ax=None, interp=True, **kwargs):
+                            xlim=None, interp=True, ax=None, **kwargs):
     """Plot a burst detection parameter and threshold.
 
     Parameters
@@ -168,10 +168,10 @@ def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
         than ``thresh`` are considered bursts.
     xlim : tuple of (float, float), optional, default: None
         Start and stop times for plot.
-    ax : matplotlib.Axes, optional
-        Figure axes upon which to plot.
     interp : bool, optional, default: True
         Interpolates points if true.
+    ax : matplotlib.Axes, optional
+        Figure axes upon which to plot.
     **kwargs
         Keyword arguments to pass into `plot_time_series`.
 

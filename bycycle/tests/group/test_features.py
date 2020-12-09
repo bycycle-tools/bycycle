@@ -16,7 +16,7 @@ def test_compute_features_2d(sim_args, kwargs_dtype, axis):
 
     n_sigs = 5
     sigs = np.array([sim_args['sig']] * n_sigs)
-    fs  = sim_args['fs']
+    fs = sim_args['fs']
     f_range = sim_args['f_range']
 
     # Return_samples is disregarded when used in compute_features_kwargs

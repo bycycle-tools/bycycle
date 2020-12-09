@@ -7,9 +7,8 @@ Compute bycycle features for 3D organizations of timeseries.
 Bycycle supports computing the features of 3D signals using :func:`~.compute_features_3d`.
 Signals may be organized in a different ways, including (n_participants, n_channels, n_timepoints)
 or (n_channels, n_epochs, n_timepoints). The difference between these organizations is that
-continuity may be assumed across (n_participants, n_channels) but not (n_channels, n_epochs). The
-``axis`` argument is used to specificy the axis to iterate over in parallel.
-
+continuity may be assumed across epochs, but not channels. The ``axis`` argument is used to
+specificy the axis to iterate over in parallel.
 """
 
 ####################################################################################################
@@ -73,7 +72,6 @@ for dim0 in range(dim0_len):
 n_seconds = 10
 fs = 500
 
-freq = 10
 f_range = (5, 15)
 
 n_channels = 5
@@ -84,46 +82,56 @@ rdsym_rest = 0.5
 rdsym_task = 0.75
 
 ####################################################################################################
+
 # Simulate a 3d timeseries
-sigs = np.zeros((n_channels, n_epochs, n_seconds*fs))
+sim_components_rest = {'sim_powerlaw': dict(exponent=-2),
+                       'sim_bursty_oscillation': dict(cycle='asine', rdsym=rdsym_rest)}
+
+sim_components_task = {'sim_powerlaw': dict(exponent=-2),
+                       'sim_bursty_oscillation': dict(cycle='asine', rdsym=rdsym_task)}
+
+sigs_rest = np.zeros((n_channels, n_epochs, n_seconds*fs))
+sigs_task = np.zeros((n_channels, n_epochs, n_seconds*fs))
 freqs = np.linspace(5, 45, 5)
 
 for ch_idx, freq in zip(range(n_channels), freqs):
 
+    sim_components_rest['sim_bursty_oscillation']['freq'] = freq
+    sim_components_task['sim_bursty_oscillation']['freq'] = freq
+
     for ep_idx in range(n_epochs):
 
-        rdsym = rdsym_rest if ep_idx % 2 == 0 else rdsym_task
-
-        sim_components = {'sim_powerlaw': dict(exponent=-2),
-                          'sim_bursty_oscillation': dict(freq=freq, cycle='asine', rdsym=rdsym)}
-
-        sigs[ch_idx][ep_idx] = sim_combined(n_seconds, fs, components=sim_components)
+        sigs_task[ch_idx][ep_idx] = sim_combined(n_seconds, fs, components=sim_components_task)
+        sigs_rest[ch_idx][ep_idx] = sim_combined(n_seconds, fs, components=sim_components_rest)
 
 ####################################################################################################
 
 # Compute features with an higher than default period consistency threshold.
 #   This allows for more accurate estimates of burst frequency.
 thresholds = dict(amp_fraction_threshold=0., amp_consistency_threshold=.5,
-                  period_consistency_threshold=.8, monotonicity_threshold=.6,
+                  period_consistency_threshold=.9, monotonicity_threshold=.6,
                   min_n_cycles=3)
 
 compute_kwargs = {'burst_method': 'cycles', 'threshold_kwargs': thresholds}
 
-dfs_features = compute_features_3d(sigs, fs, (1, 50), axis=0,
-                                   compute_features_kwargs=compute_kwargs)
+dfs_rest = compute_features_3d(sigs_rest, fs, (1, 50), axis=0,
+                               compute_features_kwargs=compute_kwargs)
+
+dfs_task = compute_features_3d(sigs_task, fs, (1, 50), axis=0,
+                               compute_features_kwargs=compute_kwargs)
 
 ####################################################################################################
 
-# Concatenate dataframes
-ep_labels = ['rest' if ep_idx % 2 == 0 else 'task'
+# Merge epochs into a single dataframe
+df_rest = flatten_dfs(dfs_rest, ['rest'] * n_channels * n_epochs, 'Epoch')
+df_task = flatten_dfs(dfs_task, ['task'] * n_channels * n_epochs, 'Epoch')
+df_epochs = pd.concat([df_rest, df_task], axis=0)
+
+# Merge channels into a single dataframe
+ch_labels = ["CH{ch_idx}".format(ch_idx=ch_idx)
              for ch_idx in range(n_channels) for ep_idx in range(n_epochs)]
 
-ch_labels = ["CH{ch_idx}".format(ch_idx=ch_idx, ep_idx=ep_idx)
-             for ch_idx in range(n_channels) for ep_idx in range(n_epochs)]
-
-df_epochs = flatten_dfs(dfs_features, ep_labels, 'Epoch')
-
-df_channels = flatten_dfs(dfs_features, ch_labels, 'Channel')
+df_channels = flatten_dfs(np.vstack([dfs_rest, dfs_task]), ch_labels * 2, 'Channel')
 
 # Limit to bursts
 df_epochs = df_epochs[df_epochs['is_burst'] == True]
