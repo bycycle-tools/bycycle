@@ -57,10 +57,9 @@ pd.options.display.max_columns = 10
 
 ####################################################################################################
 
-# Simulation settings
-n_seconds = 100
+# Load data
+sig = load_bycycle_data('ca1.npy', folder='../examples/data')
 fs = 1250
-sig = load_bycycle_data('ca1.npy', folder='../examples/data') / 1000
 
 # Filter settings
 f_theta = (4, 10)

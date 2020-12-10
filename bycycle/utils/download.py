@@ -15,6 +15,7 @@ DATA_URL = 'https://raw.githubusercontent.com/bycycle-tools/bycycle/master/examp
 
 def fetch_bycycle_data(filename, folder='data', url=DATA_URL):
     """Download a data file for bycycle.
+
     Parameters
     ----------
     filename : str
@@ -36,6 +37,7 @@ def fetch_bycycle_data(filename, folder='data', url=DATA_URL):
 
 def load_bycycle_data(filename, folder='data', url=DATA_URL):
     """Download, if not already available, and load an example data file for bycycle.
+
     Parameters
     ----------
     filename : str
