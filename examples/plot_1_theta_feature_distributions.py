@@ -15,6 +15,7 @@ from neurodsp.plts import plot_time_series
 
 from bycycle.group import compute_features_2d
 from bycycle.plts.features import plot_feature_hist
+from bycycle.utils.download import load_bycycle_data
 
 ####################################################################################################
 # Load and preprocess data
@@ -23,8 +24,8 @@ from bycycle.plts.features import plot_feature_hist
 ####################################################################################################
 
 # Load data
-ca1_raw = np.load('data/ca1.npy')
-ec3_raw = np.load('data/ec3.npy')
+ca1_raw = load_bycycle_data('ca1.npy', folder='data') / 1000
+ec3_raw = load_bycycle_data('ec3.npy', folder='data') / 1000
 fs = 1250
 f_theta = (4, 10)
 

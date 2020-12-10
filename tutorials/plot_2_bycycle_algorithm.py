@@ -51,6 +51,7 @@ from bycycle.features import compute_features
 from bycycle.cyclepoints import find_extrema, find_zerox
 from bycycle.cyclepoints.zerox import find_flank_zerox
 from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_array
+from bycycle.utils.download import load_bycycle_data
 
 pd.options.display.max_columns = 10
 
@@ -59,7 +60,7 @@ pd.options.display.max_columns = 10
 # Simulation settings
 n_seconds = 100
 fs = 1250
-sig = np.load('../examples/data/ca1.npy') / 1000
+sig = load_bycycle_data('ca1.npy', folder='../examples/data') / 1000
 
 # Filter settings
 f_theta = (4, 10)
