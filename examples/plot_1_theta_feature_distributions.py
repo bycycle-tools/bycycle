@@ -30,13 +30,6 @@ f_theta = (4, 10)
 
 ####################################################################################################
 
-# Only keep 60 seconds of data
-n_seconds = 60
-ca1_raw = ca1_raw[:int(n_seconds*fs)]
-ec3_raw = ec3_raw[:int(n_seconds*fs)]
-
-####################################################################################################
-
 # Apply a lowpass filter at 25Hz
 fc = 25
 filter_seconds = .5

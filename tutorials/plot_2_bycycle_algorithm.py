@@ -59,10 +59,7 @@ pd.options.display.max_columns = 10
 # Simulation settings
 n_seconds = 100
 fs = 1250
-components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1,
-                                         'cycle': 'asine', 'rdsym': 0.3},
-              'sim_powerlaw': {'f_range': (2, None)}}
-sig = sim_combined(n_seconds, fs, components=components, component_variances=(2, 1))
+sig = np.load('../examples/data/ca1.npy') / 1000
 
 # Filter settings
 f_theta = (4, 10)
