@@ -10,7 +10,7 @@ from neurodsp.utils.download import check_data_folder, check_data_file
 ###################################################################################################
 ###################################################################################################
 
-DATA_URL = 'https://raw.githubusercontent.com/bycycle-tools/bycycle/master/examples/data/'
+DATA_URL = 'https://raw.githubusercontent.com/bycycle-tools/bycycle/master/data/'
 
 
 def fetch_bycycle_data(filename, folder='data', url=DATA_URL):

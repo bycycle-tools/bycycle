@@ -58,7 +58,7 @@ pd.options.display.max_columns = 10
 ####################################################################################################
 
 # Load data
-sig = load_bycycle_data('ca1.npy', folder='../examples/data')
+sig = load_bycycle_data('ca1.npy', folder='data')
 fs = 1250
 
 # Filter settings
