@@ -150,7 +150,7 @@ plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
 # - peak-trough symmetry (time_ptsym) - fraction of the period in the peak period
 #
 # Note that a warning appears here because no burst detection parameters are provided. This is
-# addressed in `section #4 <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#determine-parts-of-signal-in-oscillatory-burst>`_.
+# addressed in `section #4 <https://bycycle-tools.github.io/bycycle/v1.0.0rc2/auto_tutorials/plot_2_bycycle_algorithm.html#determine-parts-of-signal-in-oscillatory-burst>`_.
 
 ####################################################################################################
 
