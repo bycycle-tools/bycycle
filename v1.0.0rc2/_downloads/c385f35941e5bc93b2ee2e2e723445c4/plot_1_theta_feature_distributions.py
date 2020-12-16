@@ -15,6 +15,7 @@ from neurodsp.plts import plot_time_series
 
 from bycycle.group import compute_features_2d
 from bycycle.plts.features import plot_feature_hist
+from bycycle.utils.download import load_bycycle_data
 
 ####################################################################################################
 # Load and preprocess data
@@ -23,17 +24,10 @@ from bycycle.plts.features import plot_feature_hist
 ####################################################################################################
 
 # Load data
-ca1_raw = np.load('data/ca1.npy')
-ec3_raw = np.load('data/ec3.npy')
+ca1_raw = load_bycycle_data('ca1.npy', folder='data')
+ec3_raw = load_bycycle_data('ec3.npy', folder='data')
 fs = 1250
 f_theta = (4, 10)
-
-####################################################################################################
-
-# Only keep 60 seconds of data
-n_seconds = 60
-ca1_raw = ca1_raw[:int(n_seconds*fs)]
-ec3_raw = ec3_raw[:int(n_seconds*fs)]
 
 ####################################################################################################
 
@@ -82,8 +76,8 @@ df_ec3_cycles = df_ec3[df_ec3['is_burst']]
 
 # Choose samples to plot
 samplims = (10000, 12000)
-ca1_plt = ca1_raw[samplims[0]:samplims[1]]/1000
-ec3_plt = ec3_raw[samplims[0]:samplims[1]]/1000
+ca1_plt = ca1_raw[samplims[0]:samplims[1]]
+ec3_plt = ec3_raw[samplims[0]:samplims[1]]
 times = np.arange(0, len(ca1_plt)/fs, 1/fs)
 
 fig, axes = plt.subplots(figsize=(15, 6), nrows=2)
@@ -104,8 +98,8 @@ plot_time_series(times, ec3_plt, ax=axes[1], colors='r', xlim=(0, 1.6),
 fig, axes = plt.subplots(figsize=(15, 15), nrows=2, ncols=2)
 
 # Plot cycle amplitude
-cycles_ca1 = df_ca1_cycles['volt_amp']/1000
-cycles_ec3 = df_ec3_cycles['volt_amp']/1000
+cycles_ca1 = df_ca1_cycles['volt_amp']
+cycles_ec3 = df_ec3_cycles['volt_amp']
 
 plot_feature_hist(cycles_ca1, 'volt_amp', ax=axes[0][0], xlabel='Cycle amplitude (mV)',
                   xlim=(0, 4.5), color='k', bins=np.arange(0, 8, .1))

@@ -51,18 +51,15 @@ from bycycle.features import compute_features
 from bycycle.cyclepoints import find_extrema, find_zerox
 from bycycle.cyclepoints.zerox import find_flank_zerox
 from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_array
+from bycycle.utils.download import load_bycycle_data
 
 pd.options.display.max_columns = 10
 
 ####################################################################################################
 
-# Simulation settings
-n_seconds = 100
+# Load data
+sig = load_bycycle_data('ca1.npy', folder='data')
 fs = 1250
-components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1,
-                                         'cycle': 'asine', 'rdsym': 0.3},
-              'sim_powerlaw': {'f_range': (2, None)}}
-sig = sim_combined(n_seconds, fs, components=components, component_variances=(2, 1))
 
 # Filter settings
 f_theta = (4, 10)

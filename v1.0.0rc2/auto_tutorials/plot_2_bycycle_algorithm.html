@@ -154,17 +154,14 @@ plot the filtered signal in comparison to the original signal.</p>
 <span class="kn">from</span> <span class="nn">bycycle.cyclepoints</span> <span class="kn">import</span> <a href="../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema" title="bycycle.cyclepoints.find_extrema" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_extrema</span></a><span class="p">,</span> <a href="../generated/bycycle.cyclepoints.find_zerox.html#bycycle.cyclepoints.find_zerox" title="bycycle.cyclepoints.find_zerox" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_zerox</span></a>
 <span class="kn">from</span> <span class="nn">bycycle.cyclepoints.zerox</span> <span class="kn">import</span> <span class="n">find_flank_zerox</span>
 <span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">,</span> <a href="../generated/bycycle.plts.plot_cyclepoints_array.html#bycycle.plts.plot_cyclepoints_array" title="bycycle.plts.plot_cyclepoints_array" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_cyclepoints_array</span></a>
+<span class="kn">from</span> <span class="nn">bycycle.utils.download</span> <span class="kn">import</span> <span class="n">load_bycycle_data</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_columns</span> <span class="o">=</span> <span class="mi">10</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation settings</span>
-<span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">100</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">load_bycycle_data</span><span class="p">(</span><span class="s1">&#39;ca1.npy&#39;</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">1250</span>
-<span class="n">components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sim_bursty_oscillation&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;freq&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;enter_burst&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;leave_burst&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span>
-                                         <span class="s1">&#39;cycle&#39;</span><span class="p">:</span> <span class="s1">&#39;asine&#39;</span><span class="p">,</span> <span class="s1">&#39;rdsym&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
-              <span class="s1">&#39;sim_powerlaw&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;f_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)}}</span>
-<span class="n">sig</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_combined.html#neurodsp.sim.sim_combined" title="neurodsp.sim.sim_combined" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_combined</span></a><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">component_variances</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
 <span class="c1"># Filter settings</span>
 <span class="n">f_theta</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
@@ -303,72 +300,72 @@ addressed in <a class="reference external" href="https://bycycle-tools.github.io
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.165621</td>
+      <td>0.382479</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>0.561728</td>
-      <td>162</td>
+      <td>0.625397</td>
+      <td>160</td>
       <td>...</td>
-      <td>270</td>
-      <td>173</td>
-      <td>149</td>
-      <td>311</td>
+      <td>309</td>
+      <td>242</td>
+      <td>179</td>
+      <td>339</td>
       <td>False</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.080301</td>
-      <td>0.733540</td>
-      <td>0.568075</td>
-      <td>0.538033</td>
-      <td>213</td>
+      <td>0.946581</td>
+      <td>0.741088</td>
+      <td>0.803571</td>
+      <td>0.639276</td>
+      <td>180</td>
       <td>...</td>
-      <td>474</td>
-      <td>355</td>
-      <td>311</td>
-      <td>524</td>
+      <td>464</td>
+      <td>410</td>
+      <td>339</td>
+      <td>519</td>
       <td>False</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.225847</td>
-      <td>0.696347</td>
-      <td>0.568075</td>
-      <td>0.615586</td>
-      <td>121</td>
+      <td>0.384615</td>
+      <td>0.702560</td>
+      <td>0.763393</td>
+      <td>0.636719</td>
+      <td>224</td>
       <td>...</td>
-      <td>623</td>
+      <td>663</td>
       <td>575</td>
-      <td>524</td>
-      <td>645</td>
+      <td>519</td>
+      <td>743</td>
       <td>False</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.656211</td>
-      <td>0.696347</td>
-      <td>0.581731</td>
-      <td>0.610358</td>
-      <td>208</td>
+      <td>0.004274</td>
+      <td>0.630653</td>
+      <td>0.763393</td>
+      <td>0.589474</td>
+      <td>171</td>
       <td>...</td>
-      <td>813</td>
-      <td>717</td>
-      <td>645</td>
-      <td>853</td>
+      <td>882</td>
+      <td>771</td>
+      <td>743</td>
+      <td>914</td>
       <td>False</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.383940</td>
-      <td>0.742409</td>
-      <td>0.591346</td>
-      <td>0.693487</td>
-      <td>123</td>
+      <td>0.076923</td>
+      <td>0.637056</td>
+      <td>0.830409</td>
+      <td>0.652988</td>
+      <td>142</td>
       <td>...</td>
-      <td>941</td>
-      <td>875</td>
-      <td>853</td>
-      <td>976</td>
+      <td>1026</td>
+      <td>937</td>
+      <td>914</td>
+      <td>1056</td>
       <td>False</td>
     </tr>
     <tr>
@@ -386,78 +383,78 @@ addressed in <a class="reference external" href="https://bycycle-tools.github.io
       <td>...</td>
     </tr>
     <tr>
-      <th>792</th>
-      <td>0.156838</td>
-      <td>0.434958</td>
-      <td>0.547297</td>
-      <td>0.637855</td>
-      <td>148</td>
+      <th>463</th>
+      <td>0.012821</td>
+      <td>0.764740</td>
+      <td>0.625000</td>
+      <td>0.592118</td>
+      <td>192</td>
       <td>...</td>
-      <td>124208</td>
-      <td>124124</td>
-      <td>124116</td>
-      <td>124264</td>
+      <td>74389</td>
+      <td>74274</td>
+      <td>74236</td>
+      <td>74428</td>
       <td>False</td>
     </tr>
     <tr>
-      <th>793</th>
-      <td>0.061481</td>
-      <td>0.446896</td>
-      <td>0.547297</td>
-      <td>0.666667</td>
-      <td>81</td>
+      <th>464</th>
+      <td>0.235043</td>
+      <td>0.633975</td>
+      <td>0.854167</td>
+      <td>0.629349</td>
+      <td>164</td>
       <td>...</td>
-      <td>124324</td>
-      <td>124274</td>
-      <td>124264</td>
-      <td>124345</td>
+      <td>74549</td>
+      <td>74520</td>
+      <td>74428</td>
+      <td>74592</td>
       <td>False</td>
     </tr>
     <tr>
-      <th>794</th>
-      <td>0.326223</td>
-      <td>0.446896</td>
-      <td>0.600000</td>
-      <td>0.650000</td>
-      <td>135</td>
+      <th>465</th>
+      <td>0.344017</td>
+      <td>0.850734</td>
+      <td>0.766871</td>
+      <td>0.649542</td>
+      <td>163</td>
       <td>...</td>
-      <td>124456</td>
-      <td>124398</td>
-      <td>124345</td>
-      <td>124480</td>
+      <td>74708</td>
+      <td>74639</td>
+      <td>74592</td>
+      <td>74755</td>
       <td>False</td>
     </tr>
     <tr>
-      <th>795</th>
-      <td>0.051443</td>
-      <td>0.663063</td>
-      <td>0.658537</td>
-      <td>0.564199</td>
-      <td>205</td>
+      <th>466</th>
+      <td>0.794872</td>
+      <td>0.673853</td>
+      <td>0.766871</td>
+      <td>0.812765</td>
+      <td>125</td>
       <td>...</td>
-      <td>124650</td>
-      <td>124559</td>
-      <td>124480</td>
-      <td>124685</td>
+      <td>74827</td>
+      <td>74772</td>
+      <td>74755</td>
+      <td>74880</td>
       <td>False</td>
     </tr>
     <tr>
-      <th>796</th>
-      <td>0.257215</td>
+      <th>467</th>
+      <td>0.036325</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>0.565284</td>
-      <td>263</td>
+      <td>0.658937</td>
+      <td>114</td>
       <td>...</td>
-      <td>124843</td>
-      <td>124729</td>
-      <td>124685</td>
-      <td>124948</td>
+      <td>74961</td>
+      <td>74908</td>
+      <td>74880</td>
+      <td>74994</td>
       <td>False</td>
     </tr>
   </tbody>
 </table>
-<p>797 rows × 24 columns</p>
+<p>468 rows × 24 columns</p>
 </div>
 <br />
 <br /></div>
@@ -588,7 +585,7 @@ positives that may occur, like that around 1.5 seconds.</p>
 </pre></div>
 </div>
 <img alt="plot 2 bycycle algorithm" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_bycycle_algorithm_007.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.496 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.404 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-2-bycycle-algorithm-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/038cf1e17c69d46556b38dbfaa9e4add/plot_2_bycycle_algorithm.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_2_bycycle_algorithm.py</span></code></a></p>
