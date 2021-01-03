@@ -16,9 +16,6 @@ install:
   - pip install codecov
   - pip install .
 
-# Add the current directory to the pythonpath so that tests can load saved files
-before_script: export PYTHONPATH=$PYTHONPATH:$(pwd)
-
 script:
   - py.test --cov=./
 
