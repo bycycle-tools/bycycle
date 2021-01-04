@@ -27,9 +27,9 @@ bycycle - cycle-by-cycle analysis of neural oscillations
 
 NOTE: `ByCycle` is currently under-going a major new version update.
 
-Check the `changelog <https://bycycle-tools.github.io/bycycle/v1.0.0rc/changelog.html>`_ for notes on updating to the new version.
-
 The development version in this repository is no longer compatible with prior releases.
+
+Check the `changelog <https://bycycle-tools.github.io/bycycle/v1.0.0rc2/changelog.html>`_ for notes on updating to the new version.
 
 Overview
 --------
@@ -223,3 +223,17 @@ Burst Detection Results
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/bursts_detected.png
+
+|
+
+Funding
+-------
+
+Supported by NIH award R01 GM134363
+
+`NIGMS <https://www.nigms.nih.gov/>`_
+
+.. image:: https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png
+  :width: 400
+
+|
