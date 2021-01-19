@@ -6,9 +6,9 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = bycycle
 SOURCEDIR     = .
 BUILDDIR      = _build
-STABLE        = 0.1.3
-DEVELOPMENT   = 1.0.0rc2
-RECENT        = ""
+STABLE        = 1.0.0
+DEVELOPMENT   = ""
+RECENT        = 0.1.3
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -67,15 +67,8 @@ html-multi:
 	# Create clean branches
 	git branch -D v$(STABLE) || true
 	git branch v$(STABLE) tags/$(STABLE)
-	git branch -D v$(DEVELOPMENT) || true
-	git branch v$(DEVELOPMENT) tags/$(DEVELOPMENT)
 	# Checkout the stable release tag
 	git checkout v$(STABLE)
-	# Ensure navbar template exists
-	if [ ! -f _templates/navbar.html ]; then \
-		git checkout v$(DEVELOPMENT) _templates/navbar.html -3; \
-		git commit -m "navbar updated"; \
-	fi
 	# Create the stable site
 	make html
 	rm -rf _build/doctrees auto_examples auto_tutorials generated
@@ -86,7 +79,8 @@ html-multi:
 	$(eval BUILDS := $(DEVELOPMENT) $(RECENT))
 	for v in $(BUILDS); do \
 		if [ -z $$v ]; then continue; fi; \
-		if [ ! $$v = $(DEVELOPMENT) ]; then git branch -D v$$v || true; git branch v$$v tags/$$v; fi;\
+		git branch -D v$$v || true; \
+		git branch v$$v tags/$$v; \
 		git checkout v$$v; \
 		make html; \
 		mkdir -p _build/html_stable/v$$v; \
