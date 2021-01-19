@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bycycle.plts.cyclepoints &#8212; bycycle 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html"><span><img src="../../../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../glossary.html">Glossary</a></li>
+                <li><a href="../../../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../../../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+  <li class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+    v1.0.0
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v1.0.0(stable)</a></li>
+      <li><a href="https://bycycle-tools.github.io/bycycle/v0.1.3/index.html">v0.1.3</a></li>
+    </ul>
+  </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for bycycle.plts.cyclepoints</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Plot extrema and zero-crossings.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">neurodsp.plts</span> <span class="kn">import</span> <span class="n">plot_time_series</span>
+<span class="kn">from</span> <span class="nn">neurodsp.plts.utils</span> <span class="kn">import</span> <span class="n">savefig</span>
+
+<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param</span>
+<span class="kn">from</span> <span class="nn">bycycle.utils</span> <span class="kn">import</span> <span class="n">limit_signal</span><span class="p">,</span> <span class="n">get_extrema_df</span>
+
+<span class="c1">###################################################################################################</span>
+<span class="c1">###################################################################################################</span>
+
+<div class="viewcode-block" id="plot_cyclepoints_df"><a class="viewcode-back" href="../../../generated/bycycle.plts.plot_cyclepoints_df.html#bycycle.plts.plot_cyclepoints_df">[docs]</a><span class="nd">@savefig</span>
+<span class="k">def</span> <span class="nf">plot_cyclepoints_df</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">plot_sig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_extrema</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">plot_zerox</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot extrema and/or zero-crossings from a DataFrame.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_samples : pandas.DataFrame</span>
+<span class="sd">        Dataframe output of :func:`~.compute_cyclepoints`.</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series to plot.</span>
+<span class="sd">    fs : float</span>
+<span class="sd">        Sampling rate, in Hz.</span>
+<span class="sd">    plot_sig : bool, optional, default: True</span>
+<span class="sd">        Whether to also plot the raw signal.</span>
+<span class="sd">    plot_extrema :  bool, optional, default: True</span>
+<span class="sd">        Whether to plots the peaks and troughs.</span>
+<span class="sd">    plot_zerox :  bool, optional, default: True</span>
+<span class="sd">        Whether to plots the zero-crossings.</span>
+<span class="sd">    xlim : tuple of (float, float), optional</span>
+<span class="sd">        Start and stop times.</span>
+<span class="sd">    ax : matplotlib.Axes, optional</span>
+<span class="sd">        Figure axes upon which to plot.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass into `plot_time_series`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Default keyword arguments include:</span>
+
+<span class="sd">    - ``figsize``: tuple of (float, float), default: (15, 3)</span>
+<span class="sd">    - ``xlabel``: str, default: &#39;Time (s)&#39;</span>
+<span class="sd">    - ``ylabel``: str, default: &#39;Voltage (uV)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plot cyclepoints using a dataframe from :func:`~.compute_cyclepoints`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_cyclepoints</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; plot_cyclepoints_df(df_samples, sig, fs)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure arguments are within valid range</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+
+    <span class="c1"># Determine extrema/zero-crossings from dataframe</span>
+    <span class="n">center_e</span><span class="p">,</span> <span class="n">side_e</span> <span class="o">=</span> <span class="n">get_extrema_df</span><span class="p">(</span><span class="n">df_samples</span><span class="p">)</span>
+
+    <span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span><span class="p">,</span> <span class="n">rises</span><span class="p">,</span> <span class="n">decays</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span>
+
+    <span class="k">if</span> <span class="n">plot_extrema</span><span class="p">:</span>
+
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_&#39;</span> <span class="o">+</span> <span class="n">center_e</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">troughs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_last_&#39;</span> <span class="o">+</span> <span class="n">side_e</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                            <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_next_&#39;</span> <span class="o">+</span> <span class="n">side_e</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">plot_zerox</span><span class="p">:</span>
+
+        <span class="n">rises</span> <span class="o">=</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_zerox_rise&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">decays</span> <span class="o">=</span> <span class="n">df_samples</span><span class="p">[</span><span class="s1">&#39;sample_zerox_decay&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="n">plot_cyclepoints_array</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span><span class="o">=</span><span class="n">troughs</span><span class="p">,</span> <span class="n">rises</span><span class="o">=</span><span class="n">rises</span><span class="p">,</span>
+                           <span class="n">decays</span><span class="o">=</span><span class="n">decays</span><span class="p">,</span> <span class="n">plot_sig</span><span class="o">=</span><span class="n">plot_sig</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="n">xlim</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_cyclepoints_array"><a class="viewcode-back" href="../../../generated/bycycle.plts.plot_cyclepoints_array.html#bycycle.plts.plot_cyclepoints_array">[docs]</a><span class="nd">@savefig</span>
+<span class="k">def</span> <span class="nf">plot_cyclepoints_array</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">troughs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rises</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decays</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">plot_sig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot extrema and/or zero-crossings from arrays.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series to plot.</span>
+<span class="sd">    fs : float</span>
+<span class="sd">        Sampling rate, in Hz.</span>
+<span class="sd">    peaks : 1d array, optional</span>
+<span class="sd">        Peak signal indices from :func:`.find_extrema`.</span>
+<span class="sd">    troughs : 1d array, optional</span>
+<span class="sd">        Trough signal indices from :func:`.find_extrema`.</span>
+<span class="sd">    rises : 1d array, optional</span>
+<span class="sd">        Zero-crossing rise indices from :func:`~.find_zerox`.</span>
+<span class="sd">    decays : 1d array, optional</span>
+<span class="sd">        Zero-crossing decay indices from :func:`~.find_zerox`.</span>
+<span class="sd">    plot_sig : bool, optional, default: True</span>
+<span class="sd">        Whether to also plot the raw signal.</span>
+<span class="sd">    xlim : tuple of (float, float), optional</span>
+<span class="sd">        Start and stop times.</span>
+<span class="sd">    ax : matplotlib.Axes, optional, default: None</span>
+<span class="sd">        Figure axes upon which to plot.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass into `plot_time_series`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Default keyword arguments include:</span>
+
+<span class="sd">    - ``figsize``: tuple of (float, float), default: (15, 3)</span>
+<span class="sd">    - ``xlabel``: str, default: &#39;Time (s)&#39;</span>
+<span class="sd">    - ``ylabel``: str, default: &#39;Voltage (uV)</span>
+<span class="sd">    - ``colors``: list, default: [&#39;k&#39;, &#39;b&#39;, &#39;r&#39;, &#39;g&#39;, &#39;m&#39;]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plot cyclepoints using arrays from :func:`.find_extrema` and  :func:`~.find_zerox`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.cyclepoints import find_extrema, find_zerox</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; peaks, troughs = find_extrema(sig, fs, f_range=(8, 12), boundary=0)</span>
+<span class="sd">    &gt;&gt;&gt; rises, decays = find_zerox(sig, peaks, troughs)</span>
+<span class="sd">    &gt;&gt;&gt; plot_cyclepoints_array(sig, fs, peaks=peaks, troughs=troughs, rises=rises, decays=decays)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure arguments are within valid range</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+
+    <span class="c1"># Set times and limits</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">xlim</span>
+
+    <span class="c1"># Restrict sig and times to xlim</span>
+    <span class="n">sig</span><span class="p">,</span> <span class="n">times</span> <span class="o">=</span> <span class="n">limit_signal</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Set default kwargs</span>
+    <span class="n">figsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;figsize&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">xlabel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;xlabel&#39;</span><span class="p">,</span> <span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+    <span class="n">ylabel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;ylabel&#39;</span><span class="p">,</span> <span class="s1">&#39;Voltage (uV)&#39;</span><span class="p">)</span>
+    <span class="n">default_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Extend plotting based on given arguments</span>
+    <span class="n">x_values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y_values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">points</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span><span class="p">,</span> <span class="n">rises</span><span class="p">,</span> <span class="n">decays</span><span class="p">]):</span>
+
+        <span class="k">if</span> <span class="n">points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="c1"># Limit times and shift indices of cyclepoints (cps)</span>
+            <span class="n">cps</span> <span class="o">=</span> <span class="n">points</span><span class="p">[(</span><span class="n">points</span> <span class="o">&gt;=</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">points</span> <span class="o">&lt;</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">fs</span><span class="p">)]</span>
+            <span class="n">cps</span> <span class="o">=</span> <span class="n">cps</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span>
+
+            <span class="n">y_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sig</span><span class="p">[</span><span class="n">cps</span><span class="p">])</span>
+            <span class="n">x_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="n">cps</span><span class="p">])</span>
+            <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">default_colors</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+    <span class="c1"># Allow custom colors to overwrite default</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;colors&#39;</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_sig</span><span class="p">:</span>
+        <span class="n">plot_time_series</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="n">plot_time_series</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">y_values</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">,</span>
+                     <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2021, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

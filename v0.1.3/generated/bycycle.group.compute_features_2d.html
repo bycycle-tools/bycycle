@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bycycle.group.compute_features_2d &#8212; bycycle 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../glossary.html">Glossary</a></li>
+                <li><a href="../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+  <li class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+    v1.0.0
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v1.0.0(stable)</a></li>
+      <li><a href="https://bycycle-tools.github.io/bycycle/v0.1.3/index.html">v0.1.3</a></li>
+    </ul>
+  </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="bycycle-group-compute-features-2d">
+<h1>bycycle.group.compute_features_2d<a class="headerlink" href="#bycycle-group-compute-features-2d" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="bycycle.group.compute_features_2d">
+<code class="sig-prename descclassname">bycycle.group.</code><code class="sig-name descname">compute_features_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigs</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">compute_features_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">return_samples</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">progress</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/group/features.html#compute_features_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.group.compute_features_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute shape and burst features for a 2 dimensional array of signals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sigs</strong><span class="classifier">2d array</span></dt><dd><p>Voltage time series, i.e. (n_channels, n_samples) or (n_epochs, n_samples).</p>
+</dd>
+<dt><strong>fs</strong><span class="classifier">float</span></dt><dd><p>Sampling rate, in Hz.</p>
+</dd>
+<dt><strong>f_range</strong><span class="classifier">tuple of (float, float)</span></dt><dd><p>Frequency range for narrowband signal of interest, in Hz.</p>
+</dd>
+<dt><strong>compute_features_kwargs</strong><span class="classifier">dict or list of dict</span></dt><dd><p>Keyword arguments used in <a class="reference internal" href="bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a>.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">{0, None}</span></dt><dd><p>Which axes to calculate features across:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis=0</span></code> : Iterates over each row/signal in an array independently (i.e. for each
+channel in (n_channels, n_timepoints)).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis=None</span></code> : Flattens rows/signals prior to computing features (i.e. across flatten
+epochs in (n_epochs, n_timepoints)).</p></li>
+</ul>
+</dd>
+<dt><strong>return_samples</strong><span class="classifier">bool, optional, default: True</span></dt><dd><p>Whether to return a dataframe of cyclepoint sample indices.</p>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int, optional, default: -1</span></dt><dd><p>The number of jobs to compute features in parallel.</p>
+</dd>
+<dt><strong>progress</strong><span class="classifier">{None, ‘tqdm’, ‘tqdm.notebook’}</span></dt><dd><p>Specify whether to display a progress bar. Uses ‘tqdm’, if installed.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dfs_features</strong><span class="classifier">list of pandas.DataFrame</span></dt><dd><p>Dataframes containing shape and burst features for each cycle.
+Each dataframe is computed using the <a class="reference internal" href="bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a> function.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The order of <code class="docutils literal notranslate"><span class="pre">dfs_features</span></code> corresponds to the order of <code class="docutils literal notranslate"><span class="pre">sigs</span></code>. This list of dataframes
+may be reorganized into a single dataframe using <a class="reference internal" href="bycycle.utils.flatten_dfs.html#bycycle.utils.flatten_dfs" title="bycycle.utils.flatten_dfs"><code class="xref py py-func docutils literal notranslate"><span class="pre">flatten_dfs()</span></code></a>.</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">axis=None</span></code> parallel computation may not be performed due to the requirement of
+flattening the array into one dimension.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">compute_features_kwargs</span></code> is a dictionary, the same kwargs are applied applied across
+the first axis of <code class="docutils literal notranslate"><span class="pre">sigs</span></code>. Otherwise, a list of dictionaries equal in length to the
+first axis of <code class="docutils literal notranslate"><span class="pre">sigs</span></code> is required to apply unique kwargs to each signal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">return_samples</span></code> is controlled from the kwargs passed in this function. If
+<code class="docutils literal notranslate"><span class="pre">return_samples</span></code> is a key in <code class="docutils literal notranslate"><span class="pre">compute_features_kwargs</span></code>, it’s value will be ignored.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Compute the features of a 2d array (n_epochs=10, n_samples=5000) containing epoched data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_bursty_oscillation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sim_bursty_oscillation</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compute_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;burst_method&#39;</span><span class="p">:</span> <span class="s1">&#39;amp&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold_kwargs&#39;</span><span class="p">:{</span><span class="s1">&#39;burst_fraction_threshold&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dfs_features</span> <span class="o">=</span> <span class="n">compute_features_2d</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="gp">... </span>                                  <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compute the features of a 2d array in parallel using the same compute_features kwargs. Note each
+signal features are computed separately in this case, recommended for (n_channels, n_samples):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">compute_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;burst_method&#39;</span><span class="p">:</span> <span class="s1">&#39;amp&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold_kwargs&#39;</span><span class="p">:{</span><span class="s1">&#39;burst_fraction_threshold&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dfs_features</span> <span class="o">=</span> <span class="n">compute_features_2d</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span>                                  <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compute the features of a 2d array in parallel using using individualized settings per signal to
+examine the effect of various amplitude consistency thresholds:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigs</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sim_bursty_oscillation</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">)]</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compute_kwargs</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;threshold_kwargs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;amp_consistency_threshold&#39;</span><span class="p">:</span> <span class="n">thresh</span><span class="o">*.</span><span class="mi">1</span><span class="p">}}</span>
+<span class="gp">... </span>                  <span class="k">for</span> <span class="n">thresh</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dfs_features</span> <span class="o">=</span> <span class="n">compute_features_2d</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="gp">... </span>                                  <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">compute_kwargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="examples-using-bycycle-group-compute-features-2d">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">bycycle.group.compute_features_2d</span></code><a class="headerlink" href="#examples-using-bycycle-group-compute-features-2d" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="Compute and compare the distributions of bycycle features for two recordings."><div class="figure align-default" id="id1">
+<img alt="1. Theta oscillation cycle feature distributions" src="../_images/sphx_glr_plot_1_theta_feature_distributions_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_1_theta_feature_distributions.html#sphx-glr-auto-examples-plot-1-theta-feature-distributions-py"><span class="std std-ref">1. Theta oscillation cycle feature distributions</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Compute bycycle feature distributions using MNE objects."><div class="figure align-default" id="id2">
+<img alt="3. MNE Interface Cycle Feature Distributions" src="../_images/sphx_glr_plot_2_mne_feature_distributions_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_2_mne_feature_distributions.html#sphx-glr-auto-examples-plot-2-mne-feature-distributions-py"><span class="std std-ref">3. MNE Interface Cycle Feature Distributions</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Simulated experiment using the cycle-by-cycle approach."><div class="figure align-default" id="id3">
+<img alt="3. Cycle-by-cycle analysis of resting state data" src="../_images/sphx_glr_plot_3_bycycle_resting_state_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/plot_3_bycycle_resting_state.html#sphx-glr-auto-tutorials-plot-3-bycycle-resting-state-py"><span class="std std-ref">3. Cycle-by-cycle analysis of resting state data</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Compute bycycle features for 2D organizations of timeseries."><div class="figure align-default" id="id4">
+<img alt="4. Running Bycycle on 2D Arrays" src="../_images/sphx_glr_plot_4_2D_sigs_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/plot_4_2D_sigs.html#sphx-glr-auto-tutorials-plot-4-2d-sigs-py"><span class="std std-ref">4. Running Bycycle on 2D Arrays</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2021, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

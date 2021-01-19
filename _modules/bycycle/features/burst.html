@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bycycle.features.burst &#8212; bycycle 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html"><span><img src="../../../_static/logo.jpg"></span>
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../glossary.html">Glossary</a></li>
+                <li><a href="../../../auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="../../../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+  <li class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+    v1.0.0
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v1.0.0(stable)</a></li>
+      <li><a href="https://bycycle-tools.github.io/bycycle/v0.1.3/index.html">v0.1.3</a></li>
+    </ul>
+  </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for bycycle.features.burst</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Compute burst features for individual cycles.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param</span>
+<span class="kn">from</span> <span class="nn">bycycle.burst</span> <span class="kn">import</span> <span class="n">detect_bursts_dual_threshold</span>
+
+<span class="c1">###################################################################################################</span>
+<span class="c1">###################################################################################################</span>
+
+<div class="viewcode-block" id="compute_burst_features"><a class="viewcode-back" href="../../../generated/bycycle.features.compute_burst_features.html#bycycle.features.compute_burst_features">[docs]</a><span class="k">def</span> <span class="nf">compute_burst_features</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">burst_method</span><span class="o">=</span><span class="s1">&#39;cycles&#39;</span><span class="p">,</span> <span class="n">burst_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute burst features for each cycle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_shape_features : pandas.DataFrame</span>
+<span class="sd">        Shape parameters for each cycle, determined using :func:`~.compute_shape_features`.</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Voltage time series used for determining monotonicity.</span>
+<span class="sd">    burst_method : {&#39;cycles&#39;, &#39;amp&#39;}</span>
+<span class="sd">        Method for detecting bursts.</span>
+
+<span class="sd">        - &#39;cycles&#39;: detect bursts based on the consistency of consecutive periods &amp; amplitudes</span>
+<span class="sd">        - &#39;amp&#39;: detect bursts using an amplitude threshold</span>
+
+<span class="sd">    burst_kwargs : dict, optional, default: None</span>
+<span class="sd">        Additional arguments required for amplitude burst detection. Defined in</span>
+<span class="sd">        :func:`~.compute_burst_fraction`, keys include:</span>
+
+<span class="sd">        - ``fs`` : required for dual amplitude threshold burst detection</span>
+<span class="sd">        - ``f_range`` : required for dual amplitude threshold burst detection</span>
+<span class="sd">        - ``amp_threshes`` : optional, default: (1, 2)</span>
+<span class="sd">        - ``min_n_cycles`` : optional, default: 3</span>
+<span class="sd">        - ``filter_kwargs`` : optional, default: None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_burst_features : pandas.DataFrame</span>
+<span class="sd">        Dataframe containing burst features. Each row is one cycle. Columns:</span>
+
+<span class="sd">        When cycle consistency burst detection is used (i.e. burst_method == &#39;cycles&#39;):</span>
+
+<span class="sd">        - ``amp_fraction`` : normalized amplitude</span>
+<span class="sd">        - ``amp_consistency`` : difference in the rise and decay voltage within a cycle</span>
+<span class="sd">        - ``period_consistency`` : difference between a cycle’s period and the period of the</span>
+<span class="sd">          adjacent cycles</span>
+<span class="sd">        - ``monotonicity`` : fraction of monotonic voltage changes in rise and decay phases</span>
+<span class="sd">          (positive going in rise and negative going in decay)</span>
+
+<span class="sd">        When dual threshold burst detection is used (i.e. burst_method == &#39;amp&#39;):</span>
+
+<span class="sd">        - ``burst_fraction`` : fraction of a cycle that is bursting</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute burst features:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_shape_features</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs  = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, 10)</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; df_burst = compute_burst_features(df_shapes, sig, burst_method=&#39;amp&#39;,</span>
+<span class="sd">    ...                                   burst_kwargs={&#39;fs&#39;: fs, &#39;f_range&#39;: (8, 12)})</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df_burst_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+    <span class="c1"># Use feature consistency burst detection</span>
+    <span class="k">if</span> <span class="n">burst_method</span> <span class="o">==</span> <span class="s1">&#39;cycles&#39;</span><span class="p">:</span>
+
+        <span class="c1"># Custom feature functions may be inserted here as long as an array is returned</span>
+        <span class="c1">#   with length equal to the number of cycles, or rows in df_shapes</span>
+        <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;amp_fraction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_amp_fraction</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
+
+        <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;amp_consistency&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">compute_amp_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
+
+        <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;period_consistency&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_period_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
+        <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;monotonicity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_monotonicity</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+
+    <span class="c1"># Use dual threshold burst detection</span>
+    <span class="k">elif</span> <span class="n">burst_method</span> <span class="o">==</span> <span class="s1">&#39;amp&#39;</span><span class="p">:</span>
+
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">burst_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">f_range</span> <span class="o">=</span> <span class="n">burst_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;f_range&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">f_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;fs&#39; and &#39;f_range&#39; must be defined in &#39;burst_kwargs&#39; &quot;</span>
+                             <span class="s2">&quot;when &#39;burst_method&#39; is &#39;amp&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="n">df_burst_features</span><span class="p">[</span><span class="s1">&#39;burst_fraction&#39;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">compute_burst_fraction</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="o">**</span><span class="n">burst_kwargs</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unrecognized &#39;burst_method&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df_burst_features</span></div>
+
+
+<span class="k">def</span> <span class="nf">compute_amp_fraction</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the amplitude fraction of each cycle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_shape_features : pandas.DataFrame</span>
+<span class="sd">        Shape features for each cycle, determined using :func:`~.compute_shape_features`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    amp_fract : 1d array</span>
+<span class="sd">        The amplitude fraction of each cycle.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute amplitude fractions.</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_shape_features</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, (8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; amp_fraction = compute_amp_fraction(df_shapes)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">df_shape_features</span><span class="p">[</span><span class="s1">&#39;volt_amp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">compute_amp_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute amplitude consistency for each cycle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_shape_features : pandas.DataFrame</span>
+<span class="sd">        Shape features for each cycle, determined using :func:`~.compute_shape_features`.</span>
+<span class="sd">    df_samples : pandas.DataFrame</span>
+<span class="sd">        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    amp_consist : 1d array</span>
+<span class="sd">        The amplitude consistency of each cycle.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute amplitude consistency:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_shape_features</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; amp_consistency = compute_amp_consistency(df_shapes)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Compute amplitude consistency</span>
+    <span class="n">cycles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
+    <span class="n">amp_consistency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">cycles</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">rises</span> <span class="o">=</span> <span class="n">df_shape_features</span><span class="p">[</span><span class="s1">&#39;volt_rise&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">decays</span> <span class="o">=</span> <span class="n">df_shape_features</span><span class="p">[</span><span class="s1">&#39;volt_decay&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="k">for</span> <span class="n">cyc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cycles</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="c1"># Division by zero will return np.nan, suppress warning.</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+
+            <span class="n">consist_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span>
+
+            <span class="k">if</span> <span class="s1">&#39;sample_peak&#39;</span> <span class="ow">in</span> <span class="n">df_shape_features</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+
+                <span class="n">consist_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="o">/</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+
+                <span class="n">consist_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span> <span class="o">/</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">consist_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span> <span class="o">/</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span>
+
+                <span class="n">consist_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="o">+</span><span class="mi">1</span><span class="p">]])</span> <span class="o">/</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">rises</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">decays</span><span class="p">[</span><span class="n">cyc</span><span class="o">+</span><span class="mi">1</span><span class="p">]])</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">([</span><span class="n">consist_current</span><span class="p">,</span> <span class="n">consist_next</span><span class="p">,</span> <span class="n">consist_last</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="n">amp_consistency</span><span class="p">[</span><span class="n">cyc</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">amp_consistency</span><span class="p">[</span><span class="n">cyc</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">([</span><span class="n">consist_current</span><span class="p">,</span> <span class="n">consist_next</span><span class="p">,</span> <span class="n">consist_last</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">amp_consistency</span>
+
+
+<span class="k">def</span> <span class="nf">compute_period_consistency</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the period consistency of each cycle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_shape_features : pandas.DataFrame</span>
+<span class="sd">        Shape features for each cycle, determined using :func:`~.compute_shape_features`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    period_consistency : 1d array</span>
+<span class="sd">        The period consistency of each cycle.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute period consistency:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_shape_features</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; period_consistency = compute_period_consistency(df_shapes)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Compute period consistency</span>
+    <span class="n">cycles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">)</span>
+    <span class="n">period_consistency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">cycles</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">periods</span> <span class="o">=</span> <span class="n">df_shape_features</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="k">for</span> <span class="n">cyc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cycles</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="n">consist_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">periods</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">periods</span><span class="p">[</span><span class="n">cyc</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="o">/</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">periods</span><span class="p">[</span><span class="n">cyc</span><span class="p">],</span> <span class="n">periods</span><span class="p">[</span><span class="n">cyc</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">consist_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">periods</span><span class="p">[</span><span class="n">cyc</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">periods</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span> <span class="o">/</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">periods</span><span class="p">[</span><span class="n">cyc</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">periods</span><span class="p">[</span><span class="n">cyc</span><span class="p">]])</span>
+
+        <span class="n">period_consistency</span><span class="p">[</span><span class="n">cyc</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">consist_next</span><span class="p">,</span> <span class="n">consist_last</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">period_consistency</span>
+
+
+<span class="k">def</span> <span class="nf">compute_monotonicity</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the monotonicity of each cycle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_samples : pandas.DataFrame</span>
+<span class="sd">        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    monotonicity : 1d array</span>
+<span class="sd">        The monotonicity of each cycle.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute monotonicity:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_cyclepoints</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; monotonicity = compute_monotonicity(df_samples, sig)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Compute monotonicity</span>
+    <span class="n">cycles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_samples</span><span class="p">)</span>
+    <span class="n">monotonicity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">cycles</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_samples</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+
+        <span class="k">if</span> <span class="s1">&#39;sample_peak&#39;</span> <span class="ow">in</span> <span class="n">df_samples</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">rise_period</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_last_trough&#39;</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">decay_period</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_peak&#39;</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_next_trough&#39;</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">decay_period</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_last_peak&#39;</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_trough&#39;</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">rise_period</span> <span class="o">=</span> <span class="n">sig</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_trough&#39;</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_next_peak&#39;</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">decay_mono</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">decay_period</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">rise_mono</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">rise_period</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">monotonicity</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">decay_mono</span><span class="p">,</span> <span class="n">rise_mono</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">monotonicity</span>
+
+
+<span class="k">def</span> <span class="nf">compute_burst_fraction</span><span class="p">(</span><span class="n">df_samples</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">amp_threshes</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                           <span class="n">min_n_cycles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">filter_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the proportion of each cycle that is bursting using a dual threshold algorithm.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_samples : pandas.DataFrame</span>
+<span class="sd">        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.</span>
+<span class="sd">    sig : 1d array</span>
+<span class="sd">        Time series.</span>
+<span class="sd">    fs : float</span>
+<span class="sd">        Sampling rate, Hz.</span>
+<span class="sd">    f_range : tuple of (float, float)</span>
+<span class="sd">        Frequency range (Hz) for oscillaton of interest.</span>
+<span class="sd">    amp_threshes : tuple (low, high), optional, default: (1, 2)</span>
+<span class="sd">        Threshold values for determining timing of bursts.</span>
+<span class="sd">        These values are in units of amplitude (or power, if specified) normalized to</span>
+<span class="sd">        the median amplitude (value 1).</span>
+<span class="sd">    min_n_cycles : int, optional, default: 3</span>
+<span class="sd">        Minimum number of consecutive cycles to be identified as an oscillation.</span>
+<span class="sd">    filter_kwargs : dict, optional, default: None</span>
+<span class="sd">        Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    burst_fraction : 1d array</span>
+<span class="sd">        The proportion of each cycle that is bursting.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If a cycle contains three samples and the corresponding section of `is_burst` is</span>
+<span class="sd">    np.array([True, True, False]), the burst fraction is 0.66 for that cycle.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Compute proportions of cycles that are bursting using dual amplitude thresholding:</span>
+
+<span class="sd">    &gt;&gt;&gt; from bycycle.features import compute_cyclepoints</span>
+<span class="sd">    &gt;&gt;&gt; from neurodsp.sim import sim_bursty_oscillation</span>
+<span class="sd">    &gt;&gt;&gt; fs = 500</span>
+<span class="sd">    &gt;&gt;&gt; sig = sim_bursty_oscillation(10, fs, freq=10)</span>
+<span class="sd">    &gt;&gt;&gt; df_samples = compute_cyclepoints(sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &gt;&gt;&gt; burst_fraction = compute_burst_fraction(df_samples, sig, fs, f_range=(8, 12))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure arguments are within valid ranges</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">amp_threshes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;lower amp_threshes&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">amp_threshes</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">check_param</span><span class="p">(</span><span class="n">amp_threshes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;upper amp_threshes&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">amp_threshes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+
+    <span class="n">filter_kwargs</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">filter_kwargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">filter_kwargs</span>
+
+    <span class="c1"># Detect bursts using the dual amplitude threshold approach</span>
+    <span class="n">is_burst</span> <span class="o">=</span> <span class="n">detect_bursts_dual_threshold</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">amp_threshes</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span>
+                                            <span class="n">min_n_cycles</span><span class="o">=</span><span class="n">min_n_cycles</span><span class="p">,</span> <span class="o">**</span><span class="n">filter_kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Convert the boolean array to binary</span>
+    <span class="n">is_burst</span> <span class="o">=</span> <span class="n">is_burst</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="c1"># Determine cycle sides</span>
+    <span class="n">side_e</span> <span class="o">=</span> <span class="s1">&#39;trough&#39;</span> <span class="k">if</span> <span class="s1">&#39;sample_peak&#39;</span> <span class="ow">in</span> <span class="n">df_samples</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="s1">&#39;peak&#39;</span>
+
+    <span class="c1"># Compute fraction of each cycle that&#39;s bursting</span>
+    <span class="n">burst_fraction</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_samples</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">fraction_bursting</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">is_burst</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_last_&#39;</span> <span class="o">+</span> <span class="n">side_e</span><span class="p">]):</span>
+                                             <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sample_next_&#39;</span> <span class="o">+</span> <span class="n">side_e</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
+        <span class="n">burst_fraction</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fraction_bursting</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">burst_fraction</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2021, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
