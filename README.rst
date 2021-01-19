@@ -85,12 +85,11 @@ Dependencies
 It has the following dependencies:
 
 - `neurodsp <https://github.com/neurodsp-tools/neurodsp>`_ >= 2.1.0
-- `numpy <https://github.com/numpy/numpy>`_
-- `scipy <https://github.com/scipy/scipy>`_ >= 0.19
-- `pandas <https://github.com/pandas-dev/pandas>`_
-- `matplotlib <https://github.com/matplotlib/matplotlib>`_
+- `numpy <https://github.com/numpy/numpy>`_ >= 1.18.5
+- `scipy <https://github.com/scipy/scipy>`_ >=  1.4.1
+- `pandas <https://github.com/pandas-dev/pandas>`_ >= 0.25.3
+- `matplotlib <https://github.com/matplotlib/matplotlib>`_ >= 3.0.3
 - `pytest <https://github.com/pytest-dev/pytest>`_ (optional)
-
 
 Install
 -------
@@ -135,11 +134,11 @@ To install an editable, development version, move into the directory you cloned 
 Quickstart
 ----------
 
-The main function in ``bycycle`` is ``compute_features``, which takes as inputs a time series and some
-parameters, and returns a table of features for each cycle.
+The main function in ``bycycle`` is ``compute_features``, which takes a time series and some
+parameters as inputs, and returns a table of features for each cycle.
 
 For example, consider having a 1-dimensional numpy array, ``sig``, which is a neural signal time series
-sampled at 1000 Hz (``fs``) that with an alpha (8-12 Hz, ``f_range``) oscillation. We can compute the table
+sampled at 1000 Hz (``fs``) with an alpha (8-12 Hz, ``f_range``) oscillation. We can compute the table
 of cycle features with the following:
 
 .. code-block:: python
