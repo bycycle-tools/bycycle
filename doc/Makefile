@@ -64,7 +64,7 @@ html-multi:
 	git remote remove upstream_temp || true
 	git remote add upstream_temp https://github.com/bycycle-tools/bycycle.git
 	git fetch upstream_temp --tags
-	# Create clean branches
+	# Create a clean stable branch
 	git branch -D v$(STABLE) || true
 	git branch v$(STABLE) tags/$(STABLE)
 	# Checkout the stable release tag
@@ -74,14 +74,18 @@ html-multi:
 	rm -rf _build/doctrees auto_examples auto_tutorials generated
 	mv _build/* _build/html_stable
 	git checkout $(current_branch)
-	git branch -D v$(STABLE)
 	# Build develompent and recent sites
 	$(eval BUILDS := $(DEVELOPMENT) $(RECENT))
 	for v in $(BUILDS); do \
 		if [ -z $$v ]; then continue; fi; \
+		git clean -f; \
 		git branch -D v$$v || true; \
 		git branch v$$v tags/$$v; \
-		git checkout v$$v; \
+		git checkout -f v$$v; \
+		if [ ! -f _templates/navbar.html ]; then \
+            git checkout v$(STABLE) _templates/navbar.html -3; \
+            git commit -m "navbar updated"; \
+    	fi; \
 		make html; \
 		mkdir -p _build/html_stable/v$$v; \
 		mv _build/html/* _build/html_stable/v$$v; \
@@ -89,6 +93,7 @@ html-multi:
 		git checkout $(current_branch);\
 		git branch -D v$$v; \
 	done
+	git branch -D v$(STABLE)
 	# Move stable back to root reference
 	mv _build/html_stable _build/html
 	# Remove the temporary remote
