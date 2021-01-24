@@ -25,39 +25,21 @@ bycycle - cycle-by-cycle analysis of neural oscillations
 .. |Publication| image:: https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue
 .. _Publication: https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019
 
-
-Note that the current release version (1.0.0) is not compatible with prior releases.
-Check the `changelog <https://bycycle-tools.github.io/bycycle/v1.0.0/changelog.html>`_ for notes on updating to the new version.
+ByCycle is a module for analyzing neural oscillations in a cycle-by-cycle approach.
 
 Overview
 --------
 
-``bycycle`` is a python implementation of a cycle-by-cycle approach to analyzing neural oscillations,
-an approach for quantifying features of neural oscillations in the time domain, as opposed to the
-frequency domain.
-
-Rather than applying narrowband filters and other methods that use a sinusoidal basis, this approach
-segments a recording into individual cycles and directly measures each of their properties including
-amplitude, period, and symmetry.
+``bycycle`` is a tool for quantifying features of neural oscillations in the time domain, as opposed to the
+frequency domain, using a cycle-by-cycle approach. Rather than applying narrowband filters and other methods
+that use a sinusoidal basis, this approach segments a recording into individual cycles and directly measures
+each of their properties including amplitude, period, and symmetry.
 
 This is most advantageous for analyzing the waveform shape properties of neural oscillations.
 It may also provide advantages for studying traditional amplitude and frequency effects, as well.
 Using cycle properties can also be used for burst detection.
 
 A full description of the method and approach is available in the paper below.
-
-
-Reference
----------
-
-If you use this code in your project, please cite:
-::
-
-    Cole SR & Voytek B (2019) Cycle-by-cycle analysis of neural oscillations. Journal of neurophysiology
-    122(2), 849-861. DOI: 10.1152/jn.00273.2019
-
-Direct Link: https://doi.org/10.1152/jn.00273.2019
-
 
 Documentation
 -------------
@@ -76,7 +58,6 @@ This documentation includes:
 - `Glossary <https://bycycle-tools.github.io/bycycle/glossary.html>`_:
   which defines key terms used in the module
 
-
 Dependencies
 ------------
 
@@ -93,6 +74,10 @@ It has the following dependencies:
 
 Install
 -------
+
+The current major release is the 1.X.X series, which is a breaking change from the prior 0.X.X series.
+
+Check the `changelog <https://bycycle-tools.github.io/bycycle/v1.0.0/changelog.html>`_ for notes on updating to the new version.
 
 **Stable Version**
 
@@ -130,6 +115,34 @@ To install an editable, development version, move into the directory you cloned 
 
     $ pip install -e .
 
+Reference
+---------
+
+If you use this code in your project, please cite:
+::
+
+    Cole SR & Voytek B (2019) Cycle-by-cycle analysis of neural oscillations. Journal of neurophysiology
+    122(2), 849-861. DOI: 10.1152/jn.00273.2019
+
+Direct Link: https://doi.org/10.1152/jn.00273.2019
+
+Contribute
+----------
+
+This project welcomes and encourages contributions from the community!
+
+To file bug reports and/or ask questions about this project, please use the
+`Github issue tracker <https://github.com/bycycle-tools/bycycle/issues>`_.
+
+To see and get involved in discussions about the module, check out:
+
+- the `issues board <https://github.com/bycycle-tools/bycycle/issues>`_ for topics relating to code updates, bugs, and fixes
+- the `development page <https://github.com/bycycle-tools/Development>`_ for discussion of potential major updates to the module
+
+When interacting with this project, please use the
+`contribution guidelines <https://github.com/bycycle-tools/bycycle/blob/master/CONTRIBUTING.md>`_
+and follow the
+`code of conduct <https://github.com/bycycle-tools/bycycle/blob/master/CODE_OF_CONDUCT.md>`_.
 
 Quickstart
 ----------
@@ -225,8 +238,6 @@ Burst Detection Results
 
 .. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/bursts_detected.png
 
-|
-
 Funding
 -------
 
@@ -236,5 +247,3 @@ Supported by NIH award R01 GM134363
 
 .. image:: https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png
   :width: 400
-
-|
