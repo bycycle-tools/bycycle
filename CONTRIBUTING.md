@@ -53,7 +53,7 @@ and see if there is anything you would be interested in helping with. If so, joi
 
 ## Scope
 
-All contributions to the module must be within it's scope.
+All contributions must be within the scope of the module.
 
 `bycycle` is a module for analyzing neural oscillations in the time domain, in particular in a cycle-by-cycle approach. This includes characterizing waveform shape and doing burst detection, as well as functionality and utilities to visualize and work with method outputs.
 
