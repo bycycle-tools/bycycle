@@ -13,7 +13,7 @@ bycycle - cycle-by-cycle analysis of neural oscillations
 .. |BuildStatus| image:: https://travis-ci.com/bycycle-tools/bycycle.svg
 .. _BuildStatus: https://travis-ci.com/bycycle-tools/bycycle
 
-.. |Coverage| image:: https://codecov.io/gh/bycycle-tools/bycycle/branch/master/graph/badge.svg
+.. |Coverage| image:: https://codecov.io/gh/bycycle-tools/bycycle/branch/main/graph/badge.svg
 .. _Coverage: https://codecov.io/gh/bycycle-tools/bycycle
 
 .. |License| image:: https://img.shields.io/pypi/l/bycycle.svg
@@ -140,9 +140,9 @@ To see and get involved in discussions about the module, check out:
 - the `development page <https://github.com/bycycle-tools/Development>`_ for discussion of potential major updates to the module
 
 When interacting with this project, please use the
-`contribution guidelines <https://github.com/bycycle-tools/bycycle/blob/master/CONTRIBUTING.md>`_
+`contribution guidelines <https://github.com/bycycle-tools/bycycle/blob/main/CONTRIBUTING.md>`_
 and follow the
-`code of conduct <https://github.com/bycycle-tools/bycycle/blob/master/CODE_OF_CONDUCT.md>`_.
+`code of conduct <https://github.com/bycycle-tools/bycycle/blob/main/CODE_OF_CONDUCT.md>`_.
 
 Quickstart
 ----------
@@ -211,11 +211,11 @@ There are many columns, so the table is split into two images here.
 Each row of this table corresponds to an individual segment of the signal, or a putative cycle of
 the rhythm of interest.
 
-.. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/cycledf_1.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/main/doc/img/cycledf_1.png
 
 |
 
-.. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/cycledf_2.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/main/doc/img/cycledf_2.png
 
 Columns include:
 
@@ -236,14 +236,13 @@ For example, we may be interested in the distribution of rise-decay symmetry val
 Burst Detection Results
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: https://github.com/bycycle-tools/bycycle/raw/master/doc/img/bursts_detected.png
+.. image:: https://github.com/bycycle-tools/bycycle/raw/main/doc/img/bursts_detected.png
 
 Funding
 -------
 
-Supported by NIH award R01 GM134363
-
-`NIGMS <https://www.nigms.nih.gov/>`_
+Supported by NIH award R01 GM134363 from the
+`NIGMS <https://www.nigms.nih.gov/>`_.
 
 .. image:: https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png
   :width: 400
