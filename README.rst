@@ -246,3 +246,5 @@ Supported by NIH award R01 GM134363 from the
 
 .. image:: https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png
   :width: 400
+
+|
