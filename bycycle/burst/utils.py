@@ -52,14 +52,14 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     return is_burst
 
 
-def recompute_edges(df_features, threshold_kwargs):
+def recompute_edges(df_features, threshold_kwargs, burst_method='cycles', burst_kwargs=None):
     """Recompute the is_burst column for cycles on the edges of bursts.
 
     Parameters
     ----------
     df_features : pandas.DataFrame
         A dataframe containing shape and burst features for each cycle.
-    threshold_kwargs : dict, optional, default: None
+    threshold_kwargs : dict
         Feature thresholds for cycles to be considered bursts, matching keyword arguments for:
 
         - :func:`~.detect_bursts_cycles` for consistency burst detection
@@ -92,8 +92,9 @@ def recompute_edges(df_features, threshold_kwargs):
     >>> df_features_edges = recompute_edges(df_features, threshold_kwargs)
     """
 
-    # Prevent circular import between burst.utils and burst.cycle
+    # Prevent circular imports between burst.utils and burst.cycle
     from bycycle.burst import detect_bursts_cycles
+    from bycycle.features.burst import compute_amp_consistency, compute_period_consistency
 
     # Prevent overwriting the original dataframe
     df_features_edges = df_features.copy()
@@ -108,6 +109,28 @@ def recompute_edges(df_features, threshold_kwargs):
                             enumerate(burst_edges)])
 
     # Recompute is_burst
+    for idx, cyc_idx in enumerate(burst_edges):
+
+        if idx % 2 == 0:
+            direction = 'next'
+        else:
+            direction = 'last'
+
+        # Slice edges rows and recompute burst features
+        lower = cyc_idx-1 if cyc_idx-1 >= 0 else 0
+        upper = cyc_idx+2 if cyc_idx+2 < len(df_features_edges) else len(df_features_edges)
+        edge_range = range(lower, upper)
+
+        edge = df_features_edges.iloc[edge_range].copy()
+
+        # Update dataframe with recomputed consistency features
+        df_features_edges['amp_consistency'][cyc_idx] = \
+            compute_amp_consistency(edge, direction=direction)[1]
+
+        df_features_edges['period_consistency'][cyc_idx] = \
+            compute_period_consistency(edge, direction=direction)[1]
+
+    # Apply thresholding
     df_features_edges = detect_bursts_cycles(
         df_features_edges,
         amp_fraction_threshold=threshold_kwargs['amp_fraction_threshold'],

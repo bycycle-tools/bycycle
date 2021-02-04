@@ -9,7 +9,8 @@ from bycycle.burst import detect_bursts_dual_threshold
 ###################################################################################################
 ###################################################################################################
 
-def compute_burst_features(df_shape_features, sig, burst_method='cycles', burst_kwargs=None):
+def compute_burst_features(df_shape_features, sig, burst_method='cycles',
+                           burst_kwargs=None, direction=None):
     """Compute burst features for each cycle.
 
     Parameters
@@ -74,10 +75,10 @@ def compute_burst_features(df_shape_features, sig, burst_method='cycles', burst_
         #   with length equal to the number of cycles, or rows in df_shapes
         df_burst_features['amp_fraction'] = compute_amp_fraction(df_shape_features)
 
-        df_burst_features['amp_consistency'] = \
-                compute_amp_consistency(df_shape_features)
+        df_burst_features['amp_consistency'] = compute_amp_consistency(df_shape_features)
 
         df_burst_features['period_consistency'] = compute_period_consistency(df_shape_features)
+
         df_burst_features['monotonicity'] = compute_monotonicity(df_shape_features, sig)
 
     # Use dual threshold burst detection
@@ -127,15 +128,15 @@ def compute_amp_fraction(df_shape_features):
     return df_shape_features['volt_amp'].rank() / len(df_shape_features)
 
 
-def compute_amp_consistency(df_shape_features):
+def compute_amp_consistency(df_shape_features, direction=None):
     """Compute amplitude consistency for each cycle.
 
     Parameters
     ----------
     df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
-    df_samples : pandas.DataFrame
-        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
+    direction : {'next', 'last'}
+        The direction to compute consistency. Defaults to bi-directional.
 
     Returns
     -------
@@ -185,19 +186,25 @@ def compute_amp_consistency(df_shape_features):
 
             if np.isnan([consist_current, consist_next, consist_last]).all():
                 amp_consistency[cyc] = np.nan
+            elif direction == 'next':
+                amp_consistency[cyc] = np.nanmin([consist_current, consist_next])
+            elif direction == 'last':
+                amp_consistency[cyc] = np.nanmin([consist_current, consist_last])
             else:
                 amp_consistency[cyc] = np.nanmin([consist_current, consist_next, consist_last])
 
     return amp_consistency
 
 
-def compute_period_consistency(df_shape_features):
+def compute_period_consistency(df_shape_features, direction=None):
     """Compute the period consistency of each cycle.
 
     Parameters
     ----------
     df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
+    direction : {'next', 'last'}
+        The direction to compute consistency. Defaults to bi-directional.
 
     Returns
     -------
@@ -228,7 +235,12 @@ def compute_period_consistency(df_shape_features):
         consist_next = np.min([periods[cyc+1], periods[cyc]]) / \
             np.max([periods[cyc+1], periods[cyc]])
 
-        period_consistency[cyc] = np.min([consist_next, consist_last])
+        if direction == 'next':
+            period_consistency[cyc] = consist_next
+        elif direction == 'last':
+            period_consistency[cyc] = consist_last
+        else:
+            period_consistency[cyc] = np.min([consist_next, consist_last])
 
     return period_consistency
 
