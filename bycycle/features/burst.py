@@ -128,14 +128,14 @@ def compute_amp_fraction(df_shape_features):
     return df_shape_features['volt_amp'].rank() / len(df_shape_features)
 
 
-def compute_amp_consistency(df_shape_features, direction=None):
+def compute_amp_consistency(df_shape_features, direction='both'):
     """Compute amplitude consistency for each cycle.
 
     Parameters
     ----------
     df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
-    direction : {'next', 'last'}
+    direction : {'both', 'next', 'last'}
         The direction to compute consistency. Defaults to bi-directional.
 
     Returns
@@ -190,20 +190,20 @@ def compute_amp_consistency(df_shape_features, direction=None):
                 amp_consistency[cyc] = np.nanmin([consist_current, consist_next])
             elif direction == 'last':
                 amp_consistency[cyc] = np.nanmin([consist_current, consist_last])
-            else:
+            elif direction == 'both':
                 amp_consistency[cyc] = np.nanmin([consist_current, consist_next, consist_last])
 
     return amp_consistency
 
 
-def compute_period_consistency(df_shape_features, direction=None):
+def compute_period_consistency(df_shape_features, direction='both'):
     """Compute the period consistency of each cycle.
 
     Parameters
     ----------
     df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
-    direction : {'next', 'last'}
+    direction : {'both', 'next', 'last'}
         The direction to compute consistency. Defaults to bi-directional.
 
     Returns
@@ -239,7 +239,7 @@ def compute_period_consistency(df_shape_features, direction=None):
             period_consistency[cyc] = consist_next
         elif direction == 'last':
             period_consistency[cyc] = consist_last
-        else:
+        elif direction == 'both':
             period_consistency[cyc] = np.min([consist_next, consist_last])
 
     return period_consistency

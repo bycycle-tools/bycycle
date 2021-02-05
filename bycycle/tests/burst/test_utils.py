@@ -60,3 +60,19 @@ def test_recompute_edges(sim_args_comb):
     is_burst_recompute = len(np.where(df_features_edges['is_burst'] == True)[0])
 
     assert is_burst_recompute > is_burst_orig
+
+
+def test_recompute_edge(sim_args_comb):
+
+    # Grab sim arguments from fixture
+    threshold_kwargs = sim_args_comb['threshold_kwargs']
+    df_features = sim_args_comb['df_features']
+
+    threshold_kwargs['amp_consistency_threshold'] = 0
+    threshold_kwargs['period_consistency_threshold'] = 0
+
+    df_features_edge = recompute_edge(df_features.copy(), 0, 'next')
+
+    # The first cycle's consistency will now be a value, rather than nan
+    assert df_features_edge['amp_consistency'][0] != df_features['amp_consistency'][0]
+    assert df_features_edge['period_consistency'][0] != df_features['period_consistency'][0]

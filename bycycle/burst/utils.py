@@ -94,7 +94,6 @@ def recompute_edges(df_features, threshold_kwargs, burst_method='cycles', burst_
 
     # Prevent circular imports between burst.utils and burst.cycle
     from bycycle.burst import detect_bursts_cycles
-    from bycycle.features.burst import compute_amp_consistency, compute_period_consistency
 
     # Prevent overwriting the original dataframe
     df_features_edges = df_features.copy()
@@ -104,45 +103,55 @@ def recompute_edges(df_features, threshold_kwargs, burst_method='cycles', burst_
     is_burst = deepcopy(df_features_edges['is_burst'].values)
     burst_edges = np.where(is_burst[1:] == ~is_burst[:-1])[0]
 
-    # Adjust odd edges such that all edges fall on is_burst == False
-    burst_edges = np.array([edge if idx % 2 == 0 else edge+1 for idx, edge in
-                            enumerate(burst_edges)])
+    # Get cycles outside of bursts
+    burst_starts = np.array([edge for idx, edge in enumerate(burst_edges) if idx % 2 == 0])
+    burst_ends = np.array([edge+1 for idx, edge in enumerate(burst_edges) if idx % 2 == 1 ])
 
-    # Recompute is_burst
-    for idx, cyc_idx in enumerate(burst_edges):
+    # Recompute is_burst for cycles at the edge
+    for start_idx, end_idx in zip(burst_starts, burst_ends):
 
-        if idx % 2 == 0:
-            direction = 'next'
-        else:
-            direction = 'last'
-
-        # Slice edges rows and recompute burst features
-        lower = cyc_idx-1 if cyc_idx-1 >= 0 else 0
-        upper = cyc_idx+2 if cyc_idx+2 < len(df_features_edges) else len(df_features_edges)
-        edge_range = range(lower, upper)
-
-        edge = df_features_edges.iloc[edge_range].copy()
-
-        # Update dataframe with recomputed consistency features
-        df_features_edges['amp_consistency'][cyc_idx] = \
-            compute_amp_consistency(edge, direction=direction)[1]
-
-        df_features_edges['period_consistency'][cyc_idx] = \
-            compute_period_consistency(edge, direction=direction)[1]
+        df_features_edges = recompute_edge(df_features_edges, start_idx, 'next')
+        df_features_edges = recompute_edge(df_features_edges, end_idx, 'last')
 
     # Apply thresholding
-    df_features_edges = detect_bursts_cycles(
-        df_features_edges,
-        amp_fraction_threshold=threshold_kwargs['amp_fraction_threshold'],
-        amp_consistency_threshold=threshold_kwargs['amp_consistency_threshold'],
-        period_consistency_threshold=threshold_kwargs['period_consistency_threshold'],
-        monotonicity_threshold=threshold_kwargs['monotonicity_threshold'],
-        min_n_cycles=threshold_kwargs['min_n_cycles']
-    )
-
-    # Confine recomputed is_burst to edges
-    is_burst[burst_edges] = df_features_edges.iloc[burst_edges]['is_burst'].values
-
-    df_features_edges['is_burst'] = is_burst
+    df_features_edges = detect_bursts_cycles(df_features_edges, **threshold_kwargs)
 
     return df_features_edges
+
+
+def recompute_edge(df_features, cyc_idx, direction):
+    """Recompute consistency features at the edge of a cycle.
+
+    Parameters
+    ----------
+    df_features : pandas.DataFrame
+        A dataframe containing shape and burst features for each cycle.
+    cyc_idx : int
+        The dataframe index of the edge.
+    direction : {'both', 'next', 'last'}
+        The direction to compute consistency.
+
+    Returns
+    -------
+    df_features : pandas.DataFrame
+        A dataframe with updated consistency features.
+    """
+
+    # Prevent circular imports between burst.utils and burst.cycle
+    from bycycle.features.burst import compute_amp_consistency, compute_period_consistency
+
+    # Slice edges rows and recompute burst features
+    lower = max(cyc_idx-1, 0)
+    upper = min(cyc_idx+2, len(df_features))
+    edge_range = range(lower, upper)
+
+    edge = df_features.iloc[edge_range].copy()
+
+    # Update dataframe with recomputed consistency features
+    df_features['amp_consistency'][cyc_idx] = \
+        compute_amp_consistency(edge, direction=direction)[1]
+
+    df_features['period_consistency'][cyc_idx] = \
+        compute_period_consistency(edge, direction=direction)[1]
+
+    return df_features
