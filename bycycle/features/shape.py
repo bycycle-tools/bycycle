@@ -256,8 +256,8 @@ def compute_symmetry(df_samples, sig, period=None, time_peak=None, time_trough=N
 
     time_decay = df_samples['sample_next_trough'] - df_samples['sample_peak']
     time_rise = df_samples['sample_peak'] - df_samples['sample_last_trough']
-    volt_decay = sig[df_samples['sample_peak']] - sig[df_samples['sample_next_trough']]
-    volt_rise = sig[df_samples['sample_peak']] - sig[df_samples['sample_last_trough']]
+    volt_decay = np.abs(sig[df_samples['sample_peak']] - sig[df_samples['sample_next_trough']])
+    volt_rise = np.abs(sig[df_samples['sample_peak']] - sig[df_samples['sample_last_trough']])
     volt_amp = (volt_decay + volt_rise) / 2
 
     # Compute rise-decay symmetry features
