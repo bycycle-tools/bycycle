@@ -61,7 +61,7 @@ This documentation includes:
 Dependencies
 ------------
 
-``bycycle`` is written in Python, and requires >= Python 3.5 to run.
+``bycycle`` is written in Python, and requires >= Python 3.6 to run.
 
 It has the following dependencies:
 
