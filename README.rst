@@ -10,8 +10,8 @@ bycycle - cycle-by-cycle analysis of neural oscillations
 .. |Version| image:: https://img.shields.io/pypi/v/bycycle.svg
 .. _Version: https://pypi.python.org/pypi/bycycle/
 
-.. |BuildStatus| image:: https://travis-ci.com/bycycle-tools/bycycle.svg
-.. _BuildStatus: https://travis-ci.com/bycycle-tools/bycycle
+.. |BuildStatus| image:: https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml/badge.svg
+.. _BuildStatus: https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml
 
 .. |Coverage| image:: https://codecov.io/gh/bycycle-tools/bycycle/branch/main/graph/badge.svg
 .. _Coverage: https://codecov.io/gh/bycycle-tools/bycycle
@@ -61,7 +61,7 @@ This documentation includes:
 Dependencies
 ------------
 
-``bycycle`` is written in Python, and requires >= Python 3.5 to run.
+``bycycle`` is written in Python, and requires >= Python 3.6 to run.
 
 It has the following dependencies:
 
