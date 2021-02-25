@@ -3,14 +3,13 @@
 import numpy as np
 import pandas as pd
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range, check_param_options
 from bycycle.burst import detect_bursts_dual_threshold
 
 ###################################################################################################
 ###################################################################################################
 
-def compute_burst_features(df_shape_features, sig, burst_method='cycles',
-                           burst_kwargs=None, direction=None):
+def compute_burst_features(df_shape_features, sig, burst_method='cycles', burst_kwargs=None):
     """Compute burst features for each cycle.
 
     Parameters
@@ -155,6 +154,9 @@ def compute_amp_consistency(df_shape_features, direction='both'):
     >>> amp_consistency = compute_amp_consistency(df_shapes)
     """
 
+    # Check that param validity
+    check_param_options(direction, 'direction', ['both', 'next', 'last'])
+
     # Compute amplitude consistency
     cycles = len(df_shape_features)
     amp_consistency = np.ones(cycles) * np.nan
@@ -222,6 +224,9 @@ def compute_period_consistency(df_shape_features, direction='both'):
     >>> df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))
     >>> period_consistency = compute_period_consistency(df_shapes)
     """
+
+    # Check that param validity
+    check_param_options(direction, 'direction', ['both', 'next', 'last'])
 
     # Compute period consistency
     cycles = len(df_shape_features)
@@ -339,9 +344,9 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     """
 
     # Ensure arguments are within valid ranges
-    check_param(fs, 'fs', (0, np.inf))
-    check_param(amp_threshes[0], 'lower amp_threshes', (0, amp_threshes[1]))
-    check_param(amp_threshes[1], 'upper amp_threshes', (amp_threshes[0], np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
+    check_param_range(amp_threshes[0], 'lower amp_threshes', (0, amp_threshes[1]))
+    check_param_range(amp_threshes[1], 'upper amp_threshes', (amp_threshes[0], np.inf))
 
     filter_kwargs = {} if filter_kwargs is None else filter_kwargs
 

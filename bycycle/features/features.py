@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 import pandas as pd
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 from bycycle.utils.dataframes import drop_samples_df
 from bycycle.features.shape import compute_shape_features
 from bycycle.features.burst import compute_burst_features
@@ -107,7 +107,7 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Compute shape features for each cycle
     df_shape_features = compute_shape_features(sig, fs, f_range, center_extrema=center_extrema,

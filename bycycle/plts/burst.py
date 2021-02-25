@@ -11,7 +11,7 @@ from neurodsp.plts.utils import savefig
 
 from bycycle.plts.cyclepoints import plot_cyclepoints_df
 from bycycle.utils import limit_df, limit_signal, get_extrema_df
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 
 ###################################################################################################
 ###################################################################################################
@@ -74,7 +74,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Normalize signal
     sig = zscore(sig)
@@ -203,7 +203,7 @@ def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Set default kwargs
     figsize = kwargs.pop('figsize', (15, 3))

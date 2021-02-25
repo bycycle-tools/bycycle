@@ -1,6 +1,6 @@
 """Detect bursts: amplitude threshold approach."""
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 from bycycle.burst.utils import check_min_burst_cycles
 
 ###################################################################################################
@@ -38,7 +38,7 @@ def detect_bursts_amp(df_features, burst_fraction_threshold=1, min_n_cycles=3):
     """
 
     # Ensure arguments are within valid ranges
-    check_param(burst_fraction_threshold, 'burst_fraction_threshold', (0, 1))
+    check_param_range(burst_fraction_threshold, 'burst_fraction_threshold', (0, 1))
 
     # Determine cycles that are defined as bursting throughout the whole cycle
     is_burst = [frac >= burst_fraction_threshold for frac in df_features['burst_fraction']]

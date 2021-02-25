@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range, check_param_options
 
 ####################################################################################################
 ####################################################################################################
@@ -32,7 +32,7 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     """
 
     # Ensure argument is within valid range
-    check_param(min_n_cycles, 'min_n_cycles', (0, np.inf))
+    check_param_range(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
     temp_cycle_count = 0
 
@@ -136,6 +136,9 @@ def recompute_edge(df_features, cyc_idx, direction):
     df_features : pandas.DataFrame
         A dataframe with updated consistency features.
     """
+
+    # Check that param validity
+    check_param_options(direction, 'direction', ['both', 'next', 'last'])
 
     # Prevent circular imports between burst.utils and burst.cycle
     from bycycle.features.burst import compute_amp_consistency, compute_period_consistency
