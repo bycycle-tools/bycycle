@@ -11,7 +11,7 @@ from neurodsp.plts.utils import savefig
 
 from bycycle.plts.cyclepoints import plot_cyclepoints_df
 from bycycle.utils import limit_df, limit_signal, get_extrema_df
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 
 ###################################################################################################
 ###################################################################################################
@@ -74,7 +74,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Normalize signal
     sig = zscore(sig)
@@ -87,10 +87,11 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
     _, side_e = get_extrema_df(df_features)
 
     # Remove this kwarg since it isn't stored cycle by cycle in the df (nothing to plot)
-    if 'min_n_cycles' in threshold_kwargs.keys():
-        del threshold_kwargs['min_n_cycles']
+    thresholds = threshold_kwargs.copy()
+    if 'min_n_cycles' in thresholds.keys():
+        del thresholds['min_n_cycles']
 
-    n_kwargs = len(threshold_kwargs.keys())
+    n_kwargs = len(thresholds.keys())
 
     # Create figure and subplots
     if plot_only_result:
@@ -123,7 +124,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
     # Plot each burst param
     colors = cycle(['blue', 'red', 'yellow', 'green', 'cyan', 'magenta', 'orange'])
 
-    for idx, osc_key in enumerate(threshold_kwargs.keys()):
+    for idx, osc_key in enumerate(thresholds.keys()):
 
         column = osc_key.replace('_threshold', '')
 
@@ -132,7 +133,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
         # Highlight where a burst param falls below threshold
         for _, cyc in df_features.iterrows():
 
-            if cyc[column] < threshold_kwargs[osc_key]:
+            if cyc[column] < thresholds[osc_key]:
                 axes[0].axvspan(times[int(cyc['sample_last_' + side_e])],
                                 times[int(cyc['sample_next_' + side_e])],
                                 alpha=0.5, color=color, lw=0)
@@ -143,7 +144,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
             ylabel = column.replace('_', ' ').capitalize()
             xlabel = 'Time (s)' if idx == n_kwargs-1 else ''
 
-            plot_burst_detect_param(df_features, sig, fs, column, threshold_kwargs[osc_key],
+            plot_burst_detect_param(df_features, sig, fs, column, thresholds[osc_key],
                                     figsize=figsize, ax=axes[idx+1], xlim=xlim, xlabel=xlabel,
                                     ylabel=ylabel, color=color, interp=interp)
 
@@ -202,7 +203,7 @@ def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Set default kwargs
     figsize = kwargs.pop('figsize', (15, 3))

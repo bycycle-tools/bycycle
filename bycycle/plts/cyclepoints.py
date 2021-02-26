@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from neurodsp.plts import plot_time_series
 from neurodsp.plts.utils import savefig
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 from bycycle.utils import limit_signal, get_extrema_df
 
 ###################################################################################################
@@ -59,7 +59,7 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Determine extrema/zero-crossings from dataframe
     center_e, side_e = get_extrema_df(df_samples)
@@ -131,7 +131,7 @@ def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Set times and limits
     times = np.arange(0, len(sig) / fs, 1 / fs)

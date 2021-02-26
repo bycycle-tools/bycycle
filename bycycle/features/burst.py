@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range, check_param_options
 from bycycle.burst import detect_bursts_dual_threshold
 
 ###################################################################################################
@@ -74,10 +74,10 @@ def compute_burst_features(df_shape_features, sig, burst_method='cycles', burst_
         #   with length equal to the number of cycles, or rows in df_shapes
         df_burst_features['amp_fraction'] = compute_amp_fraction(df_shape_features)
 
-        df_burst_features['amp_consistency'] = \
-                compute_amp_consistency(df_shape_features)
+        df_burst_features['amp_consistency'] = compute_amp_consistency(df_shape_features)
 
         df_burst_features['period_consistency'] = compute_period_consistency(df_shape_features)
+
         df_burst_features['monotonicity'] = compute_monotonicity(df_shape_features, sig)
 
     # Use dual threshold burst detection
@@ -127,15 +127,15 @@ def compute_amp_fraction(df_shape_features):
     return df_shape_features['volt_amp'].rank() / len(df_shape_features)
 
 
-def compute_amp_consistency(df_shape_features):
+def compute_amp_consistency(df_shape_features, direction='both'):
     """Compute amplitude consistency for each cycle.
 
     Parameters
     ----------
     df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
-    df_samples : pandas.DataFrame
-        Indices of cyclepoints returned from :func:`~.compute_cyclepoints`.
+    direction : {'both', 'next', 'last'}
+        The direction to compute consistency. Defaults to bi-directional.
 
     Returns
     -------
@@ -153,6 +153,9 @@ def compute_amp_consistency(df_shape_features):
     >>> df_shapes = compute_shape_features(sig, fs, f_range=(8, 12))
     >>> amp_consistency = compute_amp_consistency(df_shapes)
     """
+
+    # Check that param validity
+    check_param_options(direction, 'direction', ['both', 'next', 'last'])
 
     # Compute amplitude consistency
     cycles = len(df_shape_features)
@@ -185,19 +188,25 @@ def compute_amp_consistency(df_shape_features):
 
             if np.isnan([consist_current, consist_next, consist_last]).all():
                 amp_consistency[cyc] = np.nan
-            else:
+            elif direction == 'next':
+                amp_consistency[cyc] = np.nanmin([consist_current, consist_next])
+            elif direction == 'last':
+                amp_consistency[cyc] = np.nanmin([consist_current, consist_last])
+            elif direction == 'both':
                 amp_consistency[cyc] = np.nanmin([consist_current, consist_next, consist_last])
 
     return amp_consistency
 
 
-def compute_period_consistency(df_shape_features):
+def compute_period_consistency(df_shape_features, direction='both'):
     """Compute the period consistency of each cycle.
 
     Parameters
     ----------
     df_shape_features : pandas.DataFrame
         Shape features for each cycle, determined using :func:`~.compute_shape_features`.
+    direction : {'both', 'next', 'last'}
+        The direction to compute consistency. Defaults to bi-directional.
 
     Returns
     -------
@@ -216,6 +225,9 @@ def compute_period_consistency(df_shape_features):
     >>> period_consistency = compute_period_consistency(df_shapes)
     """
 
+    # Check that param validity
+    check_param_options(direction, 'direction', ['both', 'next', 'last'])
+
     # Compute period consistency
     cycles = len(df_shape_features)
     period_consistency = np.ones(cycles) * np.nan
@@ -228,7 +240,12 @@ def compute_period_consistency(df_shape_features):
         consist_next = np.min([periods[cyc+1], periods[cyc]]) / \
             np.max([periods[cyc+1], periods[cyc]])
 
-        period_consistency[cyc] = np.min([consist_next, consist_last])
+        if direction == 'next':
+            period_consistency[cyc] = consist_next
+        elif direction == 'last':
+            period_consistency[cyc] = consist_last
+        elif direction == 'both':
+            period_consistency[cyc] = np.min([consist_next, consist_last])
 
     return period_consistency
 
@@ -327,9 +344,9 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     """
 
     # Ensure arguments are within valid ranges
-    check_param(fs, 'fs', (0, np.inf))
-    check_param(amp_threshes[0], 'lower amp_threshes', (0, amp_threshes[1]))
-    check_param(amp_threshes[1], 'upper amp_threshes', (amp_threshes[0], np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
+    check_param_range(amp_threshes[0], 'lower amp_threshes', (0, amp_threshes[1]))
+    check_param_range(amp_threshes[1], 'upper amp_threshes', (amp_threshes[0], np.inf))
 
     filter_kwargs = {} if filter_kwargs is None else filter_kwargs
 

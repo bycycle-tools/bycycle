@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 from bycycle.cyclepoints import find_extrema, find_zerox
 
 ###################################################################################################
@@ -51,7 +51,7 @@ def compute_cyclepoints(sig, fs, f_range, **find_extrema_kwargs):
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Find extrema and zero-crossings locations in the signal
     peaks, troughs = find_extrema(sig, fs, f_range, **find_extrema_kwargs)
