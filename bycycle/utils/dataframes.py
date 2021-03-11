@@ -55,10 +55,10 @@ def limit_df(df, fs, start=None, stop=None):
 
     start = 0 if start is None else start
 
-    df = df[df['sample_next_' + side_e].values >= start*fs]
+    df = df[df['sample_last_' + side_e].values >= start*fs]
 
     if stop is not None:
-        df = df[df['sample_last_' + side_e].values < stop*fs]
+        df = df[df['sample_next_' + side_e].values <= stop*fs]
 
     # Shift sample indices to start at 0
     df['sample_last_' + side_e] = df['sample_last_' + side_e] - int(fs * start)
