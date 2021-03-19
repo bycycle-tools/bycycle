@@ -214,7 +214,7 @@ class BycycleGroup:
 
     def __init__(self, center_extrema='peak', burst_method='cycles', burst_kwargs=None,
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
-        """Initialize object settings"""
+        """Initialize object settings."""
 
         # Compute features settings
         self.center_extrema = center_extrema
@@ -233,10 +233,8 @@ class BycycleGroup:
         else:
             self.thresholds = thresholds
 
-        if find_extrema_kwargs is None:
-            self.find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
-        else:
-            self.find_extrema_kwargs = find_extrema_kwargs
+        self.find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}} if find_extrema_kwargs \
+            is None else find_extrema_kwargs
 
         self.return_samples = return_samples
 
