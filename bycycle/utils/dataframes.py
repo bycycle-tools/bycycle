@@ -5,7 +5,7 @@ from itertools import product
 import numpy as np
 import pandas as pd
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 
 ###################################################################################################
 ###################################################################################################
@@ -47,18 +47,18 @@ def limit_df(df, fs, start=None, stop=None):
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
-    check_param(start, 'start', (0, stop))
-    check_param(stop, 'stop', (start, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
+    check_param_range(start, 'start', (0, stop))
+    check_param_range(stop, 'stop', (start, np.inf))
 
     center_e, side_e = get_extrema_df(df)
 
     start = 0 if start is None else start
 
-    df = df[df['sample_next_' + side_e].values >= start*fs]
+    df = df[df['sample_last_' + side_e].values >= start*fs]
 
     if stop is not None:
-        df = df[df['sample_last_' + side_e].values < stop*fs]
+        df = df[df['sample_next_' + side_e].values <= stop*fs]
 
     # Shift sample indices to start at 0
     df['sample_last_' + side_e] = df['sample_last_' + side_e] - int(fs * start)

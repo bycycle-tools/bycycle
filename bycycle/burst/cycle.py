@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 from bycycle.burst.utils import check_min_burst_cycles
 
 ###################################################################################################
@@ -77,10 +77,10 @@ def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency
     """
 
     # Ensure arguments are within valid ranges
-    check_param(amp_fraction_threshold, 'amp_fraction_threshold', (0, 1))
-    check_param(amp_consistency_threshold, 'amp_consistency_threshold', (0, 1))
-    check_param(period_consistency_threshold, 'period_consistency_threshold', (0, 1))
-    check_param(monotonicity_threshold, 'monotonicity_threshold', (0, 1))
+    check_param_range(amp_fraction_threshold, 'amp_fraction_threshold', (0, 1))
+    check_param_range(amp_consistency_threshold, 'amp_consistency_threshold', (0, 1))
+    check_param_range(period_consistency_threshold, 'period_consistency_threshold', (0, 1))
+    check_param_range(monotonicity_threshold, 'monotonicity_threshold', (0, 1))
 
     # Compute if each period is part of an oscillation
     amp_fraction = df_features['amp_fraction'] > amp_fraction_threshold

@@ -5,7 +5,7 @@ import numpy as np
 from neurodsp.filt import filter_signal
 from neurodsp.filt.fir import compute_filter_length
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 from bycycle.cyclepoints.zerox import find_flank_zerox
 
 ###################################################################################################
@@ -60,7 +60,7 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak',
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Set default filtering parameters
     if filter_kwargs is None:
