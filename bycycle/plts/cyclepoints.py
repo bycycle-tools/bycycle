@@ -70,7 +70,9 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
 
         peaks = df_samples['sample_' + center_e].values
         troughs = np.append(df_samples['sample_last_' + side_e].values,
-                            df_samples['sample_next_' + side_e].values[-1])
+                            df_samples['sample_next_' + side_e].values)
+        troughs = np.unique(troughs)
+
     if plot_zerox:
 
         rises = df_samples['sample_zerox_rise'].values
