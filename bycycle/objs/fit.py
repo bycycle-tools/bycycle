@@ -19,7 +19,7 @@ class Bycycle:
     df_features : pandas.DataFrame
         A dataframe containing shape and burst features for each cycle.
     sig : 1d array
-        Time series.
+        Voltage time series.
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
@@ -57,7 +57,7 @@ class Bycycle:
 
     def __init__(self, center_extrema='peak', burst_method='cycles', burst_kwargs=None,
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
-        """Initialize object settings"""
+        """Initialize object settings."""
 
         # Compute features settings
         self.center_extrema = center_extrema
@@ -159,7 +159,7 @@ class BycycleGroup:
     dfs_features : list of pandas.DataFrame or list of list of pandas.DataFrame
         Dataframe containing shape and burst features for each cycle.
     sigs : 2d or 3d array
-        Time series.
+        Voltage time series.
     fs : float
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
@@ -243,6 +243,7 @@ class BycycleGroup:
         self.fs = None
         self.f_range = None
         self.axis = None
+        self.n_jobs = None
 
         # Results
         self.dfs_features = []
@@ -311,29 +312,29 @@ class BycycleGroup:
         self.axis = axis
         self.n_jobs = n_jobs
 
-        compute_features_kwargs = dict(
-            center_extrema = self.center_extrema,
-            burst_method = self.burst_method,
-            burst_kwargs = self.burst_kwargs,
-            threshold_kwargs = self.thresholds,
-            find_extrema_kwargs = self.find_extrema_kwargs
-        )
+        compute_features_kwargs = {
+            'center_extrema': self.center_extrema,
+            'burst_method': self.burst_method,
+            'burst_kwargs': self.burst_kwargs,
+            'threshold_kwargs': self.thresholds,
+            'find_extrema_kwargs': self.find_extrema_kwargs
+        }
 
-        compute_func = compute_features_2d if sigs.ndim == 2 else compute_features_3d
+        compute_func = compute_features_2d if self.sigs.ndim == 2 else compute_features_3d
 
         features = compute_func(self.sigs, self.fs, self.f_range, compute_features_kwargs,
-                                self.axis, self.return_samples, n_jobs, progress)
+                                self.axis, self.return_samples, self.n_jobs, progress)
 
         # Initialize lists
-        if sigs.ndim == 3:
+        if  self.sigs.ndim == 3:
             self.dfs_features = np.zeros((len(features), len(features[0]))).tolist()
         else:
             self.dfs_features = np.zeros(len(features)).tolist()
 
         # Convert dataframes to Bycycle objects
-        for dim0, sig in enumerate(sigs):
+        for dim0, sig in enumerate(self.sigs):
 
-            if sigs.ndim == 3:
+            if self.sigs.ndim == 3:
 
                 for dim1, sig_ in enumerate(sig):
 
