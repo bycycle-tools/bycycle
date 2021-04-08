@@ -120,7 +120,7 @@ class Bycycle:
 
 
     @savefig
-    def plot(self, xlim=None, figsize=(15, 3), plot_only_results=False, interp=True):
+    def plot(self, xlim=None, figsize=(15, 3), plot_only_results=False, interp=True, norm=True):
         """Plot burst detection results.
 
         Parameters
@@ -139,7 +139,7 @@ class Bycycle:
             raise ValueError('The fit method must be successfully called prior to plotting.')
 
         plot_burst_detect_summary(self.df_features, self.sig, self.fs, self.thresholds,
-                                  xlim, figsize, plot_only_results, interp)
+                                  xlim, figsize, plot_only_results, interp, norm)
 
 
     def load(self, df_features, sig, fs, f_range):
@@ -421,12 +421,15 @@ class Spike:
                                              center_extrema=self.center_extrema)
 
         # Trim and shift dataframe back to original signal length
-        start = np.where(df_features['sample_last_trough'].values \
-            >= int(self.fs * self.pad_factor))[0][0]
-        end = np.where(df_features['sample_next_trough'].values \
-            < len(sig_pad) - int(self.fs * self.pad_factor))[0][-1] + 1
 
-        df_features.iloc[start:end].reset_index(drop=True, inplace=True)
+        start = np.where(df_features['sample_' + self.center_extrema].values \
+            >= (self.fs * self.pad_factor))[0][0]
+
+        end = np.where(df_features['sample_' + self.center_extrema].values \
+            < len(sig_pad) - (self.fs * self.pad_factor))[0][-1] + 1
+
+        df_features = df_features.iloc[start:end]
+        df_features = df_features.reset_index(drop=True)
 
         for key in df_features.keys().tolist():
             if key.startswith('sample_'):
