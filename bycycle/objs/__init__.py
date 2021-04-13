@@ -1,3 +1,3 @@
 """Bycycle class object."""
 
-from .fit import Bycycle, BycycleGroup, Spike
+from .fit import Bycycle, BycycleGroup
