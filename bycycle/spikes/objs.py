@@ -1,8 +1,12 @@
-""""""
+"""Class objects to compute features for spiking data."""
 
 import numpy as np
 
 from neurodsp.plts.utils import savefig
+
+from bycycle import Bycycle
+from bycycle.spikes.dataframes import slice_spikes
+from bycycle.spikes.plts import plot_spike
 
 from bycycle.features import compute_features, compute_shape_features
 from bycycle.features.burst import compute_amp_fraction, compute_monotonicity
@@ -11,13 +15,15 @@ from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_df
 ###################################################################################################
 ###################################################################################################
 
-class Spike:
-    """Compute bycycle features from a spike waveforms.
+class Spikes:
+    """Compute spikes features.
 
     Attributes
     ----------
     df_features : pandas.DataFrame
-        A dataframe containing shape and burst features for the spike waveform.
+        A dataframe containing shape and burst features for each spike.
+    spikes : 2d array
+        The signal associated with each spike (row in the ``df_features``).
     sig : 1d array
         Voltage time series.
     fs : float
@@ -30,24 +36,29 @@ class Spike:
         - 'peak' : cycles are defined trough-to-trough
         - 'trough' : cycles are defined peak-to-peak
 
-    pad_factor : int
-        Factor to scale the sampling rate (fs) by to pad on either side of the waveform.
+    find_extrema_kwargs : dict, optional, default: None
+        Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
+        to change filter parameters or boundary. By default, the filter length is set to three
+        cycles of the low cutoff frequency (``f_range[0]``).
+    normalize : bool, optional, default: True
+        Mean centers and variance normalizes when True.
     """
 
-    def __init__(self, center_extrema='peak', pad_factor=2):
-        """Initialize object settings."""
+    def __init__(self, center_extrema='trough', find_extrema_kwargs=None, normalize=True):
+        """Initialize object."""
 
         self.center_extrema = center_extrema
-        self.pad_factor = pad_factor
 
-        # Attributes set in the fit method
-        self.sig = None
-        self.fs = None
-        self.f_range = None
-        self.df_features = None
+        if find_extrema_kwargs is None:
+            self.find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
+        else:
+            self.find_extrema_kwargs = find_extrema_kwargs
+
+        self.normalize = True
+
 
     def fit(self, sig, fs, f_range):
-        """Fit bycycle to a single spike.
+        """Compute features for each spike.
 
         Parameters
         ----------
@@ -59,56 +70,57 @@ class Spike:
             Frequency range for narrowband signal of interest (Hz).
         """
 
-        # Set arguments as attributes
+        # Set attibutes
         self.sig = sig
         self.fs = fs
         self.f_range = f_range
 
-        # Pad the signal
-        sig_pad = np.pad(self.sig, int(self.fs * self.pad_factor))
+        # Initial fit
+        bm = Bycycle(center_extrema=self.center_extrema,
+                     find_extrema_kwargs=self.find_extrema_kwargs)
+        bm.fit(self.sig, self.fs, self.f_range)
 
-        # Compute cyclepoints and shape features
-        df_features = compute_shape_features(sig_pad, self.fs, self.f_range,
-                                             center_extrema=self.center_extrema)
-
-        # Trim and shift dataframe back to original signal length
-        start = np.where(df_features['sample_' + self.center_extrema].values \
-            >= (self.fs * self.pad_factor))[0][0]
-
-        end = np.where(df_features['sample_' + self.center_extrema].values \
-            < len(sig_pad) - (self.fs * self.pad_factor))[0][-1] + 1
-
-        df_features = df_features.iloc[start:end]
-        df_features = df_features.reset_index(drop=True)
-
-        for key in df_features.keys().tolist():
-            if key.startswith('sample_'):
-                df_features[key] = df_features[key] - int(self.pad_factor * self.fs)
-
-        # Additional burst features
-        df_features['amp_fraction'] = compute_amp_fraction(df_features.copy())
-        df_features['monotonicity'] = compute_monotonicity(df_features.copy(), self.sig)
+        # Isolate spikes
+        df_features, spikes = slice_spikes(bm, std=2)
 
         self.df_features = df_features
+        self.spikes = spikes
+
+        # Mean and varaince normalize
+        if self.normalize:
+            self.normalize_spikes()
+
+
+    def normalize_spikes(self):
+        """Mean and variance normalize spikes."""
+
+        if self.df_features is None or self.sig is None or self.fs is None:
+            raise ValueError('The fit method must be successfully called prior to plotting.')
+
+        # Mean and variance normalize
+        mean_ = np.nanmean(self.spikes, axis=1)
+        scale_ = np.nanstd(self.spikes, axis=1)
+        scale_[np.where(scale_ == 0)[0]] = 1
+
+        sig_roll = np.rollaxis(self.spikes, axis=1)
+        sig_roll -= mean_
+        sig_roll /= scale_
+
 
     @savefig
-    def plot(self, xlim=None, figsize=(15, 3), plot_only_results=True, interp=True):
-        """Plot cyclepoints.
+    def plot(self, index=None, ax=None):
+        """Plot spike results.
 
         Parameters
         ----------
-        xlim : tuple of (float, float), optional, default: None
-            Start and stop times for plot.
-        figsize : tuple of (float, float), optional, default: (15, 3)
-            Size of each plot.
-        plot_only_result : bool, optional, default: True
-            Plot only the signal and bursts, excluding burst parameter plots.
-        interp : bool, optional, default: True
-            If True, interpolates between given values. Otherwise, plots in a step-wise fashion.
+        index : int, optional, default: None
+            The index in ``spikes`` and ``df_features`` to plot. If none, plot all spikes.
+        ax : matplotlib.Axes, optional, default: None
+            Figure axes upon which to plot.
         """
 
         if self.df_features is None or self.sig is None or self.fs is None:
             raise ValueError('The fit method must be successfully called prior to plotting.')
 
-        plot_cyclepoints_df(self.df_features, self.sig, self.fs, plot_sig=True, plot_extrema=True,
-                            plot_zerox=True, xlim=None, ax=None, figsize=figsize)
+        # Plot an individual spike or a spike summary
+        plot_spike(self.fs, self.spikes, self.df_features, index=index, ax=ax)
