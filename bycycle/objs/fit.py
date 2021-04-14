@@ -119,7 +119,7 @@ class Bycycle:
 
 
     @savefig
-    def plot(self, xlim=None, figsize=(15, 3), plot_only_results=False, interp=True, norm=True):
+    def plot(self, xlim=None, figsize=(15, 3), plot_only_results=False, interp=True):
         """Plot burst detection results.
 
         Parameters
@@ -138,7 +138,7 @@ class Bycycle:
             raise ValueError('The fit method must be successfully called prior to plotting.')
 
         plot_burst_detect_summary(self.df_features, self.sig, self.fs, self.thresholds,
-                                  xlim, figsize, plot_only_results, interp, norm)
+                                  xlim, figsize, plot_only_results, interp)
 
 
     def load(self, df_features, sig, fs, f_range):

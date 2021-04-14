@@ -18,7 +18,7 @@ from bycycle.utils.checks import check_param_range
 
 @savefig
 def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
-                              figsize=(15, 3), plot_only_result=False, interp=True, norm=True):
+                              figsize=(15, 3), plot_only_result=False, interp=True):
     """Plot the cycle-by-cycle burst detection parameters and burst detection summary.
 
     Parameters
@@ -77,8 +77,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
     check_param_range(fs, 'fs', (0, np.inf))
 
     # Normalize signal
-    if norm:
-        sig = zscore(sig)
+    sig = zscore(sig)
 
     # Determine time array and limits
     times = np.arange(0, len(sig) / fs, 1 / fs)
