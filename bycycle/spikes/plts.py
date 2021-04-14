@@ -52,7 +52,7 @@ def plot_spike(fs, spikes, df_features, index=None, ax=None):
         # Plot cyclespoints
         for idx, key in enumerate(keys):
 
-            sample = df_features.iloc[index][key]
+            sample = df_features.iloc[index][key].astype('int')
 
             plot_time_series(np.array([times[sample]]), np.array([spike[sample]]),
                              colors=colors[idx], labels=labels[idx], ls='', marker='o', ax=ax)

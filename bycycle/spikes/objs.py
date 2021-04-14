@@ -1,16 +1,14 @@
 """Class objects to compute features for spiking data."""
 
 import numpy as np
+import pandas as pd
 
 from neurodsp.plts.utils import savefig
 
 from bycycle import Bycycle
 from bycycle.spikes.dataframes import slice_spikes
 from bycycle.spikes.plts import plot_spike
-
-from bycycle.features import compute_features, compute_shape_features
-from bycycle.features.burst import compute_amp_fraction, compute_monotonicity
-from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_df
+from bycycle.spikes.features import compute_shape_features
 
 ###################################################################################################
 ###################################################################################################
@@ -21,7 +19,7 @@ class Spikes:
     Attributes
     ----------
     df_features : pandas.DataFrame
-        A dataframe containing shape and burst features for each spike.
+        Dataframe containing shape and burst features for each spike.
     spikes : 2d array
         The signal associated with each spike (row in the ``df_features``).
     sig : 1d array
@@ -54,7 +52,7 @@ class Spikes:
         else:
             self.find_extrema_kwargs = find_extrema_kwargs
 
-        self.normalize = True
+        self.normalize = normalize
 
 
     def fit(self, sig, fs, f_range):
@@ -90,11 +88,17 @@ class Spikes:
         if self.normalize:
             self.normalize_spikes()
 
+        # Compute shape features
+        df_shape_features = compute_shape_features(self.df_features, self.spikes)
+
+        # Merge dataframes
+        self.df_features = pd.concat((df_features, df_shape_features), axis=1)
+
 
     def normalize_spikes(self):
         """Mean and variance normalize spikes."""
 
-        if self.df_features is None or self.sig is None or self.fs is None:
+        if self.df_features is None or self.spikes is None or self.fs is None:
             raise ValueError('The fit method must be successfully called prior to plotting.')
 
         # Mean and variance normalize
