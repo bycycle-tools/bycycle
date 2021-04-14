@@ -25,6 +25,10 @@ def slice_spikes(bm, std=2):
         A dataframe containing cyclepoint locations, as samples indices, for each spike.
     spikes : 2d array
         The signal associated with each spike (row in the ``df_features``).
+
+    Notes
+    -----
+    This function assumes bm has been fit with ``center_extrema=trough``.
     """
 
     # Infer extrema
@@ -33,20 +37,15 @@ def slice_spikes(bm, std=2):
     # Determine sub-(standard deviation) extrema (i.e. spikes as large deviations from mean)
     volt_center = bm.df_features['volt_' + center_e].values
 
-    if center_e == 'trough':
-        thresh = volt_center.mean() - (volt_center.std() * std)
-        cycle_idxs = np.array([[idx-1, idx, idx+1] for idx in np.where(volt_center < thresh)[0]
-                               if idx-1 >= 0 and idx+1 < len(bm.df_features)])
-    elif center_e == 'peak':
-        thresh = volt_center.mean() + (volt_center.std() * std)
-        cycle_idxs = np.array([[idx-1, idx, idx+1] for idx in np.where(volt_center > thresh)[0]
-                               if idx-1 >= 0 and idx+1 < len(bm.df_features)])
+    thresh = volt_center.mean() - (volt_center.std() * std)
+    cycle_idxs = np.array([[idx-1, idx, idx+1] for idx in np.where(volt_center < thresh)[0]
+                            if idx-1 >= 0 and idx+1 < len(bm.df_features)])
 
-    # Infer cyclespoints from bycycle dataframe
+    # Get cyclespoints from bycycle dataframe
     starts = bm.df_features.iloc[cycle_idxs[:, 0]]['sample_zerox_rise'].values
-    centers =  bm.df_features.iloc[cycle_idxs[:, 1]]['sample_' + center_e].values
-    ends = bm.df_features.iloc[cycle_idxs[:, 2]]['sample_' + center_e].values
-    next_sides = bm.df_features.iloc[cycle_idxs[:, 1]]['sample_next_' + side_e].values
+    centers =  bm.df_features.iloc[cycle_idxs[:, 1]]['sample_trough'].values
+    ends = bm.df_features.iloc[cycle_idxs[:, 2]]['sample_trough'].values
+    next_sides = bm.df_features.iloc[cycle_idxs[:, 1]]['sample_next_peak'].values
 
     # Maximum pre-extrema and post-extrema lengths
     left_max = (centers-starts).max()
@@ -56,7 +55,8 @@ def slice_spikes(bm, std=2):
     spikes = np.zeros((len(starts), sum([left_max, right_max])))
     spikes[:] = np.nan
 
-    # Store cyclepoints as 2d array of (start, center, left side, end, decay, rise, next_decay)
+    # Store cyclepoints as 2d array of (defined for trough-centered spikes):
+    #   [first rise, trough, peak, inflection, first decay, rise, second decay]
     cps = zip(starts, centers,  next_sides, ends)
     cps_adjusted = np.zeros((len(centers), 7), dtype=int)
 
@@ -70,13 +70,11 @@ def slice_spikes(bm, std=2):
         pad_right = len(spikes[idx]) - (right_max - (end-center))
         spikes[idx][pad_left:pad_right] = bm.sig[start:end]
 
-        # Determine the right inflection point
+        # Determine the inflection point
         #   (first derivative == 0) of the repolarization phase
-        compare = np.greater_equal if center_e == 'trough' else np.less_equal
-
         extrema_right = pad_right - (end-side)
         trail_flank = np.diff(spikes[idx][extrema_right:pad_right])
-        trail_flank = np.where(compare(trail_flank, 0))[0]
+        trail_flank = np.where(np.greater_equal(trail_flank, 0))[0]
 
         inflection_pt = pad_right-extrema_right-1 if len(trail_flank) == 0 else trail_flank[0]
         inflection_pt += extrema_right
@@ -85,13 +83,11 @@ def slice_spikes(bm, std=2):
         adj_next_side = pad_left + (side - start)
         adj_center = pad_left + (center - start)
 
-        # Determine the left rising/decaying point
+        # Determine the first rising point
         spike_inv = np.flip(spikes[idx][:adj_center+1])
         diff_sign = np.sign(np.diff(spike_inv))
 
-        compare = (-1, 1) if center_e == 'trough' else (1, -1)
-        new_start = np.where((diff_sign[:-1] == compare[0]) &
-                             (diff_sign[1:] == compare[1]))[0]
+        new_start = np.where((diff_sign[:-1] == -1) & (diff_sign[1:] == 1))[0]
 
         # Minus one to account for diff slicing
         adj_start = pad_left if len(new_start) == 0 else adj_center - new_start[0] - 1
@@ -100,27 +96,26 @@ def slice_spikes(bm, std=2):
         spikes[idx][inflection_pt+1:] = np.nan
         spikes[idx][:adj_start] = np.nan
 
-        cps_adjusted[idx] = [adj_start, adj_center, adj_next_side, inflection_pt,
-                             0, 0, 0]
+        # Zeros are place holders for zerox
+        cps_adjusted[idx] = [adj_start, adj_center, adj_next_side, inflection_pt, 0, 0, 0]
 
         # Mark poor spikes (i.e. the center point should be the only voltage outlier)
         spike_mean = np.nanmean(spikes[idx])
         spike_std = np.nanstd(spikes[idx])
 
-        spike_thresh = spike_mean - (std * spike_std) if center_e == 'trough' \
-            else spike_mean + (std * spike_std)
+        spike_thresh = spike_mean - (std * spike_std)
 
-        compare = np.greater if center_e == 'peak' else np.less
+        # Check non-center points are within std
         for sample in [adj_start, adj_next_side, inflection_pt]:
-            if compare(spikes[idx][sample], spike_thresh):
+            if spikes[idx][sample] < spike_thresh:
                 drop_idxs[idx] = True
                 break
 
-        compare = np.less_equal if center_e == 'peak' else np.greater_equal
-        if compare(spikes[idx][adj_center], spike_thresh):
+        # Check center point is outside std
+        if spikes[idx][adj_center] >= spike_thresh:
             drop_idxs[idx] = True
 
-    # Remove unstable spikes
+    # Remove std violations
     spikes = spikes[~drop_idxs]
     cps_adjusted = cps_adjusted[~drop_idxs]
 
@@ -134,13 +129,14 @@ def slice_spikes(bm, std=2):
     # Get zero-crossings
     for idx, (spike, cps) in enumerate(zip(spikes, cps_adjusted)):
 
-        rises, decays = get_spike_zerox(spike, [cps[0], cps[2]], [cps[1], cps[3]], center='trough')
-
+        # Order of params is flipped since signal is inverted
+        decays, rises = find_zerox(-spike, [cps[1], cps[3]], [cps[0], cps[2]])
         cps[-3:] = [decays[0], rises[0], decays[1]]
 
     # Move cps to a dataframe
     df_features = pd.DataFrame()
 
+    df_features['sample_shift'] = starts[~drop_idxs]
     df_features['sample_last_rise'] = cps_adjusted[:, 0]
     df_features['sample_trough'] = cps_adjusted[:, 1]
     df_features['sample_next_peak'] = cps_adjusted[:, 2]
@@ -152,14 +148,31 @@ def slice_spikes(bm, std=2):
     return df_features, spikes
 
 
-def get_spike_zerox(spike, peaks, troughs, center='extrema'):
-    """Utility function to find zero-crossings in spikes."""
+def rename_df(df_features):
+    """Rename the columns of a peak-centered dataframe.
 
-    # Get zero-crossings
-    #   Note: order of params is flipped when inverting signal
-    if center == 'trough':
-        decays, rises = find_zerox(-spike, troughs, peaks)
-    elif center == 'peak':
-        rises, decays = find_zerox(spike, troughs, peaks)
+    Parameters
+    ----------
+    df_features : pd.DataFrame
+        A dataframe containing cyclepoint locations, as samples indices, for each spike.
 
-    return rises, decays
+    Returns
+    -------
+    df_features : pd.DataFrame
+        A renamed dataframe containing updated column names.
+    """
+
+    mapping = {}
+
+    orig_keys = ['peak', 'trough', 'rise', 'decay']
+    new_keys = ['trough', 'peak', 'decay', 'rise']
+
+    for key in df_features.columns:
+        for orig, new in zip(orig_keys, new_keys):
+            if orig in key:
+                mapping[key] = key.replace(orig, new)
+
+    df_features.rename(columns=mapping, inplace=True)
+
+    return df_features
+

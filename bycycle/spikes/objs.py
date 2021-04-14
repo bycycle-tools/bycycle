@@ -6,7 +6,7 @@ import pandas as pd
 from neurodsp.plts.utils import savefig
 
 from bycycle import Bycycle
-from bycycle.spikes.dataframes import slice_spikes
+from bycycle.spikes.dataframes import slice_spikes, rename_df
 from bycycle.spikes.plts import plot_spike
 from bycycle.spikes.features import compute_shape_features
 
@@ -74,9 +74,12 @@ class Spikes:
         self.f_range = f_range
 
         # Initial fit
-        bm = Bycycle(center_extrema=self.center_extrema,
-                     find_extrema_kwargs=self.find_extrema_kwargs)
-        bm.fit(self.sig, self.fs, self.f_range)
+        bm = Bycycle(center_extrema='trough', find_extrema_kwargs=self.find_extrema_kwargs)
+
+        if self.center_extrema == 'trough':
+            bm.fit(self.sig, self.fs, self.f_range)
+        else:
+            bm.fit(-self.sig, self.fs, self.f_range)
 
         # Isolate spikes
         df_features, spikes = slice_spikes(bm, std=2)
@@ -93,6 +96,15 @@ class Spikes:
 
         # Merge dataframes
         self.df_features = pd.concat((df_features, df_shape_features), axis=1)
+
+        # Rename dataframe
+        if self.center_extrema == 'peak':
+
+            # Rename columns
+            self.df_features = rename_df(self.df_features)
+
+            # Invert spikes
+            self.spikes = -self.spikes
 
 
     def normalize_spikes(self):

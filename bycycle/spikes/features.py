@@ -6,7 +6,7 @@ import pandas as pd
 ###################################################################################################
 ###################################################################################################
 
-def compute_shape_features(df_features, spikes):
+def compute_shape_features(df_features, spikes, center='trough'):
     """Compute shape features for each spike.
 
     Parameters
@@ -15,13 +15,15 @@ def compute_shape_features(df_features, spikes):
         Dataframe containing shape and burst features for each spike.
     spikes : 2d array
         The signal associated with each spike (row in the ``df_features``).
+    center : {'trough', 'peak'}
+        Center extrema of the spike.
 
     Returns
     -------
     df_shape_features : pd.DataFrame
         Dataframe containing spike shape features. Each row is one cycle. Columns:
 
-        - time_decay : time between trough and first peak
+        - time_decay : time between trough and start rise
         - time_rise : time between second peak and first trough
         - time_decay_sym : fraction of cycle in the first decay period
         - time_rise_sym : fraction of cycle in the rise period
@@ -53,8 +55,8 @@ def compute_shape_features(df_features, spikes):
     shape_features['period'] = period
     shape_features['time_trough'] = time_trough
     shape_features['time_peak'] = time_peak
-    shape_features['volt_trough'] = volt_trough
 
+    shape_features['volt_trough'] = volt_trough
     shape_features['volt_peak'] = volt_peak
     shape_features['volt_last_rise'] = volt_last_rise
     shape_features['volt_decay'] = volt_decay
@@ -71,6 +73,7 @@ def compute_shape_features(df_features, spikes):
     df_shape_features = pd.DataFrame.from_dict(shape_features)
 
     return df_shape_features
+
 
 def compute_symmetry(df_features, spikes, period=None, time_trough=None, time_peak=None):
     """Compute symmetry characteristics.
@@ -91,10 +94,10 @@ def compute_symmetry(df_features, spikes, period=None, time_trough=None, time_pe
     Returns
     -------
     sym_features : dict
-        Contains 1d arrays of symmetry features. Keys include:
+        Contains 1d arrays of symmetry features. Trough-centered key definitions:
 
         - time_decay : time between trough and first peak
-        - time_rise : time between second peak and first trough
+        - time_rise : time between peak and trough
         - time_decay_sym : fraction of cycle in the first decay period
         - time_rise_sym : fraction of cycle in the rise period
         - time_next_decay_sym : fraction of the cycle in the second decay period
@@ -118,9 +121,9 @@ def compute_symmetry(df_features, spikes, period=None, time_trough=None, time_pe
     sym_features['time_decay'] = time_decay.values.astype('int')
     sym_features['time_rise'] = time_rise.values.astype('int')
     sym_features['time_next_decay'] = time_next_decay.values.astype('int')
-    sym_features['time_decay_sym'] = time_decay_sym.astype('int')
-    sym_features['time_rise_sym'] = time_rise_sym.astype('int')
-    sym_features['time_next_decay_sym'] = time_next_decay_sym.astype('int')
+    sym_features['time_decay_sym'] = time_decay_sym
+    sym_features['time_rise_sym'] = time_rise_sym
+    sym_features['time_next_decay_sym'] = time_next_decay_sym
 
     return sym_features
 
