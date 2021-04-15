@@ -55,7 +55,7 @@ class Spikes:
         self.normalize = normalize
 
 
-    def fit(self, sig, fs, f_range):
+    def fit(self, sig, fs, f_range, std=1.5):
         """Compute features for each spike.
 
         Parameters
@@ -66,12 +66,15 @@ class Spikes:
             Sampling rate, in Hz.
         f_range : tuple of (float, float)
             Frequency range for narrowband signal of interest (Hz).
+        std : float or int, optional, default: 1.5
+            The standard deviation used to identify spikes.
         """
 
         # Set attibutes
         self.sig = sig
         self.fs = fs
         self.f_range = f_range
+        self.std = std
 
         # Initial fit
         bm = Bycycle(center_extrema='trough', find_extrema_kwargs=self.find_extrema_kwargs)
@@ -82,7 +85,7 @@ class Spikes:
             bm.fit(-self.sig, self.fs, self.f_range)
 
         # Isolate spikes
-        df_features, spikes = slice_spikes(bm, std=2)
+        df_features, spikes = slice_spikes(bm, std=self.std)
 
         self.df_features = df_features
         self.spikes = spikes

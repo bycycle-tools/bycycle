@@ -193,7 +193,7 @@ def compute_durations(df_features):
         Time between zero-crossings adjacent to peak.
     """
 
-    period = df_features['sample_next_decay'] - df_features['sample_last_rise']
+    period = df_features['sample_next_decay'] - df_features['sample_last_rise'] + 1
     time_trough = df_features['sample_zerox_rise'] - df_features['sample_zerox_decay']
     time_peak = df_features['sample_next_zerox_decay'] - df_features['sample_zerox_rise']
 

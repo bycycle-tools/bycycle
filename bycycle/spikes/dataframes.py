@@ -9,14 +9,14 @@ from bycycle.utils.dataframes import get_extrema_df
 ###################################################################################################
 ###################################################################################################
 
-def slice_spikes(bm, std=2):
+def slice_spikes(bm, std=1.5):
     """Create a samples dataframe from isolated spikes.
 
     Parameters
     ----------
     bm : bycycle.Bycycle
         A bycycle model that has been successfully fit.
-    std : float or int
+    std : float or int, optional, default: 1.5
         The standard deviation used to identify spikes.
 
     Returns
@@ -54,11 +54,13 @@ def slice_spikes(bm, std=2):
     # Init 2d spike array
     spikes = np.zeros((len(starts), sum([left_max, right_max])))
     spikes[:] = np.nan
-
     # Store cyclepoints as 2d array of (defined for trough-centered spikes):
     #   [first rise, trough, peak, inflection, first decay, rise, second decay]
     cps = zip(starts, centers,  next_sides, ends)
     cps_adjusted = np.zeros((len(centers), 7), dtype=int)
+
+    # Keep track of how much the start of a spike changes
+    start_shifts = np.zeros_like(starts)
 
     # Store where final spikes are subthresh
     drop_idxs = np.zeros(len(starts), dtype='bool')
@@ -91,6 +93,7 @@ def slice_spikes(bm, std=2):
 
         # Minus one to account for diff slicing
         adj_start = pad_left if len(new_start) == 0 else adj_center - new_start[0] - 1
+        start_shifts[idx] = adj_start - pad_left
 
         # Everything to the right/left of the inflection/start gets nan
         spikes[idx][inflection_pt+1:] = np.nan
@@ -105,14 +108,31 @@ def slice_spikes(bm, std=2):
 
         spike_thresh = spike_mean - (std * spike_std)
 
-        # Check non-center points are within std
-        for sample in [adj_start, adj_next_side, inflection_pt]:
-            if spikes[idx][sample] < spike_thresh:
-                drop_idxs[idx] = True
+        # Check non-center point voltages are closer to one another than the trough
+        trough_volt = spikes[idx][adj_center]
+
+        cyc_pts = [adj_start, adj_next_side, inflection_pt]
+
+        for cyc_idx, sample in enumerate(cyc_pts):
+
+            curr_volt = spikes[idx][sample]
+
+            others = [0, 1, 2]
+            del others[cyc_idx]
+
+            for other in others:
+
+                other_volt = spikes[idx][cyc_pts[other]]
+
+                if np.abs(curr_volt - trough_volt) < np.abs(curr_volt - other_volt):
+                    drop_idxs[idx] = True
+                    break
+
+            if drop_idxs[idx]:
                 break
 
         # Check center point is outside std
-        if spikes[idx][adj_center] >= spike_thresh:
+        if  trough_volt >= spike_thresh:
             drop_idxs[idx] = True
 
     # Remove std violations
@@ -136,7 +156,7 @@ def slice_spikes(bm, std=2):
     # Move cps to a dataframe
     df_features = pd.DataFrame()
 
-    df_features['sample_shift'] = starts[~drop_idxs]
+    df_features['sample_spike'] = starts[~drop_idxs] + start_shifts[~drop_idxs]
     df_features['sample_last_rise'] = cps_adjusted[:, 0]
     df_features['sample_trough'] = cps_adjusted[:, 1]
     df_features['sample_next_peak'] = cps_adjusted[:, 2]
