@@ -8,7 +8,7 @@ from bycycle.spikes.utils import create_cyclepoints_df
 ###################################################################################################
 ###################################################################################################
 
-def compute_spike_cyclepoints(sig, fs, f_range, std=2):
+def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
     """Find spike cyclepoints.
 
     Parameters
@@ -21,6 +21,8 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         Frequency range for narrowband signal of interest (Hz).
     std : float or int, optional, default: 1.5
         The standard deviation threshold used to identify spikes.
+    prune : bool, optional, default: False
+        Remove spikes with high variablility in non-trough peaks.
 
     Returns
     -------
@@ -51,6 +53,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         raise ValueError('No spikes found outside of std. Try reducing std.')
 
     troughs = _troughs[idxs]
+    volt_troughs = sig[troughs]
 
     drop_idxs = np.zeros_like(troughs, dtype='bool')
 
@@ -63,7 +66,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         reflect_diff = np.where(np.diff(sig_reflect) < 0)[0]
 
         if len(reflect_diff) != 0:
-            starts[idx] = trough - reflect_diff[0]
+            starts[idx] = trough - reflect_diff[0] - 1
         else:
             drop_idxs[idx] = True
 
@@ -71,11 +74,14 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
     next_peaks = np.zeros_like(troughs)
     ends = np.zeros_like(troughs)
 
-    right_edges = np.append(starts[1:], len(sig)).astype(int)
+    right_edges = np.append(starts[1:]+2, len(sig)).astype(int)
 
     for idx, right_edge in enumerate(right_edges):
 
-        forward_diff = np.diff(sig[troughs[idx]:right_edge])
+        if drop_idxs[idx]:
+            continue
+
+        forward_diff = np.diff(sig[troughs[idx]:right_edge+2])
 
         if len(forward_diff) == 0:
             drop_idxs[idx] = True
@@ -84,7 +90,6 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         # Find next peaks
         next_peak = np.where(forward_diff < 0)[0]
         if len(next_peak) == 0:
-            drop_idxs[idx] = True
             continue
         next_peaks[idx] = troughs[idx] + next_peak[0]
 
@@ -92,9 +97,18 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         next_peak_idx = np.argwhere(forward_diff < 0)[0][0]
         next_decay = forward_diff[next_peak_idx:]
 
+        # Current spike overlaps with next spike, take the larger of the two
+        if idx < len(starts)-1 and troughs[idx] + next_peak_idx == starts[idx+1]:
+            if volt_troughs[idx] < volt_troughs[idx+1]:
+                drop_idxs[idx+1] = True
+                ends[idx] = troughs[idx+1]
+            else:
+                drop_idxs[idx] = True
+            continue
+
         next_decay = np.where(next_decay > 0)[0]
         if len(next_decay) == 0:
-            drop_idxs[idx] == True
+            drop_idxs[idx] = True
             continue
 
         ends[idx] = troughs[idx] + next_peak_idx + next_decay[0]
@@ -111,11 +125,11 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
     df_samples = create_cyclepoints_df(sig, starts, decays, troughs, rises,
                                        next_peaks, next_decays, ends)
 
-    # Apply standard deviation thresholding
-    drop_idxs = _prune_spikes(df_samples, sig, std)
-
-    df_samples = df_samples.iloc[~drop_idxs]
-    df_samples.reset_index(inplace=True, drop=True)
+    # Remove spikes with high variablility in non-trough peaks.
+    if prune:
+        drop_idxs = _prune_spikes(df_samples, sig, std)
+        df_samples = df_samples.iloc[~drop_idxs]
+        df_samples.reset_index(inplace=True, drop=True)
 
     return df_samples
 
@@ -166,13 +180,5 @@ def _prune_spikes(df_samples, sig, std=2):
                 if np.abs(curr_volt - trough_volt) < np.abs(curr_volt - other_volt):
                     drop_idxs[idx] = True
                     continue
-
-        # Check center point is outside std
-        spike_mean = sig[side_pts[0]:side_pts[-1]].mean()
-        spike_std = sig[side_pts[0]:side_pts[-1]].std()
-        spike_thresh = spike_mean - (std * spike_std)
-
-        if trough_volt >= spike_thresh:
-            drop_idxs[idx] = True
 
     return drop_idxs

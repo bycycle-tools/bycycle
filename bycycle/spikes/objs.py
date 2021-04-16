@@ -59,7 +59,7 @@ class Spikes:
         self.normalize = normalize
 
 
-    def fit(self, sig, fs, f_range, std=1.5):
+    def fit(self, sig, fs, f_range, std=1.5, prune=False):
         """Compute features for each spike.
 
         Parameters
@@ -72,6 +72,8 @@ class Spikes:
             Frequency range for narrowband signal of interest (Hz).
         std : float or int, optional, default: 1.5
             The standard deviation used to identify spikes.
+        prune : bool, optional, default: False
+            Remove spikes with high variablility in non-trough peaks.
         """
 
         # Set attibutes
@@ -79,6 +81,7 @@ class Spikes:
         self.fs = fs
         self.f_range = f_range
         self.std = std
+        self.prune = prune
 
         # Cyclepoints
         if self.center_extrema == 'trough':
