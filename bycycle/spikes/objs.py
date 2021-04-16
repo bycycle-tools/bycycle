@@ -6,9 +6,11 @@ import pandas as pd
 from neurodsp.plts.utils import savefig
 
 from bycycle import Bycycle
-from bycycle.spikes.dataframes import slice_spikes, rename_df
-from bycycle.spikes.plts import plot_spike
+
 from bycycle.spikes.features import compute_shape_features
+from bycycle.spikes.cyclepoints import compute_spike_cyclepoints
+from bycycle.spikes.plts import plot_spikes
+from bycycle.spikes.utils import split_signal, rename_df
 
 ###################################################################################################
 ###################################################################################################
@@ -40,6 +42,8 @@ class Spikes:
         cycles of the low cutoff frequency (``f_range[0]``).
     normalize : bool, optional, default: True
         Mean centers and variance normalizes when True.
+    std : float or int, optional, default: 1.5
+            The standard deviation used to identify spikes.
     """
 
     def __init__(self, center_extrema='trough', find_extrema_kwargs=None, normalize=True):
@@ -76,18 +80,17 @@ class Spikes:
         self.f_range = f_range
         self.std = std
 
-        # Initial fit
-        bm = Bycycle(center_extrema='trough', find_extrema_kwargs=self.find_extrema_kwargs)
-
+        # Cyclepoints
         if self.center_extrema == 'trough':
-            bm.fit(self.sig, self.fs, self.f_range)
+            df_features = compute_spike_cyclepoints(self.sig, self.fs, self.f_range, self.std)
         else:
-            bm.fit(-self.sig, self.fs, self.f_range)
-
-        # Isolate spikes
-        df_features, spikes = slice_spikes(bm, std=self.std)
+            df_features = compute_spike_cyclepoints(-self.sig, self.fs, self.f_range, self.std)
 
         self.df_features = df_features
+
+        # Isolate spikes
+        spikes = split_signal(self.df_features, self.sig)
+
         self.spikes = spikes
 
         # Mean and varaince normalize
@@ -95,7 +98,7 @@ class Spikes:
             self.normalize_spikes()
 
         # Compute shape features
-        df_shape_features = compute_shape_features(self.df_features, self.spikes)
+        df_shape_features = compute_shape_features(self.df_features, self.sig)
 
         # Merge dataframes
         self.df_features = pd.concat((df_features, df_shape_features), axis=1)
@@ -105,9 +108,6 @@ class Spikes:
 
             # Rename columns
             self.df_features = rename_df(self.df_features)
-
-            # Invert spikes
-            self.spikes = -self.spikes
 
 
     def normalize_spikes(self):
@@ -142,4 +142,4 @@ class Spikes:
             raise ValueError('The fit method must be successfully called prior to plotting.')
 
         # Plot an individual spike or a spike summary
-        plot_spike(self.fs, self.spikes, self.df_features, index=index, ax=ax)
+        plot_spikes(self.df_features, self.sig, self.fs, self.spikes, index=index, ax=ax)
