@@ -70,9 +70,10 @@ def split_signal(df_samples, sig):
     Each spike is trough-centered in the 2d array. Padding (np.nan's) may exists at the beginning
     or end of each spike.
     """
+    center = 'trough' if 'sample_trough' in list(df_samples.columns) else 'peak'
 
     starts = df_samples['sample_start'].values
-    troughs = df_samples['sample_trough'].values
+    troughs = df_samples['sample_' + center].values
     ends = df_samples['sample_end'].values
 
     max_left = np.max(troughs - starts)

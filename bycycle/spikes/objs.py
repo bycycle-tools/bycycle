@@ -85,9 +85,11 @@ class Spikes:
 
         # Cyclepoints
         if self.center_extrema == 'trough':
-            df_features = compute_spike_cyclepoints(self.sig, self.fs, self.f_range, self.std)
+            df_features = compute_spike_cyclepoints(self.sig, self.fs, self.f_range,
+                                                    self.std, self.prune)
         else:
-            df_features = compute_spike_cyclepoints(-self.sig, self.fs, self.f_range, self.std)
+            df_features = compute_spike_cyclepoints(-self.sig, self.fs, self.f_range,
+                                                    self.std, self.prune)
 
         self.df_features = df_features
 
@@ -130,13 +132,17 @@ class Spikes:
 
 
     @savefig
-    def plot(self, index=None, ax=None):
+    def plot(self, stack=True, index=None, xlim=None, ax=None):
         """Plot spike results.
 
         Parameters
         ----------
+        stack : bool, optional, default: True
+            Plots spikes as 2d arrays ontop of one another. Ignored if index is not None.
         index : int, optional, default: None
-            The index in ``spikes`` and ``df_features`` to plot. If none, plot all spikes.
+            The index in ``df_features`` to plot. If None, plot all spikes.
+        xlim : tuple
+            Upper and lower time limits. Ignored if ``stack`` is True or ``index`` is passed.
         ax : matplotlib.Axes, optional, default: None
             Figure axes upon which to plot.
         """
@@ -145,4 +151,7 @@ class Spikes:
             raise ValueError('The fit method must be successfully called prior to plotting.')
 
         # Plot an individual spike or a spike summary
-        plot_spikes(self.df_features, self.sig, self.fs, self.spikes, index=index, ax=ax)
+        if stack:
+            plot_spikes(self.df_features, self.sig, self.fs, self.spikes, index, xlim, ax)
+        else:
+            plot_spikes(self.df_features, self.sig, self.fs, None, index, xlim, ax)

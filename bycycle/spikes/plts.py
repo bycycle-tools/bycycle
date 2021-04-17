@@ -2,23 +2,33 @@
 
 import numpy as np
 
-from neurodsp.plts import plot_time_series
+from neurodsp.plts import plot_time_series, plot_bursts
 from neurodsp.plts.utils import check_ax
 
 from bycycle.utils.dataframes import get_extrema_df
+from bycycle.utils.timeseries import limit_signal
+from bycycle.spikes.utils import split_signal
 
 ###################################################################################################
 ###################################################################################################
 
-def plot_spikes(df_features, sig, fs, spikes, index=None, ax=None):
+def plot_spikes(df_features, sig, fs, spikes=None, index=None, xlim=None, ax=None):
     """Plot a group of spikes or the cyclepoints for an individual spike.
 
     Parameters
     ----------
-    spikes : 2d array
-        Isolated spikes returned from :func:`~.slice_spikes`.
+    df_features : pandas.DataFrame
+        Dataframe containing shape and burst features for each spike.
+    sig : 1d or 2d array
+        Voltage timeseries. May be 2d if spikes are split.
+    fs : float
+        Sampling rate, in Hz.
+    spikes : 1d array, optional, default: None
+        Spikes that have been split into a 2d array. Ignored if ``index`` is passed.
     index : int, optional, default: None
-        The index in ``spikes`` and ``df_features`` to plot. If none, plot all spikes.
+        The index in ``df_features`` to plot. If None, plot all spikes.
+    xlim : tuple
+        Upper and lower time limits. Ignored if spikes or index is passed.
     ax : matplotlib.Axes, optional, default: None
         Figure axes upon which to plot.
     """
@@ -53,12 +63,45 @@ def plot_spikes(df_features, sig, fs, spikes, index=None, ax=None):
             plot_time_series(np.array([times[sample]]), np.array([sig[sample]]),
                              colors=colors[idx], labels=labels[idx], ls='', marker='o', ax=ax)
 
-    # Plot all spikes
-    else:
+    # Plot as tack spikes in a plot
+    elif index is None and spikes is not None:
 
         times = np.arange(0, len(spikes[0])/fs, 1/fs)
 
         plot_time_series(times, spikes, ax=ax)
+
+    # Plot as continuous timeseries
+    elif index is None and spikes is None:
+
+        ax = check_ax(ax, (15, 3))
+
+        times = np.arange(0, len(sig)/fs, 1/fs)
+
+        plot_time_series(times, sig, ax=ax, xlim=xlim)
+
+        if xlim is None:
+            sig_lim = sig
+            df_lim = df_features
+            times_lim = times
+            starts = df_lim['sample_start']
+        else:
+            cyc_idxs = (df_features['sample_start'].values >= xlim[0] * fs) & \
+                    (df_features['sample_end'].values <= xlim[1] * fs)
+
+            df_lim = df_features.iloc[cyc_idxs].copy()
+
+            sig_lim, times_lim = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
+
+            starts = df_lim['sample_start'] - int(fs * xlim[0])
+
+        ends = starts + df_lim['period'].values
+
+        is_spike = np.zeros(len(sig_lim), dtype='bool')
+
+        for start, end in zip(starts, ends):
+            is_spike[start:end] = True
+
+        plot_bursts(times_lim, sig_lim, is_spike, ax=ax)
 
 
 def _infer_labels(center_e):
