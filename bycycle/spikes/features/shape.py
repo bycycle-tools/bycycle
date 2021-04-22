@@ -1,10 +1,10 @@
 """Compute spike shape features."""
 
-import numpy as np
 import pandas as pd
 
 ###################################################################################################
 ###################################################################################################
+
 
 def compute_shape_features(df_features, sig, center='trough'):
     """Compute shape features for each spike.

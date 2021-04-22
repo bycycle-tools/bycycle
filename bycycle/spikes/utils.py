@@ -74,7 +74,7 @@ def split_signal(df_samples, sig):
 
     starts = df_samples['sample_start'].values
     troughs = df_samples['sample_' + center].values
-    ends = df_samples['sample_end'].values
+    ends = df_samples['sample_end'].values + 1
 
     max_left = np.max(troughs - starts)
     max_right = np.max(ends - troughs)

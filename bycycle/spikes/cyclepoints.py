@@ -1,4 +1,4 @@
-""""""
+"""Compute spike cyclespoints functions."""
 
 import numpy as np
 
@@ -81,24 +81,40 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
         if drop_idxs[idx]:
             continue
 
-        forward_diff = np.diff(sig[troughs[idx]:right_edge+2])
+        sig_post_trough = sig[troughs[idx]:right_edge+2]
+        forward_diff = np.diff(sig_post_trough)
 
         if len(forward_diff) == 0:
             drop_idxs[idx] = True
             continue
 
-        # Find next peaks
-        next_peak = np.where(forward_diff < 0)[0]
-        if len(next_peak) == 0:
+        # Find next peaks: volt_thresh prevents small diffences between peak and inflection point
+        #   my requiring a minimum of 1 volt between the two points
+        volt_thresh = 1
+
+        post_trough_diff = np.where(forward_diff < 0)[0]
+        post_trough_decay = np.split(post_trough_diff,
+                                     np.where(np.diff(post_trough_diff) != 1)[0]+1)
+
+        post_trough_volt_diff = np.array([abs(sig_post_trough[decay[-1]] - \
+            sig_post_trough[decay[0]]) for decay in post_trough_decay])
+
+        next_peak_idx = np.where(post_trough_volt_diff > volt_thresh)[0]
+
+        if len(next_peak_idx) == 0:
+            drop_idxs[idx] = True
             continue
-        next_peaks[idx] = troughs[idx] + next_peak[0]
+
+        next_peak_idx = next_peak_idx[0]
+        next_peak = post_trough_decay[next_peak_idx][0]
+
+        next_peaks[idx] = troughs[idx] + next_peak
 
         # Find next decays
-        next_peak_idx = np.argwhere(forward_diff < 0)[0][0]
-        next_decay = forward_diff[next_peak_idx:]
+        next_decay = forward_diff[next_peak:]
 
         # Current spike overlaps with next spike, take the larger of the two
-        if idx < len(starts)-1 and troughs[idx] + next_peak_idx == starts[idx+1]:
+        if idx < len(starts)-1 and troughs[idx] + next_peak == starts[idx+1]:
             if volt_troughs[idx] < volt_troughs[idx+1]:
                 drop_idxs[idx+1] = True
                 ends[idx] = troughs[idx+1]
@@ -106,12 +122,12 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
                 drop_idxs[idx] = True
             continue
 
-        next_decay = np.where(next_decay > 0)[0]
+        next_decay = np.where(next_decay >= 0)[0]
         if len(next_decay) == 0:
             drop_idxs[idx] = True
             continue
 
-        ends[idx] = troughs[idx] + next_peak_idx + next_decay[0]
+        ends[idx] = troughs[idx] + next_peak + next_decay[0]
 
     # Drop monotonic spikes
     starts = starts[~drop_idxs]
