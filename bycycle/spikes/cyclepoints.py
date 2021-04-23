@@ -63,12 +63,28 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
 
         sig_reflect = np.flip(sig[:trough])
 
-        reflect_diff = np.where(np.diff(sig_reflect) < 0)[0]
+        # Ignore the previous extrema
+        last_extrema = np.where(np.diff(sig_reflect) < 0)[0]
+        if len(last_extrema) == 0:
+            drop_idxs[idx] = True
+            continue
+
+        sig_reflect = sig_reflect[last_extrema[0]:]
+
+        reflect_diff = np.where(np.diff(sig_reflect) > 0)[0]
 
         if len(reflect_diff) != 0:
-            starts[idx] = trough - reflect_diff[0] - 1
+            starts[idx] = trough - reflect_diff[0] - last_extrema[0] - 1
         else:
             drop_idxs[idx] = True
+            continue
+
+        # Trim outlier start voltages (i.e. a two extrema spike vs three extrema spike)
+        volt_start = sig[starts[idx]]
+        volt_last_peak = sig[trough - last_extrema[0] - 1]
+
+        if abs(volt_troughs[idx] - volt_start) < abs(volt_last_peak- volt_start):
+            starts[idx] = trough - reflect_diff[0] - 1
 
     # Determine next peak and next decay points
     next_peaks = np.zeros_like(troughs)
@@ -89,12 +105,16 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
             continue
 
         # Find next peaks: volt_thresh prevents small diffences between peak and inflection point
-        #   my requiring a minimum of 1 volt between the two points
+        #   by requiring a minimum of 1 mV between the two points
         volt_thresh = 1
 
         post_trough_diff = np.where(forward_diff < 0)[0]
         post_trough_decay = np.split(post_trough_diff,
                                      np.where(np.diff(post_trough_diff) != 1)[0]+1)
+
+        if len(post_trough_decay[0]) == 0:
+            drop_idxs[idx] = True
+            continue
 
         post_trough_volt_diff = np.array([abs(sig_post_trough[decay[-1]] - \
             sig_post_trough[decay[0]]) for decay in post_trough_decay])
@@ -129,7 +149,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
 
         ends[idx] = troughs[idx] + next_peak + next_decay[0]
 
-    # Drop monotonic spikes
+    # Drop invalid spikes
     starts = starts[~drop_idxs]
     troughs = troughs[~drop_idxs]
     next_peaks = next_peaks[~drop_idxs]
