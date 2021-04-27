@@ -39,6 +39,8 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
 
     """
 
+    times = np.arange(0, len(sig)/fs, 1/fs)
+
     # Find troughs
     _, _troughs = find_extrema(sig, fs, f_range, first_extrema=None, pass_type='bandpass')
 
@@ -83,7 +85,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
         volt_start = sig[starts[idx]]
         volt_last_peak = sig[trough - last_extrema[0] - 1]
 
-        if abs(volt_troughs[idx] - volt_start) < abs(volt_last_peak- volt_start):
+        if abs(volt_troughs[idx] - volt_start) < 2 * abs(volt_last_peak- volt_start):
             starts[idx] = trough - reflect_diff[0] - 1
 
     # Determine next peak and next decay points
@@ -105,8 +107,8 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
             continue
 
         # Find next peaks: volt_thresh prevents small diffences between peak and inflection point
-        #   by requiring a minimum of 1 mV between the two points
-        volt_thresh = 1
+        #   by requiring a slope < -1 between the two points
+        volt_slope_thresh = -1
 
         post_trough_diff = np.where(forward_diff < 0)[0]
         post_trough_decay = np.split(post_trough_diff,
@@ -116,10 +118,19 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
             drop_idxs[idx] = True
             continue
 
-        post_trough_volt_diff = np.array([abs(sig_post_trough[decay[-1]] - \
-            sig_post_trough[decay[0]]) for decay in post_trough_decay])
+        post_trough_slopes = np.zeros(len(post_trough_decay))
+        for decay_idx, decay in enumerate(post_trough_decay):
 
-        next_peak_idx = np.where(post_trough_volt_diff > volt_thresh)[0]
+            if decay[0] == decay[-1]:
+                post_trough_slopes[decay_idx] = 0
+            else:
+                volt_next_peak = sig_post_trough[decay[0]]
+                volt_end = sig_post_trough[decay[-1]]
+
+                post_trough_slopes[decay_idx] = (volt_end - volt_next_peak) / \
+                    (times[decay[-1]] - times[decay[0]])
+
+        next_peak_idx = np.where(post_trough_slopes < volt_slope_thresh)[0]
 
         if len(next_peak_idx) == 0:
             drop_idxs[idx] = True
