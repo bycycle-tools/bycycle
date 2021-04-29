@@ -11,6 +11,7 @@ from neurodsp.plts.utils import savefig
 from bycycle import Bycycle
 
 from bycycle.spikes.features import compute_shape_features, compute_gaussian_features
+from bycycle.spikes.features.gaussians import sim_action_potential
 from bycycle.spikes.cyclepoints import compute_spike_cyclepoints
 from bycycle.spikes.plts import plot_spikes
 from bycycle.spikes.utils import split_signal, rename_df
@@ -33,6 +34,10 @@ class Spikes:
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest (Hz).
+    std : float or int, optional, default: 1.5
+        The standard deviation used to identify spikes.
+    spikes_gen : 2d list
+        Spikes generated from fit parameters.
     center_extrema : {'peak', 'trough'}
         The center extrema in the cycle.
 
@@ -43,8 +48,7 @@ class Spikes:
         Keyword arguments for function to find peaks an troughs (:func:`~.find_extrema`)
         to change filter parameters or boundary. By default, the filter length is set to three
         cycles of the low cutoff frequency (``f_range[0]``).
-    std : float or int, optional, default: 1.5
-            The standard deviation used to identify spikes.
+
     """
 
     def __init__(self, center_extrema='trough', find_extrema_kwargs=None):
@@ -63,11 +67,12 @@ class Spikes:
         self.fs = None
         self.f_range = None
         self.std = None
-        self.prune = None
 
         # Results
         self.df_features = None
         self.spikes = []
+        self.params = None
+        self.spikes_gen = None
 
 
     def __len__(self):
@@ -90,7 +95,7 @@ class Spikes:
 
 
     def fit(self, sig, fs, f_range, std=1.5, prune=False,
-            gaussians=True, maxfev=2000, n_jobs=-1, progress=None):
+            n_gaussians=0, maxfev=2000, tol=1.49e-6, n_jobs=-1, progress=None):
         """Compute features for each spike.
 
         Parameters
@@ -105,17 +110,20 @@ class Spikes:
             The standard deviation used to identify spikes.
         prune : bool, optional, default: False
             Remove spikes with high variablility in non-trough peaks.
-        gaussians : bool, optional, default: True
-            Fit a double gaussian model to each spike when True.
+        n_gaussians : {0, 2, 3}
+            Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
         maxfev : int, optional, default: 2000
             The maximum number of calls in curve_fit.
-            Only used when gaussians is True.
+            Only used when n_gaussians is {1, 2}.
+        tol : float, optional, default: 1.49e-6
+            Relative error desired.
+            Only used when n_gaussians is {1, 2}.
         n_jobs : int, optional, default: -1
             The number of jobs to compute features in parallel.
-            Only used when gaussians is True.
+            Only used when n_gaussians is {1, 2}.
         progress : {None, 'tqdm', 'tqdm.notebook'}
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
-            Only used when gaussians is True.
+            Only used when n_gaussians is {1, 2}.
         """
 
         # Set attibutes
@@ -123,15 +131,14 @@ class Spikes:
         self.fs = fs
         self.f_range = f_range
         self.std = std
-        self.prune = prune
 
         # Cyclepoints
         if self.center_extrema == 'trough':
             df_features = compute_spike_cyclepoints(self.sig, self.fs, self.f_range,
-                                                    self.std, self.prune)
+                                                    self.std, prune)
         else:
             df_features = compute_spike_cyclepoints(-self.sig, self.fs, self.f_range,
-                                                    self.std, self.prune)
+                                                    self.std, prune)
 
 
         # Isolate spikes
@@ -142,21 +149,36 @@ class Spikes:
         # Compute shape features
         df_shape_features = compute_shape_features(df_features, self.sig)
 
-        df_features = pd.concat((df_features, df_shape_features), axis=1)
+        self.df_features = pd.concat((df_features, df_shape_features), axis=1)
 
         # Compute gaussian features
-        if self.center_extrema == 'trough':
-            params, r_squared = compute_gaussian_features(df_features, self.sig, self.fs,
-                                                          maxfev=maxfev, n_jobs=-1, progress=None)
-        else:
-            params, r_squared = compute_gaussian_features(df_features, -self.sig, self.fs,
-                                                          maxfev=maxfev, n_jobs=-1, progress=None)
+        if n_gaussians != 0 and self.center_extrema == 'trough':
+            params, r_squared = compute_gaussian_features(self.df_features, self.sig, self.fs,
+                                                          n_gaussians, maxfev, tol, n_jobs,
+                                                          progress)
+        elif n_gaussians != 0:
+            params, r_squared = compute_gaussian_features(self.df_features, -self.sig, self.fs,
+                                                          n_gaussians, maxfev, tol, n_jobs,
+                                                          progress)
 
-        df_gaussian_features = pd.DataFrame.from_dict(params)
-        df_gaussian_features['r_squared'] = r_squared
+        self.params = params
+        self.r_squared = r_squared
 
-        # Merge dataframes
-        self.df_features = pd.concat((df_features, df_gaussian_features), axis=1)
+        if len(params[0][:-3]) % 2 == 0:
+            param_labels = ['center0', 'center1', 'std0', 'std1', 'alpha0', 'alpha1',
+                            'height0', 'height1', 'sigmoid_max', 'sigmoid_growth', 'sigmoid_mid']
+        elif len(params[0][:-3]) % 3 == 0:
+            param_labels = ['center0', 'center1', 'center2', 'std0', 'std1', 'std2', 'alpha0', 'alpha1',
+                            'alpha2', 'height0', 'height1', 'height2', 'sigmoid_max', 'sigmoid_growth',
+                            'sigmoid_mid']
+
+        if n_gaussians != 0:
+            param_dict = {k: v for k, v in zip(param_labels, self.params.transpose())}
+            df_gaussian_features = pd.DataFrame.from_dict(param_dict)
+            df_gaussian_features['r_squared'] = r_squared
+
+            # Merge dataframes
+            self.df_features = pd.concat((self.df_features, df_gaussian_features), axis=1)
 
         # Rename dataframe
         if self.center_extrema == 'peak':
@@ -191,6 +213,25 @@ class Spikes:
             self.spikes = sig_roll.transpose()
         else:
             return sig_roll.transpose()
+
+
+    def generate_spikes(self):
+        """Generate spikes from fit parameters."""
+
+        if self.df_features is None or self.params is None:
+            raise ValueError('The fit method must be successfully called prior to generating, '
+                             'using either n_gaussians = {2, 3}.')
+
+        self.spikes_gen = []
+        for idx, param in enumerate(self.params):
+
+            if np.isnan(param[0]):
+                self.spikes_gen.append(np.nan)
+                continue
+
+            times_spike = np.arange(0, len(self.spikes[idx][~np.isnan(self.spikes[idx])])/self.fs,
+                                    1/self.fs)
+            self.spikes_gen.append(sim_action_potential(times_spike, *param))
 
 
     @savefig
@@ -238,8 +279,6 @@ class Spikes:
         fig = plt.figure(figsize=(10, 18))
 
         gs = GridSpec(6, 2, figure=fig)
-
-        axes_idxs = [(row, col) for row in range(5) for col in range(2)]
 
         ax0 = fig.add_subplot(gs[0, 0])
         ax1 = fig.add_subplot(gs[0, 1])

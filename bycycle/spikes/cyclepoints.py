@@ -92,14 +92,14 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
     next_peaks = np.zeros_like(troughs)
     ends = np.zeros_like(troughs)
 
-    right_edges = np.append(starts[1:]+1, len(sig)).astype(int)
+    right_edges = np.append(starts[1:], len(sig)).astype(int)
 
     for idx, right_edge in enumerate(right_edges):
 
         if drop_idxs[idx]:
             continue
 
-        sig_post_trough = sig[troughs[idx]:right_edge]
+        sig_post_trough = sig[troughs[idx]:right_edge+2]
         forward_diff = np.diff(sig_post_trough)
 
         if len(forward_diff) == 0:
@@ -107,8 +107,8 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
             continue
 
         # Find next peaks: volt_thresh prevents small diffences between peak and inflection point
-        #   by requiring a slope < -1 between the two points
-        volt_slope_thresh = -1
+        #   by requiring a slope < -.75 between the two points
+        volt_slope_thresh = -.75
 
         post_trough_diff = np.where(forward_diff < 0)[0]
         post_trough_decay = np.split(post_trough_diff,
@@ -126,16 +126,16 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
                 post_trough_slopes[decay_idx] = 0
             else:
                 volt_next_peak = sig_post_trough[decay[0]]
-                volt_end = sig_post_trough[decay[-1]]
+                volt_end = sig_post_trough[decay[-1]+1]
 
                 post_trough_slopes[decay_idx] = (volt_end - volt_next_peak) / \
-                    (times[decay[-1]] - times[decay[0]])
+                    ((troughs[idx] + decay[-1]+1) - (troughs[idx] + decay[0]))
 
         next_peak_idx = np.where(post_trough_slopes < volt_slope_thresh)[0]
 
         if len(next_peak_idx) == 0:
-            ends[idx] = right_edge
-            next_peaks[idx] = right_edge
+            ends[idx] = post_trough_decay[0][0] + troughs[idx]
+            next_peaks[idx] = ends[idx]
             continue
 
         next_peak_idx = next_peak_idx[0]
@@ -144,7 +144,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
         next_peaks[idx] = troughs[idx] + next_peak
 
         # Find next decays
-        next_decay = forward_diff[next_peak:]
+        next_decay = forward_diff[next_peak+1:]
         next_decay = np.where(next_decay >= 0)[0]
 
         if len(next_decay) == 0:
@@ -156,7 +156,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
             volt_trough = volt_troughs[idx]
 
             if abs(volt_next_decay- volt_trough) > abs(volt_next_decay - volt_next_peak):
-                ends[idx] = troughs[idx] + next_peak + next_decay[0]
+                ends[idx] = troughs[idx] + next_peak + next_decay[0] + 1
             else:
                 ends[idx] = troughs[idx] + next_peak
 
