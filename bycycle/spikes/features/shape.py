@@ -29,7 +29,8 @@ def compute_shape_features(df_features, sig, center='trough'):
         - time_rise_sym : fraction of cycle in the rise period
         - time_next_decay_sym : fraction of the cycle in the second decay period
         - volt_trough : Voltage at the trough.
-        - volt_peak : Voltage at the next peak.
+        - volt_last_peak : Voltage at the last peak.
+        - volt_next_peak : Voltage at the next peak.
         - volt_last_rise : Voltage at the start of the spike.
         - volt_decay : Voltage at the decay before the trough.
         - volt_rise : Voltage at the rise after the trough.
@@ -44,8 +45,10 @@ def compute_shape_features(df_features, sig, center='trough'):
     period, time_trough, time_peak = compute_durations(df_features)
 
     # Compute extrema and zero-crossing voltage
-    volt_trough, volt_peak, volt_last_rise, volt_decay, volt_rise, volt_next_decay = \
-        compute_voltages(df_features, sig)
+    volts = compute_voltages(df_features, sig)
+
+    volt_trough, volt_last_peak, volt_next_peak, volt_last_rise, \
+        volt_decay, volt_rise, volt_next_decay = volts
 
     # Compute symmetry characteristics
     sym_features = compute_symmetry(df_features, period, time_trough, time_peak)
@@ -57,7 +60,8 @@ def compute_shape_features(df_features, sig, center='trough'):
     shape_features['time_peak'] = time_peak
 
     shape_features['volt_trough'] = volt_trough
-    shape_features['volt_peak'] = volt_peak
+    shape_features['volt_last_peak'] = volt_next_peak
+    shape_features['volt_next_peak'] = volt_last_peak
     shape_features['volt_last_rise'] = volt_last_rise
     shape_features['volt_decay'] = volt_decay
     shape_features['volt_rise'] = volt_rise
@@ -140,7 +144,9 @@ def compute_voltages(df_features, sig):
     -------
     volt_trough : 1d array
         Voltage at the trough.
-    volt_peak : 1d array
+    volt_last_peak : 1d array
+        Voltage at the last peak.
+    volt_next_peak : 1d array
         Voltage at the next peak.
     volt_last_rise : 1d array
         Voltage at the start of the spike.
@@ -153,13 +159,15 @@ def compute_voltages(df_features, sig):
     """
 
     volt_trough = sig[df_features['sample_trough'].values]
-    volt_peak = sig[df_features['sample_next_peak'].values]
+    volt_last_peak = sig[df_features['sample_last_peak'].values]
+    volt_next_peak = sig[df_features['sample_next_peak'].values]
     volt_last_rise = sig[df_features['sample_start'].values]
     volt_decay = sig[df_features['sample_decay'].values]
     volt_rise = sig[df_features['sample_rise'].values]
     volt_next_decay = sig[df_features['sample_next_decay'].values]
 
-    return volt_trough, volt_peak, volt_last_rise, volt_decay, volt_rise, volt_next_decay
+    return (volt_trough, volt_last_peak, volt_next_peak, volt_last_rise,
+            volt_decay, volt_rise, volt_next_decay)
 
 
 def compute_durations(df_features):

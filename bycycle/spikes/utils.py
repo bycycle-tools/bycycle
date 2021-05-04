@@ -10,7 +10,8 @@ from bycycle.utils.dataframes import get_extrema_df
 ###################################################################################################
 
 
-def create_cyclepoints_df(sig, starts, decays, troughs, rises, peaks, next_decays, ends):
+def create_cyclepoints_df(sig, starts, decays, troughs, rises,
+                          last_peaks, next_peaks, next_decays, ends):
     """Create a dataframe from arrays.
 
     Parameters
@@ -43,7 +44,8 @@ def create_cyclepoints_df(sig, starts, decays, troughs, rises, peaks, next_decay
     df_samples['sample_decay'] = decays
     df_samples['sample_trough'] = troughs
     df_samples['sample_rise'] = rises
-    df_samples['sample_next_peak'] = peaks
+    df_samples['sample_last_peak'] = last_peaks
+    df_samples['sample_next_peak'] = next_peaks
     df_samples['sample_next_decay'] = next_decays
     df_samples['sample_end'] = ends
 

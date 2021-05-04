@@ -39,8 +39,6 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
 
     """
 
-    times = np.arange(0, len(sig)/fs, 1/fs)
-
     # Find troughs
     _, _troughs = find_extrema(sig, fs, f_range, first_extrema=None, pass_type='bandpass')
 
@@ -57,35 +55,59 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
     troughs = _troughs[idxs]
     volt_troughs = sig[troughs]
 
+    # Pre/Post slope threshold
+    pre_slope_thresh = .5
+    post_slope_thresh = -.5
+
     drop_idxs = np.zeros_like(troughs, dtype='bool')
 
     # Determine spike starting points
     starts = np.zeros_like(troughs)
+    starts[:] = -1
+    last_peaks = np.zeros_like(troughs)
+
     for idx, trough in enumerate(troughs):
 
         sig_reflect = np.flip(sig[:trough])
 
-        # Ignore the previous extrema
+        # Find the previous extrema
         last_extrema = np.where(np.diff(sig_reflect) < 0)[0]
         if len(last_extrema) == 0:
             drop_idxs[idx] = True
             continue
+
+        last_peaks[idx] = trough - last_extrema[0] - 1
 
         sig_reflect = sig_reflect[last_extrema[0]:]
 
         reflect_diff = np.where(np.diff(sig_reflect) > 0)[0]
 
         if len(reflect_diff) != 0:
-            starts[idx] = trough - reflect_diff[0] - last_extrema[0] - 1
+
+            last_extrema_volt = sig[last_peaks[idx]]
+
+            for _start in reflect_diff:
+
+                start = trough - _start - last_extrema[0] - 1
+
+                pre_slope = (last_extrema_volt - sig[start]) / (last_peaks[idx] - start)
+
+                if pre_slope > pre_slope_thresh:
+                    starts[idx] = last_peaks[idx] - _start
+                    break
+
+            if starts[idx] == -1:
+                starts[idx] = last_peaks[idx]
+
         else:
-            drop_idxs[idx] = True
+            starts[idx] = last_peaks[idx]
             continue
 
         # Trim outlier start voltages (i.e. a two extrema spike vs three extrema spike)
         volt_start = sig[starts[idx]]
         volt_last_peak = sig[trough - last_extrema[0] - 1]
 
-        if abs(volt_troughs[idx] - volt_start) < abs(volt_last_peak- volt_start):
+        if abs(volt_troughs[idx] - volt_start) < 2 * abs(volt_last_peak- volt_start):
             starts[idx] = trough - last_extrema[0] - 1
 
     # Determine next peak and next decay (end) points
@@ -107,9 +129,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
             continue
 
         # Find next peaks: volt_thresh prevents small diffences between peak and inflection point
-        #   by requiring a slope < -.75 between the two points
-        volt_slope_thresh = -.75
-
+        #   by requiring a slope < -1 between the two points
         post_trough_diff = np.where(forward_diff < 0)[0]
         post_trough_decay = np.split(post_trough_diff,
                                      np.where(np.diff(post_trough_diff) != 1)[0]+1)
@@ -131,7 +151,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
                 post_trough_slopes[decay_idx] = (volt_end - volt_next_peak) / \
                     ((troughs[idx] + decay[-1]+1) - (troughs[idx] + decay[0]))
 
-        next_peak_idx = np.where(post_trough_slopes < volt_slope_thresh)[0]
+        next_peak_idx = np.where(post_trough_slopes < post_slope_thresh)[0]
 
         if len(next_peak_idx) == 0:
             ends[idx] = post_trough_decay[0][0] + troughs[idx]
@@ -172,6 +192,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
     # Drop invalid spikes
     starts = starts[~drop_idxs]
     troughs = troughs[~drop_idxs]
+    last_peaks = last_peaks[~drop_idxs]
     next_peaks = next_peaks[~drop_idxs]
     ends = ends[~drop_idxs]
 
@@ -179,7 +200,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2, prune=False):
 
     # Oraganize points into a dataframe
     df_samples = create_cyclepoints_df(sig, starts, decays, troughs, rises,
-                                       next_peaks, next_decays, ends)
+                                       last_peaks, next_peaks, next_decays, ends)
 
     # Remove spikes with high variablility in non-trough peaks.
     if prune:

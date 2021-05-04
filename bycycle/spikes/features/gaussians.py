@@ -57,7 +57,8 @@ def compute_gaussian_features(df_features, sig, fs, n_gaussians=2,
     with Pool(processes=n_jobs) as pool:
 
         mapping = pool.imap(partial(_compute_gaussian_features, df_features=df_features,
-                                    sig=sig, fs=fs, maxfev=2000, tol=tol, n_gaussians=n_gaussians),
+                                    sig=sig, fs=fs, maxfev=maxfev, tol=tol,
+                                    n_gaussians=n_gaussians),
                             indices)
 
         results = list(progress_bar(mapping, progress, len(df_features)))
@@ -70,7 +71,7 @@ def compute_gaussian_features(df_features, sig, fs, n_gaussians=2,
 
 
 def _compute_gaussian_features(index, df_features=None, sig=None,
-                               fs=None, maxfev=None, tol=1.49e-6, n_gaussians=None):
+                               fs=None, maxfev=None, tol=None, n_gaussians=None):
     """Compute gaussian features for one cycle."""
 
     start = df_features.iloc[index]['sample_start'].astype(int)
@@ -80,44 +81,43 @@ def _compute_gaussian_features(index, df_features=None, sig=None,
     times_cyc = np.arange(0, len(sig_cyc)/fs, 1/fs)
 
     # Initial parameter estimation
-    centers, stds, alphas, heights, sigmoid_max, sigmoid_growth, sigmoid_mid = \
-        estimate_params(df_features, sig, fs, index, n_gaussians)
+    _params = estimate_params(df_features, sig, fs, index, n_gaussians)
+    _bounds = _estimate_bounds(sig_cyc, *_params[:-3].reshape(4, -1)[[0, 1, 3]])
 
-    # Height and std must be > 0
-    lower_heights = [0.00001 if height - 10 <= 0 else height - 10 for height in heights]
-    upper_heights = [height+10 for height in heights]
-    lower_heights[0] = heights[0] - 10
-    upper_heights[0] = heights[0] + 10
+    # First-pass fit
+    params = _fit_gaussians(times_cyc, sig_cyc, _params, _bounds, 1e-2, maxfev, index)
+    bounds = _estimate_bounds(sig_cyc, *_params[:-3].reshape(4, -1)[[0, 1, 3]])
 
-    lower_stds = [0.00001 if std - 2.5 < 0 else std - 2.5 for std in stds]
-    upper_stds = [std + 2.5 for std in stds]
+    # Second-pass fit
+    if not np.isnan(params[0]):
 
-    lower_alphas = [-25 for std in stds]
-    upper_alphas = [25 for std in stds]
+        params = _fit_gaussians(times_cyc, sig_cyc, params, bounds, tol, maxfev, index)
 
-    lower_centers = [0, .25] if len(centers) == 2 else [0, 0, .25]
-    upper_centers = [1, 1.25] if len(centers) == 2 else [1, 1, 1.25]
+        # Insert nans where needed
+        params_gaus = params[:-3].reshape(4, -1).T
+        params_sigm = params[-3:]
 
-    upper_max = sig_cyc.max() - sig_cyc.min()
+        nan_arr = np.zeros_like(params_gaus[0])
+        nan_arr[:] = np.nan
 
-    # Organize bounds and guess
-    bounds = (
-        np.array([*lower_centers, *lower_stds, *lower_alphas, *lower_heights, 0, -1, 0]),
-        np.array([*upper_centers, *upper_stds, *upper_alphas, *upper_heights, upper_max, 1, 1])
-    )
+        if n_gaussians == 3 and len(params_gaus) == 2:
 
-    guess = [*centers, *stds, *alphas, *heights, sigmoid_max, sigmoid_growth, sigmoid_mid]
+            if params_gaus[0][0] > params_gaus[1][0]:
+                # No K current
+                params_gaus = np.insert(params_gaus, 2, nan_arr, axis=0)
+            else:
+                # No conductive current
+                params_gaus = np.insert(params_gaus, 1, nan_arr, axis=0)
 
-    try:
-        # Fit double gaussian
-        warnings.filterwarnings("ignore", category=RuntimeWarning)
-        params, _ = curve_fit(sim_action_potential, times_cyc, sig_cyc,
-                              p0=guess, bounds=bounds, ftol=tol, xtol=tol, maxfev=maxfev)
-    except:
-        # Raise warning for failed fits
-        warn_str = "Failed fit for index {idx}.".format(idx=index)
-        warnings.warn(warn_str, RuntimeWarning)
-        params = [np.nan] * len(guess)
+        elif n_gaussians == 3 and len(params_gaus) == 1:
+            # No K or conductive current
+            params_gaus = np.vstack((params_gaus, [nan_arr, nan_arr]))
+
+        elif n_gaussians == 2 and len(params_gaus) == 1:
+            # No conductive current
+            params_gaus = np.insert(params_gaus, 1, nan_arr, axis=0)
+
+        params = np.array([*params_gaus.T.flatten(), *params_sigm])
 
     if np.isnan(params[0]):
         r_squared = np.nan
@@ -132,8 +132,8 @@ def _compute_gaussian_features(index, df_features=None, sig=None,
     return params, r_squared
 
 
-def estimate_params(df_features, sig, fs, index, n_gaussians):
-    """Initial double gaussian parameter estimates.
+def estimate_params(df_features, sig, fs, index, n_gaussians=3, n_decimals=2):
+    """Initial gaussian parameter estimates.
 
     Parameters
     ----------
@@ -145,107 +145,166 @@ def estimate_params(df_features, sig, fs, index, n_gaussians):
         Sampling rate, in Hz.
     index : int
         The spike index in the 2d array (i.e. the spikes attribute of a Spikes class.
-    n_gaussian : {2, 3}
-        The number of gaussians to fit each spike.
 
     Returns
     -------
-    centers : tuple of float
-        Gaussian centers, as a proportion of the spike length.
-    stds :  tuple of float
-        Gaussian widths, as a proportion of the spike length.
-    alphas : tuple of float
-        Gaussian skews.
-    heights: tuple of float
-        Gaussian heights, in units of sig.
-    sigmoid_max : float
-        Height of the sigmoid curve.
-    sigmoid_growth : float
-        Stepness or growth rate of the sigmoid curve.
-    sigmoid_mid:
-        Midpoint of the sigmoid curve.
+    params : 1d array
+        Estimated centers, stds, alphas, heights, and sigmoid max, growth, midpoint.
+        The number of centers, stds, alphas, heights varies from one to three.
+    bounds : list of list
+        Lower and upper bounds for each parameters.
     """
 
     # Get sample indices
-    start = df_features.iloc[index]['sample_start'].astype(int)
-    end = df_features.iloc[index]['sample_end'].astype(int)
+    sample_start = df_features.iloc[index]['sample_start'].astype(int)
+    sample_end = df_features.iloc[index]['sample_end'].astype(int)
+
     sample_trough = df_features.iloc[index]['sample_trough'].astype(int)
+    sample_last_peak = df_features.iloc[index]['sample_last_peak'].astype(int)
     sample_next_peak = df_features.iloc[index]['sample_next_peak'].astype(int)
-    sample_last_peak = start + np.argmax(sig[start:sample_trough])
-    volt_next_peak = df_features.iloc[index]['volt_peak']
-
-    # Get signal and time
-    sig_cyc = sig[start:end+1]
-    cyc_len = len(sig_cyc)
-
-    # Estimate height
-    height0 = -(np.mean((sig[start], sig[end])) - \
-        df_features.iloc[index]['volt_trough'].astype(int))
-
-    height0 = height0 if height0 < 0 else 0.00001
-
-    # Estimate center
-    trough_loc = sample_trough - start
-    center0 = trough_loc / cyc_len
-
-    # Estimate standard deviation
     sample_decay = df_features.iloc[index]['sample_decay'].astype(int)
     sample_rise = df_features.iloc[index]['sample_rise'].astype(int)
 
-    sig_trough = sig[sample_decay:sample_rise+1]
-    std0 = len(sig_trough) / (2 * len(sig_cyc))
+    # Adjust samples to start at zero
+    sample_trough -= sample_start
+    sample_last_peak -= sample_start
+    sample_next_peak -= sample_start
+    sample_decay -= sample_start
+    sample_rise -= sample_start
 
-    if n_gaussians == 2:
+    # Get signal and time
+    sig_cyc = sig[sample_start:sample_end+1]
+    cyc_len = len(sig_cyc)
 
-        height1 = volt_next_peak - sig[end]
-        height1 = height1 if height1 > 0 else 0.00001
+    if sample_last_peak == 0 and sample_next_peak == len(sig_cyc):
+        # No conductive or K current
+        currents = ['Na']
+    elif sample_last_peak == 0:
+        # No conductive current
+        currents = ['Na', 'K']
+    elif sample_next_peak == len(sig_cyc):
+        # No K current
+        currents = ['Na', 'Conductive']
+    else:
+        # All 3 currents
+        currents = ['Na', 'Conductive', 'K']
 
-        next_peak_loc = sample_next_peak - start
-        center1 = next_peak_loc / cyc_len
+    centers = []
+    stds = []
+    heights = []
 
-        if np.argmax(sig[start:sample_rise+1]) == 0:
-            std1 = sig[sample_decay:].std() / (2 * cyc_len)
-        else:
-            std1 = np.mean((sig[:sample_decay+1].std(),
-                            sig[sample_rise:].std()))  / (2 * cyc_len)
+    # Define Na current estimates
+    height0 = -(np.mean((sig_cyc[0], sig_cyc[-1])) - \
+        df_features.iloc[index]['volt_trough'].astype(int))
 
-        # Organize params
-        centers = (center0, center1)
-        stds = (std0, std1)
-        alphas = (0, 0)
-        heights = (height0, height1)
+    center0 = sample_trough / cyc_len
 
-    elif n_gaussians == 3:
+    extrema_idx = np.argmin(sig_cyc)
+    extrema = np.min(sig_cyc)
 
-        if np.argmax(sig[start:sample_trough]) == 0:
-            height1 = 0.00001
-        else:
-            height1 = np.max(sig[start:sample_trough]) - sig[start]
+    fwhm = (np.argmin(np.abs(sig_cyc[extrema_idx:] - (extrema * .5))) + extrema_idx) - \
+            np.argmin(np.abs(sig_cyc[:extrema_idx] - (extrema * .5)))
 
-        height2 = volt_next_peak - sig_cyc[-1]
-        height2 = height2 if height2 > 0 else 0.00001
+    fwhm /= len(sig_cyc)
 
-        center1 = (sample_last_peak - start) / cyc_len
-        center2 = (sample_next_peak - start) / cyc_len
+    fwhm_div = (2 * np.sqrt(2 * np.log(2)))
+    std0 = fwhm / fwhm_div
 
-        std1 = sig[start:sample_decay+1].std() / (2 * cyc_len)
-        std2 = sig[sample_rise:].std() / (2 * cyc_len)
+    centers.append(center0.round(n_decimals))
+    stds.append(std0.round(n_decimals))
+    heights.append(height0.round(n_decimals))
 
-        # Organize params
-        centers = (center0, center1, center2)
-        stds = (std0, std1, std2)
-        alphas = (0, 0, 0)
-        heights = (height0, height1, height2)
+    if 'Conductive' in currents:
 
-    sigmoid_max = sig[end] - sig[start]
+        height1 = sig_cyc[sample_last_peak] - np.mean(sig_cyc)
+        center1 = sample_last_peak / cyc_len
+        std1 = len(sig_cyc[:sample_decay+1]) / (2 * fwhm_div * len(sig_cyc))
+
+        centers.append(center1.round(n_decimals))
+        stds.append(std1.round(n_decimals))
+        heights.append(height1.round(n_decimals))
+
+    if 'K' in currents:
+
+        height2 = sig_cyc[sample_next_peak] - np.mean(sig_cyc)
+        center2 = sample_next_peak / cyc_len
+        std2 = len(sig_cyc[sample_rise:]) / (2 * fwhm_div * len(sig_cyc))
+
+        centers.append(center2.round(n_decimals))
+        stds.append(std2.round(n_decimals))
+        heights.append(height2.round(n_decimals))
+
+    if 'Conductive' in currents and 'K' in currents and n_gaussians == 2:
+
+        center1 = np.mean((center1, center2))
+        std1 = std1 + std2
+        height1 = np.mean((height1, height2))
+
+        centers = centers[:-2]
+        centers.append(center1)
+        heights = heights[:-2]
+        heights.append(height1)
+        stds = stds[:-2]
+        stds.append(std1)
+
+    # Assume no skew
+    alphas = [0] * len(centers)
+
+    # Sigmoid baseline
+    sigmoid_max = (sig_cyc[-1] - sig_cyc[0]) * .5
     sigmoid_growth = .5
-    sigmoid_mid = .5
+    sigmoid_mid = np.argmin(sig_cyc) / cyc_len
 
     if sigmoid_max < 0:
         sigmoid_max *= -1
         sigmoid_growth *= -1
 
-    return centers, stds, alphas, heights, sigmoid_max, sigmoid_growth, sigmoid_mid
+    params = [*centers, *stds, *alphas, *heights, sigmoid_max, sigmoid_growth, sigmoid_mid]
+
+    return np.array(params)
+
+
+def _estimate_bounds(sig_cyc, centers, stds, heights):
+    """Estimate parameters lower and upper bounds."""
+
+    # Define bounds
+    lower_heights = [height * .5 if height > 0 else height * 1.5 for height in heights]
+    upper_heights = [height * 1.5 if height > 0 else height * .5 for height in heights]
+
+    lower_stds = [std * .5 for std in stds]
+    upper_stds = [std * 2 for std in stds]
+
+    lower_alphas = [-3 for std in stds]
+    upper_alphas = [3 for std in stds]
+
+    lower_centers = [center * .5 for center in centers]
+    upper_centers = [center * 1.5 for center in centers]
+
+    upper_max = np.max(sig_cyc) - np.min((sig_cyc[0], sig_cyc[-1]))
+
+    bounds = [
+        [*lower_centers, *lower_stds, *lower_alphas, *lower_heights, 0, -1, 0],
+        [*upper_centers, *upper_stds, *upper_alphas, *upper_heights, upper_max, 1, 1]
+    ]
+
+    return bounds
+
+
+def _fit_gaussians(xs, ys, guess, bounds, tol, maxfev, index):
+    """Fit gaussians with scipy's curve_fit."""
+
+    try:
+        # Fit gaussians
+        warnings.filterwarnings("ignore")
+        params, _ = curve_fit(sim_action_potential, xs, ys,
+                              p0=guess, bounds=bounds, ftol=tol, xtol=tol, maxfev=maxfev)
+    except:
+        # Raise warning for failed fits
+        warn_str = "Failed fit for index {idx}.".format(idx=index)
+        warnings.warn(warn_str, RuntimeWarning)
+        params = np.array([np.nan] * len(guess))
+
+    return params
 
 
 def sim_action_potential(times, *params):
@@ -274,7 +333,6 @@ def sim_action_potential(times, *params):
         gaussian_params = np.array(gaussian_params).reshape((-1, 3))
     elif len(gaussian_params) % 2 == 0:
         gaussian_params = np.array(gaussian_params).reshape((-1, 2))
-
 
     sig_cycle = _sim_ap_cycle(1, len(times), *gaussian_params)
 
