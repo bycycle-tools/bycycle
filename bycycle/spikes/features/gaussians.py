@@ -114,7 +114,7 @@ def _compute_gaussian_features(index, df_features=None, sig=None,
             params_gaus = np.vstack((params_gaus, [nan_arr, nan_arr]))
 
         elif n_gaussians == 2 and len(params_gaus) == 1:
-            # No conductive current
+            # No K or conductive current
             params_gaus = np.insert(params_gaus, 1, nan_arr, axis=0)
 
         params = np.array([*params_gaus.T.flatten(), *params_sigm])
@@ -176,7 +176,7 @@ def estimate_params(df_features, sig, fs, index, n_gaussians=3, n_decimals=2):
     sig_cyc = sig[sample_start:sample_end+1]
     cyc_len = len(sig_cyc)
 
-    if sample_last_peak == 0 and sample_next_peak == len(sig_cyc):
+    if sample_last_peak == 0 and sample_next_peak == len(sig_cyc) - 1:
         # No conductive or K current
         currents = ['Na']
     elif sample_last_peak == 0:
@@ -329,7 +329,9 @@ def sim_action_potential(times, *params):
 
     sigmoid_params = params[-3:]
 
-    if len(gaussian_params) % 3 == 0:
+    if len(gaussian_params) == 4:
+        pass
+    elif len(gaussian_params) % 3 == 0:
         gaussian_params = np.array(gaussian_params).reshape((-1, 3))
     elif len(gaussian_params) % 2 == 0:
         gaussian_params = np.array(gaussian_params).reshape((-1, 2))
@@ -403,43 +405,44 @@ def _sim_ap_cycle(n_seconds, fs, centers, stds, alphas, heights):
     # Determine number of parameters
     n_params = []
 
-    if isinstance(centers, (tuple, list, np.ndarray)):
-        n_params.append(len(centers))
-    else:
-        centers = repeat(centers)
-
-    if isinstance(stds, (tuple, list, np.ndarray)):
-        n_params.append(len(stds))
-    else:
-        stds = repeat(stds)
-
-    if isinstance(heights, (tuple, list, np.ndarray)):
-        n_params.append(len(heights))
-    else:
-        heights = repeat(heights)
+    params, n_params = _make_iterable([centers, stds, alphas, heights])
+    centers, stds, alphas, heights = params
 
     # Parameter checking
-    if len(n_params) == 0:
-        raise ValueError('Array-like expected for one of {centers, stds, heights}.')
-
-    for param_len in n_params[1:]:
-        if param_len != n_params[0]:
-            raise ValueError('Unequal lengths between two or more of {centers, stds, heights}')
-
-    # Initialize cycle array
-    n_samples = int(np.ceil(n_seconds * fs))
-
-    n_params = n_params[0]
-
-    cycle = np.zeros((n_params, n_samples))
+    if len(n_params) != 0:
+        for param_len in n_params[1:]:
+            if param_len != n_params[0]:
+                raise ValueError('Unequal lengths between two or more of {centers, stds, heights}')
 
     # Simulate
-    for idx, (center, std, alpha, height) in enumerate(zip(centers, stds, alphas, heights)):
-        cycle[idx] = _sim_skewed_gaussian_cycle(n_seconds, fs, center, std, alpha, height)
+    if len(n_params) > 0:
 
-    cycle = np.sum(cycle, axis=0)
+        n_samples = int(np.ceil(n_seconds * fs))
+        cycle = np.zeros((n_params[0], n_samples))
+
+        for idx, (center, std, alpha, height) in enumerate(zip(centers, stds, alphas, heights)):
+            cycle[idx] = _sim_skewed_gaussian_cycle(n_seconds, fs, center, std, alpha, height)
+
+        cycle = np.sum(cycle, axis=0)
+
+    else:
+
+        cycle = _sim_skewed_gaussian_cycle(n_seconds, fs, next(centers),
+                                           next(stds), next(alphas), next(heights))
 
     return cycle
+
+def _make_iterable(params):
+
+    n_params = []
+    for idx, param in enumerate(params):
+
+        if isinstance(param, (tuple, list, np.ndarray)):
+            n_params.append(len(param))
+        else:
+            params[idx] = repeat(param)
+
+    return params, n_params
 
 
 def _sim_sigmoid(xs, maximum, growth, mid):
