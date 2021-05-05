@@ -123,7 +123,7 @@ def _compute_gaussian_features(index, df_features=None, sig=None,
         r_squared = np.nan
     else:
         # Calculate r-squared
-        residuals = sig_cyc - sim_action_potential(times_cyc, *params)
+        residuals = sig_cyc - sim_action_potential(times_cyc, *params[~np.isnan(params)])
         ss_res = np.sum(residuals**2)
         ss_tot = np.sum((sig_cyc - np.mean(sig_cyc))**2)
 
