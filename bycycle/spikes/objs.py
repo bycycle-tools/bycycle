@@ -166,14 +166,14 @@ class Spikes:
             self.params = params
             self.r_squared = r_squared
 
-            if len(params[0][:-3]) % 2 == 0:
-                param_labels = ['center0', 'center1', 'std0', 'std1', 'alpha0', 'alpha1',
-                                'height0', 'height1', 'sigmoid_max', 'sigmoid_growth',
-                                'sigmoid_mid']
-            elif len(params[0][:-3]) % 3 == 0:
+            if len(params[0][:-3]) % 3 == 0:
                 param_labels = ['center0', 'center1', 'center2', 'std0', 'std1', 'std2', 'alpha0',
                                 'alpha1', 'alpha2', 'height0', 'height1', 'height2', 'sigmoid_max',
                                 'sigmoid_growth', 'sigmoid_mid']
+            elif len(params[0][:-3]) % 2 == 0:
+                param_labels = ['center0', 'center1', 'std0', 'std1', 'alpha0', 'alpha1',
+                                'height0', 'height1', 'sigmoid_max', 'sigmoid_growth',
+                                'sigmoid_mid']
 
             param_dict = {k: v for k, v in zip(param_labels, self.params.transpose())}
             df_gaussian_features = pd.DataFrame.from_dict(param_dict)

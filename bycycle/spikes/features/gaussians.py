@@ -119,6 +119,11 @@ def _compute_gaussian_features(index, df_features=None, sig=None,
 
         params = np.array([*params_gaus.T.flatten(), *params_sigm])
 
+    else:
+
+        params = np.zeros((n_gaussians * 4) + 3)
+        params[:] = np.nan
+
     if np.isnan(params[0]):
         r_squared = np.nan
     else:
@@ -179,6 +184,7 @@ def estimate_params(df_features, sig, fs, index, n_gaussians=3, n_decimals=2):
     if sample_last_peak == 0 and sample_next_peak == len(sig_cyc) - 1:
         # No conductive or K current
         currents = ['Na']
+        sig_cyc -= np.max(sig_cyc)
     elif sample_last_peak == 0:
         # No conductive current
         currents = ['Na', 'K']
@@ -194,8 +200,7 @@ def estimate_params(df_features, sig, fs, index, n_gaussians=3, n_decimals=2):
     heights = []
 
     # Define Na current estimates
-    height0 = -(np.mean((sig_cyc[0], sig_cyc[-1])) - \
-        df_features.iloc[index]['volt_trough'].astype(int))
+    height0 =  df_features.iloc[index]['volt_trough'] - np.mean((sig_cyc[0], sig_cyc[-1]))
 
     center0 = sample_trough / cyc_len
 
@@ -272,7 +277,7 @@ def _estimate_bounds(sig_cyc, centers, stds, heights):
     upper_heights = [height * 1.5 if height > 0 else height * .5 for height in heights]
 
     lower_stds = [std * .5 for std in stds]
-    upper_stds = [std * 2 for std in stds]
+    upper_stds = [std * 1.5 for std in stds]
 
     lower_alphas = [-3 for std in stds]
     upper_alphas = [3 for std in stds]
@@ -296,6 +301,7 @@ def _fit_gaussians(xs, ys, guess, bounds, tol, maxfev, index):
     try:
         # Fit gaussians
         warnings.filterwarnings("ignore")
+
         params, _ = curve_fit(sim_action_potential, xs, ys,
                               p0=guess, bounds=bounds, ftol=tol, xtol=tol, maxfev=maxfev)
     except:
