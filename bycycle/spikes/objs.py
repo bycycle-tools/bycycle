@@ -249,12 +249,17 @@ class Spikes:
                 self.spikes_gen.append(np.nan)
                 continue
 
-            times_spike = np.arange(0, len(self.spikes[idx][~np.isnan(self.spikes[idx])])/self.fs,
-                                    1/self.fs)
+            times_spike = np.arange(0, len(self._spikes[idx])/self.fs, 1/self.fs)
 
             param = param[~np.isnan(param)]
 
-            self.spikes_gen.append(sim_action_potential(times_spike, *param))
+            spike_gen = sim_action_potential(times_spike, *param)
+
+            # Translate up y-axis for single gaussian fits
+            if len(param) == 7:
+                spike_gen += self._spikes[idx].max()
+
+            self.spikes_gen.append(spike_gen)
 
 
     @savefig

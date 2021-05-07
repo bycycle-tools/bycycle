@@ -73,6 +73,11 @@ def _compute_gaussian_features(index, df_features=None, sig=None,
 
     # Initial parameter estimation
     _params = estimate_params(df_features, sig, fs, index, n_gaussians)
+
+    # Set max to zero for single gaussians
+    if len(_params) == 7:
+        sig_cyc -= sig_cyc.max()
+
     _bounds = _estimate_bounds(sig_cyc, *_params[:-3].reshape(4, -1)[[0, 1, 3]])
 
     # First-pass fit
@@ -168,7 +173,7 @@ def estimate_params(df_features, sig, fs, index, n_gaussians=3, n_decimals=2):
     elif sample_last_peak == 0:
         # No conductive current
         currents = ['Na', 'K']
-    elif sample_next_peak == len(sig_cyc):
+    elif sample_next_peak == len(sig_cyc) - 1:
         # No K current
         currents = ['Na', 'Conductive']
     else:
@@ -180,7 +185,7 @@ def estimate_params(df_features, sig, fs, index, n_gaussians=3, n_decimals=2):
     heights = []
 
     # Define Na current estimates
-    height0 =  df_features.iloc[index]['volt_trough'] - np.mean((sig_cyc[0], sig_cyc[-1]))
+    height0 =  sig_cyc[sample_trough] - np.mean((sig_cyc[0], sig_cyc[-1]))
 
     center0 = sample_trough / cyc_len
 
@@ -281,7 +286,6 @@ def _fit_gaussians(xs, ys, guess, bounds, tol, maxfev, index):
     try:
         # Fit gaussians
         warnings.filterwarnings("ignore")
-
         params, _ = curve_fit(sim_action_potential, xs, ys,
                               p0=guess, bounds=bounds, ftol=tol, xtol=tol, maxfev=maxfev)
     except:
