@@ -42,14 +42,9 @@ def compute_gaussian_features(df_features, sig, fs, n_gaussians=2,
     -------
     params : dict
         Fit parameter values.
-    r_squared : 1d array
-        R-squared values from fits.
     """
 
     n_jobs = cpu_count() if n_jobs == -1 else n_jobs
-
-    params = np.zeros((len(df_features), 10))
-    r_squared = np.zeros(len(df_features))
 
     indices = [*range(len(df_features))]
 
@@ -61,13 +56,9 @@ def compute_gaussian_features(df_features, sig, fs, n_gaussians=2,
                                     n_gaussians=n_gaussians),
                             indices)
 
-        results = list(progress_bar(mapping, progress, len(df_features)))
+        params = list(progress_bar(mapping, progress, len(df_features)))
 
-    # Unpack results
-    params = np.array([result[0] for result in results])
-    r_squared = np.array([result[1] for result in results])
-
-    return params, r_squared
+    return np.array(params)
 
 
 def _compute_gaussian_features(index, df_features=None, sig=None,
@@ -120,21 +111,10 @@ def _compute_gaussian_features(index, df_features=None, sig=None,
         params = np.array([*params_gaus.T.flatten(), *params_sigm])
 
     else:
-
         params = np.zeros((n_gaussians * 4) + 3)
         params[:] = np.nan
 
-    if np.isnan(params[0]):
-        r_squared = np.nan
-    else:
-        # Calculate r-squared
-        residuals = sig_cyc - sim_action_potential(times_cyc, *params[~np.isnan(params)])
-        ss_res = np.sum(residuals**2)
-        ss_tot = np.sum((sig_cyc - np.mean(sig_cyc))**2)
-
-        r_squared = 1 - (ss_res / ss_tot)
-
-    return params, r_squared
+    return params
 
 
 def estimate_params(df_features, sig, fs, index, n_gaussians=3, n_decimals=2):

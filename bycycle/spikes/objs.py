@@ -91,7 +91,7 @@ class Spikes:
     def __getitem__(self, index):
         """Allow for indexing into the object."""
 
-        return self.spikes[index][~np.isnan(self.spikes[index])]
+        return self._spikes[index]
 
 
     def fit(self, sig, fs, f_range, std=1.5, prune=False,
@@ -145,6 +145,7 @@ class Spikes:
         spikes = split_signal(df_features, self.sig)
 
         self.spikes = spikes
+        self._spikes = [sp[~np.isnan(sp)] for sp in self.spikes]
 
         # Compute shape features
         df_shape_features = compute_shape_features(df_features, self.sig)
@@ -153,18 +154,15 @@ class Spikes:
 
         # Compute gaussian features
         if n_gaussians != 0 and self.center_extrema == 'trough':
-            params, r_squared = compute_gaussian_features(self.df_features, self.sig, self.fs,
-                                                          n_gaussians, maxfev, tol, n_jobs,
-                                                          progress)
+            params = compute_gaussian_features(self.df_features, self.sig, self.fs,
+                                               n_gaussians, maxfev, tol, n_jobs, progress)
         elif n_gaussians != 0:
-            params, r_squared = compute_gaussian_features(self.df_features, -self.sig, self.fs,
-                                                          n_gaussians, maxfev, tol, n_jobs,
-                                                          progress)
+            params = compute_gaussian_features(self.df_features, -self.sig, self.fs,
+                                               n_gaussians, maxfev, tol, n_jobs, progress)
 
         if n_gaussians != 0:
 
             self.params = params
-            self.r_squared = r_squared
 
             if len(params[0][:-3]) % 3 == 0:
                 param_labels = ['center0', 'center1', 'center2', 'std0', 'std1', 'std2', 'alpha0',
@@ -177,6 +175,26 @@ class Spikes:
 
             param_dict = {k: v for k, v in zip(param_labels, self.params.transpose())}
             df_gaussian_features = pd.DataFrame.from_dict(param_dict)
+
+            # Calculate r-squared of the fits
+            self.generate_spikes()
+
+            r_squared = np.zeros(len(self.spikes))
+
+            for idx, (sig_cyc, sig_cyc_est) in enumerate(zip(self._spikes, self.spikes_gen)):
+
+                if np.any(np.isnan(sig_cyc_est)):
+                    r_squared[idx] = np.nan
+                else:
+                    # Calculate r-squared
+                    residuals = sig_cyc - sig_cyc_est
+                    ss_res = np.sum(residuals**2)
+                    ss_tot = np.sum((sig_cyc - np.mean(sig_cyc))**2)
+
+                    r_squared[idx] = 1 - (ss_res / ss_tot)
+
+            self.r_squared = r_squared
+
             df_gaussian_features['r_squared'] = r_squared
 
             # Merge dataframes
@@ -233,6 +251,9 @@ class Spikes:
 
             times_spike = np.arange(0, len(self.spikes[idx][~np.isnan(self.spikes[idx])])/self.fs,
                                     1/self.fs)
+
+            param = param[~np.isnan(param)]
+
             self.spikes_gen.append(sim_action_potential(times_spike, *param))
 
 
