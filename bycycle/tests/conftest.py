@@ -13,6 +13,8 @@ from neurodsp.utils.sim import set_random_seed
 from bycycle.features import compute_shape_features, compute_burst_features, compute_features
 from bycycle.tests.settings import (N_SECONDS, FS, FREQ, F_RANGE,
                                     BASE_TEST_FILE_PATH, TEST_PLOTS_PATH)
+
+from bycycle import Spikes
 from bycycle.spikes.features.gaussians import _sim_ap_cycle
 from bycycle.spikes.cyclepoints import compute_spike_cyclepoints
 
@@ -127,7 +129,7 @@ def sim_spikes():
     sig_prune = np.zeros_like(sig)
 
     for start in starts:
-        sig_prune[start:start+100] = spike_overlap
+        sig_prune[start:start+100] = spike_prune
 
     # Simulate Na current
     spike_na = _sim_ap_cycle(1, 100, .5, .1, 0, -20)
@@ -160,18 +162,31 @@ def sim_spikes():
         sig_na_cond [start:start+100] = spike_na_cond
 
     yield {'sig': sig, 'sig_overlap': sig_overlap, 'sig_prune': sig_prune, 'sig_na': sig_na,
-           'sig_na_k': sig_na_k, 'sig_na_cond': sig_na_cond, 'fs': 20000, 'spike':spike,
-           'locs':(starts, ends)}
+           'sig_na_k': sig_na_k, 'sig_na_cond': sig_na_cond, 'fs': 20000, 'f_range': (500, 3000),
+           'spike':spike, 'locs':(starts, ends)}
 
 
 @pytest.fixture(scope='module')
 def sim_spikes_df(sim_spikes):
 
     sig = sim_spikes['sig']
-
-    fs = 20000
-    f_range = (500, 3000)
+    fs = sim_spikes['fs']
+    f_range = sim_spikes['f_range']
 
     df_samples = compute_spike_cyclepoints(sig, fs, f_range, std=2)
 
     yield {'df_samples': df_samples}
+
+
+@pytest.fixture(scope='module')
+def sim_spikes_fit(sim_spikes):
+
+    sig = sim_spikes['sig']
+    fs = sim_spikes['fs']
+    f_range = sim_spikes['f_range']
+
+    spikes = Spikes()
+
+    spikes.fit(sig, fs, f_range, n_gaussians=3, tol=1e-3)
+
+    return {'spikes': spikes}

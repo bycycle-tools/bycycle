@@ -63,7 +63,7 @@ def plot_spikes(df_features, sig, fs, spikes=None, index=None, xlim=None, ax=Non
             plot_time_series(np.array([times[sample]]), np.array([sig[sample]]),
                              colors=colors[idx], labels=labels[idx], ls='', marker='o', ax=ax)
 
-    # Plot as tack spikes in a plot
+    # Plot as stack of spikes
     elif index is None and spikes is not None:
 
         times = np.arange(0, len(spikes[0])/fs, 1/fs)

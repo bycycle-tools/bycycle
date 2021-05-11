@@ -136,7 +136,6 @@ class Spikes:
         else:
             df_features = compute_spike_cyclepoints(-self.sig, self.fs, self.f_range, self.std)
 
-
         # Isolate spikes
         spikes = split_signal(df_features, self.sig)
 
@@ -168,6 +167,8 @@ class Spikes:
                 param_labels = ['center0', 'center1', 'std0', 'std1', 'alpha0', 'alpha1',
                                 'height0', 'height1', 'sigmoid_max', 'sigmoid_growth',
                                 'sigmoid_mid']
+
+            self._param_labels = param_labels
 
             param_dict = {k: v for k, v in zip(param_labels, self.params.transpose())}
             df_gaussian_features = pd.DataFrame.from_dict(param_dict)
@@ -317,13 +318,15 @@ class Spikes:
         ax10 = fig.add_subplot(gs[5, :])
 
         # Labels
-        titles = ['center0', 'center1', 'std0', 'std1', 'alpha0',
-                'alpha1', 'height0', 'height1', 'shift0', 'shift1']
+        titles = self._param_labels
 
         xlabels = ['mv (normalized)', 'mv (normalized)',
-                'Skew Coefficient', 'mV', 'mV']
+                   'Skew Coefficient', 'mV', 'mV']
 
-        xlabels = [l for lab in xlabels for l in [lab, lab]]
+        if len(titles) == 15:
+            xlabels = [l for lab in xlabels for l in [lab, lab, lab]]
+        else:
+            xlabels = [l for lab in xlabels for l in [lab, lab]]
 
         # Plot
         axes = [ax0, ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
@@ -338,5 +341,3 @@ class Spikes:
 
         # Increase spacing
         fig.subplots_adjust(hspace=.5)
-
-        plt.show()
