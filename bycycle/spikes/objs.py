@@ -94,8 +94,8 @@ class Spikes:
         return self._spikes[index]
 
 
-    def fit(self, sig, fs, f_range, std=1.5, prune=False,
-            n_gaussians=0, maxfev=2000, tol=1.49e-6, n_jobs=-1, progress=None):
+    def fit(self, sig, fs, f_range, std=1.5, n_gaussians=0,
+            maxfev=2000, tol=1.49e-6, n_jobs=-1, progress=None):
         """Compute features for each spike.
 
         Parameters
@@ -108,8 +108,6 @@ class Spikes:
             Frequency range for narrowband signal of interest (Hz).
         std : float or int, optional, default: 1.5
             The standard deviation used to identify spikes.
-        prune : bool, optional, default: False
-            Remove spikes with high variablility in non-trough peaks.
         n_gaussians : {0, 2, 3}
             Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
         maxfev : int, optional, default: 2000
@@ -134,11 +132,9 @@ class Spikes:
 
         # Cyclepoints
         if self.center_extrema == 'trough':
-            df_features = compute_spike_cyclepoints(self.sig, self.fs, self.f_range,
-                                                    self.std, prune)
+            df_features = compute_spike_cyclepoints(self.sig, self.fs, self.f_range, self.std)
         else:
-            df_features = compute_spike_cyclepoints(-self.sig, self.fs, self.f_range,
-                                                    self.std, prune)
+            df_features = compute_spike_cyclepoints(-self.sig, self.fs, self.f_range, self.std)
 
 
         # Isolate spikes

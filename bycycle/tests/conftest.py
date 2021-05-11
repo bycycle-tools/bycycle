@@ -13,6 +13,8 @@ from neurodsp.utils.sim import set_random_seed
 from bycycle.features import compute_shape_features, compute_burst_features, compute_features
 from bycycle.tests.settings import (N_SECONDS, FS, FREQ, F_RANGE,
                                     BASE_TEST_FILE_PATH, TEST_PLOTS_PATH)
+from bycycle.spikes.features.gaussians import _sim_ap_cycle
+from bycycle.spikes.cyclepoints import compute_spike_cyclepoints
 
 ###################################################################################################
 ###################################################################################################
@@ -84,67 +86,92 @@ def sim_stationary():
 
 
 @pytest.fixture(scope='module')
-def sim_spike():
+def sim_spikes():
 
-    cycle_params = {'centers': (.25, .5), 'stds':(.25, .2),
-                'alphas':(8, .2), 'heights': (15, 2.5)}
+    # Simulate 5, 3-gaussian spikes
+    cycle_params = {'centers': (.4, .5, .6), 'stds': (.1, .1, .1),
+                    'alphas': (-1, 0, 1), 'heights': (10, -30, 20)}
 
-    spike = _sim_ap_cycle(1, 100, **cycle_params, max_extrema='trough')
+    spike = _sim_ap_cycle(1, 100, **cycle_params)
 
-    sig = np.zeros(1000)
+    sig = np.zeros(1100)
 
-    for start in np.arange(200, 1000, 200):
+    starts = np.arange(100, 1100, 200)
+    ends = starts + 100
+
+    for start in starts:
         sig[start:start+100] = spike
 
-    yield sig
+    # Pad edges
+    pad = 500
+    sig = np.pad(sig, pad)
+    starts += pad
+
+    # Simulate overlapping spikes
+    cycle_params = {'centers': (.25, .5, .75), 'stds': (.05, .05, .05),
+                    'alphas': (0, 0, 0), 'heights': (-14, -30, -14)}
+
+    spike_overlap = _sim_ap_cycle(1, 100, **cycle_params)
+
+    sig_overlap = np.zeros_like(sig)
+
+    for start in starts:
+        sig_overlap[start:start+100] = spike_overlap
+
+    # Simulate prunable spikes
+    cycle_params = {'centers': (.25, .5, .75), 'stds': (.05, .05, .05),
+                    'alphas': (0, 0, 0), 'heights': (-30, -20, -30)}
+
+    spike_prune = _sim_ap_cycle(1, 100, **cycle_params)
+
+    sig_prune = np.zeros_like(sig)
+
+    for start in starts:
+        sig_prune[start:start+100] = spike_overlap
+
+    # Simulate Na current
+    spike_na = _sim_ap_cycle(1, 100, .5, .1, 0, -20)
+
+    sig_na = np.zeros_like(sig)
+
+    for start in starts:
+        sig_na[start:start+100] = spike_na
+
+    # Simulate Na+K current
+    cycle_params = {'centers': (.4, .6), 'stds': (.1, .1),
+                    'alphas': (0, .2), 'heights': (-30, 15)}
+
+    spike_na_k = _sim_ap_cycle(1, 100, **cycle_params)
+
+    sig_na_k = np.zeros_like(sig)
+
+    for start in starts:
+        sig_na_k[start:start+100] = spike_na_k
+
+    # Simulate Na+Conductive current
+    cycle_params = {'centers': (.4, .5), 'stds': (.1, .1),
+                    'alphas': (0, 0), 'heights': (15, -30)}
+
+    spike_na_cond = _sim_ap_cycle(1, 100, **cycle_params)
+
+    sig_na_cond = np.zeros_like(sig)
+
+    for start in starts:
+        sig_na_cond [start:start+100] = spike_na_cond
+
+    yield {'sig': sig, 'sig_overlap': sig_overlap, 'sig_prune': sig_prune, 'sig_na': sig_na,
+           'sig_na_k': sig_na_k, 'sig_na_cond': sig_na_cond, 'fs': 20000, 'spike':spike,
+           'locs':(starts, ends)}
 
 
-###################################################################################################
-###################################################################################################
+@pytest.fixture(scope='module')
+def sim_spikes_df(sim_spikes):
 
+    sig = sim_spikes['sig']
 
-def _sim_gaussian_cycle(n_seconds, fs, std, center=.5, height=1.):
+    fs = 20000
+    f_range = (500, 3000)
 
-    xs = np.linspace(0, 1, int(np.ceil(n_seconds * fs)))
-    cycle = height * np.exp(-(xs-center)**2 / (2*std**2))
+    df_samples = compute_spike_cyclepoints(sig, fs, f_range, std=2)
 
-    return cycle
-
-
-def _sim_skewed_gaussian_cycle(n_seconds, fs, center, std, alpha, height=1):
-
-    from scipy.stats import norm
-
-    n_samples = int(np.ceil(n_seconds * fs))
-
-    # Gaussian distribution
-    cycle = _sim_gaussian_cycle(n_seconds, fs, std/2, center, height)
-
-    # Skewed cumulative distribution function.
-    #   Assumes time are centered around 0. Adjust to center around 0.5.
-    times = np.linspace(-1, 1, n_samples)
-    cdf = norm.cdf(alpha * ((times - ((center * 2) -1 )) / std))
-
-    # Skew the gaussian
-    cycle = cycle * cdf
-
-    # Rescale height
-    cycle = (cycle / np.max(cycle)) * height
-
-    return cycle
-
-
-def _sim_ap_cycle(n_seconds, fs, centers, stds, alphas, heights, max_extrema='peak'):
-
-    polar = _sim_skewed_gaussian_cycle(n_seconds, fs, centers[0], stds[0],
-                                      alphas[0], height=heights[0])
-
-    repolar = _sim_skewed_gaussian_cycle(n_seconds, fs, centers[1], stds[1],
-                                        alphas[1], height=heights[1])
-
-    cycle = polar - repolar
-
-    if max_extrema == 'trough':
-        cycle = -cycle
-
-    return cycle
+    yield {'df_samples': df_samples}
