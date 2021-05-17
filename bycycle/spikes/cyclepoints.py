@@ -32,7 +32,6 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         - sample_trough : spike minima location.
         - sample_rise : spike zero-crossing rise location.
         - sample_next_peak : spike maxima location.
-        - sample_next_decay : spike zero-crossing decay location, after the peak.
         - sample_end : spike end location.
 
     """
@@ -91,11 +90,11 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         ends[idx] =  next_troughs[idx] if post_norm_diff > 0.5 and post_criteria_b \
             else next_peaks[idx]
 
-    decays, rises, next_decays = _compute_spike_zerox(-sig, starts, troughs, next_peaks, ends)
+    decays, rises = _compute_spike_zerox(-sig, last_peaks, troughs, next_peaks)
 
     # Oraganize points into a dataframe
     df_samples = create_cyclepoints_df(sig, starts, decays, troughs, rises,
-                                       last_peaks, next_peaks, next_decays, ends)
+                                       last_peaks, next_peaks, ends)
 
     # Drop overlapping spikes, favoring larger voltage
     drop_spikes = np.ones(len(df_samples), dtype=bool)
@@ -122,20 +121,17 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
     return df_samples
 
 
-def _compute_spike_zerox(sig, starts, troughs, next_peaks, ends):
+def _compute_spike_zerox(sig, last_peaks, troughs, next_peaks):
     """Find spike zero-crossings"""
 
     decays = np.zeros_like(troughs)
     rises = np.zeros_like(troughs)
-    next_decays = np.zeros_like(troughs)
 
     for idx in range(len(troughs)):
 
-        decay, rise = find_zerox(-sig, [troughs[idx], ends[idx]],
-                                 [starts[idx], next_peaks[idx]])
+        decay, rise = find_zerox(-sig, [troughs[idx], [last_peaks[idx], next_peaks[idx]])
 
         decays[idx] = decay[0]
         rises[idx] = rise[0]
-        next_decays[idx] = decay[1]
 
-    return decays, rises, next_decays
+    return decays, rises

@@ -19,9 +19,8 @@ def test_compute_shape_features(sim_spikes, sim_spikes_df):
     df_shape = compute_shape_features(df_samples, sig)
 
     columns = [
-        'period', 'time_trough', 'time_peak', 'volt_trough', 'volt_last_peak', 'volt_next_peak',
-        'volt_last_rise', 'volt_decay', 'volt_rise', 'volt_next_decay', 'time_decay', 'time_rise',
-        'time_next_decay', 'time_decay_sym', 'time_rise_sym', 'time_next_decay_sym'
+        'period', 'time_trough', 'volt_trough', 'volt_last_peak', 'volt_next_peak',
+        'volt_decay', 'volt_rise', 'time_decay', 'time_rise', 'time_decay_sym', 'time_rise_sym',
     ]
 
     for column in columns:
@@ -34,8 +33,7 @@ def test_compute_symmetry(sim_spikes_df):
 
     sym_features = compute_symmetry(df_samples)
 
-    columns = ['time_decay', 'time_rise', 'time_next_decay',
-               'time_decay_sym', 'time_rise_sym', 'time_next_decay_sym']
+    columns = ['time_decay', 'time_rise', 'time_decay_sym', 'time_rise_sym']
 
     for column in columns:
 
@@ -54,11 +52,9 @@ def test_compute_voltages(sim_spikes, sim_spikes_df):
 
     volts = compute_voltages(df_samples, sig)
 
-    volt_trough, volt_last_peak, volt_next_peak, volt_last_rise, \
-            volt_decay, volt_rise, volt_next_decay = volts
+    volt_trough, volt_last_peak, volt_next_peak, volt_decay, volt_rise = volts
 
-    non_trough_volts = [volt_last_peak, volt_next_peak, volt_last_rise,
-                        volt_decay, volt_rise, volt_next_decay]
+    non_trough_volts = [volt_last_peak, volt_next_peak, volt_decay, volt_rise]
 
     for volt in volts:
         assert isinstance(volt, np.ndarray)
@@ -71,12 +67,11 @@ def test_compute_durations(sim_spikes_df):
 
     df_samples = sim_spikes_df['df_samples']
 
-    period, time_trough, time_peak = compute_durations(df_samples)
+    period, time_trough = compute_durations(df_samples)
 
     assert period.dtype == 'int64'
     assert time_trough.dtype == 'int64'
-    assert time_peak.dtype == 'int64'
 
+    print(period)
+    print(time_trough)
     assert (period > time_trough).all()
-    assert (period > time_peak).all()
-    assert (period >= time_trough + time_peak).all()

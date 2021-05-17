@@ -1,3 +1,4 @@
+
 """Dataframe and spike segmentation functions."""
 
 import numpy as np
@@ -10,8 +11,7 @@ from bycycle.utils.dataframes import get_extrema_df
 ###################################################################################################
 
 
-def create_cyclepoints_df(sig, starts, decays, troughs, rises,
-                          last_peaks, next_peaks, next_decays, ends):
+def create_cyclepoints_df(sig, starts, decays, troughs, rises, last_peaks, next_peaks, ends):
     """Create a dataframe from arrays.
 
     Parameters
@@ -28,8 +28,6 @@ def create_cyclepoints_df(sig, starts, decays, troughs, rises,
         Spike zero-crossing rise location.
     next_peak : 1d array
         Spike maxima location.
-    next_decay : 1d array
-        Spike zero-crossing decay location, after the peak.
     end : 1d array
         Spike end location.
 
@@ -46,7 +44,6 @@ def create_cyclepoints_df(sig, starts, decays, troughs, rises,
     df_samples['sample_rise'] = rises
     df_samples['sample_last_peak'] = last_peaks
     df_samples['sample_next_peak'] = next_peaks
-    df_samples['sample_next_decay'] = next_decays
     df_samples['sample_end'] = ends
 
     return df_samples

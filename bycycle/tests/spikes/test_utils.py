@@ -22,11 +22,11 @@ def test_create_cyclepoints_df(sim_spikes):
     next_decays = ends
 
     df_samples = create_cyclepoints_df(sig, starts, decays, troughs, rises,
-                                       last_peaks, next_peaks, next_decays, ends)
+                                       last_peaks, next_peaks, ends)
 
     keys = [
         'sample_start', 'sample_decay', 'sample_trough', 'sample_rise',
-        'sample_last_peak', 'sample_next_peak', 'sample_next_decay', 'sample_end'
+        'sample_last_peak', 'sample_next_peak', 'sample_end'
     ]
 
     assert isinstance(df_samples, pd.DataFrame)

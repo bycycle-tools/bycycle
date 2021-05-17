@@ -27,71 +27,55 @@ def compute_shape_features(df_samples, sig, center='trough'):
         - time_rise : time between trough and next peak
         - time_decay_sym : fraction of cycle in the first decay period
         - time_rise_sym : fraction of cycle in the rise period
-        - time_next_decay_sym : fraction of the cycle in the second decay period
         - volt_trough : Voltage at the trough.
         - volt_last_peak : Voltage at the last peak.
         - volt_next_peak : Voltage at the next peak.
-        - volt_last_rise : Voltage at the start of the spike.
         - volt_decay : Voltage at the decay before the trough.
         - volt_rise : Voltage at the rise after the trough.
-        - volt_next_decay : Voltage at the decay after the peak.
         - period : The period of each spike.
         - time_trough : Time between zero-crossings adjacent to trough.
-        - time_peak : Time between zero-crossings adjacent to peak.
 
     """
 
-    # Compute durations of period, peaks, and troughs
-    period, time_trough, time_peak = compute_durations(df_samples)
+    # Compute durations
+    period, time_trough = compute_durations(df_samples)
 
     # Compute extrema and zero-crossing voltage
     volts = compute_voltages(df_samples, sig)
 
-    volt_trough, volt_last_peak, volt_next_peak, volt_last_rise, \
-        volt_decay, volt_rise, volt_next_decay = volts
+    volt_trough, volt_last_peak, volt_next_peak, volt_decay, volt_rise,  = volts
 
     # Compute symmetry characteristics
-    sym_features = compute_symmetry(df_samples, period, time_trough, time_peak)
+    sym_features = compute_symmetry(df_samples)
 
     # Organize shape features into a dataframe
     shape_features = {}
     shape_features['period'] = period
     shape_features['time_trough'] = time_trough
-    shape_features['time_peak'] = time_peak
 
     shape_features['volt_trough'] = volt_trough
     shape_features['volt_last_peak'] = volt_next_peak
     shape_features['volt_next_peak'] = volt_last_peak
-    shape_features['volt_last_rise'] = volt_last_rise
     shape_features['volt_decay'] = volt_decay
     shape_features['volt_rise'] = volt_rise
-    shape_features['volt_next_decay'] = volt_next_decay
 
     shape_features['time_decay'] = sym_features['time_decay']
     shape_features['time_rise'] = sym_features['time_rise']
-    shape_features['time_next_decay'] = sym_features['time_next_decay']
     shape_features['time_decay_sym'] = sym_features['time_decay_sym']
     shape_features['time_rise_sym'] = sym_features['time_rise_sym']
-    shape_features['time_next_decay_sym'] = sym_features['time_next_decay_sym']
 
     df_shape_features = pd.DataFrame.from_dict(shape_features)
 
     return df_shape_features
 
 
-def compute_symmetry(df_samples, period=None, time_trough=None, time_peak=None):
+def compute_symmetry(df_samples):
     """Compute symmetry characteristics.
 
     Parameters
     ---------
     df_samples : pandas.DataFrame
         Contains cycle points locations for each spike.
-    period : 1d array, optional, default: None
-        The period of each spike.
-    time_trough : 1d array, optional, default: None
-        Time between zero-crossings adjacent to trough.
-    time_peak : 1d array, optional, default: None
-        Time between zero-crossings adjacent to peak.
 
     Returns
     -------
@@ -100,32 +84,24 @@ def compute_symmetry(df_samples, period=None, time_trough=None, time_peak=None):
 
         - time_decay : time between trough and first peak
         - time_rise : time between peak and trough
-        - time_decay_sym : fraction of cycle in the first decay period
+        - time_decay_sym : fraction of cycle in the decay period
         - time_rise_sym : fraction of cycle in the rise period
-        - time_next_decay_sym : fraction of the cycle in the second decay period
 
     """
 
     # Determine rise and decay characteristics
     sym_features = {}
 
-    if period is None or time_peak is None or time_trough is None:
-        period, time_trough, time_peak = compute_durations(df_samples)
-
-    time_decay =  df_samples['sample_trough'] - df_samples['sample_start']
+    time_decay =  df_samples['sample_trough'] - df_samples['sample_last_peak']
     time_rise = df_samples['sample_next_peak'] - df_samples['sample_trough']
-    time_next_decay = df_samples['sample_next_decay'] - df_samples['sample_next_peak']
 
-    time_decay_sym = time_decay.values / period
-    time_rise_sym = (time_peak - time_trough) / period
-    time_next_decay_sym = (period - time_peak) / period
+    time_rise_sym = time_rise / (time_rise + time_decay)
+    time_decay_sym = 1 - time_rise_sym
 
     sym_features['time_decay'] = time_decay.values.astype('int')
     sym_features['time_rise'] = time_rise.values.astype('int')
-    sym_features['time_next_decay'] = time_next_decay.values.astype('int')
     sym_features['time_decay_sym'] = time_decay_sym
     sym_features['time_rise_sym'] = time_rise_sym
-    sym_features['time_next_decay_sym'] = time_next_decay_sym
 
     return sym_features
 
@@ -148,30 +124,23 @@ def compute_voltages(df_samples, sig):
         Voltage at the last peak.
     volt_next_peak : 1d array
         Voltage at the next peak.
-    volt_last_rise : 1d array
-        Voltage at the start of the spike.
     volt_decay : 1d array
         Voltage at the decay before the trough.
     volt_rise : 1d array
         Voltage at the rise after the trough.
-    volt_next_decay : 1d array
-        Voltage at the decay after the peak.
     """
 
     volt_trough = sig[df_samples['sample_trough'].values]
     volt_last_peak = sig[df_samples['sample_last_peak'].values]
     volt_next_peak = sig[df_samples['sample_next_peak'].values]
-    volt_last_rise = sig[df_samples['sample_start'].values]
     volt_decay = sig[df_samples['sample_decay'].values]
     volt_rise = sig[df_samples['sample_rise'].values]
-    volt_next_decay = sig[df_samples['sample_next_decay'].values]
 
-    return (volt_trough, volt_last_peak, volt_next_peak, volt_last_rise,
-            volt_decay, volt_rise, volt_next_decay)
+    return volt_trough, volt_last_peak, volt_next_peak, volt_decay, volt_rise
 
 
 def compute_durations(df_samples):
-    """Compute the time durations of periods, peaks, and troughs.
+    """Compute the time durations for spikes.
 
     Parameters
     ---------
@@ -188,12 +157,10 @@ def compute_durations(df_samples):
         Time between zero-crossings adjacent to peak.
     """
 
-    period = df_samples['sample_end'] - df_samples['sample_start'] + 1
+    period = df_samples['sample_next_peak'] - df_samples['sample_last_peak'] + 1
     time_trough = df_samples['sample_rise'] - df_samples['sample_decay']
-    time_peak = df_samples['sample_next_decay'] - df_samples['sample_rise']
 
     period = period.values.astype('int')
     time_trough = time_trough.values.astype('int')
-    time_peak = time_peak.values.astype('int')
 
-    return period, time_trough, time_peak
+    return period, time_trough
