@@ -1,4 +1,4 @@
-"""Compute double gaussian features."""
+"""Compute gaussian features."""
 
 import warnings
 from functools import partial
@@ -17,7 +17,7 @@ from scipy.optimize import curve_fit
 
 def compute_gaussian_features(df_samples, sig, fs, n_gaussians=3, maxfev=2000,
                               tol=1.49e-6, n_jobs=-1, chunksize=1, progress=None):
-    """Compute double gaussian features.
+    """Compute gaussian features.
 
     Parameters
     ----------
@@ -447,6 +447,6 @@ def _make_iterable(params):
 
 def _sim_sigmoid(xs, maximum, growth, mid):
 
-    mid = xs[round((len(xs)-1) * mid)]
+    mid = xs[int(round((len(xs)-1) * mid))]
 
     return maximum / (1.0 + np.exp(-growth*(xs-mid)))

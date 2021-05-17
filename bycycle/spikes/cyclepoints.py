@@ -19,7 +19,7 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         Sampling rate, in Hz.
     f_range : tuple of (float, float)
         Frequency range for narrowband signal of interest (Hz).
-    std : float or int, optional, default: 1.5
+    std : float or int, optional, default: 2
         The standard deviation threshold used to identify spikes.
 
     Returns

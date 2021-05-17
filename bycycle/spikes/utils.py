@@ -18,18 +18,20 @@ def create_cyclepoints_df(sig, starts, decays, troughs, rises, last_peaks, next_
     ----------
     sig : 1d array
         Voltage time series.
-    start : 1d array
-        Spike start location.
-    decay : 1d array
-        Spike zero-crossing decay location.
-    trough : 1d array
-        Spike minima location.
-    rise : 1d array
+    starts : 1d array
+        Spike start locations.
+    decays : 1d array
+        Spike zero-crossing decay locations.
+    troughs : 1d array
+        Spike minima locations.
+    rises : 1d array
         Spike zero-crossing rise location.
-    next_peak : 1d array
-        Spike maxima location.
-    end : 1d array
-        Spike end location.
+    last_peaks : 1d array
+        Spike maxima locations.
+    next_peaks : 1d array
+        Spike maxima locations.
+    ends : 1d array
+        Spike end locations.
 
     Returns
     -------

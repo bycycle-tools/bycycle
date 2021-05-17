@@ -94,7 +94,7 @@ class Spikes:
         return self._spikes[index]
 
 
-    def fit(self, sig, fs, f_range, std=1.5, n_gaussians=0,
+    def fit(self, sig, fs, f_range, std=2, n_gaussians=0,
             maxfev=2000, tol=1.49e-6, n_jobs=-1, chunksize=1, progress=None):
         """Compute features for each spike.
 
@@ -106,7 +106,7 @@ class Spikes:
             Sampling rate, in Hz.
         f_range : tuple of (float, float)
             Frequency range for narrowband signal of interest (Hz).
-        std : float or int, optional, default: 1.5
+        std : float or int, optional, default: 2
             Standard deviation used to identify spikes.
         n_gaussians : {0, 2, 3}
             Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
@@ -273,7 +273,7 @@ class Spikes:
             Plots spikes as 2d arrays ontop of one another. Ignored if index is not None.
         index : int, optional, default: None
             The index in ``df_features`` to plot. If None, plot all spikes.
-        normalize : bool, optional, default: True
+        normalize : bool, optional, default: False
             Mean centers and variance normalizes spikes attribute when True.
         xlim : tuple
             Upper and lower time limits. Ignored if ``stack`` is True or ``index`` is passed.
