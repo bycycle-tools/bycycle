@@ -72,6 +72,4 @@ def test_compute_durations(sim_spikes_df):
     assert period.dtype == 'int64'
     assert time_trough.dtype == 'int64'
 
-    print(period)
-    print(time_trough)
     assert (period > time_trough).all()

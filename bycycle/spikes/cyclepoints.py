@@ -122,16 +122,9 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
 
 
 def _compute_spike_zerox(sig, last_peaks, troughs, next_peaks):
-    """Find spike zero-crossings"""
+    """Find spike zero-crossings."""
 
-    decays = np.zeros_like(troughs)
-    rises = np.zeros_like(troughs)
-
-    for idx in range(len(troughs)):
-
-        decay, rise = find_zerox(-sig, [troughs[idx], [last_peaks[idx], next_peaks[idx]])
-
-        decays[idx] = decay[0]
-        rises[idx] = rise[0]
+    decays = np.round((troughs - last_peaks) / 2).astype(int) + last_peaks
+    rises = np.round((next_peaks - troughs) / 2).astype(int) + troughs
 
     return decays, rises

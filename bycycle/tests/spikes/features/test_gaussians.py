@@ -56,7 +56,7 @@ def test_fit_gaussians(sim_spikes, sim_spikes_df):
     ys = sig[start:end+1]
     xs = np.arange(0, len(ys)/fs, 1/fs)
 
-    guess = estimate_params(df_samples, sig, fs, 0)
+    guess = estimate_params(df_samples.iloc[0], sig, fs)
     bounds = _estimate_bounds(ys, *guess[:-3].reshape(4, -1)[[0, 1, 3]])
 
     params = _fit_gaussians(xs, ys, guess, bounds, 1e-3, 2000, 0)

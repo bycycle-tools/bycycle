@@ -95,7 +95,7 @@ class Spikes:
 
 
     def fit(self, sig, fs, f_range, std=1.5, n_gaussians=0,
-            maxfev=2000, tol=1.49e-6, n_jobs=-1, progress=None):
+            maxfev=2000, tol=1.49e-6, n_jobs=-1, chunksize=1, progress=None):
         """Compute features for each spike.
 
         Parameters
@@ -107,18 +107,22 @@ class Spikes:
         f_range : tuple of (float, float)
             Frequency range for narrowband signal of interest (Hz).
         std : float or int, optional, default: 1.5
-            The standard deviation used to identify spikes.
+            Standard deviation used to identify spikes.
         n_gaussians : {0, 2, 3}
             Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
         maxfev : int, optional, default: 2000
-            The maximum number of calls in curve_fit.
+            Maximum number of calls in curve_fit.
             Only used when n_gaussians is {1, 2}.
         tol : float, optional, default: 1.49e-6
             Relative error desired.
             Only used when n_gaussians is {1, 2}.
         n_jobs : int, optional, default: -1
-            The number of jobs to compute features in parallel.
+            Number of jobs to compute features in parallel.
             Only used when n_gaussians is {1, 2}.
+        chunksize : int, optional, default: 1
+            Number of chunks to split spikes into. Each chunk is submitted as a separate job.
+            With a large number of spikes, using a larger chunk size will drastically speed up
+            runtime. An optimal chunksize is typically np.ceil(n_spikes/n_jobs).
         progress : {None, 'tqdm', 'tqdm.notebook'}
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
             Only used when n_gaussians is {1, 2}.
@@ -150,10 +154,10 @@ class Spikes:
         # Compute gaussian features
         if n_gaussians != 0 and self.center_extrema == 'trough':
             params = compute_gaussian_features(self.df_features, self.sig, self.fs,
-                                               n_gaussians, maxfev, tol, n_jobs, progress)
+                                               n_gaussians, maxfev, tol, n_jobs, chunksize, progress)
         elif n_gaussians != 0:
             params = compute_gaussian_features(self.df_features, -self.sig, self.fs,
-                                               n_gaussians, maxfev, tol, n_jobs, progress)
+                                               n_gaussians, maxfev, tol, n_jobs, chunksize, progress)
 
         if n_gaussians != 0:
 

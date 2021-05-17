@@ -15,14 +15,14 @@ from scipy.optimize import curve_fit
 ###################################################################################################
 
 
-def compute_gaussian_features(df_samples, sig, fs, n_gaussians=3,
-                              maxfev=2000, tol=1.49e-6, n_jobs=-1, progress=None):
+def compute_gaussian_features(df_samples, sig, fs, n_gaussians=3, maxfev=2000,
+                              tol=1.49e-6, n_jobs=-1, chunksize=1, progress=None):
     """Compute double gaussian features.
 
     Parameters
     ----------
     df_samples : pandas.DataFrame
-        Contains cycle points locations for each spike.
+        Contains cyclepoint locations for each spike.
     sig : 1d array
         Voltage time series.
     fs : float
@@ -35,6 +35,10 @@ def compute_gaussian_features(df_samples, sig, fs, n_gaussians=3,
             Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
     n_jobs : int, optional, default: -1
         The number of jobs to compute features in parallel.
+    chunksize : int, optional, default: 1
+        Number of chunks to split spikes into. Each chunk is submitted as a separate job.
+        With a large number of spikes, using a larger chunksize will drastically speed up
+        runtime. An optimal chunksize is typically np.ceil(n_spikes/n_jobs).
     progress : {None, 'tqdm', 'tqdm.notebook'}
         Specify whether to display a progress bar. Uses 'tqdm', if installed.
 
@@ -54,7 +58,7 @@ def compute_gaussian_features(df_samples, sig, fs, n_gaussians=3,
         mapping = pool.imap(partial(_compute_gaussian_features, df_samples=df_samples,
                                     sig=sig, fs=fs, maxfev=maxfev, tol=tol,
                                     n_gaussians=n_gaussians),
-                            indices)
+                            indices, chunksize=chunksize)
 
         params = list(progress_bar(mapping, progress, len(df_samples)))
 
@@ -64,7 +68,6 @@ def compute_gaussian_features(df_samples, sig, fs, n_gaussians=3,
 def _compute_gaussian_features(index, df_samples=None, sig=None,
                                fs=None, maxfev=None, tol=None, n_gaussians=None):
     """Compute gaussian features for one cycle."""
-
     start = df_samples.iloc[index]['sample_start'].astype(int)
     end = df_samples.iloc[index]['sample_end'].astype(int)
 
@@ -72,7 +75,7 @@ def _compute_gaussian_features(index, df_samples=None, sig=None,
     times_cyc = np.arange(0, len(sig_cyc)/fs, 1/fs)
 
     # Initial parameter estimation
-    _params = estimate_params(df_samples, sig, fs, index, n_gaussians)
+    _params = estimate_params(df_samples.iloc[index], sig_cyc, fs, n_gaussians)
 
     # Set max to zero for single gaussians
     if len(_params) == 7:
@@ -122,13 +125,13 @@ def _compute_gaussian_features(index, df_samples=None, sig=None,
     return params
 
 
-def estimate_params(df_samples, sig, fs, index, n_gaussians=3, n_decimals=2):
+def estimate_params(df_samples, sig_cyc, fs, n_gaussians=3, n_decimals=2):
     """Initial gaussian parameter estimates.
 
     Parameters
     ----------
     df_samples : pandas.DataFrame
-        Contains cycle points locations for each spike.
+        Contains cycle points locations for a single spike.
     sig : 1d array
         Voltage time series.
     fs : float
@@ -150,14 +153,14 @@ def estimate_params(df_samples, sig, fs, index, n_gaussians=3, n_decimals=2):
     """
 
     # Get sample indices
-    sample_start = df_samples.iloc[index]['sample_start'].astype(int)
-    sample_end = df_samples.iloc[index]['sample_end'].astype(int)
+    sample_start = df_samples['sample_start'].astype(int)
+    sample_end = df_samples['sample_end'].astype(int)
 
-    sample_trough = df_samples.iloc[index]['sample_trough'].astype(int)
-    sample_last_peak = df_samples.iloc[index]['sample_last_peak'].astype(int)
-    sample_next_peak = df_samples.iloc[index]['sample_next_peak'].astype(int)
-    sample_decay = df_samples.iloc[index]['sample_decay'].astype(int)
-    sample_rise = df_samples.iloc[index]['sample_rise'].astype(int)
+    sample_trough = df_samples['sample_trough'].astype(int)
+    sample_last_peak = df_samples['sample_last_peak'].astype(int)
+    sample_next_peak = df_samples['sample_next_peak'].astype(int)
+    sample_decay = df_samples['sample_decay'].astype(int)
+    sample_rise = df_samples['sample_rise'].astype(int)
 
     # Adjust samples to start at zero
     sample_trough -= sample_start
@@ -167,7 +170,6 @@ def estimate_params(df_samples, sig, fs, index, n_gaussians=3, n_decimals=2):
     sample_rise -= sample_start
 
     # Get signal and time
-    sig_cyc = sig[sample_start:sample_end+1]
     cyc_len = len(sig_cyc)
 
     if sample_last_peak == 0 and sample_next_peak == len(sig_cyc) - 1:
