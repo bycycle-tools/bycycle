@@ -32,7 +32,7 @@ def compute_gaussian_features(df_samples, sig, fs, n_gaussians=3, maxfev=2000,
     tol : float, optional, default: 10e-6
         Relative error desired.
     n_gaussians : {0, 2, 3}
-            Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
+        Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
     n_jobs : int, optional, default: -1
         The number of jobs to compute features in parallel.
     chunksize : int, optional, default: 1
@@ -195,11 +195,10 @@ def estimate_params(df_samples, sig_cyc, fs, n_gaussians=3, n_decimals=2):
 
     center0 = sample_trough / cyc_len
 
-    extrema_idx = np.argmin(sig_cyc)
-    extrema = np.min(sig_cyc)
+    extrema = sig_cyc[sample_trough]
 
-    fwhm = (np.argmin(np.abs(sig_cyc[extrema_idx:] - (extrema * .5))) + extrema_idx) - \
-            np.argmin(np.abs(sig_cyc[:extrema_idx] - (extrema * .5)))
+    fwhm = (np.argmin(np.abs(sig_cyc[sample_trough:] - (extrema * .5))) + sample_trough) - \
+            np.argmin(np.abs(sig_cyc[:sample_trough] - (extrema * .5)))
 
     fwhm /= len(sig_cyc)
 
