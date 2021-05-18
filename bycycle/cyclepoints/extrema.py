@@ -97,21 +97,37 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak',
 
     # Calculate peak samples
     peaks = np.zeros(n_peaks, dtype=int)
+    _decay_xs = decay_xs.copy()
     for p_idx in range(n_peaks):
 
         # Calculate the sample range between the most recent zero rise and the next zero decay
         last_rise = rise_xs[p_idx]
-        next_decay = decay_xs[decay_xs > last_rise][0]
+
+        for idx, decay in enumerate(_decay_xs):
+            if decay > last_rise:
+                _decay_xs = _decay_xs[idx:]
+                break
+
+        next_decay = _decay_xs[0]
+
         # Identify time of peak
         peaks[p_idx] = np.argmax(sig[last_rise:next_decay]) + last_rise
 
     # Calculate trough samples
     troughs = np.zeros(n_troughs, dtype=int)
+    _rise_xs = rise_xs.copy()
     for t_idx in range(n_troughs):
 
         # Calculate the sample range between the most recent zero decay and the next zero rise
         last_decay = decay_xs[t_idx]
-        next_rise = rise_xs[rise_xs > last_decay][0]
+
+        for idx, rise in enumerate(_rise_xs):
+            if rise > last_decay:
+                _rise_xs = _rise_xs[idx:]
+                break
+
+        next_rise = _rise_xs[0]
+
         # Identify time of trough
         troughs[t_idx] = np.argmin(sig[last_decay:next_rise]) + last_decay
 
