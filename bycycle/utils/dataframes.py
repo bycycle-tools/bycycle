@@ -10,7 +10,7 @@ from bycycle.utils.checks import check_param_range
 ###################################################################################################
 ###################################################################################################
 
-def limit_df(df, fs, start=None, stop=None):
+def limit_df(df, fs, start=None, stop=None, reset_indices=True):
     """Restrict dataframe to be within time limits.
 
     Parameters
@@ -23,6 +23,8 @@ def limit_df(df, fs, start=None, stop=None):
         The lower time limit, in seconds, to restrict the df.
     stop : float, optional
         The upper time limit, in seconds, to restrict the df.
+    reset_indices : bool, optional, default: True
+        Samples start at zero when True.
 
     Returns
     -------
@@ -61,11 +63,13 @@ def limit_df(df, fs, start=None, stop=None):
         df = df[df['sample_next_' + side_e].values <= stop*fs]
 
     # Shift sample indices to start at 0
-    df['sample_last_' + side_e] = df['sample_last_' + side_e] - int(fs * start)
-    df['sample_next_' + side_e] = df['sample_next_' + side_e] - int(fs * start)
-    df['sample_' + center_e] = df['sample_' + center_e] - int(fs * start)
-    df['sample_zerox_rise'] = df['sample_zerox_rise'] - int(fs * start)
-    df['sample_zerox_decay'] = df['sample_zerox_decay'] - int(fs * start)
+    if reset_indices:
+        df['sample_last_' + side_e] = df['sample_last_' + side_e] - int(fs * start)
+        df['sample_next_' + side_e] = df['sample_next_' + side_e] - int(fs * start)
+        df['sample_' + center_e] = df['sample_' + center_e] - int(fs * start)
+        df['sample_zerox_rise'] = df['sample_zerox_rise'] - int(fs * start)
+        df['sample_zerox_decay'] = df['sample_zerox_decay'] - int(fs * start)
+        df['sample_last_zerox_decay'] = df['sample_last_zerox_decay'] - int(fs * start)
 
     return df
 
