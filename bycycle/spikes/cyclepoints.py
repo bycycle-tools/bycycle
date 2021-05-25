@@ -104,10 +104,10 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
         if not drop_spikes[idx]:
             continue
 
-        curr_end = df_samples.iloc[idx]['sample_end']
+        curr_end = ends[idx]
         curr_volt_trough = volt_troughs[idx]
 
-        next_start = df_samples.iloc[idx+1]['sample_start']
+        next_start = starts[idx+1]
         next_volt_trough = volt_troughs[idx+1]
 
         if curr_end > next_start and curr_volt_trough > next_volt_trough:
