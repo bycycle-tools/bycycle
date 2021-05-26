@@ -1,19 +1,17 @@
 """Compute multi-electrode array features."""
 
-from functools import partial
-
 import numpy as np
 
-from multiprocessing import Pool, cpu_count
-from bycycle.group.utils import progress_bar
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 
 ###################################################################################################
 ###################################################################################################
 
 
-def compute_mea_features(df_samples, sigs, n_jobs=-1, chunksize=1, progress=None):
-    """Compute correlation and relative variance features.
+def compute_pca_features(df_samples, sigs, pad, n_components, norm_mean=False, norm_std=False):
+    """Compute principal component scores for each spike.
 
     Parameters
     ----------
@@ -21,44 +19,71 @@ def compute_mea_features(df_samples, sigs, n_jobs=-1, chunksize=1, progress=None
         Contains cyclepoint locations for each spike.
     sigs : 2d array
         Voltage time series.
-    n_jobs : int, optional, default: -1
-        The number of jobs to compute features in parallel.
-    chunksize : int, optional, default: 1
-        Number of chunks to split spikes into. Each chunk is submitted as a separate job.
-        With a large number of spikes, using a larger chunksize will drastically speed up
-        runtime. An optimal chunksize is typically np.ceil(n_spikes/n_jobs).
-    progress : {None, 'tqdm', 'tqdm.notebook'}
-        Specify whether to display a progress bar. Uses 'tqdm', if installed.
+    pad : int
+        Number of samples to include around trough (one-sided).
+    n_components : int or float
+        The number of components to include (int) or the number of components required to reach
+        a minimum variance explained (float).
+    norm_mean : bool, optional, default: False
+        Normalize the mean of each MEA of each electrode.
+    norm_std : bool, optional, default: False
+        Normalize the standard deviation of each electrode.
 
     Returns
     -------
-    params : 1d array
-        Fit parameter values, the first parameters are correlation coeffeicients, followed by
-        relative variances.
+    components : 2d array
+        Principal component scores for each spike location.
     """
 
-    starts = df_samples['sample_start']
-    ends = df_samples['sample_end']
-    locs = np.vstack((starts, ends)).T
+    # Trough indices
+    troughs = df_samples['sample_trough'].values
 
-    with Pool(processes=n_jobs) as pool:
+    # Epoch spikes
+    starts = troughs - pad
+    ends = troughs + pad
+    sigs_split = np.array([sigs[:, s:e] for s, e in zip(starts, ends)])
+    sigs_split = sigs_split.reshape(sigs_split.shape[0], -1)
 
-        mapping = pool.imap(partial(mea, sigs=sigs), locs, chunksize=chunksize)
+    # PCA
+    ys = StandardScaler(with_mean=norm_mean, with_std=norm_std).fit_transform(sigs_split)
+    components = PCA(n_components=n_components).fit_transform(ys)
 
-        params = list(progress_bar(mapping, progress, len(df_samples)))
-
-    return np.array(params)
+    return components
 
 
-def _compute_mea_features(locs, sigs):
-    """Compute correlation and relative variance for each electrode."""
+def compute_voltage_features(df_samples, sigs):
+    """Compute cyclepoints voltages across electrodes.
 
-    start, end = locs[0], locs[1]
+    Parameters
+    ----------
+    df_samples : pandas.DataFrame
+        Contains cyclepoint locations for each spike.
+    sigs : 2d array
+        Voltage time series.
 
-    coeffs = np.corrcoef(sigs[:, start:end+1])
-    coeffs = np.hstack([coeffs[idx, idx+1:] for idx in range(len(coeffs))])
+    Returns
+    -------
+    volts : 2d array
+        Voltages for each spike at the mean cycle's start, decay, trough, rise and end points.
+    """
 
-    var = np.var(sigs[:, start:end+1], axis=1)
-    var /= var.sum()
+    # Cyclepoints indices
+    starts = df_samples['sample_start'].values
+    decays = df_samples['sample_decay'].values
+    troughs = df_samples['sample_trough'].values
+    rises = df_samples['sample_rise'].values
+    ends = df_samples['sample_end'].values
 
-    return np.append(coeffs, var)
+    # Index volts
+    volt_starts = sigs[:, starts]
+    volt_decays = sigs[:, decays]
+    volt_troughs = sigs[:, troughs]
+    volt_rises = sigs[:, rises]
+    volt_ends = sigs[:, ends]
+
+    # Combine
+    volts = (volt_starts, volt_decays, volt_troughs, volt_rises, volt_ends)
+    volts = np.vstack(volts).T
+
+    return volts
+
