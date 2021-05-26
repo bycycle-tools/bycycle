@@ -1,10 +1,7 @@
 """Compute multi-electrode array features."""
 
+import warnings
 import numpy as np
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-
 
 ###################################################################################################
 ###################################################################################################
@@ -45,10 +42,21 @@ def compute_pca_features(df_samples, sigs, pad, n_components, norm_mean=False, n
     sigs_split = sigs_split.reshape(sigs_split.shape[0], -1)
 
     # PCA
-    ys = StandardScaler(with_mean=norm_mean, with_std=norm_std).fit_transform(sigs_split)
-    components = PCA(n_components=n_components).fit_transform(ys)
+    try:
 
-    return components
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.decomposition import PCA
+
+        ys = StandardScaler(with_mean=norm_mean, with_std=norm_std).fit_transform(sigs_split)
+        components = PCA(n_components=n_components).fit_transform(ys)
+
+        return components
+
+    except ImportError:
+
+        warnings.warn('Optional dependency, sklearn, is required for PCA and is not installed.')
+
+        return None
 
 
 def compute_voltage_features(df_samples, sigs):
