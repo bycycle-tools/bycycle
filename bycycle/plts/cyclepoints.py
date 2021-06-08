@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from neurodsp.plts import plot_time_series
 from neurodsp.plts.utils import savefig
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 from bycycle.utils import limit_signal, get_extrema_df
 
 ###################################################################################################
@@ -59,7 +59,7 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Determine extrema/zero-crossings from dataframe
     center_e, side_e = get_extrema_df(df_samples)
@@ -70,7 +70,9 @@ def plot_cyclepoints_df(df_samples, sig, fs, plot_sig=True, plot_extrema=True,
 
         peaks = df_samples['sample_' + center_e].values
         troughs = np.append(df_samples['sample_last_' + side_e].values,
-                            df_samples['sample_next_' + side_e].values[-1])
+                            df_samples['sample_next_' + side_e].values)
+        troughs = np.unique(troughs)
+
     if plot_zerox:
 
         rises = df_samples['sample_zerox_rise'].values
@@ -131,14 +133,14 @@ def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays
     """
 
     # Ensure arguments are within valid range
-    check_param(fs, 'fs', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
 
     # Set times and limits
     times = np.arange(0, len(sig) / fs, 1 / fs)
-    xlim = (times[0], times[-1]) if xlim is None else xlim
 
     # Restrict sig and times to xlim
-    sig, times = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
+    if xlim is not None:
+        sig, times = limit_signal(times, sig, start=xlim[0], stop=xlim[1])
 
     # Set default kwargs
     figsize = kwargs.pop('figsize', (15, 3))
@@ -156,8 +158,8 @@ def plot_cyclepoints_array(sig, fs, peaks=None, troughs=None, rises=None, decays
         if points is not None:
 
             # Limit times and shift indices of cyclepoints (cps)
-            cps = points[(points >= xlim[0]*fs) & (points < xlim[1]*fs)]
-            cps = cps - int(xlim[0]*fs)
+            cps = points[(points >= times[0]*fs) & (points < times[-1]*fs)]
+            cps = cps - int(times[0]*fs)
 
             y_values.append(sig[cps])
             x_values.append(times[cps])

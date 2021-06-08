@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range, check_param_options
 
 ####################################################################################################
 ####################################################################################################
@@ -32,7 +32,7 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     """
 
     # Ensure argument is within valid range
-    check_param(min_n_cycles, 'min_n_cycles', (0, np.inf))
+    check_param_range(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
     temp_cycle_count = 0
 
@@ -52,14 +52,14 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     return is_burst
 
 
-def recompute_edges(df_features, threshold_kwargs):
+def recompute_edges(df_features, threshold_kwargs, burst_method='cycles', burst_kwargs=None):
     """Recompute the is_burst column for cycles on the edges of bursts.
 
     Parameters
     ----------
     df_features : pandas.DataFrame
         A dataframe containing shape and burst features for each cycle.
-    threshold_kwargs : dict, optional, default: None
+    threshold_kwargs : dict
         Feature thresholds for cycles to be considered bursts, matching keyword arguments for:
 
         - :func:`~.detect_bursts_cycles` for consistency burst detection
@@ -92,7 +92,7 @@ def recompute_edges(df_features, threshold_kwargs):
     >>> df_features_edges = recompute_edges(df_features, threshold_kwargs)
     """
 
-    # Prevent circular import between burst.utils and burst.cycle
+    # Prevent circular imports between burst.utils and burst.cycle
     from bycycle.burst import detect_bursts_cycles
 
     # Prevent overwriting the original dataframe
@@ -103,23 +103,58 @@ def recompute_edges(df_features, threshold_kwargs):
     is_burst = deepcopy(df_features_edges['is_burst'].values)
     burst_edges = np.where(is_burst[1:] == ~is_burst[:-1])[0]
 
-    # Adjust odd edges such that all edges fall on is_burst == False
-    burst_edges = np.array([edge if idx % 2 == 0 else edge+1 for idx, edge in
-                            enumerate(burst_edges)])
+    # Get cycles outside of bursts
+    burst_starts = np.array([edge for idx, edge in enumerate(burst_edges) if idx % 2 == 0])
+    burst_ends = np.array([edge+1 for idx, edge in enumerate(burst_edges) if idx % 2 == 1 ])
 
-    # Recompute is_burst
-    df_features_edges = detect_bursts_cycles(
-        df_features_edges,
-        amp_fraction_threshold=threshold_kwargs['amp_fraction_threshold'],
-        amp_consistency_threshold=threshold_kwargs['amp_consistency_threshold'],
-        period_consistency_threshold=threshold_kwargs['period_consistency_threshold'],
-        monotonicity_threshold=threshold_kwargs['monotonicity_threshold'],
-        min_n_cycles=threshold_kwargs['min_n_cycles']
-    )
+    # Recompute is_burst for cycles at the edge
+    for start_idx, end_idx in zip(burst_starts, burst_ends):
 
-    # Confine recomputed is_burst to edges
-    is_burst[burst_edges] = df_features_edges.iloc[burst_edges]['is_burst'].values
+        df_features_edges = recompute_edge(df_features_edges, start_idx, 'next')
+        df_features_edges = recompute_edge(df_features_edges, end_idx, 'last')
 
-    df_features_edges['is_burst'] = is_burst
+    # Apply thresholding
+    df_features_edges = detect_bursts_cycles(df_features_edges, **threshold_kwargs)
 
     return df_features_edges
+
+
+def recompute_edge(df_features, cyc_idx, direction):
+    """Recompute consistency features at the edge of a cycle.
+
+    Parameters
+    ----------
+    df_features : pandas.DataFrame
+        A dataframe containing shape and burst features for each cycle.
+    cyc_idx : int
+        The dataframe index of the edge.
+    direction : {'both', 'next', 'last'}
+        The direction to compute consistency.
+
+    Returns
+    -------
+    df_features : pandas.DataFrame
+        A dataframe with updated consistency features.
+    """
+
+    # Check that param validity
+    check_param_options(direction, 'direction', ['both', 'next', 'last'])
+
+    # Prevent circular imports between burst.utils and burst.cycle
+    from bycycle.features.burst import compute_amp_consistency, compute_period_consistency
+
+    # Slice edges rows and recompute burst features
+    lower = max(cyc_idx-1, 0)
+    upper = min(cyc_idx+2, len(df_features))
+    edge_range = range(lower, upper)
+
+    edge = df_features.iloc[edge_range].copy()
+
+    # Update dataframe with recomputed consistency features
+    df_features['amp_consistency'][cyc_idx] = \
+        compute_amp_consistency(edge, direction=direction)[1]
+
+    df_features['period_consistency'][cyc_idx] = \
+        compute_period_consistency(edge, direction=direction)[1]
+
+    return df_features

@@ -5,7 +5,7 @@ import pandas as pd
 
 from neurodsp.timefrequency import amp_by_time
 
-from bycycle.utils import rename_extrema_df, check_param
+from bycycle.utils import rename_extrema_df, check_param_range
 from bycycle.features.cyclepoints import compute_cyclepoints
 
 ###################################################################################################
@@ -79,8 +79,8 @@ def compute_shape_features(sig, fs, f_range, center_extrema='peak',
     """
 
     # Ensure arguments are within valid ranges
-    check_param(fs, 'fs', (0, np.inf))
-    check_param(n_cycles, 'n_cycles', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
+    check_param_range(n_cycles, 'n_cycles', (0, np.inf))
 
     # Set defaults if user input is None
     if find_extrema_kwargs is None:
@@ -312,8 +312,8 @@ def compute_band_amp(df_samples, sig, fs, f_range, n_cycles=3):
     """
 
     # Ensure arguments are within valid ranges
-    check_param(fs, 'fs', (0, np.inf))
-    check_param(n_cycles, 'n_cycles', (0, np.inf))
+    check_param_range(fs, 'fs', (0, np.inf))
+    check_param_range(n_cycles, 'n_cycles', (0, np.inf))
 
     amp = amp_by_time(sig, fs, f_range, remove_edges=False, n_cycles=n_cycles)
 

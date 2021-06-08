@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from bycycle.utils.checks import check_param
+from bycycle.utils.checks import check_param_range
 
 ###################################################################################################
 ###################################################################################################
@@ -40,8 +40,8 @@ def limit_signal(times, sig, start=None, stop=None):
     """
 
     # Ensure arguments are within valid range
-    check_param(start, 'start', (0, stop))
-    check_param(stop, 'stop', (start, np.inf))
+    check_param_range(start, 'start', (0, stop))
+    check_param_range(stop, 'stop', (start, np.inf))
 
     if start is not None:
         sig = sig[times >= start]
