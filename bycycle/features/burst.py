@@ -195,6 +195,11 @@ def compute_amp_consistency(df_shape_features, direction='both'):
             elif direction == 'both':
                 amp_consistency[cyc] = np.nanmin([consist_current, consist_next, consist_last])
 
+    # Prevent negative consistency
+    if (amp_consistency < 0).any():
+
+        amp_consistency[np.where(amp_consistency < 0)[0]] = 0
+
     return amp_consistency
 
 
