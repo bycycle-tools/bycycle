@@ -112,7 +112,7 @@ class Spikes:
         std : float or int, optional, default: 2
             Standard deviation used to identify spikes.
         n_gaussians : {0, 2, 3}
-            Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
+            Fit a n number of gaussians to each spike. If zero, no gaussian fitting occurs.
         maxfev : int, optional, default: 2000
             Maximum number of calls in curve_fit.
             Only used when n_gaussians is {1, 2}.
@@ -410,7 +410,7 @@ class SpikesMEA(Spikes):
         std : float or int, optional, default: 2
             Standard deviation used to identify spikes.
         n_gaussians : {0, 2, 3}
-            Fit a n number of gaussians to each spike. If zeros, no gaussian fitting occurs.
+            Fit a n number of gaussians to each spike. If zero, no gaussian fitting occurs.
         maxfev : int, optional, default: 2000
             Maximum number of calls in curve_fit.
             Only used when n_gaussians is {1, 2}.
