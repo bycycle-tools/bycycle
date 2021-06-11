@@ -1,7 +1,5 @@
 """Class objects to compute features for spiking data."""
 
-from numpy.ma.core import maximum_fill_value
-from bycycle.tests.spikes.test_cyclepoints import test_compute_spike_cyclepoints
 import numpy as np
 import pandas as pd
 
