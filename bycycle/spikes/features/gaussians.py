@@ -74,6 +74,9 @@ def _compute_gaussian_features(index, df_samples=None, sig=None,
     sig_cyc = sig[start:end+1]
     times_cyc = np.arange(0, len(sig_cyc)/fs, 1/fs)
 
+    # Demean
+    sig_cyc = sig_cyc - sig_cyc.mean()
+
     # Initial parameter estimation
     _params = estimate_params(df_samples.iloc[index], sig_cyc, fs, n_gaussians)
 
