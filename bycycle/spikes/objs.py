@@ -284,7 +284,7 @@ class Spikes:
         # Setup figure and axes
         fig = plt.figure(figsize=(10, 18))
 
-        gs = GridSpec(6, 2, figure=fig)
+        gs = GridSpec(8, 2, figure=fig)
 
         ax0 = fig.add_subplot(gs[0, 0])
         ax1 = fig.add_subplot(gs[0, 1])
@@ -296,32 +296,35 @@ class Spikes:
         ax7 = fig.add_subplot(gs[3, 1])
         ax8 = fig.add_subplot(gs[4, 0])
         ax9 = fig.add_subplot(gs[4, 1])
-        ax10 = fig.add_subplot(gs[5, :])
+        ax10 = fig.add_subplot(gs[5, 0])
+        ax11 = fig.add_subplot(gs[5, 1])
+        ax12 = fig.add_subplot(gs[6, 0])
+        ax13 = fig.add_subplot(gs[6, 1])
+        ax14 = fig.add_subplot(gs[7, 0])
 
         # Labels
         titles = self._param_labels
 
-        xlabels = ['mv (normalized)', 'mv (normalized)',
-                   'Skew Coefficient', 'mV', 'mV']
+        xlabels = ['Relative position in fit window', 'mv (normalized)',
+                   'Skew Coefficient', 'mV', '']
 
-        if len(titles) == 15:
-            xlabels = [l for lab in xlabels for l in [lab, lab, lab]]
-        else:
-            xlabels = [l for lab in xlabels for l in [lab, lab]]
+        #set labels for all 3 gaussians
+        xlabels = xlabels*3
+        
+        #set colors for gaussian plots
+        hist_colors = 5*["green"] + 5*["royalblue"] +  5*["darkorange"]
+        
 
         # Plot
-        axes = [ax0, ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
-        for idx in range(10):
+        axes = [ax0, ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10, ax11, ax12, ax13, ax14]
+        for idx in range(15):
 
-            axes[idx].hist(self.df_features[titles[idx]].values)
+            axes[idx].hist(self.df_features[titles[idx]].values, color = hist_colors[idx])
             axes[idx].set_title(titles[idx])
             axes[idx].set_xlabel(xlabels[idx])
 
-        ax10.hist(self.df_features['r_squared'].values)
-        ax10.set_title('R-Squared')
-
         # Increase spacing
-        fig.subplots_adjust(hspace=.5)
+        fig.subplots_adjust(hspace=.8)
 
 
     @savefig
