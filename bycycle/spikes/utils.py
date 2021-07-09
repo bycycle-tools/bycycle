@@ -92,10 +92,13 @@ def split_signal(df_samples, sig, demean=True):
 
         sig_cyc = sig[start:end]
 
+        # Demean
+        sig_cyc = sig_cyc - sig_cyc.mean() if demean else sig_cyc
+
         if pad_right != 0:
-            spikes[idx][pad_left:-pad_right] = sig_cyc - sig_cyc.mean()
+            spikes[idx][pad_left:-pad_right] = sig_cyc
         else:
-            spikes[idx][pad_left:] = sig_cyc - sig_cyc.mean()
+            spikes[idx][pad_left:] = sig_cyc
 
     return spikes
 
