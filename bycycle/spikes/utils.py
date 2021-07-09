@@ -51,7 +51,7 @@ def create_cyclepoints_df(sig, starts, decays, troughs, rises, last_peaks, next_
     return df_samples
 
 
-def split_signal(df_samples, sig):
+def split_signal(df_samples, sig, demean=True):
     """Split a signal into segmented spikes.
 
     Parameters
@@ -60,6 +60,8 @@ def split_signal(df_samples, sig):
         Cyclepoint locaions, in samples. Returned from func:`~.create_cyclepoints_df`.
     sig : 1d array
         Voltage time series.
+    demean : bool, optional, default: True
+        Demeans each cycle individually.
 
     Returns
     -------
@@ -88,10 +90,15 @@ def split_signal(df_samples, sig):
         pad_left = max_left - (trough - start)
         pad_right = max_right - (end - trough)
 
+        sig_cyc = sig[start:end]
+
+        # Demean
+        sig_cyc = sig_cyc - sig_cyc.mean() if demean else sig_cyc
+
         if pad_right != 0:
-            spikes[idx][pad_left:-pad_right] = sig[start:end]
+            spikes[idx][pad_left:-pad_right] = sig_cyc
         else:
-            spikes[idx][pad_left:] = sig[start:end]
+            spikes[idx][pad_left:] = sig_cyc
 
     return spikes
 
