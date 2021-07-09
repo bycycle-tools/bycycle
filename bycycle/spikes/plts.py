@@ -127,63 +127,65 @@ def plot_gaussian_fit(df_features, sig, fs, z_thresh_cond, z_thresh_K):
     start = df_features['sample_start'].astype(int)
     end = df_features['sample_end'].astype(int)
 
-    #calculate signal parameters
+    # Calculate signal parameters
     sig_cyc = sig[start:end+1]
     cyc_len = len(sig_cyc)
     times_cyc = np.arange(0, cyc_len/fs, 1/fs)
 
-    #get calculated gaussian paramters 
-    Na_params = [cyc_len, cyc_len/fs, fs, df_features['Na_center'], df_features['Na_std'], df_features['Na_alpha'], df_features['Na_height'] ]
+    # Get calculated gaussian paramters
+    Na_params = [cyc_len, cyc_len/fs, fs, df_features['Na_center'], df_features['Na_std'],
+                 df_features['Na_alpha'], df_features['Na_height']]
 
     Na_gaus = _sim_skewed_gaussian(*Na_params)
-    #plot Na gaussian fit
-    plot_sing_gaus(Na_gaus, sig_cyc, current_type = "Na")
+    # Plot Na gaussian fit
+    plot_sing_gaus(Na_gaus, sig_cyc, current_type="Na")
 
     Na_center = int(df_features['Na_center']*cyc_len)
-    #get remaining signal for plotting
+    # Get remaining signal for plotting
     rem_sig = sig_cyc - Na_gaus
     rem_sig_K = rem_sig[Na_center :,]
     rem_sig_cond = rem_sig[:Na_center ,]
     times_K = times_cyc[Na_center :,]
     times_cond = times_cyc[:Na_center ,]
 
-    #plot remaining signal 
-    plt.plot(fs*times_K,rem_sig_K, label = "K current region", color = "b")
-    plt.plot(fs*times_cond,rem_sig_cond, label = "Conductive current region", color = "green")
+    # Plot remaining signal
+    plt.plot(fs*times_K,rem_sig_K, label="K current region", color="b")
+    plt.plot(fs*times_cond,rem_sig_cond, label="Conductive current region", color="green")
     plt.axvline(Na_center, color='k')
     plt.title("Remaining signal after subtracting Na current gaussian fit")
     plt.legend()
     plt.ylabel("Voltage (uV)")
     plt.show()
 
-    # calculate z scores
+    # Calculate z scores
     z_score_K = st.zscore(rem_sig_K)
     z_score_cond = st.zscore(rem_sig_cond)
-    
-    plt.plot(fs*times_K,z_score_K, label = "K current region z-score", color = "b")
-    plt.plot(fs*times_cond,z_score_cond, label = "Conductive current region z-score", color = "green")
+
+    plt.plot(fs*times_K,z_score_K, label="K current region z-score", color="b")
+    plt.plot(fs*times_cond,z_score_cond, label="Conductive current region z-score", color="green")
     plt.plot(fs*times_K, np.array([z_thresh_K for i in range(len(times_K))]), 'k--')
     plt.axvline(Na_center, color='k')
-    plt.plot(fs*times_cond, np.array([z_thresh_cond for i in range(len(times_cond))]), 'k--') 
+    plt.plot(fs*times_cond, np.array([z_thresh_cond for i in range(len(times_cond))]), 'k--')
     plt.title("Remaining signal z-scores")
     plt.ylabel("Z-score")
     plt.legend()
     plt.show()
 
-    cond_params = [len(rem_sig_cond), len(rem_sig_cond)/fs, fs, df_features['Cond_center'], df_features['Cond_std'], df_features['Cond_alpha'], df_features['Cond_height'] ]
-    K_params = [len(rem_sig_K), len(rem_sig_K)/fs, fs, df_features['K_center'], df_features['K_std'], df_features['K_alpha'], df_features['K_height'] ]
+    cond_params = [len(rem_sig_cond), len(rem_sig_cond)/fs, fs, df_features['Cond_center'],
+                   df_features['Cond_std'], df_features['Cond_alpha'], df_features['Cond_height']]
+    K_params = [len(rem_sig_K), len(rem_sig_K)/fs, fs, df_features['K_center'],
+                df_features['K_std'], df_features['K_alpha'], df_features['K_height'] ]
 
-    #get current gaussians based on fit parameters
+    # Get current gaussians based on fit parameters
     cond_gaus = _sim_skewed_gaussian(*cond_params)
     K_gaus = _sim_skewed_gaussian(*K_params)
 
-    #plot conductive and potassium current fits
+    # Plot conductive and potassium current fits
     plot_sing_gaus(cond_gaus, rem_sig_cond, current_type="Conductive")
     plot_sing_gaus(K_gaus, rem_sig_K, current_type="K")
-    
 
-    #plot all gaussian fits
-    plt.plot(sig_cyc, label= "cycle signal", color = "k")
+    # Plot all gaussian fits
+    plt.plot(sig_cyc, label= "cycle signal", color="k")
     plt.plot(Na_gaus)
     plt.plot(fs*times_K, K_gaus)
     plt.plot(fs*times_cond, cond_gaus)
@@ -191,11 +193,11 @@ def plot_gaussian_fit(df_features, sig, fs, z_thresh_cond, z_thresh_K):
     plt.title("All gaussian fits found")
     plt.show()
 
+
 def plot_sing_gaus(gaus, sig, current_type="Na"):
-    plt.plot(gaus, label= "skewed gaussian fit", color = "red")
-    plt.plot(sig, label= "cycle signal", color = "k")
+    plt.plot(gaus, label= "skewed gaussian fit", color="red")
+    plt.plot(sig, label= "cycle signal", color="k")
     plt.title(current_type + " current gaussian fit")
     plt.ylabel("Voltage (uV)")
     plt.legend()
     plt.show()
-

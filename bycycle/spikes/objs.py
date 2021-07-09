@@ -162,12 +162,12 @@ class Spikes:
                 params = compute_gaussian_features(self.df_features, -self.sig, self.fs,
                                                     maxfev, tol, n_jobs, chunksize, progress, z_thresh_K, z_thresh_cond)
 
-
             self.params = params
 
+            param_labels = ['Cond_center', 'Cond_std', 'Cond_alpha',  'Cond_height',
+                            'Cond_r_squared', 'Na_center', 'Na_std', 'Na_alpha', 'Na_height',
+                            'Na_r_squared','K_center','K_std', 'K_alpha', 'K_height', 'K_r_squared']
 
-            param_labels = ['Cond_center', 'Cond_std', 'Cond_alpha',  'Cond_height',"Cond_r_squared", 'Na_center', 'Na_std', 'Na_alpha', 'Na_height',"Na_r_squared",'K_center','K_std', 'K_alpha', 'K_height',"K_r_squared"]
-             
 
             self._param_labels = param_labels
 
@@ -176,7 +176,6 @@ class Spikes:
 
             # Merge dataframes
             self.df_features = pd.concat((self.df_features, df_gaussian_features), axis=1)
-
 
         # Rename dataframe
         if self.center_extrema == 'peak':
@@ -308,12 +307,11 @@ class Spikes:
         xlabels = ['Relative position in fit window', 'mv (normalized)',
                    'Skew Coefficient', 'mV', '']
 
-        #set labels for all 3 gaussians
+        # Set labels for all 3 gaussians
         xlabels = xlabels*3
-        
-        #set colors for gaussian plots
+
+        # Set colors for gaussian plots
         hist_colors = 5*["green"] + 5*["royalblue"] +  5*["darkorange"]
-        
 
         # Plot
         axes = [ax0, ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10, ax11, ax12, ax13, ax14]
@@ -329,20 +327,19 @@ class Spikes:
 
     @savefig
     def plot_gaussian_fit_steps(self, index=None):
-        """Plot gaussian fit steps for a given spike """
+        """Plot gaussian fit steps for a given spike."""
 
         if self.df_features is None and np.isnan(self.df_features['Na_center']):
             raise ValueError('No successful gaussian fit found for spike.')
 
         else:
             if index:
-                plot_gaussian_fit(self.df_features.iloc[index], self.sig, self.fs, self.z_thresh_cond, self.z_thresh_K)
-                
+                plot_gaussian_fit(self.df_features.iloc[index], self.sig, self.fs,
+                                  self.z_thresh_cond, self.z_thresh_K)
 
             else:
-                #loop through all spikes
+                # Loop through all spikes
                 for spk in range(len(self.df_features)):
                     print("Gaussian fit for spike with index = " + str(spk))
-                    plot_gaussian_fit(self.df_features.iloc[spk], self.sig, self.fs, self.z_thresh_cond, self.z_thresh_K)
-
-        
+                    plot_gaussian_fit(self.df_features.iloc[spk], self.sig, self.fs,
+                                      self.z_thresh_cond, self.z_thresh_K)
