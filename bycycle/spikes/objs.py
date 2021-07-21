@@ -1,4 +1,4 @@
-""Class objects to compute features for spiking data."""
+"""Class objects to compute features for spiking data."""
 
 import numpy as np
 import pandas as pd
@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
+from neurodsp.sim.cycles import sim_gaussian_cycle
 from neurodsp.plts.utils import savefig
 
 from bycycle import Bycycle
@@ -96,7 +97,7 @@ class Spikes:
 
 
     def fit(self, sig, fs, f_range, std=2,
-            maxfev=2000, gaussian_fit=True, tol=1.49e-6, n_jobs=-1, chunksize=1, progress=None, 
+            maxfev=2000, gaussian_fit=True, tol=1.49e-6, n_jobs=-1, chunksize=1, progress=None,
             z_thresh_k=0.5, z_thresh_cond=0.5,rsq_thresh=0.5):
         """Compute features for each spike.
 
@@ -134,7 +135,7 @@ class Spikes:
             Conductive current z-score threshold.
         rsq_thresh : float, optional, default: 0.5
             Na current r-squared threshold. Used to stop conductive/K fits in cycles
-            with bad Na current fits. 
+            with bad Na current fits.
         """
 
         # Set attibutes
@@ -237,10 +238,10 @@ class Spikes:
             times_spike = np.arange(0, len(self._spikes[idx])/self.fs, 1/self.fs)
 
             param = param[~np.isnan(param)]
-            
+
             spike_gen = sim_gaussian_cycle(times_spike, *param)
 
-            
+
 
             self.spikes_gen.append(spike_gen)
 
