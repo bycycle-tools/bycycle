@@ -1,4 +1,4 @@
-"""Class objects to compute features for spiking data."""
+""Class objects to compute features for spiking data."""
 
 import numpy as np
 import pandas as pd
@@ -11,7 +11,6 @@ from neurodsp.plts.utils import savefig
 from bycycle import Bycycle
 
 from bycycle.spikes.features import compute_shape_features, compute_gaussian_features
-from bycycle.spikes.features.gaussians import sim_gaussian_cycle
 from bycycle.spikes.cyclepoints import compute_spike_cyclepoints
 from bycycle.spikes.plts import plot_spikes
 from bycycle.spikes.plts import plot_gaussian_fit
@@ -67,7 +66,7 @@ class Spikes:
         self.sig = None
         self.fs = None
         self.f_range = None
-        self.z_thresh_K=0.5
+        self.z_thresh_k=0.5
         self.z_thresh_cond=0.5
 
         # Results
@@ -97,7 +96,8 @@ class Spikes:
 
 
     def fit(self, sig, fs, f_range, std=2,
-            maxfev=2000, gaussian_fit=True, tol=1.49e-6, n_jobs=-1, chunksize=1, progress=None, z_thresh_K=0.5, z_thresh_cond=0.5):
+            maxfev=2000, gaussian_fit=True, tol=1.49e-6, n_jobs=-1, chunksize=1, progress=None, 
+            z_thresh_k=0.5, z_thresh_cond=0.5,rsq_thresh=0.5):
         """Compute features for each spike.
 
         Parameters
@@ -128,6 +128,13 @@ class Spikes:
         progress : {None, 'tqdm', 'tqdm.notebook'}
             Specify whether to display a progress bar. Uses 'tqdm', if installed.
             Only used when n_gaussians is {1, 2}.
+        z_thresh_k : float, optional, default: 0.5
+            Potassium (k) current z-score threshold.
+        z_thresh_cond : float, optional, default: 0.5
+            Conductive current z-score threshold.
+        rsq_thresh : float, optional, default: 0.5
+            Na current r-squared threshold. Used to stop conductive/K fits in cycles
+            with bad Na current fits. 
         """
 
         # Set attibutes
@@ -157,10 +164,10 @@ class Spikes:
         if gaussian_fit:
             if self.center_extrema == 'trough':
                 params = compute_gaussian_features(self.df_features, self.sig, self.fs,
-                                                    maxfev, tol, n_jobs, chunksize, progress, z_thresh_K, z_thresh_cond)
+                                                    maxfev, tol, n_jobs, chunksize, progress, z_thresh_k, z_thresh_cond)
             else:
                 params = compute_gaussian_features(self.df_features, -self.sig, self.fs,
-                                                    maxfev, tol, n_jobs, chunksize, progress, z_thresh_K, z_thresh_cond)
+                                                    maxfev, tol, n_jobs, chunksize, progress, z_thresh_k, z_thresh_cond)
 
             self.params = params
 
@@ -213,15 +220,16 @@ class Spikes:
 
 
     def generate_spikes(self):
-        """Generate spikes from fit parameters."""
+        """Generate spikes from fit parameters.
+            TO DO """
+
 
         if self.df_features is None or self.params is None:
             raise ValueError('The fit method must be successfully called prior to generating ')
 
         self.spikes_gen = []
         for idx, param in enumerate(self.params):
-            print("idx", idx)
-            print("param1", param)
+            #reshape self.params for compatibility with sim_action_potential
             if np.isnan(param[0]):
                 self.spikes_gen.append(np.nan)
                 continue
@@ -229,12 +237,10 @@ class Spikes:
             times_spike = np.arange(0, len(self._spikes[idx])/self.fs, 1/self.fs)
 
             param = param[~np.isnan(param)]
-            print("param",param)
+            
             spike_gen = sim_gaussian_cycle(times_spike, *param)
 
-            # Translate up y-axis for single gaussian fits
-            if len(param) == 7:
-                spike_gen += self._spikes[idx].max()
+            
 
             self.spikes_gen.append(spike_gen)
 
@@ -335,11 +341,11 @@ class Spikes:
         else:
             if index:
                 plot_gaussian_fit(self.df_features.iloc[index], self.sig, self.fs,
-                                  self.z_thresh_cond, self.z_thresh_K)
+                                  self.z_thresh_cond, self.z_thresh_k)
 
             else:
                 # Loop through all spikes
                 for spk in range(len(self.df_features)):
                     print("Gaussian fit for spike with index = " + str(spk))
                     plot_gaussian_fit(self.df_features.iloc[spk], self.sig, self.fs,
-                                      self.z_thresh_cond, self.z_thresh_K)
+                                      self.z_thresh_cond, self.z_thresh_k)
