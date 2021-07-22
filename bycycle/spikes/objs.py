@@ -178,6 +178,14 @@ class Spikes:
 
             self._param_labels = param_labels
 
+            # Invert parameters
+            if self.center_extrema == 'peak':
+
+                invert_inds = [9, 10, 11, 12] if len(params[0][:-3]) % 3 == 0 else [6, 7, 10]
+
+                for ind in invert_inds:
+                    self.params[:, ind] = self.params[:, ind] * -1
+
             param_dict = {k: v for k, v in zip(param_labels, self.params.transpose())}
             df_gaussian_features = pd.DataFrame.from_dict(param_dict)
 
