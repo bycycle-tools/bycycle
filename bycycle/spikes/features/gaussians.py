@@ -51,7 +51,7 @@ def compute_gaussian_features(df_samples, sig, fs, maxfev=2000, tol=1.49e-6, n_j
         Conductive current z-score threshold.
     rsq_thresh : float, optional, default: 0.5
         Na current r-squared threshold. Used to stop conductive/K fits in cycles
-        with bad Na current fits.  
+        with bad Na current fits.
 
     Returns
     -------
@@ -97,15 +97,15 @@ def _compute_gaussian_features_cycle(index, df_samples=None, sig=None, fs=None,
     # Fit single skewed gaussian to Na current
     na_params, na_gaus = _single_gaus_fit(index, sample_trough, sig_cyc, cyc_len, times_cyc, fs,
                                           extrema_type="trough", maxfev=maxfev, tol=tol)
-    if not np.isnan(np.sum(na_gaus)):
+    if not np.isnan(na_gaus).any():
 
         # Get Na center and std
-        na_center = int(na_params[3]*na_params[0])
-        na_std = int(na_params[4]*na_params[0])
+        na_center = int(na_params[0]*cyc_len)
+        na_std = int(na_params[1]*cyc_len)
 
         # Determine Na current region
-        upper_std = na_center + na_std
-        lower_std = na_center - na_std
+        upper_std = na_center + (2* na_std)
+        lower_std = na_center - (2* na_std)
 
         # Calculate Na current r-squared
         na_rsq = calculate_r_squared(sig_cyc[lower_std:upper_std], na_gaus[lower_std:upper_std])
@@ -140,13 +140,12 @@ def _compute_gaussian_features_cycle(index, df_samples=None, sig=None, fs=None,
 
             side_current_region = zip(rem_sigs, [z_thresh_k, z_thresh_cond], z_scores, times)
 
-
             side_current_params = []
             side_current_gaus = []
 
             for rem_sig, z_thresh, z_score, times in side_current_region:
 
-                if any(i >= z_thresh for i in z_score):
+                if any(z >= z_thresh for z in z_score):
                     # Get peak of remaining signal
                     peak = get_current_peak(rem_sig, fs, f_ranges, z_thresh, z_score)
 
@@ -183,12 +182,7 @@ def _compute_gaussian_features_cycle(index, df_samples=None, sig=None, fs=None,
         cond_params = np.array([np.nan] * len(na_params))
         warnings.warn("Failed fits for index = " + str(index))
 
-    # Get only center, std, height, alpha and r-squared parameters
-    cond_params_gaus = cond_params[3:]
-    na_params_gaus = na_params[3:]
-    k_params_gaus = k_params[3:]
-
-    all_params = [*cond_params_gaus, *na_params_gaus, *k_params_gaus]
+    all_params = [*cond_params, *na_params, *k_params]
 
     return all_params
 
@@ -272,13 +266,12 @@ def _fit_gaussians(xs, ys, guess, tol, maxfev, index, bounds=None):
     """Fit gaussians with scipy's curve_fit."""
 
     try:
-    # Fit gaussians
+        # Fit gaussians
         warnings.filterwarnings("ignore")
-        params, _ = curve_fit(_sim_gaussian_cycle, xs, ys,
-                          p0=guess)
-        
+        params, _ = curve_fit(_sim_gaussian_cycle, xs, ys, p0=guess)
+
     except:
-    # Raise warning for failed fits
+        # Raise warning for failed fits
         warn_str = "Failed fit for index {idx}.".format(idx=index)
         warnings.warn(warn_str, RuntimeWarning)
         params = np.array([np.nan] * len(guess))
@@ -307,8 +300,7 @@ def _sim_gaussian_cycle(times, *params):
     sig_cycle : 1d array
         Simulated action potential.
     """
-    sing_gaus = sim_skewed_gaussian_cycle(*params)
-    
+    sing_gaus = sim_skewed_gaussian_cycle(1, len(times), *params)
 
     return sing_gaus
 
@@ -317,29 +309,22 @@ def _single_gaus_fit(index, extrema, sig_cyc, cyc_len, times_cyc,
                      fs, extrema_type="trough", maxfev=2000, tol=None):
     """Calculate guassian fits for single current  """
 
-    # Get cyc time/freq parameters
-    _cyc_params = [1, cyc_len]
-
     # Initial parameter estimation
-    _gaus_params = estimate_params(extrema, sig_cyc, fs, extrema_type=extrema_type, n_decimals=2)
+    _params = estimate_params(extrema, sig_cyc, fs, extrema_type=extrema_type, n_decimals=2)
 
     # Initial bound estimation for Na current
-    _bounds = _estimate_bounds(sig_cyc, *_gaus_params.reshape(4, -1)[[0, 1, 3]])
-
-    # Append cycle params to Gaussian params
-    _params = np.insert(_gaus_params, 0, _cyc_params , axis=0)
-
+    _bounds = _estimate_bounds(sig_cyc, *_params.reshape(4, -1)[[0, 1, 3]])
 
     # Fit single skewed gaussian
     _params_fit = _fit_gaussians(times_cyc, sig_cyc, _params, tol, maxfev, index, bounds=_bounds)
 
-    if np.isnan(np.sum(_params_fit)):
+    if np.isnan(_params_fit).any():
         _gaus = np.array([np.nan] * len(times_cyc))
 
     else:
-        _gaus = sim_skewed_gaussian_cycle(*_params_fit)
+        _gaus = sim_skewed_gaussian_cycle(1, cyc_len, *_params_fit)
 
-    return [_params_fit, _gaus]
+    return _params_fit, _gaus
 
 
 def calculate_side_regions(na_center, rem_sig, times_cyc, fs, z_thresh_k, z_thresh_cond):
@@ -362,7 +347,6 @@ def calculate_side_regions(na_center, rem_sig, times_cyc, fs, z_thresh_k, z_thre
     z_scores = [z_score_k,z_score_cond]
 
     return [rem_sigs, times, z_scores]
-
 
 
 ###################################################################################################
@@ -417,13 +401,13 @@ def _get_closest(flank, spike, half_height):
 def get_current_peak(sig, fs, f_ranges, z_thresh, z_score):
 
     peaks, troughs = find_extrema(sig, fs, f_ranges, first_extrema=None, pass_type='bandpass')
-    
+
     if len(peaks) == 0:
         return None
     elif len(peaks) > 1:
-        #select highest peak 
+        #select highest peak
         max_volt = max( (v, i) for i, v in enumerate(sig[peaks]) )[1]
-        peak = peaks[max_volt] 
+        peak = peaks[max_volt]
 
     else:
         peak = peaks[0]
@@ -433,6 +417,7 @@ def get_current_peak(sig, fs, f_ranges, z_thresh, z_score):
         return peak
     else:
         return None
+
 
 def calculate_r_squared(sig_cyc, sig_cyc_est):
 
