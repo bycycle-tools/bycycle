@@ -6,7 +6,7 @@ import numpy as np
 ###################################################################################################
 ###################################################################################################
 
-def progress_bar(iterable, progress, n_to_run):
+def progress_bar(iterable, progress, n_to_run, pbar_desc='Computing Bycycle Features'):
     """Add a progress bar to an iterable to be processed.
 
     Parameters
@@ -17,6 +17,8 @@ def progress_bar(iterable, progress, n_to_run):
         Which kind of progress bar to use. If None, no progress bar is used.
     n_to_run : int
         Number of jobs to complete.
+    pbar_desc: str, optional
+        Display text for the progress bar.
 
     Returns
     -------
@@ -56,9 +58,6 @@ def progress_bar(iterable, progress, n_to_run):
     tqdm_options = ['tqdm', 'tqdm.notebook']
     if progress is not None and progress not in tqdm_options:
         raise ValueError("Progress bar option not understood.")
-
-    # Set the display text for the progress bar
-    pbar_desc = 'Computing Bycycle Features'
 
     # Use a tqdm, progress bar, if requested
     if progress:
