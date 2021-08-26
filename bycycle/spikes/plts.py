@@ -135,7 +135,7 @@ def plot_gaussian_fit(df_features, sig, fs, z_thresh_cond, z_thresh_k):
     na_params = [cyc_len/fs, fs, df_features['Na_center'], df_features['Na_std'],
                  df_features['Na_alpha'], df_features['Na_height']]
 
-    na_gaus = sim_skewed_gaussian(*na_params)
+    na_gaus = sim_skewed_gaussian_cycle(*na_params)
     # Plot Na gaussian fit
     plot_sing_gaus(na_gaus, sig_cyc, current_type="Na")
 
@@ -176,8 +176,8 @@ def plot_gaussian_fit(df_features, sig, fs, z_thresh_cond, z_thresh_k):
                 df_features['K_std'], df_features['K_alpha'], df_features['K_height'] ]
 
     # Get current gaussians based on fit parameters
-    cond_gaus = sim_skewed_gaussian(*cond_params)
-    k_gaus = sim_skewed_gaussian(*k_params)
+    cond_gaus = sim_skewed_gaussian_cycle(*cond_params)
+    k_gaus = sim_skewed_gaussian_cycle(*k_params)
 
     # Plot conductive and potassium current fits
     plot_sing_gaus(cond_gaus, rem_sig_cond, current_type="Conductive")
@@ -200,3 +200,30 @@ def plot_sing_gaus(gaus, sig, current_type="Na"):
     plt.ylabel("Voltage (uV)")
     plt.legend()
     plt.show()
+
+def plot_gen_spikes(fs, spikes_gen, index, xlim, ax):
+
+    #plot single spike
+    if index is not None:
+        times = range(1,1+ len(spikes_gen[index]))
+        plot_times = [x/fs for x in times]
+        plt.plot(plot_times, spikes_gen[index])
+        plt.ylabel("Voltage (uV)")
+
+    else:
+        #plot all spikes 
+        #get Na current trough for first generated spike 
+        align_point = np.argmin(spikes_gen[0])/fs
+
+        for i in range(len(spikes_gen)):
+            #get trough of Na current for each spike
+            trough = np.argmin(spikes_gen[i])/fs
+            #calculate shift between the trough and the align point
+            shift = trough - align_point
+           
+            times = range(1,1+ len(spikes_gen[i]))
+            #get aligned time array
+            align_times = [(x/fs)-shift for x in times]
+
+            plt.plot(align_times, spikes_gen[i])
+            plt.ylabel("Voltage (uV)")

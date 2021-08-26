@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
 from neurodsp.sim.cycles import sim_gaussian_cycle
+from neurodsp.sim.cycles import sim_ap_cycle
 from neurodsp.plts.utils import savefig
 
 from bycycle import Bycycle
@@ -15,6 +16,7 @@ from bycycle.spikes.features import compute_shape_features, compute_gaussian_fea
 from bycycle.spikes.cyclepoints import compute_spike_cyclepoints
 from bycycle.spikes.plts import plot_spikes
 from bycycle.spikes.plts import plot_gaussian_fit
+from bycycle.spikes.plts import plot_gen_spikes
 from bycycle.spikes.utils import split_signal, rename_df
 
 ###################################################################################################
@@ -179,14 +181,6 @@ class Spikes:
 
             self._param_labels = param_labels
 
-            # Invert parameters
-            if self.center_extrema == 'peak':
-
-                invert_inds = [9, 10, 11, 12] if len(params[0][:-3]) % 3 == 0 else [6, 7, 10]
-
-                for ind in invert_inds:
-                    self.params[:, ind] = self.params[:, ind] * -1
-
             param_dict = {k: v for k, v in zip(param_labels, self.params.transpose())}
             df_gaussian_features = pd.DataFrame.from_dict(param_dict)
 
@@ -229,31 +223,77 @@ class Spikes:
 
 
     def generate_spikes(self):
-        """Generate spikes from fit parameters.
-            TO DO """
+        """Generate spikes from fit parameters. """
 
 
         if self.df_features is None or self.params is None:
             raise ValueError('The fit method must be successfully called prior to generating ')
 
         self.spikes_gen = []
-        for idx, param in enumerate(self.params):
-            #reshape self.params for compatibility with sim_action_potential
-            if np.isnan(param[0]):
+
+        for idx, param in enumerate(self.params): 
+            
+            #check is Na current center is nan
+            if np.isnan(param[5]):
                 self.spikes_gen.append(np.nan)
                 continue
 
+            centers = [param[5]]
+            stds = [param[6]]
+            alphas = [param[7]]
+            heights = [param[8]]
+
             times_spike = np.arange(0, len(self._spikes[idx])/self.fs, 1/self.fs)
 
-            param = param[~np.isnan(param)]
+            #check if conductive current was fit
+            if not np.isnan(param[0]):
+                #append parameters before Na current parameters
+                centers.insert(0,param[0])
+                stds.insert(0,param[1])
+                alphas.insert(0,param[2])
+                heights.insert(0,param[3])
+            else:
+                centers.insert(0,0)
+                stds.insert(0,1)
+                alphas.insert(0,0)
+                heights.insert(0,0)
 
-            spike_gen = sim_gaussian_cycle(times_spike, *param)
+            #check if potassium current was fit
+            if not np.isnan(param[10]):
+                #append parameters after Na current parameters
+                centers.append(param[10])
+                stds.append(param[11])
+                alphas.append(param[12])
+                heights.append(param[13])
+            else:
+                centers.insert(0,0)
+                stds.insert(0,1)
+                alphas.insert(0,0)
+                heights.insert(0,0)
 
-
+        
+            spike_gen = sim_ap_cycle(len(self._spikes[idx]), self.fs, centers, stds, alphas, heights)
 
             self.spikes_gen.append(spike_gen)
 
+            
 
+    @savefig
+    def plot_generated_spikes(self, index=None, xlim=None, ax=None):
+        """Plot generated spikes. 
+        Parameters
+        ----------
+        index: int, optional, default: None
+            The index in ``spikes_gen`` to plot. If None, plot all spikes. If None, plot all spikes.
+        xlim : tuple
+            Upper and lower time limits. Ignored if ``stack`` is True or ``index`` is passed.
+        ax : matplotlib.Axes, optional, default: None
+            Figure axes upon which to plot.
+
+        """
+        plot_gen_spikes(self.fs, self.spikes_gen, index, xlim, ax)
+            
+    
     @savefig
     def plot(self, stack=True, index=None, normalize=False, xlim=None, ax=None):
         """Plot spike results.
@@ -332,9 +372,12 @@ class Spikes:
         axes = [ax0, ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10, ax11, ax12, ax13, ax14]
         for idx in range(15):
 
-            axes[idx].hist(self.df_features[titles[idx]].values, color = hist_colors[idx])
             axes[idx].set_title(titles[idx])
             axes[idx].set_xlabel(xlabels[idx])
+
+            if not np.isnan(self.df_features[titles[idx]].values).all():
+                axes[idx].hist(self.df_features[titles[idx]].values, color = hist_colors[idx])
+                
 
         # Increase spacing
         fig.subplots_adjust(hspace=.8)
@@ -348,7 +391,7 @@ class Spikes:
             raise ValueError('No successful gaussian fit found for spike.')
 
         else:
-            if index:
+            if index!=None:
                 plot_gaussian_fit(self.df_features.iloc[index], self.sig, self.fs,
                                   self.z_thresh_cond, self.z_thresh_k)
 

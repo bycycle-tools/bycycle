@@ -93,7 +93,6 @@ def _compute_gaussian_features_cycle(index, df_samples=None, sig=None, fs=None,
     cyc_len = len(sig_cyc)
     times_cyc = np.arange(0, cyc_len/fs, 1/fs)
 
-<<<<<<< HEAD
     # Fit single skewed gaussian to Na current
     na_params, na_gaus = _single_gaus_fit(index, sample_trough, sig_cyc, cyc_len, times_cyc, fs,
                                           extrema_type="trough", maxfev=maxfev, tol=tol)
@@ -125,13 +124,6 @@ def _compute_gaussian_features_cycle(index, df_samples=None, sig=None, fs=None,
 
             # Substract Na current gaussian fit
             rem_sig = sig_cyc - na_gaus
-=======
-    # Demean
-    sig_cyc = sig_cyc - sig_cyc.mean()
-
-    # Initial parameter estimation
-    _params = estimate_params(df_samples.iloc[index], sig_cyc, fs, n_gaussians)
->>>>>>> 78f3dd28980ffa8ae9d43b265dafdf370cb829b0
 
             # Split remaining signal into left of Na current (K current)
             #   and right (conductive current)
@@ -217,7 +209,11 @@ def estimate_params(extrema, sig_cyc, fs, extrema_type="trough", n_decimals=2):
 
     # Define parameters
     if extrema_type == "trough":
+
+        print("extrema", extrema)
+        print("sig_cyc", len(sig_cyc))
         height0 =  sig_cyc[extrema] - np.mean(sig_cyc)
+        print("height", height0)
     else:
         height0 =  sig_cyc[extrema]
 
@@ -428,3 +424,4 @@ def calculate_r_squared(sig_cyc, sig_cyc_est):
     r_squared = 1 - (ss_res / ss_tot)
 
     return r_squared
+
