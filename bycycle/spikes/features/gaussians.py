@@ -209,9 +209,6 @@ def estimate_params(extrema, sig_cyc, fs, extrema_type="trough", n_decimals=2):
 
     # Define parameters
     if extrema_type == "trough":
-
-        print("extrema", extrema)
-        print("sig_cyc", len(sig_cyc))
         height0 =  sig_cyc[extrema] - np.mean(sig_cyc)
         print("height", height0)
     else:
