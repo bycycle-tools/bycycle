@@ -131,6 +131,11 @@ def compute_features(sig, fs, f_range, center_extrema='peak', burst_method='cycl
         burst_kwargs['fs'] = fs
         burst_kwargs['f_range'] = f_range
 
+    if burst_method == 'amp' and 'min_n_cycles' not in burst_kwargs.keys():
+        burst_kwargs['min_n_cycles'] = threshold_kwargs.copy().pop('min_n_cycles', 3)
+    elif burst_method == 'amp' and 'min_n_cycles' in burst_kwargs.keys():
+        threshold_kwargs['min_n_cycles'] = burst_kwargs['min_n_cycles']
+
     # Compute burst features for each cycle
     df_burst_features = compute_burst_features(df_shape_features, sig, burst_method=burst_method,
                                                burst_kwargs=burst_kwargs)
