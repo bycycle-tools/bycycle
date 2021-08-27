@@ -46,6 +46,10 @@ def compute_spike_cyclepoints(sig, fs, f_range, std=2):
 
     idxs = np.where(volt_troughs < thresh)[0]
 
+    # Remove edge indices
+    idxs = idxs[1:] if idxs[0] == 0 else idxs
+    idxs = idxs[:-1] if idxs[-1] == len(_troughs)-1 else idxs
+
     if len(idxs) == 0:
         raise ValueError('No spikes found outside of std. Try reducing std.')
 
