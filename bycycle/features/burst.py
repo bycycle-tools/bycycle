@@ -32,6 +32,7 @@ def compute_burst_features(df_shape_features, sig, burst_method='cycles', burst_
         - ``f_range`` : required for dual amplitude threshold burst detection
         - ``amp_threshes`` : optional, default: (1, 2)
         - ``min_n_cycles`` : optional, default: 3
+        - ``min_burst_duration`` : optional, default: None
         - ``filter_kwargs`` : optional, default: None
 
     Returns
@@ -304,7 +305,7 @@ def compute_monotonicity(df_samples, sig):
 
 
 def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
-                           min_n_cycles=3, filter_kwargs=None):
+                           min_n_cycles=3, min_burst_duration=None, filter_kwargs=None):
     """Compute the proportion of each cycle that is bursting using a dual threshold algorithm.
 
     Parameters
@@ -323,6 +324,8 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
         the median amplitude (value 1).
     min_n_cycles : int, optional, default: 3
         Minimum number of consecutive cycles to be identified as an oscillation.
+    min_burst_duration : float, optional, default: None
+        Minimum length of a burst, in seconds.
     filter_kwargs : dict, optional, default: None
         Keyword arguments to :func:`~neurodsp.filt.filter.filter_signal`.
 
@@ -356,8 +359,13 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
     filter_kwargs = {} if filter_kwargs is None else filter_kwargs
 
     # Detect bursts using the dual amplitude threshold approach
-    is_burst = detect_bursts_dual_threshold(sig, fs, amp_threshes, f_range,
-                                            min_n_cycles=min_n_cycles, **filter_kwargs)
+    if min_burst_duration is not None:
+        min_n_cycles = None
+
+    is_burst = detect_bursts_dual_threshold(
+        sig, fs, amp_threshes, f_range, min_n_cycles=min_n_cycles,
+        min_burst_duration=min_burst_duration, **filter_kwargs
+    )
 
     # Convert the boolean array to binary
     is_burst = is_burst.astype(int)
