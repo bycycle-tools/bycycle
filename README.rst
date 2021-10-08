@@ -70,7 +70,11 @@ It has the following dependencies:
 - `scipy <https://github.com/scipy/scipy>`_ >=  1.4.1
 - `pandas <https://github.com/pandas-dev/pandas>`_ >= 0.25.3
 - `matplotlib <https://github.com/matplotlib/matplotlib>`_ >= 3.0.3
-- `pytest <https://github.com/pytest-dev/pytest>`_ (optional)
+
+There are also optional dependencies, that offer extra functionality:
+
+- `tqdm <https://github.com/tqdm/tqdm>`_ is needed to print progress bars
+- `pytest <https://github.com/pytest-dev/pytest>`_ is needed to run tests locally
 
 Install
 -------
