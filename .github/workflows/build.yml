@@ -30,6 +30,7 @@ jobs:
         pip install pytest
         pip install pytest-cov
         pip install -r requirements.txt
+        pip install -r optional-requirements.txt
     - name: Test with pytest
       run: |
         pytest --cov=./
