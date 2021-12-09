@@ -20,10 +20,10 @@ Features that describe the shape of a cycle.
         The time between the previous decay and the current rise.
 
     Rise (``time_rise``)
-        The time between the current peak and the next trough.
+        The time between the current peak and the last trough.
 
     Decay (``time_decay``)
-        The time between the current peak and the last trough.
+        The time between the current peak and the next trough.
 
     Rise-decay symmetry (``time_rdsym``)
         The fraction of the period in the rise phase.
