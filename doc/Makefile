@@ -1,4 +1,8 @@
 # Minimal makefile for Sphinx documentation
+#   This make is adapted & extended from the original sphinx file
+
+##########################################################################
+## Settings
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
@@ -6,9 +10,15 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = bycycle
 SOURCEDIR     = .
 BUILDDIR      = _build
+
+# Custom settings
+GITHUBORG     = https://github.com/bycycle-tools
 STABLE        = 1.0.0
 DEVELOPMENT   = ""
 RECENT        = 0.1.3
+
+##########################################################################
+## Standard sphinx tasks (from sphinx)
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -20,6 +30,9 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+##########################################################################
+## Custom tasks
 
 # # Custom cleaner that also removes the generated files from sphinx-gallery
 clean:
@@ -33,29 +46,7 @@ check:
 	make SPHINXOPTS="-n" html
 	make linkcheck
 
-# Build the html site, and push it to gh-pages branch of repo to deploy
-install:
-	# Clean out existing build
-	make clean
-	# Clone, specifically, the gh-pages branch, putting it into '_build/gh_pages/'
-	#   --no-checkout just fetches the root folder without content
-	#   --depth 1 is a speed optimization since we don't need the history prior to the last commit
-	#   -b gh-pages fetches only the branch for the gh-pages
-	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/bycycle-tools/bycycle _build/gh_pages
-	# A .nojekyll file tells Github pages to bypass Jekyll processing
-	touch _build/gh_pages/.nojekyll
-	# Build the sphinx site
-	make html
-	# Copy site into the gh-pages branch folder, then push to Github to deploy
-	cd _build/ && \
-	cp -r html/* gh_pages && \
-	cd gh_pages && \
-	git add * && \
-	git add .nojekyll && \
-	git commit -a -m 'Make install' && \
-	git push
-
-# Build multiple versions
+# Build multiple versions of documentation
 html-multi:
 	# Clean out existing build
 	$(eval current_branch := $(shell git branch -l | grep "\*" | sed "s/.* //" ))
@@ -99,24 +90,34 @@ html-multi:
 	# Remove the temporary remote
 	git remote remove upstream_temp
 
-# Build the multi-version html site, and push it to gh-pages branch of repo to deploy
-install-multi:
-	# Clean out existing build
-	make clean
-	# Build the sphinx site
-	make html-multi
+# Deploy the site to github pages site
+deploy:
 	# Clone, specifically, the gh-pages branch, putting it into '_build/gh_pages/'
+	#   -b gh-pages --single-branch fetches specifically and only the gh-pages branch
 	#   --no-checkout just fetches the root folder without content
 	#   --depth 1 is a speed optimization since we don't need the history prior to the last commit
-	#   -b gh-pages fetches only the branch for the gh-pages
-	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/bycycle-tools/bycycle _build/gh_pages
-	# A .nojekyll file tells Github pages to bypass Jekyll processing
+	git clone -b gh-pages --single-branch --no-checkout --depth 1 $(GITHUBORG)/$(SPHINXPROJ) _build/gh_pages
+
+	# Add a .nojekyll file to tell Github pages to bypass Jekyll processing
 	touch _build/gh_pages/.nojekyll
+
 	# Copy site into the gh-pages branch folder, then push to Github to deploy
-	cd _build && \
+	cd _build/ && \
 	cp -r html/* gh_pages && \
 	cd gh_pages && \
 	git add * && \
 	git add .nojekyll && \
-	git commit -a -m 'Make install' && \
+	git commit -a -m 'deploy docsite' && \
 	git push
+
+# Clean & rebuild the html site, then deploy docsite
+install:
+	make clean
+	make html
+	make deploy
+
+# Clean & rebuild the multi-version html site, then deploy docsite
+install-multi:
+	make clean
+	make html-multi
+	make deploy
