@@ -48,6 +48,9 @@ def test_bycycle_fit(sim_args):
     assert bm.f_range == f_range
     assert (bm.sig == sig).all()
 
+    # test getting attribute from dataframe
+    assert (bm.df_features['time_peak'].values == bm.time_peak).all()
+
 
 @plot_test
 def test_bycycle_plot(sim_args):
