@@ -92,6 +92,23 @@ class Bycycle:
         self.df_features = None
 
 
+    def __getattr__(self, key):
+        """Access df_features columns as class attributes.
+
+        Parameters
+        ----------
+        key : str
+            Column name.
+
+        Returns
+        -------
+        1d-array
+            Column values.
+        """
+        if self.df_features is not None and key in self.df_features.keys():
+            return self.df_features[key].values
+
+
     def fit(self, sig, fs, f_range):
         """Run the bycycle algorithm on a signal.
 
