@@ -105,7 +105,10 @@ class Bycycle:
         1d-array
             Column values.
         """
-        if self.df_features is not None and key in self.df_features.keys():
+
+        if key in {'__getstate__', '__setstate__'}:
+            return object.__getattr__(self, key)
+        elif (self.df_features is not None and key in self.df_features.keys()):
             return self.df_features[key].values
 
 
