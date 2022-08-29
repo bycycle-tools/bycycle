@@ -80,7 +80,6 @@ class Bycycle:
             }
         else:
             self.thresholds = thresholds
-
         if find_extrema_kwargs is None:
             self.find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
         else:
@@ -115,6 +114,8 @@ class Bycycle:
             return object.__getattr__(self, key)
         elif (self.df_features is not None and key in self.df_features.keys()):
             return self.df_features[key].values
+        else:
+            raise AttributeError(f'\'{self.__class__.__name__}\' object has no attribute \'{key}\'')
 
 
     def fit(self, sig, fs, f_range):
@@ -137,7 +138,6 @@ class Bycycle:
         self.sig = sig
         self.fs = fs
         self.f_range = f_range
-
         self.df_features = compute_features(self.sig, self.fs, self.f_range, self.center_extrema,
                                             self.burst_method, self.burst_kwargs, self.thresholds,
                                             self.find_extrema_kwargs, self.return_samples)
