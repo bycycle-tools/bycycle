@@ -65,12 +65,17 @@ class Bycycle:
         self.burst_method = burst_method
         self.burst_kwargs = {} if burst_kwargs is None else burst_kwargs
 
-        if thresholds is None:
+        if thresholds is None and burst_method == 'cycles':
             self.thresholds = {
                 'amp_fraction_threshold': 0.,
                 'amp_consistency_threshold': .5,
                 'period_consistency_threshold': .5,
                 'monotonicity_threshold': .8,
+                'min_n_cycles': 3
+            }
+        elif thresholds is None and burst_method == 'amp':
+            self.thresholds = {
+                'burst_fraction_threshold': 1,
                 'min_n_cycles': 3
             }
         else:
