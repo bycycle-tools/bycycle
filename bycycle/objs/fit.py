@@ -65,6 +65,7 @@ class Bycycle:
         self.burst_method = burst_method
         self.burst_kwargs = {} if burst_kwargs is None else burst_kwargs
 
+        # Thresholds
         if thresholds is None and burst_method == 'cycles':
             self.thresholds = {
                 'amp_fraction_threshold': 0.,
@@ -80,6 +81,13 @@ class Bycycle:
             }
         else:
             self.thresholds = thresholds
+
+        # Allow shorthand (e.g. monotonicicy instead of monotonicity_threshold)
+        if isinstance(self.thresholds, dict):
+            for k in list(self.thresholds.keys()):
+                if not k.endswith('_threshold') and k != 'min_n_cycles':
+                    self.thresholds[k + '_threshold'] = self.thresholds.pop(k)
+
         if find_extrema_kwargs is None:
             self.find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
         else:
