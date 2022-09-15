@@ -41,16 +41,15 @@ the measured features along with the raw data to assure they make sense.
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 from neurodsp.sim import sim_combined
 
-from bycycle.features import compute_features
+from bycycle import Bycycle
 from bycycle.cyclepoints import find_extrema, find_zerox
 from bycycle.cyclepoints.zerox import find_flank_zerox
-from bycycle.plts import plot_burst_detect_summary, plot_cyclepoints_array
+from bycycle.plts import plot_cyclepoints_array
 from bycycle.utils.download import load_bycycle_data
 
 pd.options.display.max_columns = 10
@@ -139,10 +138,10 @@ plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
 # 3. Compute features of each cycle
 # ---------------------------------
 # After these 4 points of each cycle are localized, we compute some simple statistics for each
-# cycle. The main cycle-by-cycle function, :func:`~.compute_features`, returns a dataframe
-# containing cycle features and sample locations of cyclepoints in the signal. Each entry or row
-# in either dataframe is a cycle and each column is a property of that cycle (see table below). The
-# four main features are:
+# cycle. The main cycle-by-cycle object, :class:`~.Bycycle`, has a `df_features` dataframe
+# attribute containing cycle features and sample locations of cyclepoints in the signal. Each entry
+# or row in either dataframe is a cycle and each column is a property of that cycle (see table below).
+# The four main features are:
 #
 # - amplitude (volt_amp) - average voltage change of the rise and decay
 # - period (period) - time between consecutive troughs (or peaks, if default is changed)
@@ -154,11 +153,12 @@ plot_cyclepoints_array(sig_low, fs, xlim=(13, 14), peaks=peaks, troughs=troughs,
 
 ####################################################################################################
 
-df_features = compute_features(sig, fs, f_theta)
+bm = Bycycle()
+bm.fit(sig, fs, f_theta)
 
 ####################################################################################################
 
-df_features
+bm.df_features
 
 ####################################################################################################
 #
@@ -243,15 +243,17 @@ sig = filter_signal(sig, fs, 'lowpass', 30, n_seconds=.2, remove_edges=False)
 
 ####################################################################################################
 
-threshold_kwargs = {'amp_fraction_threshold': 0,
-                    'amp_consistency_threshold': .2,
-                    'period_consistency_threshold': .45,
-                    'monotonicity_threshold': .7,
-                    'min_n_cycles': 3}
+thresholds = {
+    'amp_fraction': 0,
+    'amp_consistency': .2,
+    'period_consistency': .45,
+    'monotonicity': .7,
+    'min_n_cycles': 3
+}
 
-df_features = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
-
-plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, figsize=(16, 3))
+bm = Bycycle(thresholds=thresholds)
+bm.fit(sig, fs, f_alpha)
+bm.plot(figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -260,15 +262,17 @@ plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, figsize=(16, 3
 # These new burst detection thresholds seem to be set too high (too strict) as the algorithm is not
 # able to detect the bursts that are present.
 
-threshold_kwargs = {'amp_fraction_threshold': 0,
-                    'amp_consistency_threshold': .75,
-                    'period_consistency_threshold': .7,
-                    'monotonicity_threshold': .9,
-                    'min_n_cycles': 3}
+thresholds = {
+    'amp_fraction': 0,
+    'amp_consistency': .75,
+    'period_consistency': .7,
+    'monotonicity': .9,
+    'min_n_cycles': 3
+}
 
-df_features = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
-
-plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, figsize=(16, 3))
+bm = Bycycle(thresholds=thresholds)
+bm.fit(sig, fs, f_alpha)
+bm.plot(figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -279,14 +283,20 @@ plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, figsize=(16, 3
 # expect these parameters to be pretty good.
 #
 # Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove some false
-# positives that may occur, like that around 1.5 seconds.
+# positives that may occur, like that around 1.5 seconds. Consisitency features for non-bursting 
+# cycles on the edges of bursts may be recomputed to reduce false negatives when entering or exiting
+# a burst.
+#
 
-threshold_kwargs = {'amp_fraction_threshold': .3,
-                    'amp_consistency_threshold': .4,
-                    'period_consistency_threshold': .5,
-                    'monotonicity_threshold': .8,
-                    'min_n_cycles': 3}
 
-df_features = compute_features(sig, fs, f_alpha, threshold_kwargs=threshold_kwargs)
+thresholds = {
+    'amp_fraction': .3,
+    'amp_consistency': .4,
+    'period_consistency': .5,
+    'monotonicity': .8,
+    'min_n_cycles': 3
+}
 
-plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, figsize=(16, 3))
+bm = Bycycle(thresholds=thresholds)
+bm.fit(sig, fs, f_alpha, recompute_edges=True)
+bm.plot(figsize=(16, 3))

@@ -4,7 +4,7 @@
 
 Compute bycycle features for 3D organizations of timeseries.
 
-Bycycle supports computing the features of 3D signals using :func:`~.compute_features_3d`.
+Bycycle supports computing the features of 3D signals using :class:`~.BycycleGroup`.
 Signals may be organized in a different ways, including (n_participants, n_channels, n_timepoints)
 or (n_channels, n_epochs, n_timepoints). The difference between these organizations is that
 continuity may be assumed across epochs, but not channels. The ``axis`` argument is used to
@@ -18,7 +18,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from neurodsp.sim import sim_combined
-from bycycle.group import compute_features_3d
+
+from bycycle import BycycleGroup
 from bycycle.plts import plot_feature_categorical
 from bycycle.utils import flatten_dfs
 
@@ -64,7 +65,7 @@ for dim0 in range(dim0_len):
 # The features from a 3d array of (n_channels, n_epochs, n_timepoints) will be computed here.
 # Bursting frequencies and rise-decay symmetry will be modulated across channels and epochs,
 # respectively. The bursting frequencies and rise-decay symmetries will then be compared between
-# the simulated parameters and bycycle's caculation.
+# the simulated parameters and bycycle's calculation.
 
 ####################################################################################################
 
@@ -114,11 +115,14 @@ thresholds = dict(amp_fraction_threshold=0., amp_consistency_threshold=.5,
 
 compute_kwargs = {'burst_method': 'cycles', 'threshold_kwargs': thresholds}
 
-dfs_rest = compute_features_3d(sigs_rest, fs, (1, 50), axis=0,
-                               compute_features_kwargs=compute_kwargs)
+bg_rest = BycycleGroup(thresholds=thresholds)
+bg_rest.fit(sigs_rest, fs, (1, 50), axis=0)
 
-dfs_task = compute_features_3d(sigs_task, fs, (1, 50), axis=0,
-                               compute_features_kwargs=compute_kwargs)
+bg_task = BycycleGroup(thresholds=thresholds)
+bg_task.fit(sigs_task, fs, (1, 50), axis=0)
+
+dfs_rest = bg_rest.df_features
+dfs_task = bg_task.df_features
 
 ####################################################################################################
 
