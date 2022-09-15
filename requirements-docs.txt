@@ -12,3 +12,4 @@ seaborn
 mne
 pactools
 scikit-learn
+tqdm
