@@ -160,7 +160,7 @@ def compute_amp_consistency(df_shape_features, direction='both'):
 
     # Compute amplitude consistency
     cycles = len(df_shape_features)
-    amp_consistency = np.ones(cycles) * np.nan
+    amp_consistency = np.zeros(cycles)
     rises = df_shape_features['volt_rise'].values
     decays = df_shape_features['volt_decay'].values
 
@@ -236,7 +236,7 @@ def compute_period_consistency(df_shape_features, direction='both'):
 
     # Compute period consistency
     cycles = len(df_shape_features)
-    period_consistency = np.ones(cycles) * np.nan
+    period_consistency = np.zeros(cycles)
     periods = df_shape_features['period'].values
 
     for cyc in range(1, cycles-1):
@@ -285,7 +285,7 @@ def compute_monotonicity(df_samples, sig):
 
     # Compute monotonicity
     cycles = len(df_samples)
-    monotonicity = np.ones(cycles) * np.nan
+    monotonicity = np.zeros(cycles)
 
     for idx, row in enumerate(df_samples.to_dict('records')):
 
