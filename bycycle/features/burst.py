@@ -287,7 +287,7 @@ def compute_monotonicity(df_samples, sig):
     cycles = len(df_samples)
     monotonicity = np.ones(cycles) * np.nan
 
-    for idx, row in df_samples.iterrows():
+    for idx, row in enumerate(df_samples.to_dict('records')):
 
         if 'sample_peak' in df_samples.columns:
             rise_period = sig[int(row['sample_last_trough']):int(row['sample_peak'])+1]
@@ -375,7 +375,7 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
 
     # Compute fraction of each cycle that's bursting
     burst_fraction = []
-    for _, row in df_samples.iterrows():
+    for row in df_samples.to_dict('records'):
         fraction_bursting = np.mean(is_burst[int(row['sample_last_' + side_e]):
                                              int(row['sample_next_' + side_e] + 1)])
         burst_fraction.append(fraction_bursting)

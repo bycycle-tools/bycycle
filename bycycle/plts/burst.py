@@ -110,7 +110,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
     df_osc = df_features.loc[df_features['is_burst']]
     start = 0 if xlim is None else xlim[0]
 
-    for _, cyc in df_osc.iterrows():
+    for cyc in df_osc.to_dict('records'):
 
         samp_start_burst = int(cyc['sample_last_' + side_e]) - int(fs * start)
         samp_end_burst = int(cyc['sample_next_' + side_e] + 1) - int(fs * start)
@@ -137,7 +137,7 @@ def plot_burst_detect_summary(df_features, sig, fs, threshold_kwargs, xlim=None,
         color = next(colors)
 
         # Highlight where a burst param falls below threshold
-        for _, cyc in df_features.iterrows():
+        for cyc in df_features.to_dict('records'):
 
             last_cyc = int(cyc['sample_last_' + side_e]) - int(fs * start)
             next_cyc = int(cyc['sample_next_' + side_e]) - int(fs * start)
@@ -252,7 +252,7 @@ def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
         side_times = np.array([])
         side_param = np.array([])
 
-        for _, cyc in df_features.iterrows():
+        for cyc in df_features.to_dict('records'):
 
             # Get the times for the last and next side of a cycle
             side_times = np.append(side_times, [times[int(cyc['sample_last_' + side_e])],
@@ -266,7 +266,7 @@ def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
                          ylabel="{0:s}\nthreshold={1:.2f}".format(ylabel, thresh), **kwargs)
 
     # Highlight where param falls below threshold
-    for _, cyc in df_features.iterrows():
+    for cyc in df_features.to_dict('records'):
 
         if cyc[burst_param] <= thresh:
 
