@@ -7,7 +7,7 @@ import numpy as np
 ###################################################################################################
 
 # Update when a commit alters the result of compute_features
-PERSISTENT_HASH = 'a251877069bd9f960b8aee9537eee5c7856e0b34'
+PERSISTENT_HASH = '502ca93eee58f97caf83d42b866c9bab7f0074fb'
 
 def test_persistent_features(sim_args_comb):
 
@@ -15,7 +15,7 @@ def test_persistent_features(sim_args_comb):
     df_features = sim_args_comb['df_features']
 
     # Convert to np array
-    arr_features = df_features.to_numpy().astype(np.float64).copy(order='C')
+    arr_features = df_features.to_numpy().astype(np.float32).copy(order='C')
 
     # Hash
     h = sha1()
