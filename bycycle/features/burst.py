@@ -161,6 +161,9 @@ def compute_amp_consistency(df_shape_features, direction='both'):
     # Compute amplitude consistency
     cycles = len(df_shape_features)
     amp_consistency = np.zeros(cycles)
+    amp_consistency[0] = np.nan
+    amp_consistency[-1] = np.nan
+
     rises = df_shape_features['volt_rise'].values
     decays = df_shape_features['volt_decay'].values
 
@@ -237,6 +240,8 @@ def compute_period_consistency(df_shape_features, direction='both'):
     # Compute period consistency
     cycles = len(df_shape_features)
     period_consistency = np.zeros(cycles)
+    period_consistency[0] = np.nan
+    period_consistency[-1] = np.nan
     periods = df_shape_features['period'].values
 
     for cyc in range(1, cycles-1):
