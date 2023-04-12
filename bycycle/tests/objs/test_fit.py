@@ -2,24 +2,50 @@
 
 from inspect import ismethod
 
-from pytest import raises
+import pytest
 
 import pandas as pd
 import numpy as np
 
-from bycycle import Bycycle, BycycleGroup
+from bycycle.objs.fit import Bycycle, BycycleGroup, BycycleBase
 from bycycle.tests.tutils import plot_test
 
 ###################################################################################################
 ###################################################################################################
 
-def test_bycycle():
+@pytest.mark.parametrize('Base', [BycycleBase, Bycycle, BycycleGroup])
+@pytest.mark.parametrize('thresholds', [True, False])
+@pytest.mark.parametrize('burst_method', ['cycles', 'amp'])
+@pytest.mark.parametrize('find_extrema_kwargs', [True, False])
+def test_base_init(Base, thresholds, burst_method, find_extrema_kwargs):
     """Test initializing a Bycycle object."""
 
-    bm = Bycycle()
+    if not thresholds:
+        thresholds = None
+    elif burst_method == 'cycles':
+        thresholds = {
+            'amp_fraction': 0.,
+            'amp_consistency': .5,
+            'period_consistency': .5,
+            'monotonicity': .8,
+            'min_n_cycles': 3
+        }
+    elif burst_method == 'amp':
+        thresholds = {
+            'burst_fraction': 1,
+            'min_n_cycles': 3
+        }
+
+    if find_extrema_kwargs:
+        find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
+    else:
+        find_extrema_kwargs = None
+
+    bm = Base(thresholds=thresholds, burst_method=burst_method,
+              find_extrema_kwargs=find_extrema_kwargs)
 
     assert bm.center_extrema == 'peak'
-    assert bm.burst_method == 'cycles'
+    assert bm.burst_method == burst_method
     assert isinstance(bm.thresholds, dict)
     assert isinstance(bm.find_extrema_kwargs, dict)
     assert bm.burst_kwargs == {}
@@ -29,7 +55,8 @@ def test_bycycle():
     assert defaults == [None] * len(defaults)
 
 
-def test_bycycle_fit(sim_args):
+@pytest.mark.parametrize('recompute_edges', [True, False])
+def test_bycycle_fit(sim_args, recompute_edges):
     """Test the fit method of a Bycycle object."""
 
     bm = Bycycle()
@@ -38,10 +65,10 @@ def test_bycycle_fit(sim_args):
     fs = sim_args['fs']
     f_range = sim_args['f_range']
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         bm.fit(np.array([sig, sig]), fs, f_range)
 
-    bm.fit(sig, fs, f_range)
+    bm.fit(sig, fs, f_range, recompute_edges=recompute_edges)
 
     assert isinstance(bm.df_features, pd.DataFrame)
     assert bm.fs == fs
@@ -62,28 +89,15 @@ def test_bycycle_plot(sim_args):
     fs = sim_args['fs']
     f_range = sim_args['f_range']
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         bm.plot()
+
+    with pytest.raises(AttributeError):
+        bm.df_features.time_peak
 
     bm.fit(sig, fs, f_range)
     bm.plot()
-
-
-def test_bycyclegroup():
-    """Test initializing a BycycleGroup object."""
-
-    bg = BycycleGroup()
-
-    assert isinstance(bg.dfs_features, list) and len(bg.dfs_features) == 0
-    assert bg.center_extrema == 'peak'
-    assert bg.burst_method == 'cycles'
-    assert isinstance(bg.thresholds, dict)
-    assert isinstance(bg.find_extrema_kwargs, dict)
-    assert bg.burst_kwargs == {}
-    assert bg.return_samples
-
-    defaults = [bg.sigs, bg.fs, bg.f_range]
-    assert defaults == [None] * len(defaults)
+    bm.df_features.time_peak
 
 
 def test_bycyclegroup_fit(sim_args):
@@ -103,17 +117,17 @@ def test_bycyclegroup_fit(sim_args):
 
     bg = BycycleGroup(thresholds=thresholds)
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         bg.fit(sigs[0], fs, f_range)
 
     bg.fit(sigs, fs, f_range)
 
-    assert isinstance(bg.dfs_features, list)
+    assert isinstance(bg.df_features, list)
     for bm in bg:
         assert isinstance(bm, Bycycle)
-    assert isinstance(bg.dfs_features[0].df_features, pd.DataFrame)
-    assert ismethod(bg.dfs_features[0].fit)
-    assert ismethod(bg.dfs_features[0].plot)
+    assert isinstance(bg.df_features[0], pd.DataFrame)
+    assert ismethod(bg.models[0].fit)
+    assert ismethod(bg.models[0].plot)
     assert len(bg) == 2
     assert bg.fs == fs
     assert bg.f_range == f_range
@@ -123,17 +137,19 @@ def test_bycyclegroup_fit(sim_args):
     sigs = np.array([sigs, sigs])
     bg = BycycleGroup()
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         bg.fit(sigs[0][0], fs, f_range)
 
     bg.fit(sigs, fs, f_range)
 
-    assert isinstance(bg.dfs_features, list)
-    assert isinstance(bg.dfs_features[0], list)
-    assert isinstance(bg.dfs_features[0][0], Bycycle)
-    assert isinstance(bg.dfs_features[0][0].df_features, pd.DataFrame)
-    assert ismethod(bg.dfs_features[0][0].fit)
-    assert ismethod(bg.dfs_features[0][0].plot)
+    assert isinstance(bg.df_features, list)
+    assert isinstance(bg.df_features[0], list)
+    assert isinstance(bg[0][0], Bycycle)
+    assert isinstance(bg.df_features[0][0], pd.DataFrame)
+    assert ismethod(bg.models[0][0].fit)
+    assert ismethod(bg.models[0][0].plot)
+    assert ismethod(bg[0][0].fit)
+    assert ismethod(bg[0][0].plot)
     assert len(bg) == 2
     assert len(bg[0]) == 2
     assert bg.fs == fs

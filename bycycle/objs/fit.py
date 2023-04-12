@@ -4,6 +4,7 @@ import warnings
 import numpy as np
 
 from neurodsp.plts.utils import savefig
+import pandas as pd
 
 from bycycle.features import compute_features
 from bycycle.group import compute_features_2d, compute_features_3d
@@ -13,12 +14,12 @@ from bycycle.burst.utils import recompute_edges as rc_edges
 ###################################################################################################
 ###################################################################################################
 
-class Base:
+class BycycleBase:
     """Shared base sub-class."""
 
     def __init__(self, center_extrema='peak', burst_method='cycles', burst_kwargs=None,
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
-                 
+
         # Compute features settings
         self.center_extrema = center_extrema
 
@@ -72,7 +73,7 @@ class Base:
         self.df_features = None
 
 
-class Bycycle(Base):
+class Bycycle(BycycleBase):
     """Compute bycycle features from a signal.
 
     Attributes
@@ -120,9 +121,9 @@ class Bycycle(Base):
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
         """Initialize object settings."""
 
-        Base.__init__(self, center_extrema, burst_method, burst_kwargs,
-                      thresholds, find_extrema_kwargs, return_samples)
-       
+        super().__init__(center_extrema, burst_method, burst_kwargs,
+                         thresholds, find_extrema_kwargs, return_samples)
+
 
     def __getattr__(self, key):
         """Access df_features columns as class attributes.
@@ -209,12 +210,12 @@ class Bycycle(Base):
         self.df_features = df_features
 
 
-class BycycleGroup(Base):
+class BycycleGroup(BycycleBase):
     """Compute bycycle features for a 2d or 3d signal.
 
     Attributes
     ----------
-    bms : list of Bycycle
+    models : list of Bycycle
         Fit Bycycle objects.
     sigs : 2d or 3d array
         Voltage time series.
@@ -274,34 +275,34 @@ class BycycleGroup(Base):
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
         """Initialize object settings."""
 
-        Base.__init__(self, center_extrema, burst_method, burst_kwargs,
-                      thresholds, find_extrema_kwargs, return_samples)
+        super().__init__(center_extrema, burst_method, burst_kwargs,
+                         thresholds, find_extrema_kwargs, return_samples)
 
         # 2d settings
         self.axis = None
         self.n_jobs = None
 
         # Results
-        self.bms = []
+        self.models = []
 
 
     def __len__(self):
         """Define the length of the object."""
 
-        return len(self.bms)
+        return len(self.models)
 
 
     def __iter__(self):
         """Allow for iterating across the object."""
 
-        for result in self.bms:
+        for result in self.models:
             yield result
 
 
     def __getitem__(self, index):
         """Allow for indexing into the object."""
 
-        return self.bms[index]
+        return self.models[index]
 
 
     def fit(self, sigs, fs, f_range, axis=0, n_jobs=-1, progress=None):
@@ -363,9 +364,9 @@ class BycycleGroup(Base):
 
         # Initialize lists
         if  self.sigs.ndim == 3:
-            self.bms = np.zeros((len(self.df_features), len(self.df_features[0]))).tolist()
+            self.models = np.zeros((len(self.df_features), len(self.df_features[0]))).tolist()
         else:
-            self.bms = np.zeros(len(self.df_features)).tolist()
+            self.models = np.zeros(len(self.df_features)).tolist()
 
         # Convert dataframes to Bycycle objects
         for dim0, sig in enumerate(self.sigs):
@@ -381,7 +382,7 @@ class BycycleGroup(Base):
                     bm.load(self.df_features[dim0][dim1], sig_, self.fs, self.f_range)
 
                     # Set
-                    self.bms[dim0][dim1] = bm
+                    self.models[dim0][dim1] = bm
 
             else:
 
@@ -392,5 +393,4 @@ class BycycleGroup(Base):
                 bm.load(self.df_features[dim0], sig, self.fs, self.f_range)
 
                 # Set
-                self.bms[dim0] = bm
-
+                self.models[dim0] = bm
