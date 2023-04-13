@@ -82,7 +82,7 @@ html-multi:
 		git checkout $(current_branch);\
 		git branch -D v$$v; \
 	done
-	#git branch -D v$(STABLE)
+	git branch -D v$(STABLE)
 	# Move stable back to root reference
 	mv _build/html_stable _build/html
 	# Remove the temporary remote
