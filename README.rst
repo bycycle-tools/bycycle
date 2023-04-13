@@ -123,6 +123,7 @@ Reference
 ---------
 
 If you use this code in your project, please cite:
+
 ::
 
     Cole SR & Voytek B (2019) Cycle-by-cycle analysis of neural oscillations. Journal of neurophysiology
@@ -160,6 +161,7 @@ sampled at 1000 Hz (``fs``) with an alpha (8-12 Hz, ``f_range``) oscillation. We
 of cycle features with the following:
 
 .. code-block:: python
+
     from neurodsp.sim import sim_bursty_oscillation
     from bycycle import Bycycle
 
