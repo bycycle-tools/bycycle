@@ -36,8 +36,8 @@ def test_compute_shape_features(sim_args, find_extrema_kwargs, center_extrema):
     assert len(sample_cols) == 6
 
     # Assert that np.nan isn't in dataframe(s), with the exception of the first and last row
-    for idx, row in df_shapes.iterrows():
-
+    for idx, row in enumerate(df_shapes.to_dict('records')):
+        row = list(row.values())
         assert not np.isnan(row[1:-1]).any()
 
     # Check inverted signal gives appropriately opposite data

@@ -160,7 +160,10 @@ def compute_amp_consistency(df_shape_features, direction='both'):
 
     # Compute amplitude consistency
     cycles = len(df_shape_features)
-    amp_consistency = np.ones(cycles) * np.nan
+    amp_consistency = np.zeros(cycles)
+    amp_consistency[0] = np.nan
+    amp_consistency[-1] = np.nan
+
     rises = df_shape_features['volt_rise'].values
     decays = df_shape_features['volt_decay'].values
 
@@ -236,7 +239,9 @@ def compute_period_consistency(df_shape_features, direction='both'):
 
     # Compute period consistency
     cycles = len(df_shape_features)
-    period_consistency = np.ones(cycles) * np.nan
+    period_consistency = np.zeros(cycles)
+    period_consistency[0] = np.nan
+    period_consistency[-1] = np.nan
     periods = df_shape_features['period'].values
 
     for cyc in range(1, cycles-1):
@@ -285,9 +290,9 @@ def compute_monotonicity(df_samples, sig):
 
     # Compute monotonicity
     cycles = len(df_samples)
-    monotonicity = np.ones(cycles) * np.nan
+    monotonicity = np.zeros(cycles)
 
-    for idx, row in df_samples.iterrows():
+    for idx, row in enumerate(df_samples.to_dict('records')):
 
         if 'sample_peak' in df_samples.columns:
             rise_period = sig[int(row['sample_last_trough']):int(row['sample_peak'])+1]
@@ -375,7 +380,7 @@ def compute_burst_fraction(df_samples, sig, fs, f_range, amp_threshes=(1, 2),
 
     # Compute fraction of each cycle that's bursting
     burst_fraction = []
-    for _, row in df_samples.iterrows():
+    for row in df_samples.to_dict('records'):
         fraction_bursting = np.mean(is_burst[int(row['sample_last_' + side_e]):
                                              int(row['sample_next_' + side_e] + 1)])
         burst_fraction.append(fraction_bursting)
