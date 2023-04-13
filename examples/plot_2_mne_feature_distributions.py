@@ -30,7 +30,7 @@ from bycycle.plts import plot_feature_hist
 f_alpha = (8, 15)
 
 # Get the data path for the MNE example data
-raw_fname = sample.data_path() + '/MEG/sample/sample_audvis_filt-0-40_raw.fif'
+raw_fname = str(sample.data_path()) + '/MEG/sample/sample_audvis_filt-0-40_raw.fif'
 
 # Load the file of example MNE data
 raw = read_raw_fif(raw_fname, preload=True, verbose=False)

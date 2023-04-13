@@ -161,6 +161,11 @@ bm.fit(sig, fs, f_theta)
 bm.df_features
 
 ####################################################################################################
+
+# Dataframe columns are directly accessible via attributes
+bm.volt_amp
+
+####################################################################################################
 #
 # 4. Determine parts of signal in oscillatory burst
 # -------------------------------------------------
@@ -283,7 +288,7 @@ bm.plot(figsize=(16, 3))
 # expect these parameters to be pretty good.
 #
 # Notice that adding a small amplitude fraction threshold (e.g. 0.3) helps remove some false
-# positives that may occur, like that around 1.5 seconds. Consisitency features for non-bursting 
+# positives that may occur, like that around 1.5 seconds. Consisitency features for non-bursting
 # cycles on the edges of bursts may be recomputed to reduce false negatives when entering or exiting
 # a burst.
 #

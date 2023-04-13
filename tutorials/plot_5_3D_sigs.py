@@ -121,21 +121,28 @@ bg_rest.fit(sigs_rest, fs, (1, 50), axis=0)
 bg_task = BycycleGroup(thresholds=thresholds)
 bg_task.fit(sigs_task, fs, (1, 50), axis=0)
 
-dfs_rest = bg_rest.df_features
-dfs_task = bg_task.df_features
+df_rest = bg_rest.df_features
+df_task = bg_task.df_features
 
 ####################################################################################################
 
-# Merge epochs into a single dataframe
-df_rest = flatten_dfs(dfs_rest, ['rest'] * n_channels * n_epochs, 'Epoch')
-df_task = flatten_dfs(dfs_task, ['task'] * n_channels * n_epochs, 'Epoch')
-df_epochs = pd.concat([df_rest, df_task], axis=0)
+# Merge dataframes, preserving channels
+ch_labels = ["CH{ch_ind}".format(ch_ind=ch_ind) for ch_ind in range(n_channels)]
 
-# Merge channels into a single dataframe
-ch_labels = ["CH{ch_idx}".format(ch_idx=ch_idx)
-             for ch_idx in range(n_channels) for ep_idx in range(n_epochs)]
+df_rest_ch = flatten_dfs(
+    [pd.concat(df_rest[i]) for i in range(n_channels)], ch_labels, 'Channel'
+)
+df_task_ch = flatten_dfs(
+    [pd.concat(df_task[i]) for i in range(n_channels)], ch_labels, 'Channel'
+)
 
-df_channels = flatten_dfs(np.vstack([dfs_rest, dfs_task]), ch_labels * 2, 'Channel')
+df_channels = pd.concat([df_rest_ch, df_task_ch])
+
+# Merge across channels and epochs into a single dataframe
+df_rest = flatten_dfs(df_rest, ['rest'] * n_channels * n_epochs, 'Epoch')
+df_task = flatten_dfs(df_task, ['task'] * n_channels * n_epochs, 'Epoch')
+
+df_epochs = pd.concat([df_rest, df_task])
 
 # Limit to bursts
 df_epochs = df_epochs[df_epochs['is_burst'] == True]

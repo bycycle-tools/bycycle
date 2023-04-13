@@ -54,6 +54,9 @@ def test_base_init(Base, thresholds, burst_method, find_extrema_kwargs):
     defaults = [bm.df_features, bm.sig, bm.fs, bm.f_range]
     assert defaults == [None] * len(defaults)
 
+    reduced_thresholds = bm.reduce_thresholds(.1)
+    assert reduced_thresholds != thresholds
+
 
 @pytest.mark.parametrize('recompute_edges', [True, False])
 def test_bycycle_fit(sim_args, recompute_edges):
@@ -68,7 +71,10 @@ def test_bycycle_fit(sim_args, recompute_edges):
     with pytest.raises(ValueError):
         bm.fit(np.array([sig, sig]), fs, f_range)
 
-    bm.fit(sig, fs, f_range, recompute_edges=recompute_edges)
+    bm.fit(sig, fs, f_range)
+
+    if recompute_edges:
+        bm.recompute_edges()
 
     assert isinstance(bm.df_features, pd.DataFrame)
     assert bm.fs == fs
@@ -155,3 +161,5 @@ def test_bycyclegroup_fit(sim_args):
     assert bg.fs == fs
     assert bg.f_range == f_range
     assert (bg.sigs == sigs).all()
+
+    bg.recompute_edges()

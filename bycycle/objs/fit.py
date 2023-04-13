@@ -72,6 +72,30 @@ class BycycleBase:
         # Results
         self.df_features = None
 
+    def reduce_thresholds(self, reduction):
+        """Adjust thresholds by a given amount.
+
+        Parameters
+        ----------
+        reduction : float, optional, default: None
+            Reduces all float thresholds by given amount.
+
+        Returns
+        -------
+        reduced_thresholds : dict
+            Copy of thresholds with reduction applied.
+        """
+        reduction = 0 if reduction is None else reduction
+        reduced_thresholds = {}
+
+        for k, v in self.thresholds.items():
+            if k.endswith('threshold'):
+                reduced_thresholds[k] = v - reduction
+            else:
+                reduced_thresholds[k] = v
+
+        return reduced_thresholds
+
 
 class Bycycle(BycycleBase):
     """Compute bycycle features from a signal.
@@ -121,8 +145,8 @@ class Bycycle(BycycleBase):
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
         """Initialize object settings."""
 
-        super().__init__(center_extrema, burst_method, burst_kwargs,
-                         thresholds, find_extrema_kwargs, return_samples)
+        super().__init__(center_extrema, burst_method, burst_kwargs, thresholds,
+                         find_extrema_kwargs, return_samples)
 
 
     def __getattr__(self, key):
@@ -147,7 +171,7 @@ class Bycycle(BycycleBase):
             raise AttributeError(f'\'{self.__class__.__name__}\' object has no attribute \'{key}\'')
 
 
-    def fit(self, sig, fs, f_range, recompute_edges=False):
+    def fit(self, sig, fs, f_range):
         """Run the bycycle algorithm on a signal.
 
         Parameters
@@ -158,8 +182,6 @@ class Bycycle(BycycleBase):
             Sampling rate, in Hz.
         f_range : tuple of (float, float)
             Frequency range for narrowband signal of interest (Hz).
-        recompute_edges : bool, optional, default: False
-            Recomputes features for cycles on the edge of bursts.
         """
 
         if sig.ndim != 1:
@@ -169,12 +191,23 @@ class Bycycle(BycycleBase):
         self.sig = sig
         self.fs = fs
         self.f_range = f_range
-        self.df_features = compute_features(self.sig, self.fs, self.f_range, self.center_extrema,
-                                            self.burst_method, self.burst_kwargs, self.thresholds,
-                                            self.find_extrema_kwargs, self.return_samples)
+        self.df_features = compute_features(
+            self.sig, self.fs, self.f_range, self.center_extrema,
+            self.burst_method, self.burst_kwargs, self.thresholds,
+            self.find_extrema_kwargs, self.return_samples
+        )
 
-        if recompute_edges:
-            self.df_features = rc_edges(self.df_features, self.thresholds)
+
+    def recompute_edges(self, reduction=None):
+        """Recomputes features for cycles on the edge of bursts.
+
+        Parameters
+        ----------
+        reduction : float, optional, default: None
+            Reduces all float thresholds by given amount.
+        """
+        reduced_thresholds = self.reduce_thresholds(reduction)
+        self.df_features = rc_edges(self.df_features, reduced_thresholds)
 
 
     @savefig
@@ -206,7 +239,6 @@ class Bycycle(BycycleBase):
         self.sig = sig
         self.fs = fs
         self.f_range = f_range
-
         self.df_features = df_features
 
 
@@ -269,18 +301,18 @@ class BycycleGroup(BycycleBase):
 
     return_samples : bool, optional, default: True
         Returns samples indices of cyclepoints used for determining features if True.
-    """
 
+    """
     def __init__(self, center_extrema='peak', burst_method='cycles', burst_kwargs=None,
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
         """Initialize object settings."""
-
-        super().__init__(center_extrema, burst_method, burst_kwargs,
-                         thresholds, find_extrema_kwargs, return_samples)
+        super().__init__(center_extrema, burst_method, burst_kwargs, thresholds,
+                         find_extrema_kwargs, return_samples)
 
         # 2d settings
         self.axis = None
         self.n_jobs = None
+        self.n_dims = None
 
         # Results
         self.models = []
@@ -316,6 +348,8 @@ class BycycleGroup(BycycleBase):
             Sampling rate, in Hz.
         f_range : tuple of (float, float)
             Frequency range for narrowband signal of interest, in Hz.
+        recompute_edges : bool, optional, default: False
+            Recomputes features for cycles on the edge of bursts.
         axis : {0, 1, (0, 1), None}
             For 2d arrays:
 
@@ -359,8 +393,10 @@ class BycycleGroup(BycycleBase):
 
         compute_func = compute_features_2d if self.sigs.ndim == 2 else compute_features_3d
 
-        self.df_features = compute_func(self.sigs, self.fs, self.f_range, compute_features_kwargs,
-                                        self.axis, self.return_samples, self.n_jobs, progress)
+        self.df_features = compute_func(
+            self.sigs, self.fs, self.f_range, compute_features_kwargs,
+            self.axis, self.return_samples, self.n_jobs, progress
+        )
 
         # Initialize lists
         if  self.sigs.ndim == 3:
@@ -369,9 +405,11 @@ class BycycleGroup(BycycleBase):
             self.models = np.zeros(len(self.df_features)).tolist()
 
         # Convert dataframes to Bycycle objects
+        self.n_dims = self.sigs.ndim
+
         for dim0, sig in enumerate(self.sigs):
 
-            if self.sigs.ndim == 3:
+            if self.n_dims == 3:
 
                 for dim1, sig_ in enumerate(sig):
 
@@ -394,3 +432,20 @@ class BycycleGroup(BycycleBase):
 
                 # Set
                 self.models[dim0] = bm
+
+
+    def recompute_edges(self, reduction=None):
+        """Recomputes features for cycles on the edge of bursts.
+
+        Parameters
+        ----------
+        reduction : float, optional, default: None
+            Reduces all float thresholds by given amount.
+        """
+
+        for dim0, sig in enumerate(self.sigs):
+            if self.n_dims == 3:
+                for dim1 in range(len(sig)):
+                    self.models[dim0][dim1].recompute_edges(reduction)
+            else:
+                 self.models[dim0].recompute_edges(reduction)
