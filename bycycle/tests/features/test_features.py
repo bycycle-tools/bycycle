@@ -42,6 +42,6 @@ def test_compute_features(sim_args, return_samples, burst_method):
         assert len(sample_cols) == 6
 
     # Assert that np.nan isn't in dataframe columns
-    for _, column in df_features.iteritems():
+    for column in df_features.keys():
 
-        assert not np.isnan(column[1:-1]).any()
+        assert not np.isnan(df_features[column].iloc[1:-1]).any()
