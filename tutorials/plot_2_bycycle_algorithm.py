@@ -303,5 +303,5 @@ thresholds = {
 }
 
 bm = Bycycle(thresholds=thresholds)
-bm.fit(sig, fs, f_alpha, recompute_edges=True)
+bm.fit(sig, fs, f_alpha)
 bm.plot(figsize=(16, 3))

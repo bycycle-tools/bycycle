@@ -10,7 +10,7 @@ differences in oscillatory power or coupling between groups of people. In this n
 through how to use bycycle to analyze resting state data.
 
 In this example, we have 20 subjects (10 patients, 10 control), and we for some reason hypothesized
-that their alpha oscillations may be systematically different. For example, (excessive hand waving)
+that their alpha oscillations may be systematically different. For example,
 we think the patient group should have more top-down input that increases the synchrony in the
 oscillatory input (measured by its symmetry).
 """
@@ -39,6 +39,7 @@ pd.options.display.max_columns = 10
 ####################################################################################################
 
 # Simulate experimental data
+np.random.seed(0)
 n_seconds = 10
 fs = 1000
 n_subjects = 20
@@ -49,11 +50,11 @@ for subject_idx in range(n_subjects):
     # Manipulate the rise-decay symmetry between the two groups
     rdsym = .35 if subject_idx <= int(n_subjects/2) else 0.5
 
-    components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .2,
+    components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1,
                                              'cycle': 'asine', 'rdsym': rdsym},
                   'sim_powerlaw': {'f_range': (2, None)}}
 
-    sigs[subject_idx] = sim_combined(n_seconds, fs, components=components, component_variances=(3, 1))
+    sigs[subject_idx] = sim_combined(n_seconds, fs, components=components, component_variances=(5, 1))
 
 
 # Apply lowpass filter to each signal
@@ -84,13 +85,16 @@ thresholds = {
     'amp_fraction': .2,
     'amp_consistency': .5,
     'period_consistency': .5,
-    'monotonicity': .8,
-    'min_n_cycles': 3
+    'monotonicity': .9,
+    'min_n_cycles': 2
 }
 
 # Compute features for each signal
 bg = BycycleGroup(thresholds=thresholds)
 bg.fit(sigs, fs, f_alpha)
+
+# Recompute cycles on edges of bursts with reduced thresholds
+bg.recompute_edges(.01)
 
 # Add group and subject ids to dataframes
 groups = ['patient' if idx >= int(n_signals/2) else 'control' for idx in range(n_signals)]
@@ -116,7 +120,7 @@ df_features.head()
 # periods of the signal that appear to be bursting. This was confirmed by looking at a few different
 # signal segments from a few subjects.
 
-bg[0].plot(xlim=(0, 5), figsize=(16, 3))
+bg[0].plot(xlim=(0, 10), figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -124,7 +128,7 @@ bg[0].plot(xlim=(0, 5), figsize=(16, 3))
 # -------------------------------
 #
 # Note the significant difference between the treatment and control groups for rise-decay symmetry
-# but not the other features
+# but not the other features.
 
 ####################################################################################################
 
@@ -134,7 +138,7 @@ df_features_burst = df_features[df_features['is_burst']]
 # Compute average features across subjects in a recording
 features_keep = ['volt_amp', 'period', 'time_rdsym', 'time_ptsym']
 df_subjects = df_features_burst.groupby(['group', 'subject_id']).mean()[features_keep].reset_index()
-df_subjects
+df_subjects.head()
 
 ####################################################################################################
 
@@ -152,6 +156,7 @@ plot_feature_categorical(df_subjects, 'time_rdsym', group_by='group', ax=axes[1]
 
 plot_feature_categorical(df_subjects, 'time_ptsym', group_by='group', ax=axes[1][1],
                          xlabel=['Patient', 'Control'], ylabel='Peak-Trough Symmetry')
+
 
 ####################################################################################################
 #

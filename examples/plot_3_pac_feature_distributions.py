@@ -25,7 +25,7 @@ from neurodsp.plts import plot_time_series
 from neurodsp.sim import sim_oscillation
 from neurodsp.utils.norm import normalize_variance
 
-from bycycle.features import compute_features
+from bycycle import BycycleGroup
 from bycycle.plts import plot_feature_hist
 
 
@@ -125,30 +125,32 @@ plot_time_series(time, sig_no_pac, title=titles[2], colors='C3', ax=axes[3], xli
 # Compute cycle-by-cycle features
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# Here we use the bycycle compute_features function to compute the cycle-by-
+# Here we use the bycycle the `BycycleGroup`` class to compute the cycle-by-
 # cycle features of the three signals.
 #
 
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
-threshold_kwargs = {'amp_fraction_threshold': 0.3,
-                    'amp_consistency_threshold': 0.4,
-                    'period_consistency_threshold': 0.5,
-                    'monotonicity_threshold': 0.8,
-                    'min_n_cycles': 3}
+thresholds = {
+    'amp_fraction_threshold': 0.3,
+    'amp_consistency_threshold': 0.4,
+    'period_consistency_threshold': 0.5,
+    'monotonicity_threshold': 0.8,
+    'min_n_cycles': 3
+}
 
-# Cycle-by-cycle analysis
-dfs = dict()
-dfs['pac'] = compute_features(sig_pac, fs, f_beta, center_extrema='trough',
-                              threshold_kwargs=threshold_kwargs, return_samples=False)
+sigs = np.vstack([sig_pac, sig_spurious_pac, sig_no_pac])
 
-dfs['spurious'] = compute_features(sig_spurious_pac, fs, f_beta, center_extrema='trough',
-                                   threshold_kwargs=threshold_kwargs, return_samples=False)
+bg = BycycleGroup(thresholds=thresholds, center_extrema='trough', return_samples=False)
 
-dfs['no_pac'] = compute_features(sig_no_pac, fs, f_beta, center_extrema='trough',
-                                 threshold_kwargs=threshold_kwargs, return_samples=False)
+bg.fit(sigs, fs, f_beta)
 
+dfs = {
+    'pac': bg.df_features[0],
+    'spurious': bg.df_features[1],
+    'no_pac': bg.df_features[2],
+}
 
 ####################################################################################################
 #

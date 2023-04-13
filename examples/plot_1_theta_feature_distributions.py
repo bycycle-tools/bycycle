@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
-from bycycle.group import compute_features_2d
+from bycycle import BycycleGroup
 from bycycle.plts.features import plot_feature_hist
 from bycycle.utils.download import load_bycycle_data
 
@@ -47,21 +47,21 @@ ec3 = filter_signal(ec3_raw, fs, 'lowpass', fc, n_seconds=filter_seconds,
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
-threshold_kwargs = {'amp_fraction_threshold': 0,
-                    'amp_consistency_threshold': .6,
-                    'period_consistency_threshold': .75,
-                    'monotonicity_threshold': .8,
-                    'min_n_cycles': 3}
+thresholds = {
+    'amp_fraction_threshold': 0,
+    'amp_consistency_threshold': .6,
+    'period_consistency_threshold': .75,
+    'monotonicity_threshold': .8,
+    'min_n_cycles': 3
+}
 
 # Cycle-by-cycle analysis
 sigs = np.array([ca1, ec3])
 
-compute_features_kwargs = {'center_extrema': 'trough', 'threshold_kwargs': threshold_kwargs}
+bg = BycycleGroup(thresholds=thresholds, center_extrema='trough', return_samples=False)
+bg.fit(sigs, fs, f_theta)
 
-df_features = compute_features_2d(sigs, fs, f_theta, return_samples=False,
-                                  compute_features_kwargs=compute_features_kwargs)
-
-df_ca1, df_ec3 = df_features[0], df_features[1]
+df_ca1, df_ec3 = bg.df_features
 
 # Limit analysis only to oscillatory bursts
 df_ca1_cycles = df_ca1[df_ca1['is_burst']]
