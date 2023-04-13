@@ -10,12 +10,10 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = bycycle
 SOURCEDIR     = .
 BUILDDIR      = _build
-
-# Custom settings
 GITHUBORG     = https://github.com/bycycle-tools
-STABLE        = 1.0.0
+STABLE        = 1.1.0
 DEVELOPMENT   = ""
-RECENT        = 0.1.3
+RECENT        = 1.0.0
 
 ##########################################################################
 ## Standard sphinx tasks (from sphinx)
