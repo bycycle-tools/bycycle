@@ -81,7 +81,7 @@ Install
 
 The current major release is the 1.X.X series, which is a breaking change from the prior 0.X.X series.
 
-Check the `changelog <https://bycycle-tools.github.io/bycycle/v1.0.0/changelog.html>`_ for notes on updating to the new version.
+Check the `changelog <https://bycycle-tools.github.io/bycycle/changelog.html>`_ for notes on updating to the new version.
 
 **Stable Version**
 
@@ -151,26 +151,34 @@ and follow the
 Quickstart
 ----------
 
-The main function in ``bycycle`` is ``compute_features``, which takes a time series and some
-parameters as inputs, and returns a table of features for each cycle.
+The classes in ``bycycle`` are ``Bycycle``, which takes a time series and some
+parameters as inputs, and returns a table of features for each cycle. ``BycycleGroup``
+may be used when working with 2d and 3d signals.
 
 For example, consider having a 1-dimensional numpy array, ``sig``, which is a neural signal time series
 sampled at 1000 Hz (``fs``) with an alpha (8-12 Hz, ``f_range``) oscillation. We can compute the table
 of cycle features with the following:
 
 .. code-block:: python
-
     from neurodsp.sim import sim_bursty_oscillation
-    from bycycle.features import compute_features
+    from bycycle import Bycycle
 
+    # Simulate
     fs = 1000
+
     f_range = (8, 12)
 
     sig = sim_bursty_oscillation(10, fs, freq=10)
-    df_features = compute_features(sig, fs, f_range)
+
+    # Fit
+    bm = Bycycle()
+
+    bm.fit(sig, fs, f_range)
+
+    bm.df_features
 
 
-Note that the above ``compute_features`` command used default parameters to localize extrema and detect
+The above example used default parameters to localize extrema and detect
 bursts of oscillations. However, it is important to knowledgeably select these parameters, as described in the
 `algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html>`_.
 
@@ -178,17 +186,24 @@ The following example introduces some potential parameter changes:
 
 .. code-block:: python
 
-    threshold_kwargs = {'amp_fraction_threshold': .2,
-                        'amp_consistency_threshold': .5,
-                        'period_consistency_threshold': .5,
-                        'monotonicity_threshold': .8,
-                        'min_n_cycles': 3}
+    thresholds = {
+        'amp_fraction_threshold': .2,
+        'amp_consistency_threshold': .5,
+        'period_consistency_threshold': .5,
+        'monotonicity_threshold': .8,
+        'min_n_cycles': 3
+    }
 
     narrowband_kwargs = {'n_seconds': .5}
 
-    df = compute_features(sig, fs, f_range, center_extrema='trough',
-                          burst_method='cycles', threshold_kwargs=threshold_kwargs,
-                          find_extrema_kwargs={'filter_kwargs': narrowband_kwargs})
+    bm = Bycycle(
+        center_extrema='trough',
+        burst_method='cycles',
+        thresholds=thresholds,
+        find_extrema_kwargs={'filter_kwargs': narrowband_kwargs}
+    )
+
+    bm.fit(sig, fs, f_range)
 
 
 - **center_extrema** determines how the cycles are segmented. 'T' indicates the center extrema is \
@@ -197,7 +212,7 @@ The following example introduces some potential parameter changes:
   uses features of adjacent cycles in order to detect bursts (e.g. period consistency, see next \
   item). The 'amp' option uses an amplitude threshold to determine the cycles that are part of an \
   oscillatory burst.
-- **threshold_kwargs** sets the keyword arguments for the burst detection functions. For the \
+- **thresholds** sets the keyword arguments for the burst detection functions. For the \
   ``cycles`` method, there are 5 keyword arguments (see the end of the \
   `algorithm tutorial <https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html>`_ \
   for advice on choosing these parameters).

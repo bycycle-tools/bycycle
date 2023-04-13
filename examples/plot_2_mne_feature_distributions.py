@@ -21,7 +21,7 @@ from mne.datasets import sample
 from mne import pick_channels
 
 from neurodsp.plts import plot_time_series
-from bycycle.group import compute_features_2d
+from bycycle import BycycleGroup
 from bycycle.plts import plot_feature_hist
 
 ####################################################################################################
@@ -30,7 +30,7 @@ from bycycle.plts import plot_feature_hist
 f_alpha = (8, 15)
 
 # Get the data path for the MNE example data
-raw_fname = sample.data_path() + '/MEG/sample/sample_audvis_filt-0-40_raw.fif'
+raw_fname = str(sample.data_path()) + '/MEG/sample/sample_audvis_filt-0-40_raw.fif'
 
 # Load the file of example MNE data
 raw = read_raw_fif(raw_fname, preload=True, verbose=False)
@@ -71,26 +71,26 @@ plot_time_series(times, [sig * 1e6 for sig in sigs], labels=chs, title='EEG Sign
 # Compute cycle-by-cycle features
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# Here we use the bycycle compute_features function to compute the cycle-by-
+# Here we use the `BycycleGroup` class to compute the cycle-by-
 # cycle features of the three signals.
 #
 
 ####################################################################################################
 
 # Set parameters for defining oscillatory bursts
-threshold_kwargs = {'amp_fraction_threshold': 0.3,
-                    'amp_consistency_threshold': 0.4,
-                    'period_consistency_threshold': 0.5,
-                    'monotonicity_threshold': 0.8,
-                    'min_n_cycles': 3}
+thresholds = {
+    'amp_fraction_threshold': 0.3,
+    'amp_consistency_threshold': 0.4,
+    'period_consistency_threshold': 0.5,
+    'monotonicity_threshold': 0.8,
+    'min_n_cycles': 3
+}
 
 # Create a dictionary of cycle feature dataframes, corresponding to each channel
-kwargs = dict(threshold_kwargs=threshold_kwargs, center_extrema='trough')
+bg = BycycleGroup(thresholds=thresholds, center_extrema='trough')
+bg.fit(sigs, fs, f_alpha, axis=0)
 
-dfs = compute_features_2d(sigs, fs, f_alpha, axis=0,
-                          compute_features_kwargs=kwargs)
-
-dfs = {ch: df for df, ch in zip(dfs, chs)}
+dfs = {ch: df for df, ch in zip(bg.df_features, chs)}
 
 ####################################################################################################
 #

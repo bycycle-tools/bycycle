@@ -1,17 +1,103 @@
 """Bycycle class objects."""
 
+import warnings
 import numpy as np
 
 from neurodsp.plts.utils import savefig
+import pandas as pd
 
 from bycycle.features import compute_features
 from bycycle.group import compute_features_2d, compute_features_3d
 from bycycle.plts import plot_burst_detect_summary
+from bycycle.burst.utils import recompute_edges as rc_edges
 
 ###################################################################################################
 ###################################################################################################
 
-class Bycycle:
+class BycycleBase:
+    """Shared base sub-class."""
+
+    def __init__(self, center_extrema='peak', burst_method='cycles', burst_kwargs=None,
+                 thresholds=None, find_extrema_kwargs=None, return_samples=True):
+
+        # Compute features settings
+        self.center_extrema = center_extrema
+
+        self.burst_method = burst_method
+        self.burst_kwargs = {} if burst_kwargs is None else burst_kwargs
+
+        # Thresholds
+        if not isinstance(thresholds, dict):
+            warnings.warn("""
+                No burst detection thresholds are provided. This is not recommended. Please
+                inspect your data and choose appropriate parameters for 'thresholds'.
+                Default burst detection parameters are likely not well suited for your
+                desired application.
+                """)
+
+        if thresholds is None and burst_method == 'cycles':
+            self.thresholds = {
+                'amp_fraction_threshold': 0.,
+                'amp_consistency_threshold': .5,
+                'period_consistency_threshold': .5,
+                'monotonicity_threshold': .8,
+                'min_n_cycles': 3
+            }
+        elif thresholds is None and burst_method == 'amp':
+            self.thresholds = {
+                'burst_fraction_threshold': 1,
+                'min_n_cycles': 3
+            }
+        else:
+            self.thresholds = thresholds
+
+        # Allow shorthand (e.g. monotonicicy instead of monotonicity_threshold)
+        if isinstance(self.thresholds, dict):
+            for k in list(self.thresholds.keys()):
+                if not k.endswith('_threshold') and k != 'min_n_cycles':
+                    self.thresholds[k + '_threshold'] = self.thresholds.pop(k)
+
+        if find_extrema_kwargs is None:
+            self.find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
+        else:
+            self.find_extrema_kwargs = find_extrema_kwargs
+
+        self.return_samples = return_samples
+
+        # Compute features args
+        self.sig = None
+        self.fs = None
+        self.f_range = None
+
+        # Results
+        self.df_features = None
+
+    def reduce_thresholds(self, reduction):
+        """Adjust thresholds by a given amount.
+
+        Parameters
+        ----------
+        reduction : float, optional, default: None
+            Reduces all float thresholds by given amount.
+
+        Returns
+        -------
+        reduced_thresholds : dict
+            Copy of thresholds with reduction applied.
+        """
+        reduction = 0 if reduction is None else reduction
+        reduced_thresholds = {}
+
+        for k, v in self.thresholds.items():
+            if k.endswith('threshold'):
+                reduced_thresholds[k] = v - reduction
+            else:
+                reduced_thresholds[k] = v
+
+        return reduced_thresholds
+
+
+class Bycycle(BycycleBase):
     """Compute bycycle features from a signal.
 
     Attributes
@@ -59,49 +145,8 @@ class Bycycle:
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
         """Initialize object settings."""
 
-        # Compute features settings
-        self.center_extrema = center_extrema
-
-        self.burst_method = burst_method
-        self.burst_kwargs = {} if burst_kwargs is None else burst_kwargs
-
-        # Thresholds
-        if thresholds is None and burst_method == 'cycles':
-            self.thresholds = {
-                'amp_fraction_threshold': 0.,
-                'amp_consistency_threshold': .5,
-                'period_consistency_threshold': .5,
-                'monotonicity_threshold': .8,
-                'min_n_cycles': 3
-            }
-        elif thresholds is None and burst_method == 'amp':
-            self.thresholds = {
-                'burst_fraction_threshold': 1,
-                'min_n_cycles': 3
-            }
-        else:
-            self.thresholds = thresholds
-
-        # Allow shorthand (e.g. monotonicicy instead of monotonicity_threshold)
-        if isinstance(self.thresholds, dict):
-            for k in list(self.thresholds.keys()):
-                if not k.endswith('_threshold') and k != 'min_n_cycles':
-                    self.thresholds[k + '_threshold'] = self.thresholds.pop(k)
-
-        if find_extrema_kwargs is None:
-            self.find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}}
-        else:
-            self.find_extrema_kwargs = find_extrema_kwargs
-
-        self.return_samples = return_samples
-
-        # Compute features args
-        self.sig = None
-        self.fs = None
-        self.f_range = None
-
-        # Results
-        self.df_features = None
+        super().__init__(center_extrema, burst_method, burst_kwargs, thresholds,
+                         find_extrema_kwargs, return_samples)
 
 
     def __getattr__(self, key):
@@ -146,9 +191,23 @@ class Bycycle:
         self.sig = sig
         self.fs = fs
         self.f_range = f_range
-        self.df_features = compute_features(self.sig, self.fs, self.f_range, self.center_extrema,
-                                            self.burst_method, self.burst_kwargs, self.thresholds,
-                                            self.find_extrema_kwargs, self.return_samples)
+        self.df_features = compute_features(
+            self.sig, self.fs, self.f_range, self.center_extrema,
+            self.burst_method, self.burst_kwargs, self.thresholds,
+            self.find_extrema_kwargs, self.return_samples
+        )
+
+
+    def recompute_edges(self, reduction=None):
+        """Recomputes features for cycles on the edge of bursts.
+
+        Parameters
+        ----------
+        reduction : float, optional, default: None
+            Reduces all float thresholds by given amount.
+        """
+        reduced_thresholds = self.reduce_thresholds(reduction)
+        self.df_features = rc_edges(self.df_features, reduced_thresholds)
 
 
     @savefig
@@ -180,17 +239,16 @@ class Bycycle:
         self.sig = sig
         self.fs = fs
         self.f_range = f_range
-
         self.df_features = df_features
 
 
-class BycycleGroup:
+class BycycleGroup(BycycleBase):
     """Compute bycycle features for a 2d or 3d signal.
 
     Attributes
     ----------
-    dfs_features : list of pandas.DataFrame or list of list of pandas.DataFrame
-        Dataframe containing shape and burst features for each cycle.
+    models : list of Bycycle
+        Fit Bycycle objects.
     sigs : 2d or 3d array
         Voltage time series.
     fs : float
@@ -243,62 +301,40 @@ class BycycleGroup:
 
     return_samples : bool, optional, default: True
         Returns samples indices of cyclepoints used for determining features if True.
-    """
 
+    """
     def __init__(self, center_extrema='peak', burst_method='cycles', burst_kwargs=None,
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
         """Initialize object settings."""
+        super().__init__(center_extrema, burst_method, burst_kwargs, thresholds,
+                         find_extrema_kwargs, return_samples)
 
-        # Compute features settings
-        self.center_extrema = center_extrema
-
-        self.burst_method = burst_method
-        self.burst_kwargs = {} if burst_kwargs is None else burst_kwargs
-
-        if thresholds is None:
-            self.thresholds = {
-                'amp_fraction_threshold': 0.,
-                'amp_consistency_threshold': .5,
-                'period_consistency_threshold': .5,
-                'monotonicity_threshold': .8,
-                'min_n_cycles': 3
-            }
-        else:
-            self.thresholds = thresholds
-
-        self.find_extrema_kwargs = {'filter_kwargs': {'n_cycles': 3}} if find_extrema_kwargs \
-            is None else find_extrema_kwargs
-
-        self.return_samples = return_samples
-
-        # Compute features args
-        self.sigs = None
-        self.fs = None
-        self.f_range = None
+        # 2d settings
         self.axis = None
         self.n_jobs = None
+        self.n_dims = None
 
         # Results
-        self.dfs_features = []
+        self.models = []
 
 
     def __len__(self):
         """Define the length of the object."""
 
-        return len(self.dfs_features)
+        return len(self.models)
 
 
     def __iter__(self):
         """Allow for iterating across the object."""
 
-        for result in self.dfs_features:
+        for result in self.models:
             yield result
 
 
     def __getitem__(self, index):
         """Allow for indexing into the object."""
 
-        return self.dfs_features[index]
+        return self.models[index]
 
 
     def fit(self, sigs, fs, f_range, axis=0, n_jobs=-1, progress=None):
@@ -312,6 +348,8 @@ class BycycleGroup:
             Sampling rate, in Hz.
         f_range : tuple of (float, float)
             Frequency range for narrowband signal of interest, in Hz.
+        recompute_edges : bool, optional, default: False
+            Recomputes features for cycles on the edge of bursts.
         axis : {0, 1, (0, 1), None}
             For 2d arrays:
 
@@ -355,19 +393,23 @@ class BycycleGroup:
 
         compute_func = compute_features_2d if self.sigs.ndim == 2 else compute_features_3d
 
-        features = compute_func(self.sigs, self.fs, self.f_range, compute_features_kwargs,
-                                self.axis, self.return_samples, self.n_jobs, progress)
+        self.df_features = compute_func(
+            self.sigs, self.fs, self.f_range, compute_features_kwargs,
+            self.axis, self.return_samples, self.n_jobs, progress
+        )
 
         # Initialize lists
         if  self.sigs.ndim == 3:
-            self.dfs_features = np.zeros((len(features), len(features[0]))).tolist()
+            self.models = np.zeros((len(self.df_features), len(self.df_features[0]))).tolist()
         else:
-            self.dfs_features = np.zeros(len(features)).tolist()
+            self.models = np.zeros(len(self.df_features)).tolist()
 
         # Convert dataframes to Bycycle objects
+        self.n_dims = self.sigs.ndim
+
         for dim0, sig in enumerate(self.sigs):
 
-            if self.sigs.ndim == 3:
+            if self.n_dims == 3:
 
                 for dim1, sig_ in enumerate(sig):
 
@@ -375,10 +417,10 @@ class BycycleGroup:
                     bm = Bycycle(self.center_extrema, self.burst_method, self.burst_kwargs,
                                  self.thresholds, self.find_extrema_kwargs, self.return_samples)
                     # Load
-                    bm.load(features[dim0][dim1], sig_, self.fs, self.f_range)
+                    bm.load(self.df_features[dim0][dim1], sig_, self.fs, self.f_range)
 
                     # Set
-                    self.dfs_features[dim0][dim1] = bm
+                    self.models[dim0][dim1] = bm
 
             else:
 
@@ -386,7 +428,24 @@ class BycycleGroup:
                 bm = Bycycle(self.center_extrema, self.burst_method, self.burst_kwargs,
                              self.thresholds, self.find_extrema_kwargs, self.return_samples)
                 # Load
-                bm.load(features[dim0], sig, self.fs, self.f_range)
+                bm.load(self.df_features[dim0], sig, self.fs, self.f_range)
 
                 # Set
-                self.dfs_features[dim0] = bm
+                self.models[dim0] = bm
+
+
+    def recompute_edges(self, reduction=None):
+        """Recomputes features for cycles on the edge of bursts.
+
+        Parameters
+        ----------
+        reduction : float, optional, default: None
+            Reduces all float thresholds by given amount.
+        """
+
+        for dim0, sig in enumerate(self.sigs):
+            if self.n_dims == 3:
+                for dim1 in range(len(sig)):
+                    self.models[dim0][dim1].recompute_edges(reduction)
+            else:
+                 self.models[dim0].recompute_edges(reduction)
