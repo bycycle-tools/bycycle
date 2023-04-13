@@ -81,7 +81,7 @@ Install
 
 The current major release is the 1.X.X series, which is a breaking change from the prior 0.X.X series.
 
-Check the `changelog <https://bycycle-tools.github.io/bycycle/changelog.htmll>`_ for notes on updating to the new version.
+Check the `changelog <https://bycycle-tools.github.io/bycycle/changelog.html>`_ for notes on updating to the new version.
 
 **Stable Version**
 

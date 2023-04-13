@@ -15,6 +15,17 @@ API reference for the bycyle module.
 Cycle-by-cycle
 ===============
 
+Classes
+~~~~~~~
+
+.. currentmodule:: bycycle.objs
+
+.. autosummary::
+   :toctree: generated/
+
+   Bycycle
+   BycycleGroup
+
 Feature Functions
 ~~~~~~~~~~~~~~~~~
 
