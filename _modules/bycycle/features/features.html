@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bycycle.features.features &#8212; bycycle 1.0.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bycycle.features.features &#8212; bycycle 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -25,10 +24,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -54,9 +53,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../../../index.html"><span><img src="../../../_static/logo.jpg"></span>
+        <a class="navbar-brand" href="../../../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +70,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.0.0
+    v1.1.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -113,7 +112,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param</span>
+<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param_range</span>
 <span class="kn">from</span> <span class="nn">bycycle.utils.dataframes</span> <span class="kn">import</span> <span class="n">drop_samples_df</span>
 <span class="kn">from</span> <span class="nn">bycycle.features.shape</span> <span class="kn">import</span> <span class="n">compute_shape_features</span>
 <span class="kn">from</span> <span class="nn">bycycle.features.burst</span> <span class="kn">import</span> <span class="n">compute_burst_features</span>
@@ -125,7 +124,7 @@
 <div class="viewcode-block" id="compute_features"><a class="viewcode-back" href="../../../generated/bycycle.features.compute_features.html#bycycle.features.compute_features">[docs]</a><span class="k">def</span> <span class="nf">compute_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span> <span class="n">burst_method</span><span class="o">=</span><span class="s1">&#39;cycles&#39;</span><span class="p">,</span>
                      <span class="n">burst_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">find_extrema_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">return_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute shape and burst features for each cycle.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute shape and burst features for each cycle.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -216,7 +215,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Ensure arguments are within valid range</span>
-    <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+    <span class="n">check_param_range</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
 
     <span class="c1"># Compute shape features for each cycle</span>
     <span class="n">df_shape_features</span> <span class="o">=</span> <span class="n">compute_shape_features</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="n">center_extrema</span><span class="p">,</span>
@@ -239,6 +238,11 @@
     <span class="k">if</span> <span class="n">burst_method</span> <span class="o">==</span> <span class="s1">&#39;amp&#39;</span><span class="p">:</span>
         <span class="n">burst_kwargs</span><span class="p">[</span><span class="s1">&#39;fs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
         <span class="n">burst_kwargs</span><span class="p">[</span><span class="s1">&#39;f_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_range</span>
+
+    <span class="k">if</span> <span class="n">burst_method</span> <span class="o">==</span> <span class="s1">&#39;amp&#39;</span> <span class="ow">and</span> <span class="s1">&#39;min_n_cycles&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">burst_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">burst_kwargs</span><span class="p">[</span><span class="s1">&#39;min_n_cycles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">threshold_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;min_n_cycles&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">burst_method</span> <span class="o">==</span> <span class="s1">&#39;amp&#39;</span> <span class="ow">and</span> <span class="s1">&#39;min_n_cycles&#39;</span> <span class="ow">in</span> <span class="n">burst_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">threshold_kwargs</span><span class="p">[</span><span class="s1">&#39;min_n_cycles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">burst_kwargs</span><span class="p">[</span><span class="s1">&#39;min_n_cycles&#39;</span><span class="p">]</span>
 
     <span class="c1"># Compute burst features for each cycle</span>
     <span class="n">df_burst_features</span> <span class="o">=</span> <span class="n">compute_burst_features</span><span class="p">(</span><span class="n">df_shape_features</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">burst_method</span><span class="o">=</span><span class="n">burst_method</span><span class="p">,</span>
@@ -272,8 +276,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2018-2023, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

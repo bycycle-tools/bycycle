@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3. MNE Interface Cycle Feature Distributions &#8212; bycycle 1.0.0 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>3. MNE Interface Cycle Feature Distributions &#8212; bycycle 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -25,10 +25,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -54,9 +54,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo.jpg"></span>
+        <a class="navbar-brand" href="../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +71,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.0.0
+    v1.1.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -108,13 +108,14 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-2-mne-feature-distributions-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-2-mne-feature-distributions-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="mne-interface-cycle-feature-distributions">
-<span id="sphx-glr-auto-examples-plot-2-mne-feature-distributions-py"></span><h1>3. MNE Interface Cycle Feature Distributions<a class="headerlink" href="#mne-interface-cycle-feature-distributions" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="mne-interface-cycle-feature-distributions">
+<span id="sphx-glr-auto-examples-plot-2-mne-feature-distributions-py"></span><h1>3. MNE Interface Cycle Feature Distributions<a class="headerlink" href="#mne-interface-cycle-feature-distributions" title="Permalink to this heading">¶</a></h1>
 <p>Compute bycycle feature distributions using MNE objects.</p>
-<div class="section" id="import-packages-and-load-data">
-<h2>Import Packages and Load Data<a class="headerlink" href="#import-packages-and-load-data" title="Permalink to this headline">¶</a></h2>
+<section id="import-packages-and-load-data">
+<h2>Import Packages and Load Data<a class="headerlink" href="#import-packages-and-load-data" title="Permalink to this heading">¶</a></h2>
 <p>First let’s import the packages we need. This example depends on mne.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -124,7 +125,7 @@
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">pick_channels</span>
 
 <span class="kn">from</span> <span class="nn">neurodsp.plts</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a>
-<span class="kn">from</span> <span class="nn">bycycle.group</span> <span class="kn">import</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a>
+<span class="kn">from</span> <span class="nn">bycycle</span> <span class="kn">import</span> <span class="n">BycycleGroup</span>
 <span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_feature_hist.html#bycycle.plts.plot_feature_hist" title="bycycle.plts.plot_feature_hist" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_hist</span></a>
 </pre></div>
 </div>
@@ -132,7 +133,7 @@
 <span class="n">f_alpha</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
 
 <span class="c1"># Get the data path for the MNE example data</span>
-<span class="n">raw_fname</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">data_path</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis_filt-0-40_raw.fif&#39;</span>
+<span class="n">raw_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis_filt-0-40_raw.fif&#39;</span>
 
 <span class="c1"># Load the file of example MNE data</span>
 <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_fif</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -156,39 +157,61 @@
                            <span class="n">start</span><span class="o">=</span><span class="n">t_start</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">t_stop</span><span class="p">,</span> <span class="n">return_times</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="plot-time-series-for-each-recording">
-<h3>Plot time series for each recording<a class="headerlink" href="#plot-time-series-for-each-recording" title="Permalink to this headline">¶</a></h3>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Removing projector &lt;Projection | PCA-v1, active : False, n_channels : 102&gt;
+Removing projector &lt;Projection | PCA-v2, active : False, n_channels : 102&gt;
+Removing projector &lt;Projection | PCA-v3, active : False, n_channels : 102&gt;
+Filtering raw data in 1 contiguous segment
+Setting up low-pass filter at 20 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal lowpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Upper passband edge: 20.00 Hz
+- Upper transition bandwidth: 5.00 Hz (-6 dB cutoff frequency: 22.50 Hz)
+- Filter length: 101 samples (0.673 sec)
+
+[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done  59 out of  59 | elapsed:    0.0s finished
+</pre></div>
+</div>
+<section id="plot-time-series-for-each-recording">
+<h3>Plot time series for each recording<a class="headerlink" href="#plot-time-series-for-each-recording" title="Permalink to this heading">¶</a></h3>
 <p>Now let’s see how each signal looks in time. This looks like standard EEG
 data.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the signal</span>
 <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="p">[</span><span class="n">sig</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">sigs</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">chs</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;EEG Signal&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="EEG Signal" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_mne_feature_distributions_001.png" />
-</div>
-<div class="section" id="compute-cycle-by-cycle-features">
-<h3>Compute cycle-by-cycle features<a class="headerlink" href="#compute-cycle-by-cycle-features" title="Permalink to this headline">¶</a></h3>
-<p>Here we use the bycycle compute_features function to compute the cycle-by-
+<img src="../_images/sphx_glr_plot_2_mne_feature_distributions_001.png" srcset="../_images/sphx_glr_plot_2_mne_feature_distributions_001.png" alt="EEG Signal" class = "sphx-glr-single-img"/></section>
+<section id="compute-cycle-by-cycle-features">
+<h3>Compute cycle-by-cycle features<a class="headerlink" href="#compute-cycle-by-cycle-features" title="Permalink to this heading">¶</a></h3>
+<p>Here we use the <cite>BycycleGroup</cite> class to compute the cycle-by-
 cycle features of the three signals.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set parameters for defining oscillatory bursts</span>
-<span class="n">threshold_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;amp_fraction_threshold&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
-                    <span class="s1">&#39;amp_consistency_threshold&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
-                    <span class="s1">&#39;period_consistency_threshold&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-                    <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
-                    <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;amp_fraction_threshold&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s1">&#39;amp_consistency_threshold&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="s1">&#39;period_consistency_threshold&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span>
+<span class="p">}</span>
 
 <span class="c1"># Create a dictionary of cycle feature dataframes, corresponding to each channel</span>
-<span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;trough&#39;</span><span class="p">)</span>
+<span class="n">bg</span> <span class="o">=</span> <span class="n">BycycleGroup</span><span class="p">(</span><span class="n">thresholds</span><span class="o">=</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;trough&#39;</span><span class="p">)</span>
+<span class="n">bg</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="n">dfs</span> <span class="o">=</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                          <span class="n">compute_features_kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="n">ch</span><span class="p">:</span> <span class="n">df</span> <span class="k">for</span> <span class="n">df</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">chs</span><span class="p">)}</span>
+<span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="n">ch</span><span class="p">:</span> <span class="n">df</span> <span class="k">for</span> <span class="n">df</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bg</span><span class="o">.</span><span class="n">df_features</span><span class="p">,</span> <span class="n">chs</span><span class="p">)}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="plot-feature-distributions">
-<h3>Plot feature distributions<a class="headerlink" href="#plot-feature-distributions" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="plot-feature-distributions">
+<h3>Plot feature distributions<a class="headerlink" href="#plot-feature-distributions" title="Permalink to this heading">¶</a></h3>
 <p>As it turns out, none of the channels in the mne example audio and visual
 task has waveform asymmetry. These data were collected from a healthy
 person while they listened to beeps or saw gratings on a screen
@@ -209,15 +232,14 @@ so this is not unexpected.</p>
                       <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Cycle period (ms)&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">25</span><span class="p">))</span>
 
     <a href="../generated/bycycle.plts.plot_feature_hist.html#bycycle.plts.plot_feature_hist" title="bycycle.plts.plot_feature_hist" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_hist</span></a><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;time_rdsym&#39;</span><span class="p">,</span> <span class="n">only_bursts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">ch</span><span class="p">,</span>
-                      <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Rise-decay asymmetry&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">))</span>
+                      <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Rise-decay asymmetry&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">.1</span><span class="p">))</span>
 
     <a href="../generated/bycycle.plts.plot_feature_hist.html#bycycle.plts.plot_feature_hist" title="bycycle.plts.plot_feature_hist" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_hist</span></a><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;time_ptsym&#39;</span><span class="p">,</span> <span class="n">only_bursts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">ch</span><span class="p">,</span>
-                      <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Peak-trough asymmetry&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">))</span>
+                      <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Peak-trough asymmetry&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">.1</span><span class="p">))</span>
 </pre></div>
 </div>
-<img alt="plot 2 mne feature distributions" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_2_mne_feature_distributions_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.964 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-2-mne-feature-distributions-py">
+<img src="../_images/sphx_glr_plot_2_mne_feature_distributions_002.png" srcset="../_images/sphx_glr_plot_2_mne_feature_distributions_002.png" alt="plot 2 mne feature distributions" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.887 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-2-mne-feature-distributions-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/836877f351d16e49398bf3430b74d5d0/plot_2_mne_feature_distributions.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_2_mne_feature_distributions.py</span></code></a></p>
 </div>
@@ -226,9 +248,9 @@ so this is not unexpected.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
     </div>
@@ -242,8 +264,8 @@ so this is not unexpected.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2018-2023, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3. Cycle-by-cycle analysis of resting state data &#8212; bycycle 1.0.0 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>3. Cycle-by-cycle analysis of resting state data &#8212; bycycle 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -25,10 +25,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -54,9 +54,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo.jpg"></span>
+        <a class="navbar-brand" href="../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +71,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.0.0
+    v1.1.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -108,38 +108,39 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-tutorials-plot-3-bycycle-resting-state-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-tutorials-plot-3-bycycle-resting-state-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="cycle-by-cycle-analysis-of-resting-state-data">
-<span id="sphx-glr-auto-tutorials-plot-3-bycycle-resting-state-py"></span><h1>3. Cycle-by-cycle analysis of resting state data<a class="headerlink" href="#cycle-by-cycle-analysis-of-resting-state-data" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="cycle-by-cycle-analysis-of-resting-state-data">
+<span id="sphx-glr-auto-tutorials-plot-3-bycycle-resting-state-py"></span><h1>3. Cycle-by-cycle analysis of resting state data<a class="headerlink" href="#cycle-by-cycle-analysis-of-resting-state-data" title="Permalink to this heading">¶</a></h1>
 <p>Simulated experiment using the cycle-by-cycle approach.</p>
 <p>Say we ran an experiment and want to compare subjects’ resting state data for some reason. Maybe we
 want to study age, gender, disease state, or something. This has often been done to study
 differences in oscillatory power or coupling between groups of people. In this notebook, we will run
 through how to use bycycle to analyze resting state data.</p>
 <p>In this example, we have 20 subjects (10 patients, 10 control), and we for some reason hypothesized
-that their alpha oscillations may be systematically different. For example, (excessive hand waving)
+that their alpha oscillations may be systematically different. For example,
 we think the patient group should have more top-down input that increases the synchrony in the
 oscillatory input (measured by its symmetry).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 
-<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_combined.html#neurodsp.sim.sim_combined" title="neurodsp.sim.sim_combined" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_combined</span></a>
+<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_combined</span>
 <span class="kn">from</span> <span class="nn">neurodsp.filt</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a>
 <span class="kn">from</span> <span class="nn">neurodsp.plts</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a>
 
-<span class="kn">from</span> <span class="nn">bycycle.group</span> <span class="kn">import</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a>
-<span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">,</span> <a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a>
+<span class="kn">from</span> <span class="nn">bycycle</span> <span class="kn">import</span> <span class="n">BycycleGroup</span>
+<span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <span class="n">plot_burst_detect_summary</span><span class="p">,</span> <a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_columns</span> <span class="o">=</span> <span class="mi">10</span>
 </pre></div>
 </div>
-<div class="section" id="load-simulated-experiment-of-10-patients-and-10-controls">
-<h2>Load simulated experiment of 10 patients and 10 controls<a class="headerlink" href="#load-simulated-experiment-of-10-patients-and-10-controls" title="Permalink to this headline">¶</a></h2>
+<section id="load-simulated-experiment-of-10-patients-and-10-controls">
+<h2>Load simulated experiment of 10 patients and 10 controls<a class="headerlink" href="#load-simulated-experiment-of-10-patients-and-10-controls" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate experimental data</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="n">n_subjects</span> <span class="o">=</span> <span class="mi">20</span>
@@ -148,18 +149,18 @@ oscillatory input (measured by its symmetry).</p>
 <span class="k">for</span> <span class="n">subject_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_subjects</span><span class="p">):</span>
 
     <span class="c1"># Manipulate the rise-decay symmetry between the two groups</span>
-    <span class="n">rdsym</span> <span class="o">=</span> <span class="o">.</span><span class="mi">35</span> <span class="k">if</span> <span class="n">subject_idx</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_subjects</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="k">else</span> <span class="mf">0.5</span>
+    <span class="n">rdsym</span> <span class="o">=</span> <span class="mf">.35</span> <span class="k">if</span> <span class="n">subject_idx</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_subjects</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="k">else</span> <span class="mf">0.5</span>
 
-    <span class="n">components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sim_bursty_oscillation&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;freq&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;enter_burst&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;leave_burst&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sim_bursty_oscillation&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;freq&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;enter_burst&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span> <span class="s1">&#39;leave_burst&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span>
                                              <span class="s1">&#39;cycle&#39;</span><span class="p">:</span> <span class="s1">&#39;asine&#39;</span><span class="p">,</span> <span class="s1">&#39;rdsym&#39;</span><span class="p">:</span> <span class="n">rdsym</span><span class="p">},</span>
                   <span class="s1">&#39;sim_powerlaw&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;f_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)}}</span>
 
-    <span class="n">sigs</span><span class="p">[</span><span class="n">subject_idx</span><span class="p">]</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_combined.html#neurodsp.sim.sim_combined" title="neurodsp.sim.sim_combined" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_combined</span></a><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">component_variances</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">sigs</span><span class="p">[</span><span class="n">subject_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim_combined</span><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">component_variances</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
 
 <span class="c1"># Apply lowpass filter to each signal</span>
 <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sigs</span><span class="p">)):</span>
-    <span class="n">sigs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a><span class="p">(</span><span class="n">sigs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;lowpass&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">n_seconds</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span> <span class="n">remove_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a><span class="p">(</span><span class="n">sigs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;lowpass&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">n_seconds</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span> <span class="n">remove_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot an example signal</span>
@@ -170,40 +171,44 @@ oscillatory input (measured by its symmetry).</p>
 <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">sigs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="plot 3 bycycle resting state" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_bycycle_resting_state_001.png" />
-</div>
-<div class="section" id="compute-cycle-by-cycle-features">
-<h2>Compute cycle-by-cycle features<a class="headerlink" href="#compute-cycle-by-cycle-features" title="Permalink to this headline">¶</a></h2>
+<img src="../_images/sphx_glr_plot_3_bycycle_resting_state_001.png" srcset="../_images/sphx_glr_plot_3_bycycle_resting_state_001.png" alt="plot 3 bycycle resting state" class = "sphx-glr-single-img"/></section>
+<section id="compute-cycle-by-cycle-features">
+<h2>Compute cycle-by-cycle features<a class="headerlink" href="#compute-cycle-by-cycle-features" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Frequency band of interest</span>
 <span class="n">f_alpha</span> <span class="o">=</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
 
 <span class="c1"># Tuned burst detection parameters</span>
-<span class="n">threshold_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;amp_fraction_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span>
-                    <span class="s1">&#39;amp_consistency_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
-                    <span class="s1">&#39;period_consistency_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
-                    <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span>
-                    <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;amp_fraction&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">,</span>
+    <span class="s1">&#39;amp_consistency&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>
+    <span class="s1">&#39;period_consistency&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>
+    <span class="s1">&#39;monotonicity&#39;</span><span class="p">:</span> <span class="mf">.9</span><span class="p">,</span>
+    <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">}</span>
 
 <span class="c1"># Compute features for each signal</span>
-<span class="n">compute_features_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;threshold_kwargs&#39;</span><span class="p">:</span> <span class="n">threshold_kwargs</span><span class="p">}</span>
+<span class="n">bg</span> <span class="o">=</span> <span class="n">BycycleGroup</span><span class="p">(</span><span class="n">thresholds</span><span class="o">=</span><span class="n">thresholds</span><span class="p">)</span>
+<span class="n">bg</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">)</span>
 
-<span class="n">df_features_list</span> <span class="o">=</span> <a href="../generated/bycycle.group.compute_features_2d.html#bycycle.group.compute_features_2d" title="bycycle.group.compute_features_2d" class="sphx-glr-backref-module-bycycle-group sphx-glr-backref-type-py-function"><span class="n">compute_features_2d</span></a><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_alpha</span><span class="p">,</span> <span class="n">compute_features_kwargs</span><span class="p">)</span>
+<span class="c1"># Recompute cycles on edges of bursts with reduced thresholds</span>
+<span class="n">bg</span><span class="o">.</span><span class="n">recompute_edges</span><span class="p">(</span><span class="mf">.01</span><span class="p">)</span>
 
 <span class="c1"># Add group and subject ids to dataframes</span>
 <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;patient&#39;</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_signals</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;control&#39;</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_signals</span><span class="p">)]</span>
 <span class="n">subject_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_signals</span><span class="p">)]</span>
 
 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">groups</span><span class="p">):</span>
-    <span class="n">df_features_list</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span>
-    <span class="n">df_features_list</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;subject_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">bg</span><span class="o">.</span><span class="n">df_features</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span>
+    <span class="n">bg</span><span class="o">.</span><span class="n">df_features</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;subject_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
 <span class="c1"># Concatenate the list of dataframes</span>
-<span class="n">df_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_features_list</span><span class="p">)</span>
+<span class="n">df_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">bg</span><span class="o">.</span><span class="n">df_features</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df_features</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
+<div class="output_subarea output_html rendered_html output_result">
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -238,70 +243,70 @@ oscillatory input (measured by its symmetry).</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.843750</td>
+      <td>0.234043</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>0.890805</td>
-      <td>134</td>
+      <td>0.856481</td>
+      <td>153</td>
       <td>...</td>
-      <td>135</td>
-      <td>269</td>
+      <td>89</td>
+      <td>242</td>
       <td>False</td>
       <td>control</td>
       <td>0</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.989583</td>
-      <td>0.620434</td>
-      <td>0.835821</td>
-      <td>1.000000</td>
-      <td>112</td>
+      <td>0.202128</td>
+      <td>0.806234</td>
+      <td>0.385621</td>
+      <td>0.980769</td>
+      <td>59</td>
       <td>...</td>
-      <td>269</td>
-      <td>381</td>
-      <td>True</td>
+      <td>242</td>
+      <td>301</td>
+      <td>False</td>
       <td>control</td>
       <td>0</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.864583</td>
-      <td>0.610152</td>
-      <td>0.901786</td>
-      <td>1.000000</td>
-      <td>101</td>
+      <td>0.191489</td>
+      <td>0.337052</td>
+      <td>0.627660</td>
+      <td>0.792573</td>
+      <td>94</td>
       <td>...</td>
-      <td>381</td>
-      <td>482</td>
-      <td>True</td>
+      <td>301</td>
+      <td>395</td>
+      <td>False</td>
       <td>control</td>
       <td>0</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.968750</td>
-      <td>0.510478</td>
-      <td>0.902913</td>
+      <td>0.095745</td>
+      <td>0.239360</td>
+      <td>0.699115</td>
       <td>1.000000</td>
-      <td>103</td>
+      <td>79</td>
       <td>...</td>
-      <td>482</td>
-      <td>585</td>
-      <td>True</td>
+      <td>395</td>
+      <td>474</td>
+      <td>False</td>
       <td>control</td>
       <td>0</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.677083</td>
-      <td>0.280686</td>
-      <td>0.781513</td>
-      <td>0.928571</td>
-      <td>93</td>
+      <td>0.117021</td>
+      <td>0.634007</td>
+      <td>0.699115</td>
+      <td>0.895161</td>
+      <td>113</td>
       <td>...</td>
-      <td>585</td>
-      <td>678</td>
+      <td>474</td>
+      <td>587</td>
       <td>False</td>
       <td>control</td>
       <td>0</td>
@@ -310,32 +315,42 @@ oscillatory input (measured by its symmetry).</p>
 </table>
 <p>5 rows × 26 columns</p>
 </div>
+</div>
 <br />
-<br /></div>
-<div class="section" id="confirm-appropriateness-of-burst-detection-parameters">
-<h2>Confirm appropriateness of burst detection parameters<a class="headerlink" href="#confirm-appropriateness-of-burst-detection-parameters" title="Permalink to this headline">¶</a></h2>
+<br /></section>
+<section id="confirm-appropriateness-of-burst-detection-parameters">
+<h2>Confirm appropriateness of burst detection parameters<a class="headerlink" href="#confirm-appropriateness-of-burst-detection-parameters" title="Permalink to this heading">¶</a></h2>
 <p>These burst detection parameters seem appropriate because they mostly restrict the analysis to
 periods of the signal that appear to be bursting. This was confirmed by looking at a few different
 signal segments from a few subjects.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/bycycle.plts.plot_burst_detect_summary.html#bycycle.plts.plot_burst_detect_summary" title="bycycle.plts.plot_burst_detect_summary" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_burst_detect_summary</span></a><span class="p">(</span><span class="n">df_features_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sigs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fs</span><span class="p">,</span> <span class="n">threshold_kwargs</span><span class="p">,</span>
-                          <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
-<img alt="plot 3 bycycle resting state" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_bycycle_resting_state_002.png" />
+<img src="../_images/sphx_glr_plot_3_bycycle_resting_state_002.png" srcset="../_images/sphx_glr_plot_3_bycycle_resting_state_002.png" alt="plot 3 bycycle resting state" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
+  line.set(**{style : next(values)})
+/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
+  line.set(**{style : next(values)})
+/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
+  line.set(**{style : next(values)})
+/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
+  line.set(**{style : next(values)})
+</pre></div>
 </div>
-<div class="section" id="analyze-cycle-by-cycle-features">
-<h2>Analyze cycle-by-cycle features<a class="headerlink" href="#analyze-cycle-by-cycle-features" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="analyze-cycle-by-cycle-features">
+<h2>Analyze cycle-by-cycle features<a class="headerlink" href="#analyze-cycle-by-cycle-features" title="Permalink to this heading">¶</a></h2>
 <p>Note the significant difference between the treatment and control groups for rise-decay symmetry
-but not the other features</p>
+but not the other features.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Only consider cycles that were identified to be in bursting regimes</span>
 <span class="n">df_features_burst</span> <span class="o">=</span> <span class="n">df_features</span><span class="p">[</span><span class="n">df_features</span><span class="p">[</span><span class="s1">&#39;is_burst&#39;</span><span class="p">]]</span>
 
 <span class="c1"># Compute average features across subjects in a recording</span>
 <span class="n">features_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;volt_amp&#39;</span><span class="p">,</span> <span class="s1">&#39;period&#39;</span><span class="p">,</span> <span class="s1">&#39;time_rdsym&#39;</span><span class="p">,</span> <span class="s1">&#39;time_ptsym&#39;</span><span class="p">]</span>
 <span class="n">df_subjects</span> <span class="o">=</span> <span class="n">df_features_burst</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;group&#39;</span><span class="p">,</span> <span class="s1">&#39;subject_id&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()[</span><span class="n">features_keep</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-<span class="n">df_subjects</span>
+<span class="n">df_subjects</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
+<div class="output_subarea output_html rendered_html output_result">
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -367,206 +382,71 @@ but not the other features</p>
       <th>0</th>
       <td>control</td>
       <td>0</td>
-      <td>4.679689</td>
-      <td>101.727273</td>
-      <td>0.454922</td>
-      <td>0.509715</td>
+      <td>3.415119</td>
+      <td>99.645833</td>
+      <td>0.398167</td>
+      <td>0.506239</td>
     </tr>
     <tr>
       <th>1</th>
       <td>control</td>
       <td>1</td>
-      <td>4.063838</td>
-      <td>98.750000</td>
-      <td>0.396006</td>
-      <td>0.475136</td>
+      <td>3.663709</td>
+      <td>102.357143</td>
+      <td>0.417092</td>
+      <td>0.503348</td>
     </tr>
     <tr>
       <th>2</th>
       <td>control</td>
       <td>2</td>
-      <td>3.289236</td>
-      <td>104.370370</td>
-      <td>0.451629</td>
-      <td>0.527016</td>
+      <td>3.830204</td>
+      <td>99.142857</td>
+      <td>0.392477</td>
+      <td>0.511995</td>
     </tr>
     <tr>
       <th>3</th>
       <td>control</td>
       <td>3</td>
-      <td>3.259429</td>
-      <td>98.407407</td>
-      <td>0.409072</td>
-      <td>0.507445</td>
+      <td>3.555657</td>
+      <td>98.945946</td>
+      <td>0.410615</td>
+      <td>0.499541</td>
     </tr>
     <tr>
       <th>4</th>
       <td>control</td>
       <td>4</td>
-      <td>3.425267</td>
-      <td>100.192308</td>
-      <td>0.407316</td>
-      <td>0.515441</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>control</td>
-      <td>5</td>
-      <td>3.178816</td>
-      <td>99.428571</td>
-      <td>0.397448</td>
-      <td>0.520976</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>control</td>
-      <td>6</td>
-      <td>3.283935</td>
-      <td>103.440000</td>
-      <td>0.398010</td>
-      <td>0.480890</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>control</td>
-      <td>7</td>
-      <td>3.901318</td>
-      <td>101.562500</td>
-      <td>0.391142</td>
-      <td>0.516936</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>control</td>
-      <td>8</td>
-      <td>2.965661</td>
-      <td>100.500000</td>
-      <td>0.401419</td>
-      <td>0.506036</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>control</td>
-      <td>9</td>
-      <td>3.318195</td>
-      <td>107.904762</td>
-      <td>0.397613</td>
-      <td>0.514270</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>patient</td>
-      <td>10</td>
-      <td>3.182003</td>
-      <td>104.666667</td>
-      <td>0.441258</td>
-      <td>0.514982</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>patient</td>
-      <td>11</td>
-      <td>3.085259</td>
-      <td>99.370370</td>
-      <td>0.494656</td>
-      <td>0.516204</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>patient</td>
-      <td>12</td>
-      <td>3.296432</td>
-      <td>100.250000</td>
-      <td>0.445505</td>
-      <td>0.489280</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>patient</td>
-      <td>13</td>
-      <td>3.122408</td>
-      <td>100.900000</td>
-      <td>0.511184</td>
-      <td>0.490658</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>patient</td>
-      <td>14</td>
-      <td>3.300744</td>
-      <td>99.750000</td>
-      <td>0.493443</td>
-      <td>0.496569</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>patient</td>
-      <td>15</td>
-      <td>3.313917</td>
-      <td>101.724138</td>
-      <td>0.508145</td>
-      <td>0.527206</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>patient</td>
-      <td>16</td>
-      <td>2.991150</td>
-      <td>100.878049</td>
-      <td>0.466456</td>
-      <td>0.525759</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>patient</td>
-      <td>17</td>
-      <td>3.600522</td>
-      <td>101.000000</td>
-      <td>0.480670</td>
-      <td>0.530958</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>patient</td>
-      <td>18</td>
-      <td>3.604836</td>
-      <td>103.866667</td>
-      <td>0.520220</td>
-      <td>0.488618</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>patient</td>
-      <td>19</td>
-      <td>3.536440</td>
-      <td>101.312500</td>
-      <td>0.483750</td>
-      <td>0.499131</td>
+      <td>4.496516</td>
+      <td>100.062500</td>
+      <td>0.406571</td>
+      <td>0.508676</td>
     </tr>
   </tbody>
 </table>
+</div>
 </div>
 <br />
 <br /><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
 
 <a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a><span class="p">(</span><span class="n">df_subjects</span><span class="p">,</span> <span class="s1">&#39;volt_amp&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;group&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                        <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Patient&#39;</span><span class="p">,</span> <span class="s1">&#39;Control&#39;</span><span class="p">],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+                         <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Patient&#39;</span><span class="p">,</span> <span class="s1">&#39;Control&#39;</span><span class="p">],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
 
 <a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a><span class="p">(</span><span class="n">df_subjects</span><span class="p">,</span> <span class="s1">&#39;period&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;group&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
-                        <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Patient&#39;</span><span class="p">,</span> <span class="s1">&#39;Control&#39;</span><span class="p">],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Period (ms)&#39;</span><span class="p">)</span>
+                         <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Patient&#39;</span><span class="p">,</span> <span class="s1">&#39;Control&#39;</span><span class="p">],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Period (ms)&#39;</span><span class="p">)</span>
 
 <a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a><span class="p">(</span><span class="n">df_subjects</span><span class="p">,</span> <span class="s1">&#39;time_rdsym&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;group&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                        <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Patient&#39;</span><span class="p">,</span> <span class="s1">&#39;Control&#39;</span><span class="p">],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Rise-Decay Symmetry&#39;</span><span class="p">)</span>
+                         <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Patient&#39;</span><span class="p">,</span> <span class="s1">&#39;Control&#39;</span><span class="p">],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Rise-Decay Symmetry&#39;</span><span class="p">)</span>
 
 <a href="../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical" title="bycycle.plts.plot_feature_categorical" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_categorical</span></a><span class="p">(</span><span class="n">df_subjects</span><span class="p">,</span> <span class="s1">&#39;time_ptsym&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;group&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
-                        <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Patient&#39;</span><span class="p">,</span> <span class="s1">&#39;Control&#39;</span><span class="p">],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Peak-Trough Symmetry&#39;</span><span class="p">)</span>
+                         <span class="n">xlabel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Patient&#39;</span><span class="p">,</span> <span class="s1">&#39;Control&#39;</span><span class="p">],</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Peak-Trough Symmetry&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="plot 3 bycycle resting state" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_bycycle_resting_state_003.png" />
-</div>
-<div class="section" id="statistical-differences-in-cycle-features">
-<h2>Statistical differences in cycle features<a class="headerlink" href="#statistical-differences-in-cycle-features" title="Permalink to this headline">¶</a></h2>
+<img src="../_images/sphx_glr_plot_3_bycycle_resting_state_003.png" srcset="../_images/sphx_glr_plot_3_bycycle_resting_state_003.png" alt="plot 3 bycycle resting state" class = "sphx-glr-single-img"/></section>
+<section id="statistical-differences-in-cycle-features">
+<h2>Statistical differences in cycle features<a class="headerlink" href="#statistical-differences-in-cycle-features" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">feature_names</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;volt_amp&#39;</span><span class="p">:</span> <span class="s1">&#39;Amplitude&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;period&#39;</span><span class="p">:</span> <span class="s1">&#39;Period (ms)&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;time_rdsym&#39;</span><span class="p">:</span> <span class="s1">&#39;Rise-Decay Symmetry&#39;</span><span class="p">,</span>
@@ -580,17 +460,14 @@ but not the other features</p>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:20s}</span><span class="s1"> difference between groups, U= </span><span class="si">{:3.0f}</span><span class="s1">, p=</span><span class="si">{:.5f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">feat_name</span><span class="p">,</span> <span class="n">ustat</span><span class="p">,</span> <span class="n">pval</span><span class="p">))</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/rph/Projects/bycycle/.env/lib/python3.8/site-packages/scipy/stats/stats.py:7012: DeprecationWarning: Calling `mannwhitneyu` without specifying `alternative` is deprecated.
-  warnings.warn(&quot;Calling `mannwhitneyu` without specifying &quot;
-Amplitude            difference between groups, U=  41, p=0.26026
-Period (ms)          difference between groups, U=  48, p=0.45486
-Rise-Decay Symmetry  difference between groups, U=   4, p=0.00029
-Peak-Trough Symmetry difference between groups, U=  48, p=0.45486
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Amplitude            difference between groups, U=  25, p=0.06402
+Period (ms)          difference between groups, U=  36, p=0.30749
+Rise-Decay Symmetry  difference between groups, U=  97, p=0.00044
+Peak-Trough Symmetry difference between groups, U=  41, p=0.52052
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.955 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-3-bycycle-resting-state-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.180 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-3-bycycle-resting-state-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/a420da27baa2092e3a432c04209f31d2/plot_3_bycycle_resting_state.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_3_bycycle_resting_state.py</span></code></a></p>
 </div>
@@ -599,8 +476,8 @@ Peak-Trough Symmetry difference between groups, U=  48, p=0.45486
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -614,8 +491,8 @@ Peak-Trough Symmetry difference between groups, U=  48, p=0.45486
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2018-2023, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>neurodsp.burst.dualthresh &#8212; bycycle 1.0.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>neurodsp.burst.dualthresh &#8212; bycycle 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -25,10 +24,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -54,9 +53,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../../../index.html"><span><img src="../../../_static/logo.jpg"></span>
+        <a class="navbar-brand" href="../../../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +70,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.0.0
+    v1.1.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -112,6 +111,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">neurodsp.utils.core</span> <span class="kn">import</span> <span class="n">get_avg_func</span>
+<span class="kn">from</span> <span class="nn">neurodsp.utils.checks</span> <span class="kn">import</span> <span class="n">check_param_options</span>
 <span class="kn">from</span> <span class="nn">neurodsp.utils.decorators</span> <span class="kn">import</span> <span class="n">multidim</span>
 <span class="kn">from</span> <span class="nn">neurodsp.timefrequency.hilbert</span> <span class="kn">import</span> <span class="n">amp_by_time</span>
 
@@ -123,7 +123,7 @@
                                  <span class="n">min_n_cycles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">min_burst_duration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                  <span class="n">avg_type</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">,</span> <span class="n">magnitude_type</span><span class="o">=</span><span class="s1">&#39;amplitude&#39;</span><span class="p">,</span>
                                  <span class="o">**</span><span class="n">filter_kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Detect bursts in a signal using the dual threshold algorithm.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect bursts in a signal using the dual threshold algorithm.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -156,6 +156,18 @@
 <span class="sd">        Boolean indication of where bursts are present in the input signal.</span>
 <span class="sd">        True indicates that a burst was detected at that sample, otherwise False.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The dual-threshold burst detection algorithm was originally proposed in [1]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Feingold, J., Gibson, D. J., DePasquale, B., &amp; Graybiel, A. M. (2015).</span>
+<span class="sd">           Bursts of beta oscillation differentiate postperformance activity in</span>
+<span class="sd">           the striatum and motor cortex of monkeys performing movement tasks.</span>
+<span class="sd">           Proceedings of the National Academy of Sciences, 112(44), 13687–13692.</span>
+<span class="sd">           DOI: https://doi.org/10.1073/pnas.1517629112</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Detect bursts using the dual threshold algorithm:</span>
@@ -175,8 +187,7 @@
     <span class="n">sig_magnitude</span> <span class="o">=</span> <span class="n">amp_by_time</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">remove_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">filter_kwargs</span><span class="p">)</span>
 
     <span class="c1"># Set magnitude as power or amplitude: square if power, leave as is if amplitude</span>
-    <span class="k">if</span> <span class="n">magnitude_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">,</span> <span class="s1">&#39;power&#39;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid input for &#39;magnitude_type&#39;&quot;</span><span class="p">)</span>
+    <span class="n">check_param_options</span><span class="p">(</span><span class="n">magnitude_type</span><span class="p">,</span> <span class="s1">&#39;magnitude_type&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">,</span> <span class="s1">&#39;power&#39;</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">magnitude_type</span> <span class="o">==</span> <span class="s1">&#39;power&#39;</span><span class="p">:</span>
         <span class="n">sig_magnitude</span> <span class="o">=</span> <span class="n">sig_magnitude</span><span class="o">**</span><span class="mi">2</span>
 
@@ -188,7 +199,7 @@
 
     <span class="c1"># Remove bursts detected that are too short</span>
     <span class="c1"># Use a number of cycles defined on the frequency range, if available</span>
-    <span class="k">if</span> <span class="n">f_range</span> <span class="ow">and</span> <span class="n">min_n_cycles</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">f_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">min_n_cycles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">min_burst_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">min_n_cycles</span> <span class="o">*</span> <span class="n">fs</span> <span class="o">/</span> <span class="n">f_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
     <span class="c1"># Otherwise, make sure minimum duration is set, and use that</span>
     <span class="k">else</span><span class="p">:</span>
@@ -203,7 +214,7 @@
 
 
 <span class="k">def</span> <span class="nf">_dual_threshold_split</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">thresh_hi</span><span class="p">,</span> <span class="n">thresh_lo</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Identify periods that are above thresh_lo and have at least one value above thresh_hi.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Identify periods that are above thresh_lo and have at least one value above thresh_hi.&quot;&quot;&quot;</span>
 
     <span class="c1"># Find all values above thresh_hi</span>
     <span class="c1"># To avoid bug in later loop, do not allow first or last index to start off as 1</span>
@@ -247,7 +258,7 @@
 
 
 <span class="k">def</span> <span class="nf">_rmv_short_periods</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove periods that are equal to 1 for less than n_samples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove periods that are equal to 1 for less than n_samples.&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">sig</span>
@@ -288,8 +299,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2018-2023, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

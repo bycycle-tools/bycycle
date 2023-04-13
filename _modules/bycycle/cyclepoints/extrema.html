@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bycycle.cyclepoints.extrema &#8212; bycycle 1.0.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bycycle.cyclepoints.extrema &#8212; bycycle 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -25,10 +24,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -54,9 +53,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../../../index.html"><span><img src="../../../_static/logo.jpg"></span>
+        <a class="navbar-brand" href="../../../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +70,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.0.0
+    v1.1.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -114,7 +113,7 @@
 <span class="kn">from</span> <span class="nn">neurodsp.filt</span> <span class="kn">import</span> <span class="n">filter_signal</span>
 <span class="kn">from</span> <span class="nn">neurodsp.filt.fir</span> <span class="kn">import</span> <span class="n">compute_filter_length</span>
 
-<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param</span>
+<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param_range</span>
 <span class="kn">from</span> <span class="nn">bycycle.cyclepoints.zerox</span> <span class="kn">import</span> <span class="n">find_flank_zerox</span>
 
 <span class="c1">###################################################################################################</span>
@@ -122,7 +121,7 @@
 
 <div class="viewcode-block" id="find_extrema"><a class="viewcode-back" href="../../../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema">[docs]</a><span class="k">def</span> <span class="nf">find_extrema</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">first_extrema</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span>
                  <span class="n">filter_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pass_type</span><span class="o">=</span><span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Identify peaks and troughs in a time series.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Identify peaks and troughs in a time series.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -169,7 +168,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Ensure arguments are within valid range</span>
-    <span class="n">check_param</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+    <span class="n">check_param_range</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;fs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
 
     <span class="c1"># Set default filtering parameters</span>
     <span class="k">if</span> <span class="n">filter_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -206,21 +205,37 @@
 
     <span class="c1"># Calculate peak samples</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_peaks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">_decay_xs</span> <span class="o">=</span> <span class="n">decay_xs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">p_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_peaks</span><span class="p">):</span>
 
         <span class="c1"># Calculate the sample range between the most recent zero rise and the next zero decay</span>
         <span class="n">last_rise</span> <span class="o">=</span> <span class="n">rise_xs</span><span class="p">[</span><span class="n">p_idx</span><span class="p">]</span>
-        <span class="n">next_decay</span> <span class="o">=</span> <span class="n">decay_xs</span><span class="p">[</span><span class="n">decay_xs</span> <span class="o">&gt;</span> <span class="n">last_rise</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">decay</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_decay_xs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">decay</span> <span class="o">&gt;</span> <span class="n">last_rise</span><span class="p">:</span>
+                <span class="n">_decay_xs</span> <span class="o">=</span> <span class="n">_decay_xs</span><span class="p">[</span><span class="n">idx</span><span class="p">:]</span>
+                <span class="k">break</span>
+
+        <span class="n">next_decay</span> <span class="o">=</span> <span class="n">_decay_xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="c1"># Identify time of peak</span>
         <span class="n">peaks</span><span class="p">[</span><span class="n">p_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">sig</span><span class="p">[</span><span class="n">last_rise</span><span class="p">:</span><span class="n">next_decay</span><span class="p">])</span> <span class="o">+</span> <span class="n">last_rise</span>
 
     <span class="c1"># Calculate trough samples</span>
     <span class="n">troughs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_troughs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">_rise_xs</span> <span class="o">=</span> <span class="n">rise_xs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">t_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_troughs</span><span class="p">):</span>
 
         <span class="c1"># Calculate the sample range between the most recent zero decay and the next zero rise</span>
         <span class="n">last_decay</span> <span class="o">=</span> <span class="n">decay_xs</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span>
-        <span class="n">next_rise</span> <span class="o">=</span> <span class="n">rise_xs</span><span class="p">[</span><span class="n">rise_xs</span> <span class="o">&gt;</span> <span class="n">last_decay</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">rise</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_rise_xs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">rise</span> <span class="o">&gt;</span> <span class="n">last_decay</span><span class="p">:</span>
+                <span class="n">_rise_xs</span> <span class="o">=</span> <span class="n">_rise_xs</span><span class="p">[</span><span class="n">idx</span><span class="p">:]</span>
+                <span class="k">break</span>
+
+        <span class="n">next_rise</span> <span class="o">=</span> <span class="n">_rise_xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="c1"># Identify time of trough</span>
         <span class="n">troughs</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">sig</span><span class="p">[</span><span class="n">last_decay</span><span class="p">:</span><span class="n">next_rise</span><span class="p">])</span> <span class="o">+</span> <span class="n">last_decay</span>
 
@@ -258,8 +273,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2018-2023, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

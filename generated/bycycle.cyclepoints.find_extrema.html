@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bycycle.cyclepoints.find_extrema &#8212; bycycle 1.0.0 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>bycycle.cyclepoints.find_extrema &#8212; bycycle 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -25,10 +25,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -54,9 +54,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo.jpg"></span>
+        <a class="navbar-brand" href="../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +71,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.0.0
+    v1.1.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -106,14 +106,14 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="bycycle-cyclepoints-find-extrema">
-<h1>bycycle.cyclepoints.find_extrema<a class="headerlink" href="#bycycle-cyclepoints-find-extrema" title="Permalink to this headline">¶</a></h1>
+  <section id="bycycle-cyclepoints-find-extrema">
+<h1>bycycle.cyclepoints.find_extrema<a class="headerlink" href="#bycycle-cyclepoints-find-extrema" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
-<dt id="bycycle.cyclepoints.find_extrema">
-<code class="sig-prename descclassname">bycycle.cyclepoints.</code><code class="sig-name descname">find_extrema</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sig</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">f_range</span></em>, <em class="sig-param"><span class="n">boundary</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">first_extrema</span><span class="o">=</span><span class="default_value">'peak'</span></em>, <em class="sig-param"><span class="n">filter_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pass_type</span><span class="o">=</span><span class="default_value">'bandpass'</span></em>, <em class="sig-param"><span class="n">pad</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/cyclepoints/extrema.html#find_extrema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bycycle.cyclepoints.find_extrema" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bycycle.cyclepoints.find_extrema">
+<span class="sig-prename descclassname"><span class="pre">bycycle.cyclepoints.</span></span><span class="sig-name descname"><span class="pre">find_extrema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_extrema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'peak'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pass_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bandpass'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/cyclepoints/extrema.html#find_extrema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.cyclepoints.find_extrema" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identify peaks and troughs in a time series.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>sig</strong><span class="classifier">1d array</span></dt><dd><p>Time series.</p>
 </dd>
@@ -136,7 +136,7 @@ such as ‘n_cycles’ or ‘n_seconds’ to control filter length.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>peaks</strong><span class="classifier">1d array</span></dt><dd><p>Indices at which oscillatory peaks occur in the input <code class="docutils literal notranslate"><span class="pre">sig</span></code>.</p>
 </dd>
@@ -158,14 +158,13 @@ if the first extrema is forced to be either peak or trough.</p>
 </div>
 </dd></dl>
 
-<div class="section" id="examples-using-bycycle-cyclepoints-find-extrema">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">bycycle.cyclepoints.find_extrema</span></code><a class="headerlink" href="#examples-using-bycycle-cyclepoints-find-extrema" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="Demonstration of the cycle-by-cycle approach."><div class="figure align-default" id="id1">
-<img alt="2. Cycle-by-cycle algorithm" src="../_images/sphx_glr_plot_2_bycycle_algorithm_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py"><span class="std std-ref">2. Cycle-by-cycle algorithm</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div style='clear:both'></div></div>
-</div>
+<section id="examples-using-bycycle-cyclepoints-find-extrema">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">bycycle.cyclepoints.find_extrema</span></code><a class="headerlink" href="#examples-using-bycycle-cyclepoints-find-extrema" title="Permalink to this heading">¶</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Demonstration of the cycle-by-cycle approach."><img alt="" src="../_images/sphx_glr_plot_2_bycycle_algorithm_thumb.png" />
+<p><a class="reference internal" href="../auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py"><span class="std std-ref">2. Cycle-by-cycle algorithm</span></a></p>
+  <div class="sphx-glr-thumbnail-title">2. Cycle-by-cycle algorithm</div>
+</div></div><div style='clear:both'></div></section>
+</section>
 
 
     </div>
@@ -179,8 +178,8 @@ if the first extrema is forced to be either peak or trough.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2018-2023, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

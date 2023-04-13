@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4. PAC Cycle Feature Distributions &#8212; bycycle 1.0.0 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>4. PAC Cycle Feature Distributions &#8212; bycycle 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -25,10 +25,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -54,9 +54,9 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo.jpg"></span>
+        <a class="navbar-brand" href="../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.0.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +71,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.0.0
+    v1.1.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -108,13 +108,14 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-3-pac-feature-distributions-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-3-pac-feature-distributions-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="pac-cycle-feature-distributions">
-<span id="sphx-glr-auto-examples-plot-3-pac-feature-distributions-py"></span><h1>4. PAC Cycle Feature Distributions<a class="headerlink" href="#pac-cycle-feature-distributions" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="pac-cycle-feature-distributions">
+<span id="sphx-glr-auto-examples-plot-3-pac-feature-distributions-py"></span><h1>4. PAC Cycle Feature Distributions<a class="headerlink" href="#pac-cycle-feature-distributions" title="Permalink to this heading">¶</a></h1>
 <p>Compute bycycle features for simulated phase-amplitude coupled (PAC) data.</p>
-<div class="section" id="import-packages">
-<h2>Import packages<a class="headerlink" href="#import-packages" title="Permalink to this headline">¶</a></h2>
+<section id="import-packages">
+<h2>Import packages<a class="headerlink" href="#import-packages" title="Permalink to this heading">¶</a></h2>
 <p>First let’s import the packages we need. This example depends on the
 pactools simulator to make pac and a spurious pac function from the
 pactools spurious pac example.</p>
@@ -126,14 +127,14 @@ pactools spurious pac example.</p>
 
 <span class="kn">from</span> <span class="nn">neurodsp.plts</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a>
 <span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_oscillation.html#neurodsp.sim.sim_oscillation" title="neurodsp.sim.sim_oscillation" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_oscillation</span></a>
-<span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <span class="n">normalize_variance</span>
+<span class="kn">from</span> <span class="nn">neurodsp.utils.norm</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.utils.norm.normalize_variance.html#neurodsp.utils.norm.normalize_variance" title="neurodsp.utils.norm.normalize_variance" class="sphx-glr-backref-module-neurodsp-utils-norm sphx-glr-backref-type-py-function"><span class="n">normalize_variance</span></a>
 
-<span class="kn">from</span> <span class="nn">bycycle.features</span> <span class="kn">import</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a>
+<span class="kn">from</span> <span class="nn">bycycle</span> <span class="kn">import</span> <span class="n">BycycleGroup</span>
 <span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_feature_hist.html#bycycle.plts.plot_feature_hist" title="bycycle.plts.plot_feature_hist" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_feature_hist</span></a>
 </pre></div>
 </div>
-<div class="section" id="simulate-pac-data">
-<h3>Simulate PAC data<a class="headerlink" href="#simulate-pac-data" title="Permalink to this headline">¶</a></h3>
+<section id="simulate-pac-data">
+<h3>Simulate PAC data<a class="headerlink" href="#simulate-pac-data" title="Permalink to this heading">¶</a></h3>
 <p>Now we will use the imported functions to make pac data, spurious pac data
 and a sine wave with pink noise.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">20</span>
@@ -153,7 +154,7 @@ and a sine wave with pink noise.</p>
 
 <span class="c1"># Simulate 10 Hz spiking which couples to about 60 Hz</span>
 <span class="n">spikes</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.sim.sim_oscillation.html#neurodsp.sim.sim_oscillation" title="neurodsp.sim.sim_oscillation" class="sphx-glr-backref-module-neurodsp-sim sphx-glr-backref-type-py-function"><span class="n">sim_oscillation</span></a><span class="p">(</span><span class="n">n_seconds</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
-<span class="n">noise</span> <span class="o">=</span> <span class="n">normalize_variance</span><span class="p">(</span><span class="n">pink_noise</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mf">1.</span><span class="p">),</span> <span class="n">variance</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">noise</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.utils.norm.normalize_variance.html#neurodsp.utils.norm.normalize_variance" title="neurodsp.utils.norm.normalize_variance" class="sphx-glr-backref-module-neurodsp-utils-norm sphx-glr-backref-type-py-function"><span class="n">normalize_variance</span></a><span class="p">(</span><span class="n">pink_noise</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mf">1.</span><span class="p">),</span> <span class="n">variance</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
 <span class="n">sig_spurious_pac</span> <span class="o">=</span> <span class="n">spikes</span> <span class="o">+</span> <span class="n">noise</span>
 
 <span class="c1"># Simulate a sine wave that is the driver frequency</span>
@@ -163,9 +164,9 @@ and a sine wave with pink noise.</p>
 <span class="n">sig_no_pac</span> <span class="o">=</span> <span class="n">sig_low_fq</span> <span class="o">+</span> <span class="n">noise</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="check-comodulogram-for-pac">
-<h3>Check comodulogram for PAC<a class="headerlink" href="#check-comodulogram-for-pac" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="check-comodulogram-for-pac">
+<h3>Check comodulogram for PAC<a class="headerlink" href="#check-comodulogram-for-pac" title="Permalink to this heading">¶</a></h3>
 <p>Now, we will use the tools from pactools to compute the comodulogram which
 is a visualization of phase amplitude coupling. The stronger the driver
 phase couples with a particular frequency, the brighter the color value.
@@ -187,10 +188,9 @@ spurious pac and the final signal has no pac, just background noise.</p>
     <span class="n">estimator</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">axs</span><span class="o">=</span><span class="p">[</span><span class="n">ax</span><span class="p">],</span> <span class="n">tight_layout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">titles</span><span class="o">=</span><span class="p">[</span><span class="n">title</span><span class="p">])</span>
 </pre></div>
 </div>
-<img alt="Signal with PAC, Signal with Spurious PAC, Signal with no  PAC" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_pac_feature_distributions_001.png" />
-</div>
-<div class="section" id="plot-time-series-for-each-recording">
-<h3>Plot time series for each recording<a class="headerlink" href="#plot-time-series-for-each-recording" title="Permalink to this headline">¶</a></h3>
+<img src="../_images/sphx_glr_plot_3_pac_feature_distributions_001.png" srcset="../_images/sphx_glr_plot_3_pac_feature_distributions_001.png" alt="Signal with PAC, Signal with Spurious PAC, Signal with no  PAC" class = "sphx-glr-single-img"/></section>
+<section id="plot-time-series-for-each-recording">
+<h3>Plot time series for each recording<a class="headerlink" href="#plot-time-series-for-each-recording" title="Permalink to this heading">¶</a></h3>
 <p>Now let’s see how each signal looks in time. The third plot of spikes is
 added to pink noise to make the second plot which is the spurious pac.
 This is so that where the spikes occur can be noted in the spurious pac plot.</p>
@@ -212,34 +212,36 @@ This is so that where the spikes occur can be noted in the spurious pac plot.</p
 <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">sig_no_pac</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">titles</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">xlim</span><span class="o">=</span><span class="n">xlim</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Signal with PAC, Signal with Spurious PAC, Spikes, Signal with no  PAC" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_pac_feature_distributions_002.png" />
-</div>
-<div class="section" id="compute-cycle-by-cycle-features">
-<h3>Compute cycle-by-cycle features<a class="headerlink" href="#compute-cycle-by-cycle-features" title="Permalink to this headline">¶</a></h3>
-<p>Here we use the bycycle compute_features function to compute the cycle-by-
+<img src="../_images/sphx_glr_plot_3_pac_feature_distributions_002.png" srcset="../_images/sphx_glr_plot_3_pac_feature_distributions_002.png" alt="Signal with PAC, Signal with Spurious PAC, Spikes, Signal with no  PAC" class = "sphx-glr-single-img"/></section>
+<section id="compute-cycle-by-cycle-features">
+<h3>Compute cycle-by-cycle features<a class="headerlink" href="#compute-cycle-by-cycle-features" title="Permalink to this heading">¶</a></h3>
+<p>Here we use the bycycle the <cite>BycycleGroup`</cite> class to compute the cycle-by-
 cycle features of the three signals.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set parameters for defining oscillatory bursts</span>
-<span class="n">threshold_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;amp_fraction_threshold&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
-                    <span class="s1">&#39;amp_consistency_threshold&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
-                    <span class="s1">&#39;period_consistency_threshold&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-                    <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
-                    <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;amp_fraction_threshold&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s1">&#39;amp_consistency_threshold&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="s1">&#39;period_consistency_threshold&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s1">&#39;monotonicity_threshold&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="s1">&#39;min_n_cycles&#39;</span><span class="p">:</span> <span class="mi">3</span>
+<span class="p">}</span>
 
-<span class="c1"># Cycle-by-cycle analysis</span>
-<span class="n">dfs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-<span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;pac&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig_pac</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_beta</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;trough&#39;</span><span class="p">,</span>
-                              <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">sigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">sig_pac</span><span class="p">,</span> <span class="n">sig_spurious_pac</span><span class="p">,</span> <span class="n">sig_no_pac</span><span class="p">])</span>
 
-<span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;spurious&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig_spurious_pac</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_beta</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;trough&#39;</span><span class="p">,</span>
-                                   <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">bg</span> <span class="o">=</span> <span class="n">BycycleGroup</span><span class="p">(</span><span class="n">thresholds</span><span class="o">=</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;trough&#39;</span><span class="p">,</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;no_pac&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features" class="sphx-glr-backref-module-bycycle-features sphx-glr-backref-type-py-function"><span class="n">compute_features</span></a><span class="p">(</span><span class="n">sig_no_pac</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_beta</span><span class="p">,</span> <span class="n">center_extrema</span><span class="o">=</span><span class="s1">&#39;trough&#39;</span><span class="p">,</span>
-                                 <span class="n">threshold_kwargs</span><span class="o">=</span><span class="n">threshold_kwargs</span><span class="p">,</span> <span class="n">return_samples</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">bg</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">sigs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_beta</span><span class="p">)</span>
+
+<span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;pac&#39;</span><span class="p">:</span> <span class="n">bg</span><span class="o">.</span><span class="n">df_features</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="s1">&#39;spurious&#39;</span><span class="p">:</span> <span class="n">bg</span><span class="o">.</span><span class="n">df_features</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="s1">&#39;no_pac&#39;</span><span class="p">:</span> <span class="n">bg</span><span class="o">.</span><span class="n">df_features</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="plot-feature-distributions">
-<h3>Plot feature distributions<a class="headerlink" href="#plot-feature-distributions" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="plot-feature-distributions">
+<h3>Plot feature distributions<a class="headerlink" href="#plot-feature-distributions" title="Permalink to this heading">¶</a></h3>
 <p>As shown in the feature distributions, the pac signal displays some peak-
 tough asymmetry as does the spurious pac signal.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -263,9 +265,8 @@ tough asymmetry as does the spurious pac signal.</p>
                       <span class="n">label</span><span class="o">=</span><span class="n">titles</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Peak-trough asymmetry&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="plot 3 pac feature distributions" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_3_pac_feature_distributions_003.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.909 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-3-pac-feature-distributions-py">
+<img src="../_images/sphx_glr_plot_3_pac_feature_distributions_003.png" srcset="../_images/sphx_glr_plot_3_pac_feature_distributions_003.png" alt="plot 3 pac feature distributions" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.224 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-3-pac-feature-distributions-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/689dea2c9e7d434fb38c9fca0eebb8da/plot_3_pac_feature_distributions.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_3_pac_feature_distributions.py</span></code></a></p>
 </div>
@@ -274,9 +275,9 @@ tough asymmetry as does the spurious pac signal.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
     </div>
@@ -290,8 +291,8 @@ tough asymmetry as does the spurious pac signal.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2018-2023, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

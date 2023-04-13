@@ -10,7 +10,7 @@ differences in oscillatory power or coupling between groups of people. In this n
 through how to use bycycle to analyze resting state data.
 
 In this example, we have 20 subjects (10 patients, 10 control), and we for some reason hypothesized
-that their alpha oscillations may be systematically different. For example, (excessive hand waving)
+that their alpha oscillations may be systematically different. For example,
 we think the patient group should have more top-down input that increases the synchrony in the
 oscillatory input (measured by its symmetry).
 """
@@ -21,13 +21,12 @@ import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 
 from neurodsp.sim import sim_combined
 from neurodsp.filt import filter_signal
 from neurodsp.plts import plot_time_series
 
-from bycycle.group import compute_features_2d
+from bycycle import BycycleGroup
 from bycycle.plts import plot_burst_detect_summary, plot_feature_categorical
 
 pd.options.display.max_columns = 10
@@ -40,6 +39,7 @@ pd.options.display.max_columns = 10
 ####################################################################################################
 
 # Simulate experimental data
+np.random.seed(0)
 n_seconds = 10
 fs = 1000
 n_subjects = 20
@@ -50,11 +50,11 @@ for subject_idx in range(n_subjects):
     # Manipulate the rise-decay symmetry between the two groups
     rdsym = .35 if subject_idx <= int(n_subjects/2) else 0.5
 
-    components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .2,
+    components = {'sim_bursty_oscillation': {'freq': 10, 'enter_burst': .1, 'leave_burst': .1,
                                              'cycle': 'asine', 'rdsym': rdsym},
                   'sim_powerlaw': {'f_range': (2, None)}}
 
-    sigs[subject_idx] = sim_combined(n_seconds, fs, components=components, component_variances=(3, 1))
+    sigs[subject_idx] = sim_combined(n_seconds, fs, components=components, component_variances=(5, 1))
 
 
 # Apply lowpass filter to each signal
@@ -81,27 +81,31 @@ plot_time_series(times, sigs[0], lw=2)
 f_alpha = (7, 13)
 
 # Tuned burst detection parameters
-threshold_kwargs = {'amp_fraction_threshold': .2,
-                    'amp_consistency_threshold': .5,
-                    'period_consistency_threshold': .5,
-                    'monotonicity_threshold': .8,
-                    'min_n_cycles': 3}
+thresholds = {
+    'amp_fraction': .2,
+    'amp_consistency': .5,
+    'period_consistency': .5,
+    'monotonicity': .9,
+    'min_n_cycles': 2
+}
 
 # Compute features for each signal
-compute_features_kwargs={'threshold_kwargs': threshold_kwargs}
+bg = BycycleGroup(thresholds=thresholds)
+bg.fit(sigs, fs, f_alpha)
 
-df_features_list = compute_features_2d(sigs, fs, f_alpha, compute_features_kwargs)
+# Recompute cycles on edges of bursts with reduced thresholds
+bg.recompute_edges(.01)
 
 # Add group and subject ids to dataframes
 groups = ['patient' if idx >= int(n_signals/2) else 'control' for idx in range(n_signals)]
 subject_ids = [idx for idx in range(n_signals)]
 
 for idx, group in enumerate(groups):
-    df_features_list[idx]['group'] = group
-    df_features_list[idx]['subject_id'] = subject_ids[idx]
+    bg.df_features[idx]['group'] = group
+    bg.df_features[idx]['subject_id'] = subject_ids[idx]
 
 # Concatenate the list of dataframes
-df_features = pd.concat(df_features_list)
+df_features = pd.concat(bg.df_features)
 
 ####################################################################################################
 
@@ -116,8 +120,7 @@ df_features.head()
 # periods of the signal that appear to be bursting. This was confirmed by looking at a few different
 # signal segments from a few subjects.
 
-plot_burst_detect_summary(df_features_list[0], sigs[0], fs, threshold_kwargs,
-                          xlim=(0, 5), figsize=(16, 3))
+bg[0].plot(xlim=(0, 10), figsize=(16, 3))
 
 ####################################################################################################
 #
@@ -125,7 +128,7 @@ plot_burst_detect_summary(df_features_list[0], sigs[0], fs, threshold_kwargs,
 # -------------------------------
 #
 # Note the significant difference between the treatment and control groups for rise-decay symmetry
-# but not the other features
+# but not the other features.
 
 ####################################################################################################
 
@@ -135,7 +138,7 @@ df_features_burst = df_features[df_features['is_burst']]
 # Compute average features across subjects in a recording
 features_keep = ['volt_amp', 'period', 'time_rdsym', 'time_ptsym']
 df_subjects = df_features_burst.groupby(['group', 'subject_id']).mean()[features_keep].reset_index()
-df_subjects
+df_subjects.head()
 
 ####################################################################################################
 
@@ -143,16 +146,17 @@ fig, axes = plt.subplots(figsize=(15, 15), nrows=2, ncols=2)
 
 
 plot_feature_categorical(df_subjects, 'volt_amp', group_by='group', ax=axes[0][0],
-                        xlabel=['Patient', 'Control'], ylabel='Amplitude')
+                         xlabel=['Patient', 'Control'], ylabel='Amplitude')
 
 plot_feature_categorical(df_subjects, 'period', group_by='group', ax=axes[0][1],
-                        xlabel=['Patient', 'Control'], ylabel='Period (ms)')
+                         xlabel=['Patient', 'Control'], ylabel='Period (ms)')
 
 plot_feature_categorical(df_subjects, 'time_rdsym', group_by='group', ax=axes[1][0],
-                        xlabel=['Patient', 'Control'], ylabel='Rise-Decay Symmetry')
+                         xlabel=['Patient', 'Control'], ylabel='Rise-Decay Symmetry')
 
 plot_feature_categorical(df_subjects, 'time_ptsym', group_by='group', ax=axes[1][1],
-                        xlabel=['Patient', 'Control'], ylabel='Peak-Trough Symmetry')
+                         xlabel=['Patient', 'Control'], ylabel='Peak-Trough Symmetry')
+
 
 ####################################################################################################
 #
