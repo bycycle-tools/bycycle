@@ -31,6 +31,10 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     array([False, False, False, False,  True,  True,  True,  True, False])
     """
 
+    # handle special case where input iterable is empty
+    if len(is_burst) == 0:
+        return is_burst
+
     # Ensure argument is within valid range
     check_param_range(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
@@ -45,9 +49,10 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     ons, offs = ons[long_enough], offs[long_enough]
 
     # construct bool time series from transition indices
-    is_burst[:] = False
+    is_burst[:] = [False] * len(is_burst)
     for turn_on, turn_off in zip(ons, offs):
-        is_burst[turn_on:turn_off] = True
+        n_cycles = turn_off - turn_on
+        is_burst[turn_on:turn_off] = [True] * n_cycles
 
     return is_burst
 

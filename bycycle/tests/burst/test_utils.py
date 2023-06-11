@@ -1,6 +1,7 @@
 """Test burst.utils."""
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from bycycle.features import compute_features
@@ -45,6 +46,24 @@ def test_check_min_burst_cycles_no_bursts():
     is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
 
     assert not any(is_burst_check)
+
+
+def test_check_min_burst_cycles_empty_input():
+
+    is_burst = []
+    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
+
+    assert not len(is_burst_check)
+
+
+@pytest.mark.parametrize("input_type", [list, np.array, pd.Series])
+def test_check_min_burst_cycles_output_type(input_type):
+
+    is_burst = [False, True, True, True]
+    is_burst = input_type(is_burst)
+    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
+
+    assert type(is_burst) == type(is_burst_check)
 
 
 def test_recompute_edges(sim_args_comb):
