@@ -12,15 +12,15 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
 
     Parameters
     ----------
-    is_burst : 1d array
+    is_burst : 1d array-like
         Boolean array indicating which cycles are bursting.
     min_n_cycles : int, optional, default: 3
         The minimum number of cycles of consecutive cycles required to be considered a burst.
 
     Returns
     -------
-    is_burst : 1d array
-        Updated burst array.
+    is_burst : 1d array-like
+        Updated burst array with same type as input.
 
     Examples
     --------
@@ -30,6 +30,7 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     >>> check_min_burst_cycles(is_burst)
     array([False, False, False, False,  True,  True,  True,  True, False])
     """
+
     # Ensure argument is within valid range
     check_param_range(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
