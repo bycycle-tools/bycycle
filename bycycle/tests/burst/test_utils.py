@@ -22,6 +22,15 @@ def test_check_min_burst_cycles():
     assert not any(is_burst_check)
 
 
+def test_check_min_burst_cycles_no_bursts():
+
+    num_cycles = 5
+    is_burst = np.zeros(num_cycles, dtype=bool)
+    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
+
+    assert not any(is_burst_check)
+
+
 def test_recompute_edges(sim_args_comb):
 
     # Grab sim arguments from fixture
