@@ -90,6 +90,7 @@ def detect_bursts_cycles(df_features, amp_fraction_threshold=0., amp_consistency
 
     # Set the burst status for each cycle as the answer across all criteria
     is_burst = amp_fraction & amp_consistency & period_consistency & monotonicity
+    is_burst = is_burst.to_numpy()
 
     # Set the first and last cycles to not be part of a burst
     is_burst[0] = False

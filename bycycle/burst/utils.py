@@ -31,23 +31,28 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     array([False, False, False, False,  True,  True,  True,  True, False])
     """
 
+    if not isinstance(is_burst, np.ndarray):
+        raise ValueError("Argument 'is_burst' must be a numpy array!")
+
+    # handle special case where input array is empty
+    if len(is_burst) == 0:
+        return is_burst
+
     # Ensure argument is within valid range
     check_param_range(min_n_cycles, 'min_n_cycles', (0, np.inf))
 
-    temp_cycle_count = 0
+    # extract transition indices
+    diff = np.diff(is_burst, prepend=0, append=0)
+    transitions = np.flatnonzero(diff)
+    ons, offs = transitions[0::2], transitions[1::2]
 
-    for idx, bursting in enumerate(is_burst):
+    # select only segments with long enough duration
+    durations = offs - ons
+    too_short = durations < min_n_cycles
 
-        if bursting:
-            temp_cycle_count += 1
-
-        else:
-
-            if temp_cycle_count < min_n_cycles:
-                for c_rm in range(temp_cycle_count):
-                    is_burst[idx - 1 - c_rm] = False
-
-            temp_cycle_count = 0
+    # construct bool time series from transition indices
+    for silence_on, silence_off in zip(ons[too_short], offs[too_short]):
+        is_burst[silence_on:silence_off] = False
 
     return is_burst
 
