@@ -12,15 +12,15 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
 
     Parameters
     ----------
-    is_burst : 1d array-like
+    is_burst : 1d array
         Boolean array indicating which cycles are bursting.
     min_n_cycles : int, optional, default: 3
         The minimum number of cycles of consecutive cycles required to be considered a burst.
 
     Returns
     -------
-    is_burst : 1d array-like
-        Updated burst array with same type as input.
+    is_burst : 1d array
+        Updated burst array.
 
     Examples
     --------
@@ -31,7 +31,10 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
     array([False, False, False, False,  True,  True,  True,  True, False])
     """
 
-    # handle special case where input iterable is empty
+    if not isinstance(is_burst, np.ndarray):
+        raise ValueError("Argument 'is_burst' must be a numpy array!")
+
+    # handle special case where input array is empty
     if len(is_burst) == 0:
         return is_burst
 
@@ -45,14 +48,11 @@ def check_min_burst_cycles(is_burst, min_n_cycles=3):
 
     # select only segments with long enough duration
     durations = offs - ons
-    long_enough = durations >= min_n_cycles
-    ons, offs = ons[long_enough], offs[long_enough]
+    too_short = durations < min_n_cycles
 
     # construct bool time series from transition indices
-    is_burst[:] = [False] * len(is_burst)
-    for turn_on, turn_off in zip(ons, offs):
-        n_cycles = turn_off - turn_on
-        is_burst[turn_on:turn_off] = [True] * n_cycles
+    for silence_on, silence_off in zip(ons[too_short], offs[too_short]):
+        is_burst[silence_on:silence_off] = False
 
     return is_burst
 

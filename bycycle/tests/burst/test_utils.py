@@ -12,58 +12,46 @@ from bycycle.burst.utils import *
 ###################################################################################################
 
 @pytest.mark.parametrize("min_n_cycles", [2, 3])
-def test_check_min_burst_cycles_bursting_at_start(min_n_cycles):
+def test_check_min_burst_cycles(min_n_cycles):
 
-    is_burst = np.array([True, True, True, False])
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
+    is_burst = np.array([False, True, True, False, False])
+
+    is_burst_check = check_min_burst_cycles(is_burst.copy(), min_n_cycles=min_n_cycles)
+
+    burst_should_be_kept = min_n_cycles < 3
+    burst_kept = (is_burst == is_burst_check).all()
+
+    assert burst_kept == burst_should_be_kept
+
+
+@pytest.mark.parametrize("side", ["start", "end"])
+def test_check_min_burst_cycles_bursting_at_side(side):
+
+    min_n_cycles = 5
+    is_burst = [True] * min_n_cycles + [False]
+    is_burst = np.flip(is_burst) if side == "end" else np.array(is_burst)
+
+    is_burst_check = check_min_burst_cycles(is_burst.copy(), min_n_cycles=min_n_cycles)
 
     assert (is_burst == is_burst_check).all()
-
-    is_burst = np.array([True, False, True, False])
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
-
-    assert not any(is_burst_check)
-
-
-@pytest.mark.parametrize("min_n_cycles", [2, 3])
-def test_check_min_burst_cycles_bursting_at_end(min_n_cycles):
-
-    is_burst = np.array([False, True, True, True])
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
-
-    assert (is_burst == is_burst_check).all()
-
-    is_burst = np.array([False, True, False, True])
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
-
-    assert not any(is_burst_check)
 
 
 def test_check_min_burst_cycles_no_bursts():
 
     num_cycles = 5
     is_burst = np.zeros(num_cycles, dtype=bool)
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
+
+    is_burst_check = check_min_burst_cycles(is_burst.copy(), min_n_cycles=3)
 
     assert not any(is_burst_check)
 
 
 def test_check_min_burst_cycles_empty_input():
 
-    is_burst = []
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
+    is_burst = np.array([])
+    is_burst_check = check_min_burst_cycles(is_burst.copy(), min_n_cycles=3)
 
     assert not len(is_burst_check)
-
-
-@pytest.mark.parametrize("input_type", [list, np.array, pd.Series])
-def test_check_min_burst_cycles_output_type(input_type):
-
-    is_burst = [False, True, True, True]
-    is_burst = input_type(is_burst)
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
-
-    assert type(is_burst) == type(is_burst_check)
 
 
 def test_recompute_edges(sim_args_comb):
