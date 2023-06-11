@@ -1,6 +1,7 @@
 """Test burst.utils."""
 
 import numpy as np
+import pytest
 
 from bycycle.features import compute_features
 from bycycle.burst.utils import *
@@ -9,15 +10,30 @@ from bycycle.burst.utils import *
 ###################################################################################################
 ###################################################################################################
 
-def test_check_min_burst_cycles():
+@pytest.mark.parametrize("min_n_cycles", [2, 3])
+def test_check_min_burst_cycles_bursting_at_start(min_n_cycles):
 
     is_burst = np.array([True, True, True, False])
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
+    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
 
     assert (is_burst == is_burst_check).all()
 
     is_burst = np.array([True, False, True, False])
-    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=3)
+    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
+
+    assert not any(is_burst_check)
+
+
+@pytest.mark.parametrize("min_n_cycles", [2, 3])
+def test_check_min_burst_cycles_bursting_at_end(min_n_cycles):
+
+    is_burst = np.array([False, True, True, True])
+    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
+
+    assert (is_burst == is_burst_check).all()
+
+    is_burst = np.array([False, True, False, True])
+    is_burst_check = check_min_burst_cycles(is_burst, min_n_cycles=min_n_cycles)
 
     assert not any(is_burst_check)
 
