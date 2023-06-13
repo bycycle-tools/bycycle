@@ -113,12 +113,12 @@ thresholds = dict(amp_fraction_threshold=0., amp_consistency_threshold=.5,
                   period_consistency_threshold=.9, monotonicity_threshold=.6,
                   min_n_cycles=3)
 
-compute_kwargs = {'burst_method': 'cycles', 'threshold_kwargs': thresholds}
+compute_kwargs = {'burst_method': 'cycles', 'thresholds': thresholds}
 
-bg_rest = BycycleGroup(thresholds=thresholds)
+bg_rest = BycycleGroup(**compute_kwargs)
 bg_rest.fit(sigs_rest, fs, (1, 50), axis=0)
 
-bg_task = BycycleGroup(thresholds=thresholds)
+bg_task = BycycleGroup(**compute_kwargs)
 bg_task.fit(sigs_task, fs, (1, 50), axis=0)
 
 df_rest = bg_rest.df_features
