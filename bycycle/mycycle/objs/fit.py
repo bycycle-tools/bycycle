@@ -5,14 +5,19 @@ import numpy as np
 
 from neurodsp.plts.utils import savefig
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from bycycle.features import compute_features
 from bycycle.group import compute_features_2d, compute_features_3d
 from bycycle.plts import plot_burst_detect_summary
 from bycycle.burst.utils import recompute_edges as rc_edges
 
+# import sklearn for k-means
+from sklearn.cluster import KMeans
+
 ###################################################################################################
 ###################################################################################################
+
 
 class BycycleBase:
     """Shared base sub-class."""
@@ -148,7 +153,6 @@ class Bycycle(BycycleBase):
         super().__init__(center_extrema, burst_method, burst_kwargs, thresholds,
                          find_extrema_kwargs, return_samples)
 
-
     def __getattr__(self, key):
         """Access df_features columns as class attributes.
 
@@ -168,8 +172,8 @@ class Bycycle(BycycleBase):
         elif (self.df_features is not None and key in self.df_features.keys()):
             return self.df_features[key].values
         else:
-            raise AttributeError(f'\'{self.__class__.__name__}\' object has no attribute \'{key}\'')
-
+            raise AttributeError(
+                f'\'{self.__class__.__name__}\' object has no attribute \'{key}\'')
 
     def fit(self, sig, fs, f_range):
         """Run the bycycle algorithm on a signal.
@@ -197,7 +201,6 @@ class Bycycle(BycycleBase):
             self.find_extrema_kwargs, self.return_samples
         )
 
-
     def recompute_edges(self, reduction=None):
         """Recomputes features for cycles on the edge of bursts.
 
@@ -208,7 +211,6 @@ class Bycycle(BycycleBase):
         """
         reduced_thresholds = self.reduce_thresholds(reduction)
         self.df_features = rc_edges(self.df_features, reduced_thresholds)
-
 
     @savefig
     def plot(self, xlim=None, figsize=(15, 3), plot_only_results=False, interp=True):
@@ -227,11 +229,11 @@ class Bycycle(BycycleBase):
         """
 
         if self.df_features is None or self.sig is None or self.fs is None:
-            raise ValueError('The fit method must be successfully called prior to plotting.')
+            raise ValueError(
+                'The fit method must be successfully called prior to plotting.')
 
         plot_burst_detect_summary(self.df_features, self.sig, self.fs, self.thresholds,
                                   xlim, figsize, plot_only_results, interp)
-
 
     def load(self, df_features, sig, fs, f_range):
         """Load external results."""
@@ -240,6 +242,112 @@ class Bycycle(BycycleBase):
         self.fs = fs
         self.f_range = f_range
         self.df_features = df_features
+
+    def align_signals_plot(self, sig_collection=None):
+        longest_signal_length = 0
+        combined_signal_length = 0
+        # check for valid input
+        if sig_collection is None:
+            return
+
+        sig_collection = sig_collection.to_numpy()
+        print(sig_collection)
+        # ensure that at least one signal is non-empty.
+        # This can be expensive if this function is called repetitively
+        for idx in range(len(sig_collection)):
+            sig = sig_collection[idx]
+            # print(sig)
+            sig_len = len(sig)
+            # will set longest_signal_length over the iterative cycle.
+            if sig_len > longest_signal_length:
+                longest_signal_length = sig_len
+        combined_signal_length = 2*longest_signal_length
+        if combined_signal_length == 0:
+            return
+
+        clean_sig_collection = [None]*len(sig_collection)
+        for idx in range(len(sig_collection)):
+            sig = sig_collection[idx]
+            peak_idx = 0
+            # print(sig.keys())
+            # print(sig)
+            # sig=sig.iloc[[0]]
+            max_val = sig[0]
+            # clean the signals.
+            clean_sig = np.zeros(combined_signal_length)
+            print(type(sig))
+            fin = np.isfinite(sig)
+
+            for i in range(len(sig)):
+                v = sig[i]
+                if v > max_val:
+                    peak_idx = i
+                    max_val = v
+
+            shift_dist = longest_signal_length-peak_idx
+            # replace non-finite_values with zero because this is plottable.
+            for i in range(len(sig)):
+                if fin[i]:
+                    clean_sig[i + shift_dist] = sig[i]
+            clean_sig_collection[idx] = clean_sig
+
+        times = np.linspace(0, combined_signal_length, combined_signal_length)
+        for sig in clean_sig_collection:
+            plt.plot(times, sig, alpha=0.2)
+
+        average_signal = np.zeros(combined_signal_length)
+        for idx in range(len(clean_sig_collection)):
+            for i in range(len(average_signal)):
+                average_signal[i] += clean_sig_collection[idx][i]
+        average_signal *= (1.0/float(len(clean_sig_collection)))
+        plt.plot(times, average_signal)
+
+        return
+
+    # TODO: separate bursty, non-bursty cycles.
+    def report(self, show=False):
+        feature_df = self.df_features
+        feature_df_keys = feature_df.keys()
+
+        # TODO: figure out how this worked. bing ai result.
+        burst_collection = feature_df.loc[feature_df['is_burst'], ['sample_last_trough', 'sample_next_trough']].apply(
+            lambda x: self.sig[x['sample_last_trough']:x['sample_next_trough']], axis=1)
+
+        non_burst_collection = feature_df.loc[~feature_df['is_burst'], ['sample_last_trough', 'sample_next_trough']].apply(
+            lambda x: self.sig[x['sample_last_trough']:x['sample_next_trough']], axis=1)
+
+        plt.figure()
+        plt.title('Bursts')
+        # Plot burst_collection
+        self.align_signals_plot(burst_collection)
+        # print("we've detected zero bursts")
+        plt.figure()
+        plt.title('Non-bursts')
+        # Plot non_burst_collection
+        self.align_signals_plot(non_burst_collection)
+        # group0 = []
+        # group1 = []
+        # kmeans_model = KMeans(n_clusters=2, random_state=0, n_init="auto")
+        # all_cycle_collection = pd.concat(
+        #     [burst_collection, non_burst_collection])
+        # all_cycle_collection=np.array(all_cycle_collection)
+        # # for i in range (len(all_cycle_collection)):
+        # #     all_cycle_collection[i]=np.array(all_cycle_collection[i])
+
+        # print(type(all_cycle_collection))
+        # print(all_cycle_collection.shape)
+        # kmeans = kmeans_model.fit_predict(all_cycle_collection)
+        # for i in range(len(kmeans)):
+        #     if kmeans[i] == 0:
+        #         group0.append(all_cycle_collection.loc[[i]])
+        #     else:
+        #         group1.append(all_cycle_collection.loc[[i]])
+
+        # plt.show()
+        # self.align_signals_plot(pd.DataFrame(data=group0))
+        # self.align_signals_plot(pd.DataFrame(data=group1))
+        if show:
+            plt.show()
 
 
 class BycycleGroup(BycycleBase):
@@ -303,6 +411,7 @@ class BycycleGroup(BycycleBase):
         Returns samples indices of cyclepoints used for determining features if True.
 
     """
+
     def __init__(self, center_extrema='peak', burst_method='cycles', burst_kwargs=None,
                  thresholds=None, find_extrema_kwargs=None, return_samples=True):
         """Initialize object settings."""
@@ -317,12 +426,10 @@ class BycycleGroup(BycycleBase):
         # Results
         self.models = []
 
-
     def __len__(self):
         """Define the length of the object."""
 
         return len(self.models)
-
 
     def __iter__(self):
         """Allow for iterating across the object."""
@@ -330,12 +437,10 @@ class BycycleGroup(BycycleBase):
         for result in self.models:
             yield result
 
-
     def __getitem__(self, index):
         """Allow for indexing into the object."""
 
         return self.models[index]
-
 
     def fit(self, sigs, fs, f_range, axis=0, n_jobs=-1, progress=None):
         """Run the bycycle algorithm on a 2D or 3D array of signals.
@@ -399,8 +504,9 @@ class BycycleGroup(BycycleBase):
         )
 
         # Initialize lists
-        if  self.sigs.ndim == 3:
-            self.models = np.zeros((len(self.df_features), len(self.df_features[0]))).tolist()
+        if self.sigs.ndim == 3:
+            self.models = np.zeros(
+                (len(self.df_features), len(self.df_features[0]))).tolist()
         else:
             self.models = np.zeros(len(self.df_features)).tolist()
 
@@ -417,7 +523,8 @@ class BycycleGroup(BycycleBase):
                     bm = Bycycle(self.center_extrema, self.burst_method, self.burst_kwargs,
                                  self.thresholds, self.find_extrema_kwargs, self.return_samples)
                     # Load
-                    bm.load(self.df_features[dim0][dim1], sig_, self.fs, self.f_range)
+                    bm.load(self.df_features[dim0][dim1],
+                            sig_, self.fs, self.f_range)
 
                     # Set
                     self.models[dim0][dim1] = bm
@@ -433,7 +540,6 @@ class BycycleGroup(BycycleBase):
                 # Set
                 self.models[dim0] = bm
 
-
     def recompute_edges(self, reduction=None):
         """Recomputes features for cycles on the edge of bursts.
 
@@ -448,4 +554,4 @@ class BycycleGroup(BycycleBase):
                 for dim1 in range(len(sig)):
                     self.models[dim0][dim1].recompute_edges(reduction)
             else:
-                 self.models[dim0].recompute_edges(reduction)
+                self.models[dim0].recompute_edges(reduction)

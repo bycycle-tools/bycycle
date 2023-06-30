@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Cole"
+    given-names: "Scott"
+  - family-names: "Voytek"
+    given-names: "Bradley"
+  title: "Cycle-by-cycle analysis of neural oscillations"
+  doi: "10.1152/JN.00273.2019"
+  journal: "Journal of Neurophysiology"
+  month: 8
+  year: 2019
+  volume: 122
+  issue: 2
+  start: 849
+  end: 861
