@@ -6,6 +6,7 @@ import mycycle
 import matplotlib.pyplot as plt
 import numpy as np
 from statsmodels.tsa.stattools import acf as autocorrelate
+from neurodsp.burst import detect_bursts_dual_threshold as dualthresh
 
 
 def create_window_indices_from_signal(bm=None,sig=None, fs=500, window_length=3):
@@ -65,3 +66,57 @@ def autocorrelate_all_windowed_signals(sig_window_collection):
     for i in range(result_length):
         result[i]=autocorrelate_signal(sig_window_collection[i])
     return result
+
+def get_bursts_windows_dualthresh(current_signal, fs, f_range):
+    longest = 0
+    shortest = 0
+    mode=False
+    last_true = 0
+    last_false = 0
+    bursts=[None]*len(current_signal)
+    complements=[None]*len(current_signal)
+    bursts_idx = 0
+    complements_idx = 0
+    dt_burst = dualthresh(sig=current_signal, fs=fs, dual_thresh=(1,2), f_range=f_range, min_n_cycles=1, min_burst_duration=1)
+    for i in range(len(current_signal)):
+        if i>=1:
+            # print(dt_burst[i])
+            chk_mode = dt_burst[i]
+            if chk_mode != mode:
+                if chk_mode:
+                    interval=i-last_true
+                    longest=np.max((interval,longest))
+                    shortest=np.min((interval,shortest))
+                    complements[complements_idx]=(last_true,i)
+                    complements_idx+=1
+                else:
+                    interval=i-last_false
+                    longest=np.max((interval,longest))
+                    shortest=np.min((interval,shortest))
+                    bursts[bursts_idx]=(last_false,i)
+                    bursts_idx+=1
+        mode = dt_burst[i]
+        if mode:
+            last_true = i
+        else:
+            last_false = i
+    num_burst_cycles = 0
+    num_complement_cycles = 0
+    check_burst_list, check_complement_list = True, True
+    for i in range(len(current_signal)):
+        if not check_burst_list and not check_complement_list:
+            break
+        if bursts[i]==None:
+            check_burst_list=False
+        if complements[i]==None:
+            check_complement_list=False
+        if check_burst_list:
+            num_burst_cycles+=1
+        if check_complement_list:
+            num_complement_cycles+=1
+        
+    
+    bursts=bursts[:num_burst_cycles]
+    complements=complements[:num_complement_cycles]
+    return bursts, complements
+
