@@ -20,6 +20,7 @@ setup(
     version = __version__,
     description = 'Cycle-by-cycle analyses of neural oscillations.',
     long_description = long_description,
+    long_description_content_type = 'text/x-rst',
     python_requires = '>=3.6',
     author = 'The Voytek Lab',
     author_email = 'voyteklab@gmail.com',
