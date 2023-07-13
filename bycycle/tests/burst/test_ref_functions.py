@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import bycycle
 
 
+FS = 500
+
+
 class TestRefFunctions(TestCase):
     
 
