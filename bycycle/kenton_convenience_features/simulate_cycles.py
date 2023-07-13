@@ -1,21 +1,21 @@
 from neurodsp.sim import sim_bursty_oscillation, sim_powerlaw
 
 FS = 500
-def create_signals(self):
+def create_signals(nb, na):
         n_seconds = 10
         # bursts and signals taken from tutorial pages.
         burst0 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations', burst_params={
-            'n_cycles_burst': 3, 'n_cycles_off': 3})
-        burst1 = sig = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_params={
+            'n_cycles_burst': nb, 'n_cycles_off': na})
+        burst1 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_params={
             'enter_burst': 0.2, 'leave_burst': 0.8})
         burst2 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations',
-                                        burst_params={'n_cycles_burst': 3, 'n_cycles_off': 5})
+                                        burst_params={'n_cycles_burst': 10*nb, 'n_cycles_off': 2*na})
         burst3 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations', burst_params={
-            'n_cycles_burst': 8, 'n_cycles_off': 20})
+            'n_cycles_burst': 3*nb, 'n_cycles_off': 12*na})
         burst4 = sig = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_params={
             'enter_burst': 0.2, 'leave_burst': 0.8})
         burst5 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations',
-                                        burst_params={'n_cycles_burst': 3, 'n_cycles_off': 3})
+                                        burst_params={'n_cycles_burst': 5*nb, 'n_cycles_off': 3*na})
 
         sig0 = sim_powerlaw(n_seconds=n_seconds, fs=FS, exponent=-2.0)
 

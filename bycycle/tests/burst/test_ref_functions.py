@@ -5,7 +5,7 @@ from unittest import TestCase
 import numpy as np
 import matplotlib.pyplot as plt
 import bycycle
-
+from bycycle.kenton_convenience_features import create_signals
 
 FS = 500
 
@@ -31,7 +31,7 @@ class TestRefFunctions(TestCase):
         print("hello")
 
     def test_map_cycles_to_windows(self):
-        combined_sigs = self.create_signals(1)
+        combined_sigs = create_signals(1)
         # for i in range(len(combined_sigs)):
         #     plt.plot(combined_sigs[i])
         self.assertFalse(combined_sigs == None)
