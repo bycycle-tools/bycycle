@@ -4,7 +4,9 @@ from bycycle.burst import create_window_indices_from_signal, get_cycle_bounds, s
 from neurodsp.sim import sim_powerlaw
 from neurodsp.sim import sim_bursty_oscillation
 from unittest import TestCase
-import sys
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 FS = 500
 
@@ -63,7 +65,7 @@ class TestRefFunctions(TestCase):
         x = np.linspace(0, sig_length, sig_length*fs)
         f = np.sin
         y = f(x)
-        BM = mycycle.Bycycle()
+        BM = bycycle.Bycycle()
         windows = create_window_indices_from_signal(BM, f(x), fs, 1)
         for i in range(len(windows)):
             # Plot the scatter plot with windows as colors
@@ -79,7 +81,7 @@ class TestRefFunctions(TestCase):
         # for i in range(len(combined_sigs)):
         #     plt.plot(combined_sigs[i])
         self.assertFalse(combined_sigs == None)
-        BM = mycycle.Bycycle()
+        BM = bycycle.Bycycle()
         for i in range(len(combined_sigs)):
             curr_sig = combined_sigs[i]
             BM.fit(sig=curr_sig, fs=FS, f_range=(8, 12))
@@ -100,7 +102,7 @@ class TestRefFunctions(TestCase):
             curr_sig = combined_sigs[i]
             # plt.plot(combined_sigs[i])
             self.assertFalse(combined_sigs == None)
-            BM = mycycle.Bycycle(burst_method='amp')
+            BM = bycycle.Bycycle(burst_method='amp')
             BM.fit(sig=curr_sig, fs=FS, f_range=(8, 12))
             burst_bounds, complement_bounds = get_bursts_windows_dualthresh(
                 curr_sig, FS, (8, 12))
