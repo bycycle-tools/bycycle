@@ -47,8 +47,8 @@ def get_signal_windows(sig, window_idx_collection):
         collection[i] = sig[window_idx_collection[i]
                             [0]:window_idx_collection[i][1]]
 
-    for i in collection:
-        plt.plot(np.linspace(0, len(i), len(i)), i)
+    # for i in collection:
+    #     plt.plot(np.linspace(0, len(i), len(i)), i)
 
     # plt.show()
     return collection
@@ -120,7 +120,7 @@ def plot_bounded_windows(sig, window_truth_array, window_bounds):
 
     # new_x = np.linspace(0,longest_burst,longest_burst)
     for i in range(len(window_bounds)):
-        resampled_sig = resample(window_bounds[i],longest_burst)
+        resampled_sig = resample(x=sig[window_bounds[i][0]:window_bounds[i][1]], num=longest_burst)
         mean = np.mean(resampled_sig)
         resampled_sig-=mean
         plt.plot(resampled_sig)
@@ -166,7 +166,7 @@ def autocorrelate_all_windowed_signals(sig_window_collection):
     return result
 
 
-def get_bursts_windows_dualthresh(current_signal, fs, f_range):
+def get_bursts_windows_dualthresh(current_signal, fs, f_range=(8,12), min_burst_duration=3):
     longest = 0
     shortest = 0
     last_mode = False
@@ -177,7 +177,7 @@ def get_bursts_windows_dualthresh(current_signal, fs, f_range):
     bursts_idx = 0
     complements_idx = 0
     dt_burst = dualthresh(sig=current_signal, fs=fs, dual_thresh=(
-        1, 2), f_range=f_range, min_n_cycles=1, min_burst_duration=1)
+        1, 2), f_range=f_range, min_n_cycles=1, min_burst_duration=min_burst_duration)
     for i in range(len(current_signal)):
         if i >= 1:
             # print(dt_burst[i])

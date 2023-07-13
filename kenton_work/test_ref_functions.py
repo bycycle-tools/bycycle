@@ -1,8 +1,11 @@
 # test reference functions
+import sys
+sys.path.insert(0, '/Users/kenton/HOME/coding/python/bycycle_env/bycycle')
 
 from unittest import TestCase
 from neurodsp.sim import sim_bursty_oscillation
 from neurodsp.sim import sim_powerlaw
+from mycycle.burst import detect_bursts_amp
 from ref_functions import *
 import matplotlib.pyplot as plt
 
@@ -35,12 +38,13 @@ class TestRefFunctions(TestCase):
                             exponent=-3, f_range=(2, None))
 
 
-        # bursts = [burst1,burst2,burst3,burst4,burst5]
-        bursts = [burst0]
-        # sigs = [sig0, sig1, sig2, sig3]
-        sigs = [sig0]
+        bursts = [burst1,burst2,burst3,burst4,burst5]
+        # bursts = [burst0]
+        sigs = [sig0, sig1, sig2, sig3]
+        # sigs = [sig0]
         # ratios = [10, 1, 0.5, 0.1, 0.0]
         ratios=[10,1,0.5]
+        # ratios=[20,10]
         combined_sigs = [None]*(len(bursts) * len(sigs)*len(ratios))
 
         # for y_vals in all_to_plot:
@@ -75,16 +79,34 @@ class TestRefFunctions(TestCase):
 
     def test_map_cycles_to_windows(self):
         combined_sigs = self.create_signals()
+        # for i in range(len(combined_sigs)):
+        #     plt.plot(combined_sigs[i])
         self.assertFalse(combined_sigs==None)
         BM=mycycle.Bycycle()
         for i in range(len(combined_sigs)):
             curr_sig = combined_sigs[i]
-            BM.fit(sig=curr_sig, fs=FS, f_range=(3,12))
+            BM.fit(sig=curr_sig, fs=FS, f_range=(8,12))
             burst_bounds, complement_bounds = get_bursts_windows_dualthresh(curr_sig,FS,(8,12))
             cycle_bounds_all = get_cycle_bounds(BM)
-            cycle_bounds_bursting = select_bursting_cycles(cycle_bounds_all, burst_bounds)
-            cycle_bounds_nonbursting = select_bursting_cycles(cycle_bounds_all, complement_bounds)
-            plot_bounded_windows(curr_sig, cycle_bounds_bursting, cycle_bounds_all)
-            plot_bounded_windows(curr_sig, cycle_bounds_nonbursting, cycle_bounds_all)
+            bursting_cycle_idxs = select_bursting_cycles(cycle_bounds_all, burst_bounds)
+            nonbursting_cycle_idxs = select_bursting_cycles(cycle_bounds_all, complement_bounds)
+            # plot_bounded_windows(curr_sig, bursting_cycle_idxs, cycle_bounds_all)
+            # plot_bounded_windows(curr_sig, nonbursting_cycle_idxs, cycle_bounds_all)
+        # plt.show()
+    
+    def test_clustering_neurodsp_amp_function(self):
+        combined_sigs = self.create_signals()
+        for i in range(len(combined_sigs)):
+            curr_sig=combined_sigs[i]
+            # plt.plot(combined_sigs[i])
+            self.assertFalse(combined_sigs==None)
+            BM=mycycle.Bycycle(burst_method='amp')
+            BM.fit(sig=curr_sig, fs=FS,f_range=(8,12))
+            burst_bounds, complement_bounds = get_bursts_windows_dualthresh(curr_sig,FS,(8,12))
+            cycle_bounds_all = get_cycle_bounds(BM)
+            new_features = detect_bursts_amp(BM.df_features)
+            new_bursting_cycle_idxs = new_features.index[new_features['is_burst']==True].tolist()
+            plot_bounded_windows(curr_sig, new_bursting_cycle_idxs, cycle_bounds_all)
         plt.show()
+        print("hi")
         
