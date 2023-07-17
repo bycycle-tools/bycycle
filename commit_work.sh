@@ -9,4 +9,4 @@ git add *
 git commit -m "$1"
 
 git push
-pip install -U git+https://github.com/bycycle-tools/bycycle.git@cluster+recon
+pip install git+https://github.com/bycycle-tools/bycycle.git@cluster+recon --upgrade
