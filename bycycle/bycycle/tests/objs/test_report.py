@@ -4,7 +4,7 @@
 # -Kenton Guarian
 
 # general imports
-from ref_functions import *
+from bycycle.tests.utils import *
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn import preprocessing

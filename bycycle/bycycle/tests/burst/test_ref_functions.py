@@ -5,10 +5,9 @@ from unittest import TestCase
 import numpy as np
 import matplotlib.pyplot as plt
 import bycycle
-from bycycle.kenton_convenience_features import create_signals
+from bycycle.tests.utils import *
 
 FS = 500
-
 
 class TestRefFunctions(TestCase):
     
@@ -30,8 +29,9 @@ class TestRefFunctions(TestCase):
         # unsuccessful. Function plots first cycle from peak to peak and all others from rising zero-crossing to rising zero-crossing.
         print("hello")
 
-    def test_map_cycles_to_windows(self):
-        combined_sigs = create_signals(1)
+    def test_map_cycles_to_windows(self, create_signals):
+        # combined_sigs = create_signals(4,6)
+        combined_sigs = create_signals
         # for i in range(len(combined_sigs)):
         #     plt.plot(combined_sigs[i])
         self.assertFalse(combined_sigs == None)
@@ -53,8 +53,9 @@ class TestRefFunctions(TestCase):
     def test_clustering_kmeans(self):
         self.assertTrue(False)
 
-    def test_clustering_neurodsp_amp_function(self):
-        combined_sigs = self.create_signals()
+    def test_clustering_neurodsp_amp_function(self, create_signals):
+        # combined_sigs = create_signals(3,8)
+        combined_sigs = create_signals
         for i in range(len(combined_sigs)):
             curr_sig = combined_sigs[i]
             # plt.plot(combined_sigs[i])
@@ -70,4 +71,3 @@ class TestRefFunctions(TestCase):
             plot_bounded_windows(
                 curr_sig, new_bursting_cycle_idxs, cycle_bounds_all)
         plt.show()
-        print("hi")
