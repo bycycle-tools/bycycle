@@ -1,6 +1,6 @@
 # test reference functions
 import matplotlib.pyplot as plt
-from bycycle.burst import create_window_indices_from_signal, get_cycle_bounds, select_bursting_cycles, plot_bounded_windows, get_bursts_windows_dualthresh, get_signal_windows, create_signals, detect_bursts_amp
+from bycycle.burst import create_window_indices_from_signal, get_cycle_bounds, select_bursting_cycles, plot_bounded_windows, get_bursts_windows_dualthresh, get_signal_windows, create_signals, create_signals_burst_table, detect_bursts_amp
 from unittest import TestCase
 import numpy as np
 import matplotlib.pyplot as plt
