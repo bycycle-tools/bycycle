@@ -116,7 +116,7 @@ class TestRefFunctions(TestCase):
 
     def test_clustering_neurodsp_amp_function(self):
         # combined_sigs = create_signals(3,8)
-        combined_sigs, ground_truth = create_signals_burst_table(nb=4,na=6,fs=FS,freq=8, n_seconds=10)
+        combined_sigs, ground_truth = create_signals_burst_table(nb=15,na=0,fs=FS,freq=8, n_seconds=10)
         our_findings = np.full(len(ground_truth), False)
         for i in range(len(combined_sigs)):
             curr_sig = combined_sigs[i]
@@ -132,9 +132,9 @@ class TestRefFunctions(TestCase):
             )
             new_bursting_cycle_bounds = [cycle_bounds_all[i] for i in new_bursting_cycle_idxs]
             # print("hi")
-            for i in range(len(new_bursting_cycle_bounds)):
-                for j in range(new_bursting_cycle_bounds[i][0], new_bursting_cycle_bounds[i][1]):
-                    our_findings[j]=True
+            for j in range(len(new_bursting_cycle_bounds)):
+                for k in range(new_bursting_cycle_bounds[j][0], new_bursting_cycle_bounds[j][1]):
+                    our_findings[k]=True
             score = (ground_truth == our_findings).mean()
             print(score)
             # plot_bounded_windows(
