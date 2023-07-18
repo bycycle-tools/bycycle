@@ -116,7 +116,7 @@ class TestRefFunctions(TestCase):
 
     def test_clustering_neurodsp_amp_function(self):
         # combined_sigs = create_signals(3,8)
-        combined_sigs, ground_truth = create_signals_burst_table(nb=15,na=0,fs=FS,freq=8, n_seconds=10)
+        combined_sigs, ground_truth = create_signals_burst_table(nb=5,na=5,fs=FS,freq=8, n_seconds=10)
         our_findings = np.full(len(ground_truth), False)
         for i in range(len(combined_sigs)):
             curr_sig = combined_sigs[i]
