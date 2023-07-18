@@ -14,16 +14,16 @@ from neurodsp.sim.periodic import sim_bursty_oscillation
 def create_signals(nb, na, fs, freq, n_seconds):
         n_seconds = 10
         # bursts and signals taken from tutorial pages.
-        burst0 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations', burst_params={
+        burst0 = sim_bursty_oscillation(n_seconds=n_seconds, fs=fs, freq=10, burst_def='durations', burst_params={
             'n_cycles_burst': nb, 'n_cycles_off': na})
 
-        sig0 = sim_powerlaw(n_seconds=n_seconds, fs=FS, exponent=-2.0)
+        sig0 = sim_powerlaw(n_seconds=n_seconds, fs=fs, exponent=-2.0)
 
-        sig1 = sim_powerlaw(n_seconds=n_seconds, fs=FS,
+        sig1 = sim_powerlaw(n_seconds=n_seconds, fs=fs,
                             exponent=-1.5, f_range=(2, None))
-        sig2 = sim_powerlaw(n_seconds=n_seconds, fs=FS, exponent=-0.5)
+        sig2 = sim_powerlaw(n_seconds=n_seconds, fs=fs, exponent=-0.5)
 
-        sig3 = sim_powerlaw(n_seconds=n_seconds, fs=FS,
+        sig3 = sim_powerlaw(n_seconds=n_seconds, fs=fs,
                             exponent=-3, f_range=(2, None))
 
         bursts = [burst0]
