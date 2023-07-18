@@ -64,8 +64,11 @@ def create_window_indices_from_signal(bm=None, sig=None, fs=500, window_length=3
     # print(next_troughs[len(last_troughs)-2])
     window_bound_collection = [None]*(len(last_troughs)-window_length)
     for i in range(window_length, len(last_troughs)):
-        window = (last_troughs[i-window_length], next_troughs[i-1])
+        # make cycles disjoint
+        window = (last_troughs[i-window_length], next_troughs[i-1]-1)
         window_bound_collection[i-window_length] = window
+    # in disjoint cycle adjustment, last cycle needs to be full-length
+    window_bound_collection[-1][1]=window_bound_collection[-1][1]+1
     return window_bound_collection
 
 # NOTE: `get_*` functions that take a bycycle model as input do not call bm.fit.

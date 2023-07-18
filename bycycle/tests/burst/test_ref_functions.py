@@ -55,7 +55,8 @@ class TestRefFunctions(TestCase):
 
     def test_clustering_kmeans(self):
         bm=bycycle.Bycycle()
-        combined_sigs = create_signals(4,6)
+        combined_sigs, ground_truth = create_signals_burst_table(nb=4,na=6,fs=FS,freq=8, n_seconds=10)
+        our_findings = np.full(len(ground_truth), False)
         sig = combined_sigs[1]
         idxs = create_window_indices_from_signal(bm=bm, sig=sig, fs=FS,window_length=1)
         sig_windows = get_signal_windows(sig, idxs)
@@ -87,27 +88,36 @@ class TestRefFunctions(TestCase):
         kmeans = kmeans_model.fit_predict(norm_homog_coll)
         for i in range(len(kmeans)):
             if kmeans[i]==0:
-                group0.append(sig_windows_homogeneous_shape[i])
+                group0.append(idxs[i])
             else:
-                group1.append(sig_windows_homogeneous_shape[i])
-
-        plt.figure()
+                group1.append(idxs[i])
         for i in range(len(group0)):
-            plt.plot(np.linspace(0,len(group0[i]),len(group0[i])), group0[i], alpha=0.5)
-        plt.figure()
-        for i in range(len(group1)):
-            plt.plot(np.linspace(0,len(group1[i]),len(group1[i])), group1[i], alpha=0.5)
-        plt.show()
+            for j in range(group0[i][0], group0[i][1]):
+                our_findings[j]=True
+        score = 0
+        for i in range(len(ground_truth)):
+            if ground_truth[i]==our_findings[i]:
+                score+=1.0/float(len(ground_truth))
+        print("wait")
+        # TODO: if you ever uncomment this code, use subfigures.
+        # plt.figure()
+        # for i in range(len(group0)):
+        #     plt.plot(np.linspace(0,len(group0[i]),len(group0[i])), group0[i], alpha=0.5)
+        # plt.figure()
+        # for i in range(len(group1)):
+        #     plt.plot(np.linspace(0,len(group1[i]),len(group1[i])), group1[i], alpha=0.5)
+        # plt.show()
 
-        print(len(group0))
-        print(len(group1))
+        # print(len(group0))
+        # print(len(group1))
 
     print("done")
 
 
     def test_clustering_neurodsp_amp_function(self):
         # combined_sigs = create_signals(3,8)
-        combined_sigs = create_signals(4,6)
+        combined_sigs, ground_truth = create_signals_burst_table(nb=4,na=6,fs=FS,freq=8, n_seconds=10)
+        our_findings = np.full(len(ground_truth), False)
         for i in range(len(combined_sigs)):
             curr_sig = combined_sigs[i]
             # plt.plot(combined_sigs[i])
