@@ -11,22 +11,11 @@ from neurodsp.sim.periodic import sim_bursty_oscillation
 # NOTE: `create_*` functions that take a bycycle model as input DO call bm.fit.
 # These methods assume the model has already been fit.
 
-FS = 500
-def create_signals(nb, na):
+def create_signals(nb, na, fs, freq, n_seconds):
         n_seconds = 10
         # bursts and signals taken from tutorial pages.
         burst0 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations', burst_params={
             'n_cycles_burst': nb, 'n_cycles_off': na})
-        burst1 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_params={
-            'enter_burst': 0.2, 'leave_burst': 0.8})
-        burst2 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations',
-                                        burst_params={'n_cycles_burst': 10*nb, 'n_cycles_off': 2*na})
-        burst3 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations', burst_params={
-            'n_cycles_burst': 3*nb, 'n_cycles_off': 12*na})
-        burst4 = sig = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_params={
-            'enter_burst': 0.2, 'leave_burst': 0.8})
-        burst5 = sim_bursty_oscillation(n_seconds=n_seconds, fs=FS, freq=10, burst_def='durations',
-                                        burst_params={'n_cycles_burst': 5*nb, 'n_cycles_off': 3*na})
 
         sig0 = sim_powerlaw(n_seconds=n_seconds, fs=FS, exponent=-2.0)
 
@@ -37,8 +26,7 @@ def create_signals(nb, na):
         sig3 = sim_powerlaw(n_seconds=n_seconds, fs=FS,
                             exponent=-3, f_range=(2, None))
 
-        bursts = [burst1, burst2, burst3, burst4, burst5]
-        # bursts = [burst0]
+        bursts = [burst0]
         sigs = [sig0, sig1, sig2, sig3]
         # sigs = [sig0]
         # ratios = [10, 1, 0.5, 0.1, 0.0]
@@ -50,6 +38,7 @@ def create_signals(nb, na):
         #     plot_time_series(times=times, sigs=y_vals)
         # tested, looks good.
 
+        # keeping in case we add more bursts down the line.
         for i in range(len(bursts)):
             for j in range(len(sigs)):
                 for k in range(len(ratios)):
@@ -57,6 +46,14 @@ def create_signals(nb, na):
                                   * j+k] = bursts[i]+10*ratios[len(ratios)-k-1]*sigs[j]
 
         return combined_sigs
+
+def create_signals_burst_table(nb, na, fs, freq, n_seconds):
+    sigs = create_signals(nb, na, fs, freq, n_seconds)
+    truth_table = np.full(fs*n_seconds,False)
+    for i in range(n_seconds*fs):
+        if i%(nb+na) < nb:
+            truth_table[i]=True
+    return sigs, truth_table
 
 # Complexity: O(bm.fit + len(bm.df_features **after bm.fit**))
 def create_window_indices_from_signal(bm=None, sig=None, fs=500, window_length=3):
