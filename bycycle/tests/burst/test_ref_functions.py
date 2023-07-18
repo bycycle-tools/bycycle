@@ -130,9 +130,16 @@ class TestRefFunctions(TestCase):
             new_features = detect_bursts_amp(BM.df_features)
             new_bursting_cycle_idxs = new_features.index[new_features['is_burst'] == True].tolist(
             )
-            plot_bounded_windows(
-                curr_sig, new_bursting_cycle_idxs, cycle_bounds_all)
-        plt.show()
+            new_bursting_cycle_bounds = [cycle_bounds_all[i] for i in new_bursting_cycle_idxs]
+            # print("hi")
+            for i in range(len(new_bursting_cycle_bounds)):
+                for j in range(new_bursting_cycle_bounds[i][0], new_bursting_cycle_bounds[i][1]):
+                    our_findings[j]=True
+            score = (ground_truth == our_findings).mean()
+            print(score)
+            # plot_bounded_windows(
+            #     curr_sig, new_bursting_cycle_idxs, cycle_bounds_all)
+        # plt.show()
 
     def test_evaluate_clustering(self):
         print("")

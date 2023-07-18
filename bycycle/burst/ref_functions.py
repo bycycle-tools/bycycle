@@ -43,7 +43,7 @@ def create_signals(nb, na, fs, freq, n_seconds):
             for j in range(len(sigs)):
                 for k in range(len(ratios)):
                     combined_sigs[len(sigs)*len(ratios)*i + len(ratios)
-                                  * j+k] = bursts[i]+10*ratios[len(ratios)-k-1]*sigs[j]
+                                  * j+k] = bursts[i]+ratios[len(ratios)-k-1]*sigs[j]
 
         return combined_sigs
 
