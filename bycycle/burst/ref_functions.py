@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import resample
 from neurodsp.sim.aperiodic import sim_powerlaw
-from neurodsp.sim.periodic import sim_bursty_oscillation
+from neurodsp.sim.periodic import sim_bursty_oscillation, make_is_osc_durations
 
 # NOTE: `create_*` functions that take a bycycle model as input DO call bm.fit.
 # These methods assume the model has already been fit.
@@ -14,8 +14,14 @@ from neurodsp.sim.periodic import sim_bursty_oscillation
 def create_signals(nb, na, fs, freq, n_seconds):
         n_seconds = 10
         # bursts and signals taken from tutorial pages.
-        burst0 = sim_bursty_oscillation(n_seconds=n_seconds, fs=fs, freq=10, burst_def='durations', burst_params={
-            'n_cycles_burst': nb, 'n_cycles_off': na})
+        burst0 = sim_bursty_oscillation(
+            n_seconds=n_seconds,
+            fs=fs,
+            freq=10, 
+            burst_def='durations',
+            burst_params={'n_cycles_burst': nb, 'n_cycles_off': na},
+            phase="min"
+        )
 
         sig0 = sim_powerlaw(n_seconds=n_seconds, fs=fs, exponent=-2.0)
 
@@ -49,11 +55,11 @@ def create_signals(nb, na, fs, freq, n_seconds):
 
 def create_signals_burst_table(nb, na, fs, freq, n_seconds):
     sigs = create_signals(nb, na, fs, freq, n_seconds)
-    truth_table = np.full(fs*n_seconds,False)
-    for i in range(n_seconds*fs):
-        if i%(nb+na) < nb:
-            truth_table[i]=True
-    return sigs, truth_table
+    
+    is_oscillating = make_is_osc_durations(int(np.ceil(n_seconds * freq)), nb, na)
+    is_oscillating = np.repeat(is_oscillating, int(fs/freq))
+    
+    return sigs, is_oscillating
 
 # Complexity: O(bm.fit + len(bm.df_features **after bm.fit**))
 def create_window_indices_from_signal(bm=None, sig=None, fs=500, window_length=3):
@@ -222,8 +228,10 @@ def get_bursts_windows_dualthresh(current_signal, fs, f_range=(8,12), min_burst_
     complements = [None]*len(current_signal)
     bursts_idx = 0
     complements_idx = 0
-    dt_burst = dualthresh(sig=current_signal, fs=fs, dual_thresh=(
-        1, 2), f_range=f_range, min_n_cycles=1, min_burst_duration=min_burst_duration)
+    dt_burst = dualthresh(sig=current_signal, fs=fs, dual_thresh=(1, 2),
+                          f_range=f_range, min_n_cycles=1,
+                          min_burst_duration=min_burst_duration)
+    
     for i in range(len(current_signal)):
         if i >= 1:
             # print(dt_burst[i])
