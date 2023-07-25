@@ -42,6 +42,7 @@ def test_clustering_neurodsp_amp_function():
     combined_sigs, ground_truth = create_signals_burst_table(
         nb=5, na=5, fs=FS, freq=10, n_seconds=10
     )
+    # step 2.
     bo = np.full(
         # length of array
         len(combined_sigs),
@@ -57,6 +58,7 @@ def test_clustering_neurodsp_amp_function():
     failing_dfs = np.full(len(bo), None, dtype=object)
     passing_dfs = np.full(len(bo), None, dtype=object)
     passing_count = failing_count = 0
+    # step 3.
     for i in range(len(combined_sigs)):
         curr_sig = combined_sigs[i]
 
@@ -83,16 +85,19 @@ def test_clustering_neurodsp_amp_function():
             failing_dfs[failing_count] = bo[i].df_features
             failing_count = failing_count + 1
 
+    # step 4.
     passing_dfs=passing_dfs[:passing_count]
     failing_dfs=failing_dfs[:failing_count]
     print("failing count: ", failing_count)
+    print("passing count: ", passing_count)
     if failing_count>0:
+        testPasses=False
         keys = None
         failing_data_by_key = dict()
         passing_data_by_key = dict()
         df_model = failing_dfs[0]
         keys = df_model.keys()
-        # keep only the first 14 keys (not sample or is_burst)
+        # keep only the first 14 keys (not sample_* or is_burst)
         keys=keys[:14]
         for i in range(0, len(keys)):
             num_failing_elements = 0
