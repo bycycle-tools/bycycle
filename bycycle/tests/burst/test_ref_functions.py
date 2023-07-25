@@ -23,6 +23,8 @@ from scipy.stats import ttest_ind
 
 from neurodsp.sim.periodic import make_is_osc_durations
 
+from neurodsp.sim.aperiodic import sim_powerlaw
+from neurodsp.sim.periodic import sim_bursty_oscillation, make_is_osc_durations
 FS = 500
 
 
@@ -83,7 +85,7 @@ def test_clustering_neurodsp_amp_function():
 
     passing_dfs=passing_dfs[:passing_count]
     failing_dfs=failing_dfs[:failing_count]
-
+    print("failing count: ", failing_count)
     if failing_count>0:
         keys = None
         failing_data_by_key = dict()
