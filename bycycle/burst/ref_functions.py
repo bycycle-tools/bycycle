@@ -11,7 +11,7 @@ from neurodsp.sim.periodic import sim_bursty_oscillation, make_is_osc_durations
 # NOTE: `create_*` functions that take a bycycle model as input DO call bm.fit.
 # These methods assume the model has already been fit.
 
-def create_signals(nb, na, fs, freq, n_seconds):
+def create_signals(nb, na, fs, freq, n_seconds, num_sigs=1):
         n_seconds = 10
         # bursts and signals taken from tutorial pages.
         burst0 = sim_bursty_oscillation(
@@ -33,11 +33,16 @@ def create_signals(nb, na, fs, freq, n_seconds):
                             exponent=-3, f_range=(2, None))
 
         bursts = [burst0]
-        sigs = [sig0, sig1, sig2, sig3]
-        # sigs = [sig0]
+        # sigs = [sig0, sig1, sig2, sig3]
+        sigs = [sig0]
         # ratios = [10, 1, 0.5, 0.1, 0.0]
         ratios = [10, 1, 0.5]
         # ratios=[20,10]
+        if num_sigs > len(sigs):
+            num_sigs = len(sigs)
+        if num_sigs < 1:
+            num_sigs = 1
+        sigs = sigs[:num_sigs]
         combined_sigs = [None]*(len(bursts) * len(sigs)*len(ratios))
 
         # for y_vals in all_to_plot:
