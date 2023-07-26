@@ -23,6 +23,7 @@ def create_signals(nb, na, fs, freq, n_seconds, num_sigs=1):
             phase="min"
         )
 
+        
         sig0 = sim_powerlaw(n_seconds=n_seconds, fs=fs, exponent=-2.0)
 
         sig1 = sim_powerlaw(n_seconds=n_seconds, fs=fs,
@@ -36,7 +37,8 @@ def create_signals(nb, na, fs, freq, n_seconds, num_sigs=1):
         # sigs = [sig0, sig1, sig2, sig3]
         sigs = [sig0]
         # ratios = [10, 1, 0.5, 0.1, 0.0]
-        ratios = [10, 1, 0.5]
+        # ratios = [10, 1, 0.5]
+        ratios = [1.5, 1, 0.5, 0.1, 0.0]
         # ratios=[20,10]
         if num_sigs > len(sigs):
             num_sigs = len(sigs)

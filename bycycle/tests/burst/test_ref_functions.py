@@ -25,20 +25,31 @@ from neurodsp.sim.periodic import make_is_osc_durations
 
 from neurodsp.sim.aperiodic import sim_powerlaw
 from neurodsp.sim.periodic import sim_bursty_oscillation, make_is_osc_durations
+from multiprocessing import Pool
 FS = 500
 
 
 # This function should test neurodsp burst detection using the amp method
 def test_clustering_neurodsp_amp_function():
+    with Pool() as pool:
+        results = pool.map(clustering_subfunction, range(0, 1000))
+    for result in results:
+        assert result == True
+
+def clustering_subfunction(seed):
     # Test setup:
+    # (Repeat whole test over 1000 random seeds)
     # 1. create signals for testing
     # 2. create a bycycle object for each signal
     # 3. run neurodsp burst detection on each signal
     # 4. compare the results of neurodsp burst detection to the ground truth
     # 5. if the results are not similar, then the test fails
 
-    # Step 1.
     testPasses = True
+    passing_total, failing_total = 0, 0
+    print("seed: ", seed)
+    np.random.seed(seed)
+    # step 1.
     combined_sigs, ground_truth = create_signals_burst_table(
         nb=5, na=5, fs=FS, freq=10, n_seconds=10
     )
@@ -81,15 +92,17 @@ def test_clustering_neurodsp_amp_function():
         if score > 0.8:
             passing_dfs[passing_count] = bo[i].df_features
             passing_count = passing_count + 1
+            passing_total = passing_total + 1
         else:
             failing_dfs[failing_count] = bo[i].df_features
             failing_count = failing_count + 1
+            failing_total = failing_total + 1
 
     # step 4.
     passing_dfs=passing_dfs[:passing_count]
     failing_dfs=failing_dfs[:failing_count]
-    print("failing count: ", failing_count)
-    print("passing count: ", passing_count)
+    # print("failing count: ", failing_count)
+    # print("passing count: ", passing_count)
     if failing_count>0:
         testPasses=False
         keys = None
@@ -129,6 +142,6 @@ def test_clustering_neurodsp_amp_function():
         for i in range(0, len(keys)):
             result=np.append(result, ttest_ind(passing_data_by_index[i], failing_data_by_index[i]))
         print("hook")
-
-
-    assert testPasses
+    # print("passing total: ", passing_total)
+    # print("failing total: ", failing_total)
+    return testPasses
