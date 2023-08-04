@@ -26,6 +26,7 @@ from neurodsp.sim.periodic import make_is_osc_durations
 from neurodsp.sim.aperiodic import sim_powerlaw
 from neurodsp.sim.periodic import sim_bursty_oscillation, make_is_osc_durations
 from multiprocessing import Pool
+
 FS = 500
 
 
@@ -35,6 +36,7 @@ def test_clustering_neurodsp_amp_function():
         results = pool.map(clustering_subfunction, range(0, 1000))
     for result in results:
         assert result == True
+
 
 def clustering_subfunction(seed):
     # Test setup:
@@ -58,12 +60,13 @@ def clustering_subfunction(seed):
         # length of array
         len(combined_sigs),
         bycycle.Bycycle(
-        burst_method="amp",
-        thresholds={"burst_fraction_threshold": 0.5, "min_n_cycles": 1},
-        burst_kwargs={
-            # just worked best.
-            "amp_threshes": (1, 1)
-        })
+            burst_method="amp",
+            thresholds={"burst_fraction_threshold": 0.5, "min_n_cycles": 1},
+            burst_kwargs={
+                # just worked best.
+                "amp_threshes": (1, 1)
+            },
+        ),
     )
 
     failing_dfs = np.full(len(bo), None, dtype=object)
@@ -99,49 +102,144 @@ def clustering_subfunction(seed):
             failing_total = failing_total + 1
 
     # step 4.
-    passing_dfs=passing_dfs[:passing_count]
-    failing_dfs=failing_dfs[:failing_count]
+    passing_dfs = passing_dfs[:passing_count]
+    failing_dfs = failing_dfs[:failing_count]
     # print("failing count: ", failing_count)
     # print("passing count: ", passing_count)
-    if failing_count>0:
-        testPasses=False
+    if failing_count > 0:
+        testPasses = False
         keys = None
         failing_data_by_key = dict()
         passing_data_by_key = dict()
         df_model = failing_dfs[0]
         keys = df_model.keys()
         # keep only the first 14 keys (not sample_* or is_burst)
-        keys=keys[:14]
+        keys = keys[:14]
         for i in range(0, len(keys)):
             num_failing_elements = 0
             num_passing_elements = 0
             for j in range(0, len(failing_dfs)):
-                num_failing_elements = num_failing_elements + len(failing_dfs[j][keys[i]])
+                num_failing_elements = num_failing_elements + len(
+                    failing_dfs[j][keys[i]]
+                )
             failing_data_by_key[keys[i]] = np.empty(num_failing_elements)
             for j in range(0, len(passing_dfs)):
-                num_passing_elements = num_passing_elements + len(passing_dfs[j][keys[i]])
+                num_passing_elements = num_passing_elements + len(
+                    passing_dfs[j][keys[i]]
+                )
             passing_data_by_key[keys[i]] = np.empty(num_passing_elements)
             curr_idx = 0
             for j in range(0, len(failing_dfs)):
                 curr_array = failing_dfs[j][keys[i]]
-                failing_data_by_key[keys[i]][curr_idx:curr_idx+len(curr_array)] = curr_array
+                failing_data_by_key[keys[i]][
+                    curr_idx : curr_idx + len(curr_array)
+                ] = curr_array
                 curr_idx = curr_idx + len(curr_array)
             curr_idx = 0
             for j in range(0, len(passing_dfs)):
                 curr_array = passing_dfs[j][keys[i]]
-                passing_data_by_key[keys[i]][curr_idx:curr_idx+len(curr_array)] = curr_array
+                passing_data_by_key[keys[i]][
+                    curr_idx : curr_idx + len(curr_array)
+                ] = curr_array
                 curr_idx = curr_idx + len(curr_array)
-        
-        passing_data_by_index = np.empty(len(keys),dtype=object)
-        failing_data_by_index = np.empty(len(keys),dtype=object)
+
+        passing_data_by_index = np.empty(len(keys), dtype=object)
+        failing_data_by_index = np.empty(len(keys), dtype=object)
         for i in range(0, len(keys)):
-            passing_data_by_index[i] = passing_data_by_key[keys[i]][1:len(passing_data_by_key[keys[i]])-1]
-            failing_data_by_index[i] = failing_data_by_key[keys[i]][1:len(failing_data_by_key[keys[i]])-1]
-        
-        result=np.empty(0,dtype=object)
+            passing_data_by_index[i] = passing_data_by_key[keys[i]][
+                1 : len(passing_data_by_key[keys[i]]) - 1
+            ]
+            failing_data_by_index[i] = failing_data_by_key[keys[i]][
+                1 : len(failing_data_by_key[keys[i]]) - 1
+            ]
+
+        result = np.empty(0, dtype=object)
         for i in range(0, len(keys)):
-            result=np.append(result, ttest_ind(passing_data_by_index[i], failing_data_by_index[i]))
+            result = np.append(
+                result, ttest_ind(passing_data_by_index[i], failing_data_by_index[i])
+            )
         print("hook")
     # print("passing total: ", passing_total)
     # print("failing total: ", failing_total)
     return testPasses
+
+
+def test_cluster_by_amp_plot(seed=0, fs=500):
+    # Test setup:
+    # (Repeat whole test over 1000 random seeds)
+    # 1. create signals for testing
+    # 2. create a bycycle object for each signal
+    # 3. run neurodsp burst detection on each signal
+    # 4. plot all bursts vs non-bursts, per signal
+
+    testPasses = True
+    passing_total, failing_total = 0, 0
+    print("seed: ", seed)
+    np.random.seed(seed)
+    # step 1.
+    combined_sigs, ground_truth = create_signals_burst_table(
+        nb=5, na=5, fs=fs, freq=10, n_seconds=10
+    )
+    # step 2.
+    bo = np.full(
+        # length of array
+        len(combined_sigs),
+        bycycle.Bycycle(
+            burst_method="amp",
+            thresholds={"burst_fraction_threshold": 0.5, "min_n_cycles": 1},
+            burst_kwargs={
+                # just worked best.
+                "amp_threshes": (1, 1)
+            },
+        ),
+    )
+
+    failing_dfs = np.full(len(bo), None, dtype=object)
+    passing_dfs = np.full(len(bo), None, dtype=object)
+    passing_count = failing_count = 0
+    # step 3.
+    for i in range(len(combined_sigs)):
+        plt.figure()
+        curr_sig = combined_sigs[i]
+
+        bo[i].fit(sig=curr_sig, fs=fs, f_range=(8, 12))
+
+        cycle_bounds_all = get_cycle_bounds(bo[i])
+
+        bursting_cycle_idxs = bo[i].df_features.index[
+            bo[i].df_features["is_burst"] == True
+        ]
+        # step 4
+        bursting_cycle_bounds = [cycle_bounds_all[j] for j in bursting_cycle_idxs]
+        burst_sigs = np.full(
+            len(bursting_cycle_bounds),
+            None,
+        )
+        print("burst_sigs shape", burst_sigs.shape)
+        print("bursting_cycle_bounds length", len(bursting_cycle_bounds))
+        for j in range(len(bursting_cycle_bounds)):
+            burst_sigs[j] = curr_sig[
+                bursting_cycle_bounds[j][0] : bursting_cycle_bounds[j][1]
+            ]
+        for j in range(burst_sigs.shape[0]):
+            resampled_sig = resample(burst_sigs[j], 1000)
+            plt.plot(resampled_sig)
+        plt.title("Bursts")
+        plt.figure()
+        nonbursting_cycle_idxs = bo[i].df_features.index[
+            bo[i].df_features["is_burst"] == False
+        ]
+        nonbursting_cycle_bounds = [cycle_bounds_all[i] for i in nonbursting_cycle_idxs]
+        nonburst_sigs = np.full(
+            len(nonbursting_cycle_bounds),
+            None,
+        )
+        for j in range(len(nonbursting_cycle_bounds)):
+            nonburst_sigs[j] = curr_sig[
+                nonbursting_cycle_bounds[j][0] : nonbursting_cycle_bounds[j][1]
+            ]
+        for j in range(nonburst_sigs.shape[0]):
+            resampled_sig = resample(nonburst_sigs[j], 1000)
+            plt.plot(resampled_sig)
+        plt.title("Non-bursts")
+        plt.show()
