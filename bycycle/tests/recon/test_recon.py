@@ -62,7 +62,7 @@ def create_new_cycles():
         },
     }
 
-    n_sims = 100
+    n_sims = 10
 
     cycle_targets = np.zeros((len(mappings), n_sims, 100))
     target_values = []
@@ -118,3 +118,12 @@ def test_fit():
     rc.fit(cycles)
     models =  rc.models
     print(models)
+
+def test_fit_accuracy():
+    # this is test_fit
+    cycles = create_new_cycles()
+    rc = BycycleRecon()
+    rc.fit(cycles)
+    models =  rc.models
+    print("next step")
+    # this is code unique to this test

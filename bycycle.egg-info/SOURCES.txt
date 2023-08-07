@@ -34,6 +34,8 @@ bycycle/plts/__init__.py
 bycycle/plts/burst.py
 bycycle/plts/cyclepoints.py
 bycycle/plts/features.py
+bycycle/recon/__init__.py
+bycycle/recon/recon_obj.py
 bycycle/tests/__init__.py
 bycycle/tests/conftest.py
 bycycle/tests/settings.py
