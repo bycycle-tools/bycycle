@@ -62,7 +62,7 @@ def create_new_cycles():
         },
     }
 
-    n_sims = 100
+    n_sims = 10
 
     cycle_targets = np.zeros((len(mappings), n_sims, 100))
     target_values = []
@@ -117,4 +117,7 @@ def test_fit():
     rc = BycycleRecon()
     rc.fit(cycles)
     models =  rc.models
+    # assert n models,
+    # assert models has optimized parameters (float)
+    # check model.popt, model.loss, model.rsq for setting
     print(models)
