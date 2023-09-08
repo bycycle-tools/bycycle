@@ -117,7 +117,34 @@ def test_fit():
     rc = BycycleRecon()
     rc.fit(cycles)
     models =  rc.models
-    # assert n models,
+
+
     # assert models has optimized parameters (float)
+    assert models.asine.popt is not None
+    assert models.asym_harmonic.popt is not None
+    assert models.exp_cos.popt is not None
+    assert models.gaussian.popt is not None
+    assert models.skewed_gaussian.popt is not None
+    assert models.sine.popt is not None
+    assert models.sawtooth.popt is not None
+
+    # assert models has loss (float)
+    assert models.asine.loss is not None
+    assert models.asym_harmonic.loss is not None
+    assert models.exp_cos.loss is not None
+    assert models.gaussian.loss is not None
+    assert models.skewed_gaussian.loss is not None
+    assert models.sine.loss is not None
+    assert models.sawtooth.loss is not None
+    
+    # assert models has rsq (float)
+    assert models.asine.rsq is not None
+    assert models.asym_harmonic.rsq is not None
+    assert models.exp_cos.rsq is not None
+    assert models.gaussian.rsq is not None
+    assert models.skewed_gaussian.rsq is not None
+    assert models.sine.rsq is not None
+    assert models.sawtooth.rsq is not None
     # check model.popt, model.loss, model.rsq for setting
+    
     print(models)
