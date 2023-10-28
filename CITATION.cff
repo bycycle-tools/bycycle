@@ -1,15 +1,36 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: >-
+  If you use this software, please cite it using the metadata from this file.
+type: software
+title: 'bycycle: cycle-by-cycle analysis of neural oscillations'
+authors:
+- given-names: 'Ryan'
+  family-names: 'Hammonds'
+  orcid: 'https://orcid.org/0000-0002-5032-3241'
+- given-names: 'Scott'
+  family-names: 'Cole'
+  orcid: 'https://orcid.org/0000-0002-6168-9951'
+- given-names: 'Thomas'
+  family-names: 'Donoghue'
+  orcid: 'https://orcid.org/0000-0001-5911-0472'
+- given-names: 'Bradley'
+  family-names: 'Voytek'
+  orcid: 'https://orcid.org/0000-0003-1640-2525'
+repository-code: 'https://github.com/bycycle-tools/bycycle'
+url: 'https://bycycle-tools.github.io/'
+license: Apache-2.0
 preferred-citation:
   type: article
   authors:
-  - family-names: "Cole"
-    given-names: "Scott"
-  - family-names: "Voytek"
-    given-names: "Bradley"
-  title: "Cycle-by-cycle analysis of neural oscillations"
-  doi: "10.1152/JN.00273.2019"
-  journal: "Journal of Neurophysiology"
+  - given-names: 'Scott'
+    family-names: 'Cole'
+    orcid: 'https://orcid.org/0000-0002-6168-9951'
+  - family-names: 'Voytek'
+    given-names: 'Bradley'
+    orcid: 'https://orcid.org/0000-0003-1640-2525'
+  title: 'Cycle-by-cycle analysis of neural oscillations'
+  doi: '10.1152/JN.00273.2019'
+  journal: 'Journal of Neurophysiology'
   month: 8
   year: 2019
   volume: 122
