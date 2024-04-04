@@ -2,28 +2,35 @@
 bycycle - cycle-by-cycle analysis of neural oscillations
 ========================================================
 
-|ProjectStatus|_ |Version|_ |BuildStatus|_ |Coverage|_ |License|_ |PythonVersions|_ |Publication|_
+|ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions| |Publication|
 
 .. |ProjectStatus| image:: https://www.repostatus.org/badges/latest/active.svg
-.. _ProjectStatus: https://www.repostatus.org/#active
+   :target: https://www.repostatus.org/#active
+   :alt: project status
 
 .. |Version| image:: https://img.shields.io/pypi/v/bycycle.svg
-.. _Version: https://pypi.python.org/pypi/bycycle/
+   :target: https://pypi.python.org/pypi/bycycle/
+   :alt: version
 
 .. |BuildStatus| image:: https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml/badge.svg
-.. _BuildStatus: https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml
+   :target: https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml
+   :alt: build status
 
 .. |Coverage| image:: https://codecov.io/gh/bycycle-tools/bycycle/branch/main/graph/badge.svg
-.. _Coverage: https://codecov.io/gh/bycycle-tools/bycycle
+   :target: https://codecov.io/gh/bycycle-tools/bycycle
+   :alt: coverage
 
 .. |License| image:: https://img.shields.io/pypi/l/bycycle.svg
-.. _License: https://opensource.org/licenses/Apache-2.0
+   :target: https://opensource.org/licenses/Apache-2.0
+   :alt: license
 
 .. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/bycycle.svg
-.. _PythonVersions: https://pypi.python.org/pypi/bycycle/
+   :target: https://pypi.python.org/pypi/bycycle/
+   :alt: python versions
 
-.. |Publication| image:: https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue
-.. _Publication: https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019
+.. |Publication| image:: https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue.svg
+   :target: https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019
+   :alt: publication
 
 ByCycle is a module for analyzing neural oscillations in a cycle-by-cycle approach.
 
