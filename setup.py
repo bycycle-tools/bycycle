@@ -44,15 +44,16 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
     ],
     platforms = 'any',
     project_urls = {
         'Documentation' : 'https://bycycle-tools.github.io/bycycle/',
         'Bug Reports' : 'https://github.com/bycycle-tools/bycycle/issues',
-        'Source' : 'https://github.com/bycycle-tools/bycycle'
+        'Source' : 'https://github.com/bycycle-tools/bycycle',
     },
     download_url = 'https://github.com/bycycle-tools/bycycle/releases',
     keywords = ['neuroscience', 'neural oscillations', 'waveform', 'shape', 'electrophysiology'],
     install_requires = install_requires,
-    tests_require = ['pytest']
+    tests_require = ['pytest'],
 )
