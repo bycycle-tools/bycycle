@@ -242,7 +242,7 @@ def plot_burst_detect_param(df_features, sig, fs, burst_param, thresh,
 
         plot_time_series([times[df_features['sample_' + center_e]], (times[0], times[-1])],
                          [df_features[burst_param], [thresh]*2], ax=ax, colors=['k', 'k'],
-                         ls=['-', '--'], marker=["o", "None"], xlabel=xlabel,
+                         ls=['-', '--'], marker=["o"], xlabel=xlabel,
                          ylabel="{0:s}\nthreshold={1:.2f}".format(ylabel, thresh), **kwargs)
 
     else:
