@@ -447,5 +447,7 @@ class BycycleGroup(BycycleBase):
             if self.n_dims == 3:
                 for dim1 in range(len(sig)):
                     self.models[dim0][dim1].recompute_edges(reduction)
+                    self.df_features[dim0][dim1] = self.models[dim0][dim1].df_features
             else:
                  self.models[dim0].recompute_edges(reduction)
+                 self.df_features[dim0] = self.models[dim0].df_features
