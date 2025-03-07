@@ -25,7 +25,7 @@ bycycle - cycle-by-cycle analysis of neural oscillations
    :alt: license
 
 .. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/bycycle.svg
-   :target: https://pypi.python.org/pypi/bycycle/
+   :target: https://pypi.org/project/bycycle/
    :alt: python versions
 
 .. |Publication| image:: https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue.svg
