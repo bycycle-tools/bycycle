@@ -65,6 +65,8 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak',
     # Set default filtering parameters
     if filter_kwargs is None:
         filter_kwargs = {}
+        # If not defined, set default filter length (ndsp defaults to n_cycles of 3)
+        filter_kwargs['n_cycles'] = 3
 
     # Get the original signal and filter lengths
     sig_len = len(sig)
@@ -75,7 +77,7 @@ def find_extrema(sig, fs, f_range, boundary=0, first_extrema='peak',
 
         filt_len = compute_filter_length(fs, pass_type, f_range[0], f_range[1],
                                          n_seconds=filter_kwargs.get('n_seconds', None),
-                                         n_cycles=filter_kwargs.get('n_cycles', 3))
+                                         n_cycles=filter_kwargs.get('n_cycles', None))
 
         # Pad the signal
         sig = np.pad(sig, int(np.ceil(filt_len/2)), mode='constant')
