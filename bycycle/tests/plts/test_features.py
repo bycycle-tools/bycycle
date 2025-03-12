@@ -5,7 +5,7 @@ import numpy as np
 from bycycle.burst import detect_bursts_cycles
 
 from bycycle.tests.tutils import plot_test
-from bycycle.tests.settings import TEST_PLOTS_PATH
+from bycycle.tests.tsettings import TEST_PLOTS_PATH
 
 from bycycle.plts.features import *
 

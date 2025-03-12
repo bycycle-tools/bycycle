@@ -11,8 +11,8 @@ from neurodsp.sim import sim_oscillation, sim_combined
 from neurodsp.utils.sim import set_random_seed
 
 from bycycle.features import compute_shape_features, compute_burst_features, compute_features
-from bycycle.tests.settings import (N_SECONDS, FS, FREQ, F_RANGE,
-                                    BASE_TEST_FILE_PATH, TEST_PLOTS_PATH)
+from bycycle.tests.tsettings import (N_SECONDS, FS, FREQ, F_RANGE,
+                                     BASE_TEST_FILE_PATH, TEST_PLOTS_PATH)
 
 ###################################################################################################
 ###################################################################################################
