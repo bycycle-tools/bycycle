@@ -17,10 +17,25 @@ from bycycle.tests.settings import (N_SECONDS, FS, FREQ, F_RANGE,
 ###################################################################################################
 ###################################################################################################
 
+## TEST SETUP
+
 def pytest_configure(config):
 
     set_random_seed(42)
 
+@pytest.fixture(scope='session', autouse=True)
+def check_dir():
+    """Once, prior to session, this will clear and re-initialize the test file directories."""
+
+    # If the directories already exist, clear them
+    if os.path.exists(BASE_TEST_FILE_PATH):
+        shutil.rmtree(BASE_TEST_FILE_PATH)
+
+    # Remake (empty) directories
+    os.mkdir(BASE_TEST_FILE_PATH)
+    os.mkdir(TEST_PLOTS_PATH)
+
+## TEST OBJECTS
 
 @pytest.fixture(scope='module')
 def sim_args():
@@ -39,7 +54,6 @@ def sim_args():
 
     yield {'sig': sig, 'fs': FS, 'f_range': F_RANGE, 'df_features': df_features,
            'df_shapes': df_shapes, 'df_burst': df_burst, 'threshold_kwargs': threshold_kwargs}
-
 
 @pytest.fixture(scope='module')
 def sim_args_comb():
@@ -60,20 +74,6 @@ def sim_args_comb():
 
     yield {'sig': sig, 'fs': FS, 'f_range': F_RANGE, 'df_features': df_features,
            'df_shapes': df_shapes, 'df_burst': df_burst, 'threshold_kwargs': threshold_kwargs}
-
-
-@pytest.fixture(scope='session', autouse=True)
-def check_dir():
-    """Once, prior to session, this will clear and re-initialize the test file directories."""
-
-    # If the directories already exist, clear them
-    if os.path.exists(BASE_TEST_FILE_PATH):
-        shutil.rmtree(BASE_TEST_FILE_PATH)
-
-    # Remake (empty) directories
-    os.mkdir(BASE_TEST_FILE_PATH)
-    os.mkdir(TEST_PLOTS_PATH)
-
 
 @pytest.fixture(scope='module')
 def sim_stationary():
