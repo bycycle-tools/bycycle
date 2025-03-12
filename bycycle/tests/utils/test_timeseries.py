@@ -1,4 +1,4 @@
-"""Tests for utils.timeseries."""
+"""Tests for bycycle.utils.timeseries."""
 
 import numpy as np
 

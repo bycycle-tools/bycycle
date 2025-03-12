@@ -1,4 +1,4 @@
-"""Tests for plts.burst."""
+"""Tests for bycycle.plts.burst."""
 
 import pytest
 

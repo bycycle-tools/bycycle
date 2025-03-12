@@ -1,4 +1,4 @@
-"""Test group utility functions."""
+"""Tests for bycycle.group.utils."""
 
 import pytest
 

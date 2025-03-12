@@ -1,4 +1,4 @@
-"""Tests for plts.cyclepoints."""
+"""Tests for bycycle.plts.cyclepoints."""
 
 from bycycle.cyclepoints import find_extrema, find_zerox
 

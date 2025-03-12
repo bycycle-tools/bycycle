@@ -1,6 +1,7 @@
-"""Tests for burst.amp."""
+"""Tests for bycycle.burst.amp."""
 
 import itertools
+
 import numpy as np
 
 from bycycle.features import compute_burst_features

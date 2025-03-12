@@ -1,4 +1,4 @@
-"""Tests for features.cyclepoints."""
+"""Tests for bycycle.features.cyclepoints."""
 
 from bycycle.cyclepoints import find_extrema, find_zerox
 

@@ -1,9 +1,9 @@
-"""Tests for cyclepoints.extrema."""
+"""Tests for bycycle.cyclepoints.extrema."""
+
+import pytest
 
 import numpy as np
 from scipy.signal import argrelextrema
-
-import pytest
 
 from bycycle.cyclepoints.extrema import *
 from bycycle.tests.settings import FS, F_RANGE

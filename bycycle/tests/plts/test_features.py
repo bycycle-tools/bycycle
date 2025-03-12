@@ -1,4 +1,4 @@
-"""Tests plts.features."""
+"""Tests for bycycle.plts.features."""
 
 import numpy as np
 

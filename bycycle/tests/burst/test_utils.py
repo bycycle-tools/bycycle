@@ -1,12 +1,13 @@
-"""Test burst.utils."""
+"""Test bycycle.burst.utils."""
+
+import pytest
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from bycycle.features import compute_features
-from bycycle.burst.utils import *
 
+from bycycle.burst.utils import *
 
 ###################################################################################################
 ###################################################################################################

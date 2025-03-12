@@ -1,4 +1,4 @@
-"""Tests for features.shape."""
+"""Tests for bycycle.features.shape."""
 
 import pytest
 

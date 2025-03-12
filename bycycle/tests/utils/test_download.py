@@ -1,4 +1,4 @@
-"""Test functions for bycycle.utils.download."""
+"""Tests for bycycle.utils.download."""
 
 import os
 import shutil
