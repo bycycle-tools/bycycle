@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>bycycle.objs.Bycycle &#8212; bycycle 1.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
+    <title>bycycle.objs.Bycycle &#8212; bycycle 1.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=84a24d03"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=a56c686a"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 
@@ -56,7 +56,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.2.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +71,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.1.0
+    v1.2.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -104,13 +104,38 @@
 
 <div class="container">
   <div class="row">
-    <div class="body col-md-12 content" role="main">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">bycycle.objs.Bycycle</a><ul>
+<li><a class="reference internal" href="#bycycle.objs.Bycycle"><code class="docutils literal notranslate"><span class="pre">Bycycle</span></code></a><ul>
+<li><a class="reference internal" href="#bycycle.objs.Bycycle.__init__"><code class="docutils literal notranslate"><span class="pre">Bycycle.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#bycycle.objs.Bycycle.fit"><code class="docutils literal notranslate"><span class="pre">Bycycle.fit()</span></code></a></li>
+<li><a class="reference internal" href="#bycycle.objs.Bycycle.load"><code class="docutils literal notranslate"><span class="pre">Bycycle.load()</span></code></a></li>
+<li><a class="reference internal" href="#bycycle.objs.Bycycle.plot"><code class="docutils literal notranslate"><span class="pre">Bycycle.plot()</span></code></a></li>
+<li><a class="reference internal" href="#bycycle.objs.Bycycle.recompute_edges"><code class="docutils literal notranslate"><span class="pre">Bycycle.recompute_edges()</span></code></a></li>
+<li><a class="reference internal" href="#bycycle.objs.Bycycle.reduce_thresholds"><code class="docutils literal notranslate"><span class="pre">Bycycle.reduce_thresholds()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
       
   <section id="bycycle-objs-bycycle">
-<h1>bycycle.objs.Bycycle<a class="headerlink" href="#bycycle-objs-bycycle" title="Permalink to this heading">¶</a></h1>
+<h1>bycycle.objs.Bycycle<a class="headerlink" href="#bycycle-objs-bycycle" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="bycycle.objs.Bycycle">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bycycle.objs.</span></span><span class="sig-name descname"><span class="pre">Bycycle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center_extrema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'peak'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cycles'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_extrema_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bycycle.objs.</span></span><span class="sig-name descname"><span class="pre">Bycycle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center_extrema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'peak'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cycles'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_extrema_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle" title="Link to this definition">¶</a></dt>
 <dd><p>Compute bycycle features from a signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
@@ -157,7 +182,7 @@ cycles of the low cutoff frequency (<code class="docutils literal notranslate"><
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="bycycle.objs.Bycycle.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center_extrema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'peak'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cycles'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_extrema_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center_extrema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'peak'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cycles'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_extrema_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize object settings.</p>
 </dd></dl>
 
@@ -186,7 +211,7 @@ cycles of the low cutoff frequency (<code class="docutils literal notranslate"><
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="bycycle.objs.Bycycle.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_range</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_range</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.fit" title="Link to this definition">¶</a></dt>
 <dd><p>Run the bycycle algorithm on a signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -204,13 +229,13 @@ cycles of the low cutoff frequency (<code class="docutils literal notranslate"><
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bycycle.objs.Bycycle.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_range</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.load" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_range</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.load" title="Link to this definition">¶</a></dt>
 <dd><p>Load external results.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bycycle.objs.Bycycle.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">3)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_only_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.plot" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">3)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_only_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.plot" title="Link to this definition">¶</a></dt>
 <dd><p>Plot burst detection results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -230,7 +255,7 @@ cycles of the low cutoff frequency (<code class="docutils literal notranslate"><
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bycycle.objs.Bycycle.recompute_edges">
-<span class="sig-name descname"><span class="pre">recompute_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.recompute_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.recompute_edges" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">recompute_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bycycle/objs/fit.html#Bycycle.recompute_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bycycle.objs.Bycycle.recompute_edges" title="Link to this definition">¶</a></dt>
 <dd><p>Recomputes features for cycles on the edge of bursts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -244,7 +269,7 @@ cycles of the low cutoff frequency (<code class="docutils literal notranslate"><
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bycycle.objs.Bycycle.reduce_thresholds">
-<span class="sig-name descname"><span class="pre">reduce_thresholds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reduction</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bycycle.objs.Bycycle.reduce_thresholds" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reduce_thresholds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reduction</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bycycle.objs.Bycycle.reduce_thresholds" title="Link to this definition">¶</a></dt>
 <dd><p>Adjust thresholds by a given amount.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -278,8 +303,8 @@ cycles of the low cutoff frequency (<code class="docutils literal notranslate"><
       
     </p>
     <p>
-        &copy; Copyright 2018-2023, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
+        &copy; Copyright 2018-2025, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br/>
     </p>
   </div>
 </footer>

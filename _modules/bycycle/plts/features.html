@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bycycle.plts.features &#8212; bycycle 1.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
+    <title>bycycle.plts.features &#8212; bycycle 1.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../../_static/documentation_options.js?v=84a24d03"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=a56c686a"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -55,7 +55,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.2.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -70,7 +70,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.1.0
+    v1.2.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -103,22 +103,35 @@
 
 <div class="container">
   <div class="row">
-    <div class="body col-md-12 content" role="main">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<form action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
       
   <h1>Source code for bycycle.plts.features</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Plot cycle features.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">neurodsp.plts.utils</span> <span class="kn">import</span> <span class="n">savefig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.plts.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">savefig</span>
 
 <span class="c1">###################################################################################################</span>
 <span class="c1">###################################################################################################</span>
 
-<div class="viewcode-block" id="plot_feature_hist"><a class="viewcode-back" href="../../../generated/bycycle.plts.plot_feature_hist.html#bycycle.plts.plot_feature_hist">[docs]</a><span class="nd">@savefig</span>
-<span class="k">def</span> <span class="nf">plot_feature_hist</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">param_label</span><span class="p">,</span> <span class="n">only_bursts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_feature_hist">
+<a class="viewcode-back" href="../../../generated/bycycle.plts.plot_feature_hist.html#bycycle.plts.plot_feature_hist">[docs]</a>
+<span class="nd">@savefig</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_feature_hist</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">param_label</span><span class="p">,</span> <span class="n">only_bursts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a histogram for a cycle feature.</span>
 
 <span class="sd">    Parameters</span>
@@ -188,8 +201,11 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot_feature_categorical"><a class="viewcode-back" href="../../../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical">[docs]</a><span class="nd">@savefig</span>
-<span class="k">def</span> <span class="nf">plot_feature_categorical</span><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">param_label</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="plot_feature_categorical">
+<a class="viewcode-back" href="../../../generated/bycycle.plts.plot_feature_categorical.html#bycycle.plts.plot_feature_categorical">[docs]</a>
+<span class="nd">@savefig</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_feature_categorical</span><span class="p">(</span><span class="n">df_features</span><span class="p">,</span> <span class="n">param_label</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a cycle feature by one or more categories.</span>
 
 <span class="sd">    Parameters</span>
@@ -266,6 +282,7 @@
     <span class="c1"># Hide the right and top spines</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
 </pre></div>
 
     </div>
@@ -279,8 +296,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018-2023, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
+        &copy; Copyright 2018-2025, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br/>
     </p>
   </div>
 </footer>

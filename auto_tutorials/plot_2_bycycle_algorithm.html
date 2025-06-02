@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2. Cycle-by-cycle algorithm &#8212; bycycle 1.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
+    <title>2. Cycle-by-cycle algorithm &#8212; bycycle 1.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=84a24d03"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=a56c686a"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 
@@ -56,7 +56,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.2.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +71,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.1.0
+    v1.2.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -104,15 +104,46 @@
 
 <div class="container">
   <div class="row">
-    <div class="body col-md-12 content" role="main">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">2. Cycle-by-cycle algorithm</a><ul>
+<li><a class="reference internal" href="#preprocess-signal">0. Preprocess signal</a></li>
+<li><a class="reference internal" href="#localize-peaks-and-troughs">1. Localize peaks and troughs</a><ul>
+<li><a class="reference internal" href="#note-the-filter-characteristics-used-in-the-process-of-finding-peaks-and-troughs">Note the filter characteristics used in the process of finding peaks and troughs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#localize-rise-and-decay-midpoints">2. Localize rise and decay midpoints</a></li>
+<li><a class="reference internal" href="#compute-features-of-each-cycle">3. Compute features of each cycle</a></li>
+<li><a class="reference internal" href="#determine-parts-of-signal-in-oscillatory-burst">4. Determine parts of signal in oscillatory burst</a><ul>
+<li><a class="reference internal" href="#load-a-simulated-signal-and-apply-a-lowpass-filter">Load a simulated signal and apply a lowpass filter</a></li>
+<li><a class="reference internal" href="#visualizing-burst-detection-settings">Visualizing burst detection settings</a></li>
+<li><a class="reference internal" href="#burst-detection-settings-too-liberal">Burst detection settings: too liberal</a></li>
+<li><a class="reference internal" href="#burst-detection-settings-too-conservative">Burst detection settings: too conservative</a></li>
+<li><a class="reference internal" href="#more-appropriate-burst-detection-thresholds">More appropriate burst detection thresholds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-tutorials-plot-2-bycycle-algorithm-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="cycle-by-cycle-algorithm">
-<span id="sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py"></span><h1>2. Cycle-by-cycle algorithm<a class="headerlink" href="#cycle-by-cycle-algorithm" title="Permalink to this heading">¶</a></h1>
+<span id="sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py"></span><h1>2. Cycle-by-cycle algorithm<a class="headerlink" href="#cycle-by-cycle-algorithm" title="Link to this heading">¶</a></h1>
 <p>Demonstration of the cycle-by-cycle approach.</p>
 <p>In the last tutorial notebook, I described the conventional approach for analyzing time-varying
 properties of neural oscillations, and in this notebook, we will go over our alternative approach.
@@ -134,7 +165,7 @@ of the signal to be analyzed for their oscillatory properties.</p>
 processed appropriately. As signal processing is complicated, it is very beneficial to visualize
 the measured features along with the raw data to assure they make sense.</p>
 <section id="preprocess-signal">
-<h2>0. Preprocess signal<a class="headerlink" href="#preprocess-signal" title="Permalink to this heading">¶</a></h2>
+<h2>0. Preprocess signal<a class="headerlink" href="#preprocess-signal" title="Link to this heading">¶</a></h2>
 <p>A crucial part of the cycle-by-cycle approach is the ability to localize the peaks and troughs of
 the oscillation. Therefore, some preprocessing of the signal is often useful in order to make
 these extrema more apparent, i.e. isolate the oscillation component and minimize the
@@ -143,23 +174,23 @@ choice of cutoff frequency is very important. The cutoff frequency should not be
 order to remove high frequency “noise” that interferes with extrema localization but not so low
 that it deforms the shape of the oscillation of interest. In order to assess this, the user should
 plot the filtered signal in comparison to the original signal.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">neurodsp.filt</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a>
-<span class="kn">from</span> <span class="nn">neurodsp.plts</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a>
-<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_combined</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.filt</span><span class="w"> </span><span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.plts</span><span class="w"> </span><span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.sim</span><span class="w"> </span><span class="kn">import</span> <span class="n">sim_combined</span>
 
-<span class="kn">from</span> <span class="nn">bycycle</span> <span class="kn">import</span> <span class="n">Bycycle</span>
-<span class="kn">from</span> <span class="nn">bycycle.cyclepoints</span> <span class="kn">import</span> <a href="../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema" title="bycycle.cyclepoints.find_extrema" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_extrema</span></a><span class="p">,</span> <a href="../generated/bycycle.cyclepoints.find_zerox.html#bycycle.cyclepoints.find_zerox" title="bycycle.cyclepoints.find_zerox" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_zerox</span></a>
-<span class="kn">from</span> <span class="nn">bycycle.cyclepoints.zerox</span> <span class="kn">import</span> <span class="n">find_flank_zerox</span>
-<span class="kn">from</span> <span class="nn">bycycle.plts</span> <span class="kn">import</span> <a href="../generated/bycycle.plts.plot_cyclepoints_array.html#bycycle.plts.plot_cyclepoints_array" title="bycycle.plts.plot_cyclepoints_array" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_cyclepoints_array</span></a>
-<span class="kn">from</span> <span class="nn">bycycle.utils.download</span> <span class="kn">import</span> <span class="n">load_bycycle_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bycycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bycycle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bycycle.cyclepoints</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema" title="bycycle.cyclepoints.find_extrema" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_extrema</span></a><span class="p">,</span> <a href="../generated/bycycle.cyclepoints.find_zerox.html#bycycle.cyclepoints.find_zerox" title="bycycle.cyclepoints.find_zerox" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_zerox</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bycycle.cyclepoints.zerox</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_flank_zerox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bycycle.plts</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/bycycle.plts.plot_cyclepoints_array.html#bycycle.plts.plot_cyclepoints_array" title="bycycle.plts.plot_cyclepoints_array" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_cyclepoints_array</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bycycle.utils.download</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_bycycle_data</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_columns</span> <span class="o">=</span> <span class="mi">10</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
 <span class="n">sig</span> <span class="o">=</span> <span class="n">load_bycycle_data</span><span class="p">(</span><span class="s1">&#39;ca1.npy&#39;</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">1250</span>
 
@@ -182,13 +213,13 @@ plot the filtered signal in comparison to the original signal.</p>
 </div>
 <img src="../_images/sphx_glr_plot_2_bycycle_algorithm_001.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_001.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/></section>
 <section id="localize-peaks-and-troughs">
-<h2>1. Localize peaks and troughs<a class="headerlink" href="#localize-peaks-and-troughs" title="Permalink to this heading">¶</a></h2>
+<h2>1. Localize peaks and troughs<a class="headerlink" href="#localize-peaks-and-troughs" title="Link to this heading">¶</a></h2>
 <p>In order to characterize the oscillation, it is useful to know the precise times of peaks and
 troughs. For one, this will allow us to compute the periods and rise-decay symmetries of the
 individual cycles. To do this, the signal is first narrow-bandpass filtered in order to estimate
 “zero-crossings.” Then, in between these zerocrossings, the absolute maxima and minima are found
 and labeled as the peaks and troughs, respectively.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Narrowband filter signal</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Narrowband filter signal</span>
 <span class="n">n_seconds_theta</span> <span class="o">=</span> <span class="mf">.75</span>
 <span class="n">sig_narrow</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">f_theta</span><span class="p">,</span>
                            <span class="n">n_seconds</span><span class="o">=</span><span class="n">n_seconds_theta</span><span class="p">,</span> <span class="n">remove_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -198,7 +229,7 @@ and labeled as the peaks and troughs, respectively.</p>
 <span class="n">decay_xs</span> <span class="o">=</span> <span class="n">find_flank_zerox</span><span class="p">(</span><span class="n">sig_narrow</span><span class="p">,</span> <span class="s1">&#39;decay&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find peaks and troughs (this function also does the above)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find peaks and troughs (this function also does the above)</span>
 <span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span> <span class="o">=</span> <a href="../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema" title="bycycle.cyclepoints.find_extrema" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_extrema</span></a><span class="p">(</span><span class="n">sig_low</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_theta</span><span class="p">,</span>
                               <span class="n">filter_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_seconds&#39;</span><span class="p">:</span><span class="n">n_seconds_theta</span><span class="p">})</span>
 
@@ -206,15 +237,15 @@ and labeled as the peaks and troughs, respectively.</p>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_plot_2_bycycle_algorithm_002.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_002.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/><section id="note-the-filter-characteristics-used-in-the-process-of-finding-peaks-and-troughs">
-<h3>Note the filter characteristics used in the process of finding peaks and troughs<a class="headerlink" href="#note-the-filter-characteristics-used-in-the-process-of-finding-peaks-and-troughs" title="Permalink to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot frequency response of bandpass filter</span>
+<h3>Note the filter characteristics used in the process of finding peaks and troughs<a class="headerlink" href="#note-the-filter-characteristics-used-in-the-process-of-finding-peaks-and-troughs" title="Link to this heading">¶</a></h3>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot frequency response of bandpass filter</span>
 <span class="n">sig_filt</span> <span class="o">=</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">n_seconds</span><span class="o">=</span><span class="mf">.75</span><span class="p">,</span> <span class="n">plot_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_plot_2_bycycle_algorithm_003.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_003.png" alt="Frequency response, Kernel" class = "sphx-glr-single-img"/></section>
 </section>
 <section id="localize-rise-and-decay-midpoints">
-<h2>2. Localize rise and decay midpoints<a class="headerlink" href="#localize-rise-and-decay-midpoints" title="Permalink to this heading">¶</a></h2>
+<h2>2. Localize rise and decay midpoints<a class="headerlink" href="#localize-rise-and-decay-midpoints" title="Link to this heading">¶</a></h2>
 <p>In addition to localizing the peaks and troughs of a cycle, we also want to get more information
 about the rise and decay periods. For instance, these flanks may have deflections if the peaks or
 troughs are particularly sharp. In order to gauge a dimension of this, we localize midpoints for
@@ -224,7 +255,7 @@ multiple times, then the median time is chosen as the flank midpoint. This is no
 however, this is rare, and most of these cycles should be removed by burst detection.</p>
 <p>Note: Plotting midpoints and extrema may also be performed using the dataframe output from
 <a class="reference internal" href="../generated/bycycle.features.compute_features.html#bycycle.features.compute_features" title="bycycle.features.compute_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_features()</span></code></a> with the <code class="xref py py-func docutils literal notranslate"><span class="pre">plot_cyclepoints()</span></code> function.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rises</span><span class="p">,</span> <span class="n">decays</span> <span class="o">=</span> <a href="../generated/bycycle.cyclepoints.find_zerox.html#bycycle.cyclepoints.find_zerox" title="bycycle.cyclepoints.find_zerox" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_zerox</span></a><span class="p">(</span><span class="n">sig_low</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rises</span><span class="p">,</span> <span class="n">decays</span> <span class="o">=</span> <a href="../generated/bycycle.cyclepoints.find_zerox.html#bycycle.cyclepoints.find_zerox" title="bycycle.cyclepoints.find_zerox" class="sphx-glr-backref-module-bycycle-cyclepoints sphx-glr-backref-type-py-function"><span class="n">find_zerox</span></a><span class="p">(</span><span class="n">sig_low</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span><span class="p">)</span>
 
 <a href="../generated/bycycle.plts.plot_cyclepoints_array.html#bycycle.plts.plot_cyclepoints_array" title="bycycle.plts.plot_cyclepoints_array" class="sphx-glr-backref-module-bycycle-plts sphx-glr-backref-type-py-function"><span class="n">plot_cyclepoints_array</span></a><span class="p">(</span><span class="n">sig_low</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span><span class="o">=</span><span class="n">troughs</span><span class="p">,</span>
                        <span class="n">rises</span><span class="o">=</span><span class="n">rises</span><span class="p">,</span> <span class="n">decays</span><span class="o">=</span><span class="n">decays</span><span class="p">)</span>
@@ -232,7 +263,7 @@ however, this is rare, and most of these cycles should be removed by burst detec
 </div>
 <img src="../_images/sphx_glr_plot_2_bycycle_algorithm_004.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_004.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/></section>
 <section id="compute-features-of-each-cycle">
-<h2>3. Compute features of each cycle<a class="headerlink" href="#compute-features-of-each-cycle" title="Permalink to this heading">¶</a></h2>
+<h2>3. Compute features of each cycle<a class="headerlink" href="#compute-features-of-each-cycle" title="Link to this heading">¶</a></h2>
 <p>After these 4 points of each cycle are localized, we compute some simple statistics for each
 cycle. The main cycle-by-cycle object, <a class="reference internal" href="../generated/bycycle.objs.Bycycle.html#bycycle.objs.Bycycle" title="bycycle.objs.Bycycle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bycycle</span></code></a>, has a <cite>df_features</cite> dataframe
 attribute containing cycle features and sample locations of cyclepoints in the signal. Each entry
@@ -246,7 +277,7 @@ The four main features are:</p>
 </ul>
 <p>Note that a warning appears here because no burst detection parameters are provided. This is
 addressed in <a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html#determine-parts-of-signal-in-oscillatory-burst">section #4</a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bm</span> <span class="o">=</span> <span class="n">Bycycle</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bm</span> <span class="o">=</span> <span class="n">Bycycle</span><span class="p">()</span>
 <span class="n">bm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_theta</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -259,7 +290,7 @@ addressed in <a class="reference external" href="https://bycycle-tools.github.io
   warnings.warn(&quot;&quot;&quot;
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bm</span><span class="o">.</span><span class="n">df_features</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">bm</span><span class="o">.</span><span class="n">df_features</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -455,7 +486,7 @@ addressed in <a class="reference external" href="https://bycycle-tools.github.io
 </div>
 </div>
 <br />
-<br /><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dataframe columns are directly accessible via attributes</span>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dataframe columns are directly accessible via attributes</span>
 <span class="n">bm</span><span class="o">.</span><span class="n">volt_amp</span>
 </pre></div>
 </div>
@@ -522,7 +553,7 @@ addressed in <a class="reference external" href="https://bycycle-tools.github.io
 </div>
 </section>
 <section id="determine-parts-of-signal-in-oscillatory-burst">
-<h2>4. Determine parts of signal in oscillatory burst<a class="headerlink" href="#determine-parts-of-signal-in-oscillatory-burst" title="Permalink to this heading">¶</a></h2>
+<h2>4. Determine parts of signal in oscillatory burst<a class="headerlink" href="#determine-parts-of-signal-in-oscillatory-burst" title="Link to this heading">¶</a></h2>
 <p>Note above that the signal is segmented into cycles and the dataframe provides properties for each
 segment of the signal. However, if no oscillation is apparent in the signal at a given time, the
 properties for these “cycles” are meaningless. Therefore, it is useful to have a binary indicator
@@ -565,8 +596,8 @@ instantaneous derivative is 80% negative, then the monotonicity of the cycle wou
 <p>Below, we load a simulated signal and then define 3 sets of thresholds ranging from liberal to
 conservative.</p>
 <section id="load-a-simulated-signal-and-apply-a-lowpass-filter">
-<h3>Load a simulated signal and apply a lowpass filter<a class="headerlink" href="#load-a-simulated-signal-and-apply-a-lowpass-filter" title="Permalink to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate a signal</span>
+<h3>Load a simulated signal and apply a lowpass filter<a class="headerlink" href="#load-a-simulated-signal-and-apply-a-lowpass-filter" title="Link to this heading">¶</a></h3>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate a signal</span>
 <span class="n">n_seconds</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># Sampling rate</span>
 <span class="n">f_alpha</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
@@ -581,7 +612,7 @@ conservative.</p>
 </div>
 </section>
 <section id="visualizing-burst-detection-settings">
-<h3>Visualizing burst detection settings<a class="headerlink" href="#visualizing-burst-detection-settings" title="Permalink to this heading">¶</a></h3>
+<h3>Visualizing burst detection settings<a class="headerlink" href="#visualizing-burst-detection-settings" title="Link to this heading">¶</a></h3>
 <p>Below, we visualize how the burst detector determined which cycles were part of an oscillatory
 burst. The top plot shows a markup of the time series. The portions of the signal in red were
 determined to be parts of bursts. Signals in black were not part of bursts. Magenta and cyan dots
@@ -596,10 +627,10 @@ a burst because they did not meet certain thresholds:</p>
 , but is present in case users want to add an amplitude threshold to this algorithm.</p>
 </section>
 <section id="burst-detection-settings-too-liberal">
-<h3>Burst detection settings: too liberal<a class="headerlink" href="#burst-detection-settings-too-liberal" title="Permalink to this heading">¶</a></h3>
+<h3>Burst detection settings: too liberal<a class="headerlink" href="#burst-detection-settings-too-liberal" title="Link to this heading">¶</a></h3>
 <p>The following burst detection thresholds (defined in burst_kwargs) are too low, so some portions
 of the signal that do not have much apparent oscillatory burst are still labeled as if they do.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;amp_fraction&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s1">&#39;amp_consistency&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">,</span>
     <span class="s1">&#39;period_consistency&#39;</span><span class="p">:</span> <span class="mf">.45</span><span class="p">,</span>
@@ -612,22 +643,12 @@ of the signal that do not have much apparent oscillatory burst are still labeled
 <span class="n">bm</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_2_bycycle_algorithm_005.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_005.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-</pre></div>
-</div>
-</section>
+<img src="../_images/sphx_glr_plot_2_bycycle_algorithm_005.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_005.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/></section>
 <section id="burst-detection-settings-too-conservative">
-<h3>Burst detection settings: too conservative<a class="headerlink" href="#burst-detection-settings-too-conservative" title="Permalink to this heading">¶</a></h3>
+<h3>Burst detection settings: too conservative<a class="headerlink" href="#burst-detection-settings-too-conservative" title="Link to this heading">¶</a></h3>
 <p>These new burst detection thresholds seem to be set too high (too strict) as the algorithm is not
 able to detect the bursts that are present.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;amp_fraction&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s1">&#39;amp_consistency&#39;</span><span class="p">:</span> <span class="mf">.75</span><span class="p">,</span>
     <span class="s1">&#39;period_consistency&#39;</span><span class="p">:</span> <span class="mf">.7</span><span class="p">,</span>
@@ -640,19 +661,9 @@ able to detect the bursts that are present.</p>
 <span class="n">bm</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_2_bycycle_algorithm_006.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_006.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-</pre></div>
-</div>
-</section>
+<img src="../_images/sphx_glr_plot_2_bycycle_algorithm_006.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_006.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/></section>
 <section id="more-appropriate-burst-detection-thresholds">
-<h3>More appropriate burst detection thresholds<a class="headerlink" href="#more-appropriate-burst-detection-thresholds" title="Permalink to this heading">¶</a></h3>
+<h3>More appropriate burst detection thresholds<a class="headerlink" href="#more-appropriate-burst-detection-thresholds" title="Link to this heading">¶</a></h3>
 <p>The conservative thresholds were then lowered, and we can see now that the algorithms correctly
 identifies parts of the 3 bursting periods. Therefore, for a signal with this level of noise, we
 expect these parameters to be pretty good.</p>
@@ -660,7 +671,7 @@ expect these parameters to be pretty good.</p>
 positives that may occur, like that around 1.5 seconds. Consisitency features for non-bursting
 cycles on the edges of bursts may be recomputed to reduce false negatives when entering or exiting
 a burst.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;amp_fraction&#39;</span><span class="p">:</span> <span class="mf">.3</span><span class="p">,</span>
     <span class="s1">&#39;amp_consistency&#39;</span><span class="p">:</span> <span class="mf">.4</span><span class="p">,</span>
     <span class="s1">&#39;period_consistency&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>
@@ -673,23 +684,16 @@ a burst.</p>
 <span class="n">bm</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_2_bycycle_algorithm_007.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_007.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-/Users/ryanhammonds/projects/bycycle/.env/lib/python3.11/site-packages/neurodsp/plts/style.py:69: MatplotlibDeprecationWarning: MarkerStyle(None) is deprecated since 3.6; support will be removed two minor releases later.  Use MarkerStyle(&#39;&#39;) to construct an empty MarkerStyle.
-  line.set(**{style : next(values)})
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.435 seconds)</p>
+<img src="../_images/sphx_glr_plot_2_bycycle_algorithm_007.png" srcset="../_images/sphx_glr_plot_2_bycycle_algorithm_007.png" alt="plot 2 bycycle algorithm" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.322 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-2-bycycle-algorithm-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/b1ab5701cb95d7b9cddf74ec3caa6b23/plot_2_bycycle_algorithm.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_2_bycycle_algorithm.ipynb</span></code></a></p>
+</div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/038cf1e17c69d46556b38dbfaa9e4add/plot_2_bycycle_algorithm.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_2_bycycle_algorithm.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/b1ab5701cb95d7b9cddf74ec3caa6b23/plot_2_bycycle_algorithm.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_2_bycycle_algorithm.ipynb</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/e0964d21f8e90f7b0450c4f77f71699f/plot_2_bycycle_algorithm.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_2_bycycle_algorithm.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -709,8 +713,8 @@ a burst.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2023, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
+        &copy; Copyright 2018-2025, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br/>
     </p>
   </div>
 </footer>

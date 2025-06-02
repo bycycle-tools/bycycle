@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Cycle-by-cycle philosophy &#8212; bycycle 1.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
+    <title>1. Cycle-by-cycle philosophy &#8212; bycycle 1.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=84a24d03"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=a56c686a"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 
@@ -56,7 +56,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.2.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +71,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.1.0
+    v1.2.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -104,15 +104,36 @@
 
 <div class="container">
   <div class="row">
-    <div class="body col-md-12 content" role="main">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">1. Cycle-by-cycle philosophy</a><ul>
+<li><a class="reference internal" href="#conventional-analysis-of-amplitude-and-phase-hilbert-transform">Conventional analysis of amplitude and phase: Hilbert Transform</a><ul>
+<li><a class="reference internal" href="#note-that-different-hyperparameter-choices-for-filters-can-lead-to-significant-differences-in-results">Note that different hyperparameter choices for filters can lead to significant differences in results</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cycle-by-cycle-approach">Cycle-by-cycle approach</a></li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-tutorials-plot-1-bycycle-philosophy-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="cycle-by-cycle-philosophy">
-<span id="sphx-glr-auto-tutorials-plot-1-bycycle-philosophy-py"></span><h1>1. Cycle-by-cycle philosophy<a class="headerlink" href="#cycle-by-cycle-philosophy" title="Permalink to this heading">¶</a></h1>
+<span id="sphx-glr-auto-tutorials-plot-1-bycycle-philosophy-py"></span><h1>1. Cycle-by-cycle philosophy<a class="headerlink" href="#cycle-by-cycle-philosophy" title="Link to this heading">¶</a></h1>
 <p>Motivations behind the cycle-by-cycle approach.</p>
 <p>Neural signals, like the example shown below, are analyzed in order to extract information about
 brain activity. Basically, we process these signals in order to extract features that will hopefully
@@ -124,15 +145,15 @@ and phase.</p>
 narrowband signal by applying a wavelet transform or bandpass filtering followed by the Hilbert
 transform. The latter is demonstrated below.</p>
 <section id="conventional-analysis-of-amplitude-and-phase-hilbert-transform">
-<h2>Conventional analysis of amplitude and phase: Hilbert Transform<a class="headerlink" href="#conventional-analysis-of-amplitude-and-phase-hilbert-transform" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<h2>Conventional analysis of amplitude and phase: Hilbert Transform<a class="headerlink" href="#conventional-analysis-of-amplitude-and-phase-hilbert-transform" title="Link to this heading">¶</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_combined</span>
-<span class="kn">from</span> <span class="nn">neurodsp.utils</span> <span class="kn">import</span> <span class="n">create_times</span>
-<span class="kn">from</span> <span class="nn">neurodsp.filt</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a>
-<span class="kn">from</span> <span class="nn">neurodsp.timefrequency</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.timefrequency.amp_by_time.html#neurodsp.timefrequency.amp_by_time" title="neurodsp.timefrequency.amp_by_time" class="sphx-glr-backref-module-neurodsp-timefrequency sphx-glr-backref-type-py-function"><span class="n">amp_by_time</span></a><span class="p">,</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.timefrequency.phase_by_time.html#neurodsp.timefrequency.phase_by_time" title="neurodsp.timefrequency.phase_by_time" class="sphx-glr-backref-module-neurodsp-timefrequency sphx-glr-backref-type-py-function"><span class="n">phase_by_time</span></a>
-<span class="kn">from</span> <span class="nn">neurodsp.plts</span> <span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a><span class="p">,</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_instantaneous_measure.html#neurodsp.plts.plot_instantaneous_measure" title="neurodsp.plts.plot_instantaneous_measure" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_instantaneous_measure</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.sim</span><span class="w"> </span><span class="kn">import</span> <span class="n">sim_combined</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_times</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.filt</span><span class="w"> </span><span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.filt.filter_signal.html#neurodsp.filt.filter_signal" title="neurodsp.filt.filter_signal" class="sphx-glr-backref-module-neurodsp-filt sphx-glr-backref-type-py-function"><span class="n">filter_signal</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.timefrequency</span><span class="w"> </span><span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.timefrequency.amp_by_time.html#neurodsp.timefrequency.amp_by_time" title="neurodsp.timefrequency.amp_by_time" class="sphx-glr-backref-module-neurodsp-timefrequency sphx-glr-backref-type-py-function"><span class="n">amp_by_time</span></a><span class="p">,</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.timefrequency.phase_by_time.html#neurodsp.timefrequency.phase_by_time" title="neurodsp.timefrequency.phase_by_time" class="sphx-glr-backref-module-neurodsp-timefrequency sphx-glr-backref-type-py-function"><span class="n">phase_by_time</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.plts</span><span class="w"> </span><span class="kn">import</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_time_series.html#neurodsp.plts.plot_time_series" title="neurodsp.plts.plot_time_series" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_time_series</span></a><span class="p">,</span> <a href="https://neurodsp-tools.github.io/neurodsp/generated/neurodsp.plts.plot_instantaneous_measure.html#neurodsp.plts.plot_instantaneous_measure" title="neurodsp.plts.plot_instantaneous_measure" class="sphx-glr-backref-module-neurodsp-plts sphx-glr-backref-type-py-function"><span class="n">plot_instantaneous_measure</span></a>
 
 
 <span class="c1"># Simulation settings</span>
@@ -198,9 +219,9 @@ bias amplitude and phase estimates (though perhaps negligibly). Furthermore, the
 tools for extracting nonsinusoidal properties using conventional techniques.</p></li>
 </ol>
 <section id="note-that-different-hyperparameter-choices-for-filters-can-lead-to-significant-differences-in-results">
-<h3>Note that different hyperparameter choices for filters can lead to significant differences in results<a class="headerlink" href="#note-that-different-hyperparameter-choices-for-filters-can-lead-to-significant-differences-in-results" title="Permalink to this heading">¶</a></h3>
+<h3>Note that different hyperparameter choices for filters can lead to significant differences in results<a class="headerlink" href="#note-that-different-hyperparameter-choices-for-filters-can-lead-to-significant-differences-in-results" title="Link to this heading">¶</a></h3>
 <p>When effect sizes are small, these hyperparameter choices may make a crucial difference.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Different hyperparameter choices - filter length and center frequency and bandwidth</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Different hyperparameter choices - filter length and center frequency and bandwidth</span>
 <span class="n">f_alphas</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">13</span><span class="p">)]</span>
 <span class="n">n_seconds</span> <span class="o">=</span> <span class="p">[</span><span class="mf">.4</span><span class="p">,</span> <span class="mf">.75</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]</span>
 
@@ -230,7 +251,7 @@ tools for extracting nonsinusoidal properties using conventional techniques.</p>
 </section>
 </section>
 <section id="cycle-by-cycle-approach">
-<h1>Cycle-by-cycle approach<a class="headerlink" href="#cycle-by-cycle-approach" title="Permalink to this heading">¶</a></h1>
+<h1>Cycle-by-cycle approach<a class="headerlink" href="#cycle-by-cycle-approach" title="Link to this heading">¶</a></h1>
 <p>The main issues in the conventional approach are because the measurements of amplitude and phase
 are very indirect, using certain transforms in the frequency domain defined by sine waves.
 Therefore, we developed an alternative approach that analyzes oscillatory properties more directly
@@ -244,13 +265,16 @@ independent sine waves).</p>
 <li><p>Explicit definitions of which portions of the signal are suitable for analysis (in oscillatory bursts) or not (no oscillation present).</p></li>
 <li><p>It is important to note that this approach also has some key disadvantages. First, it is not widely adopted like the conventional techniques. Second, it requires more hyperparameter choosing and potentialyy more quality control compared to conventional techniques. I emphasize how important it is to visualize the cycle-by-cycle characterization and burst detection to assure that the metrics match the intuition. However, this is not commonly expected or performed using conventional techniques.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.537 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.332 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-1-bycycle-philosophy-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/ea82fd10e8c19a387a475b2e4ca07609/plot_1_bycycle_philosophy.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_1_bycycle_philosophy.ipynb</span></code></a></p>
+</div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/20341b081999389e17222a0c39969471/plot_1_bycycle_philosophy.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_1_bycycle_philosophy.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/ea82fd10e8c19a387a475b2e4ca07609/plot_1_bycycle_philosophy.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_1_bycycle_philosophy.ipynb</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/035b5a9f1a68d0154a0a045b2c9714c6/plot_1_bycycle_philosophy.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_1_bycycle_philosophy.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -268,8 +292,8 @@ independent sine waves).</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2023, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
+        &copy; Copyright 2018-2025, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br/>
     </p>
   </div>
 </footer>

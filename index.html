@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>bycycle - cycle-by-cycle analysis of neural oscillations &#8212; bycycle 1.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
+    <title>bycycle - cycle-by-cycle analysis of neural oscillations &#8212; bycycle 1.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="_static/documentation_options.js?v=84a24d03"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=a56c686a"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 
@@ -56,7 +56,7 @@
         </button>
         <a class="navbar-brand" href="#">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.2.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -71,7 +71,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.1.0
+    v1.2.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -104,14 +104,42 @@
 
 <div class="container">
   <div class="row">
-    <div class="body col-md-12 content" role="main">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">bycycle - cycle-by-cycle analysis of neural oscillations</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#reference">Reference</a></li>
+<li><a class="reference internal" href="#contribute">Contribute</a></li>
+<li><a class="reference internal" href="#quickstart">Quickstart</a><ul>
+<li><a class="reference internal" href="#dataframe-output">DataFrame Output</a></li>
+<li><a class="reference internal" href="#burst-detection-results">Burst Detection Results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#funding">Funding</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
       
   <section id="bycycle-cycle-by-cycle-analysis-of-neural-oscillations">
-<h1>bycycle - cycle-by-cycle analysis of neural oscillations<a class="headerlink" href="#bycycle-cycle-by-cycle-analysis-of-neural-oscillations" title="Permalink to this heading">¶</a></h1>
-<p><a class="reference external" href="https://www.repostatus.org/#active"><img alt="ProjectStatus" src="https://www.repostatus.org/badges/latest/active.svg" /></a> <a class="reference external" href="https://pypi.python.org/pypi/bycycle/"><img alt="Version" src="https://img.shields.io/pypi/v/bycycle.svg" /></a> <a class="reference external" href="https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml"><img alt="BuildStatus" src="https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml/badge.svg" /></a> <a class="reference external" href="https://codecov.io/gh/bycycle-tools/bycycle"><img alt="Coverage" src="https://codecov.io/gh/bycycle-tools/bycycle/branch/main/graph/badge.svg" /></a> <a class="reference external" href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/pypi/l/bycycle.svg" /></a> <a class="reference external" href="https://pypi.python.org/pypi/bycycle/"><img alt="PythonVersions" src="https://img.shields.io/pypi/pyversions/bycycle.svg" /></a> <a class="reference external" href="https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019"><img alt="Publication" src="https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue" /></a></p>
+<h1>bycycle - cycle-by-cycle analysis of neural oscillations<a class="headerlink" href="#bycycle-cycle-by-cycle-analysis-of-neural-oscillations" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://www.repostatus.org/#active"><img alt="project status" src="https://www.repostatus.org/badges/latest/active.svg" /></a> <a class="reference external" href="https://pypi.org/project/bycycle/"><img alt="version" src="https://img.shields.io/pypi/v/bycycle.svg" /></a> <a class="reference external" href="https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml"><img alt="build status" src="https://github.com/bycycle-tools/bycycle/actions/workflows/build.yml/badge.svg" /></a> <a class="reference external" href="https://codecov.io/gh/bycycle-tools/bycycle"><img alt="coverage" src="https://codecov.io/gh/bycycle-tools/bycycle/branch/main/graph/badge.svg" /></a> <a class="reference external" href="https://opensource.org/license/apache-2-0"><img alt="license" src="https://img.shields.io/pypi/l/bycycle.svg" /></a> <a class="reference external" href="https://pypi.org/project/bycycle/"><img alt="python versions" src="https://img.shields.io/pypi/pyversions/bycycle.svg" /></a> <a class="reference external" href="https://journals.physiology.org/doi/abs/10.1152/jn.00273.2019"><img alt="publication" src="https://img.shields.io/badge/publication-10.1152%2Fjn.00273.2019-blue.svg" /></a></p>
 <p>ByCycle is a module for analyzing neural oscillations in a cycle-by-cycle approach.</p>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is a tool for quantifying features of neural oscillations in the time domain, as opposed to the
 frequency domain, using a cycle-by-cycle approach. Rather than applying narrowband filters and other methods
 that use a sinusoidal basis, this approach segments a recording into individual cycles and directly measures
@@ -122,7 +150,7 @@ Using cycle properties can also be used for burst detection.</p>
 <p>A full description of the method and approach is available in the paper below.</p>
 </section>
 <section id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">¶</a></h2>
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
 <p>Documentation for <code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is available on the
 <a class="reference external" href="https://bycycle-tools.github.io/bycycle/index.html">documentation site</a>.</p>
 <p>This documentation includes:</p>
@@ -138,8 +166,8 @@ which defines key terms used in the module</p></li>
 </ul>
 </section>
 <section id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is written in Python, and requires &gt;= Python 3.6 to run.</p>
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is written in Python, and requires &gt;= Python 3.7 to run.</p>
 <p>It has the following dependencies:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/neurodsp-tools/neurodsp">neurodsp</a> &gt;= 2.1.0</p></li>
@@ -155,7 +183,7 @@ which defines key terms used in the module</p></li>
 </ul>
 </section>
 <section id="install">
-<h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">¶</a></h2>
+<h2>Install<a class="headerlink" href="#install" title="Link to this heading">¶</a></h2>
 <p>The current major release is the 1.X.X series, which is a breaking change from the prior 0.X.X series.</p>
 <p>Check the <a class="reference external" href="https://bycycle-tools.github.io/bycycle/changelog.html">changelog</a> for notes on updating to the new version.</p>
 <p><strong>Stable Version</strong></p>
@@ -183,7 +211,7 @@ which defines key terms used in the module</p></li>
 </div>
 </section>
 <section id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">¶</a></h2>
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">¶</a></h2>
 <p>If you use this code in your project, please cite:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Cole</span> <span class="n">SR</span> <span class="o">&amp;</span> <span class="n">Voytek</span> <span class="n">B</span> <span class="p">(</span><span class="mi">2019</span><span class="p">)</span> <span class="n">Cycle</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="n">cycle</span> <span class="n">analysis</span> <span class="n">of</span> <span class="n">neural</span> <span class="n">oscillations</span><span class="o">.</span> <span class="n">Journal</span> <span class="n">of</span> <span class="n">neurophysiology</span>
 <span class="mi">122</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">849</span><span class="o">-</span><span class="mf">861.</span> <span class="n">DOI</span><span class="p">:</span> <span class="mf">10.1152</span><span class="o">/</span><span class="n">jn</span><span class="mf">.00273.2019</span>
@@ -192,7 +220,7 @@ which defines key terms used in the module</p></li>
 <p>Direct Link: <a class="reference external" href="https://doi.org/10.1152/jn.00273.2019">https://doi.org/10.1152/jn.00273.2019</a></p>
 </section>
 <section id="contribute">
-<h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this heading">¶</a></h2>
+<h2>Contribute<a class="headerlink" href="#contribute" title="Link to this heading">¶</a></h2>
 <p>This project welcomes and encourages contributions from the community!</p>
 <p>To file bug reports and/or ask questions about this project, please use the
 <a class="reference external" href="https://github.com/bycycle-tools/bycycle/issues">Github issue tracker</a>.</p>
@@ -207,15 +235,15 @@ and follow the
 <a class="reference external" href="https://github.com/bycycle-tools/bycycle/blob/main/CODE_OF_CONDUCT.md">code of conduct</a>.</p>
 </section>
 <section id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h2>
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h2>
 <p>The classes in <code class="docutils literal notranslate"><span class="pre">bycycle</span></code> are <code class="docutils literal notranslate"><span class="pre">Bycycle</span></code>, which takes a time series and some
 parameters as inputs, and returns a table of features for each cycle. <code class="docutils literal notranslate"><span class="pre">BycycleGroup</span></code>
 may be used when working with 2d and 3d signals.</p>
 <p>For example, consider having a 1-dimensional numpy array, <code class="docutils literal notranslate"><span class="pre">sig</span></code>, which is a neural signal time series
 sampled at 1000 Hz (<code class="docutils literal notranslate"><span class="pre">fs</span></code>) with an alpha (8-12 Hz, <code class="docutils literal notranslate"><span class="pre">f_range</span></code>) oscillation. We can compute the table
 of cycle features with the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neurodsp.sim</span> <span class="kn">import</span> <span class="n">sim_bursty_oscillation</span>
-<span class="kn">from</span> <span class="nn">bycycle</span> <span class="kn">import</span> <span class="n">Bycycle</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.sim</span><span class="w"> </span><span class="kn">import</span> <span class="n">sim_bursty_oscillation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bycycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bycycle</span>
 
 <span class="c1"># Simulate</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -263,16 +291,16 @@ bursts of oscillations. However, it is important to knowledgeably select these p
 <li><p><strong>find_extrema_kwargs</strong> sets the keyword arguments for the function used to localize peaks and troughs. Most notably, you can change the duration of the bandpass filter (<code class="docutils literal notranslate"><span class="pre">n_seconds</span></code>) used during extrema localization (see section 1 of the <a class="reference external" href="https://bycycle-tools.github.io/bycycle/auto_tutorials/plot_2_bycycle_algorithm.html">algorithm tutorial</a>)</p></li>
 </ul>
 <section id="dataframe-output">
-<h3>DataFrame Output<a class="headerlink" href="#dataframe-output" title="Permalink to this heading">¶</a></h3>
+<h3>DataFrame Output<a class="headerlink" href="#dataframe-output" title="Link to this heading">¶</a></h3>
 <p>The output of <code class="docutils literal notranslate"><span class="pre">bycycle</span></code> is a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, which is a table, as shown below.
 There are many columns, so the table is split into two images here.</p>
 <p>Each row of this table corresponds to an individual segment of the signal, or a putative cycle of
 the rhythm of interest.</p>
-<img alt="https://github.com/bycycle-tools/bycycle/raw/main/doc/img/cycledf_1.png" src="https://github.com/bycycle-tools/bycycle/raw/main/doc/img/cycledf_1.png" />
+<img alt="https://raw.githubusercontent.com/bycycle-tools/bycycle/main/doc/img/cycledf_1.png" src="https://raw.githubusercontent.com/bycycle-tools/bycycle/main/doc/img/cycledf_1.png" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<img alt="https://github.com/bycycle-tools/bycycle/raw/main/doc/img/cycledf_2.png" src="https://github.com/bycycle-tools/bycycle/raw/main/doc/img/cycledf_2.png" />
+<img alt="https://raw.githubusercontent.com/bycycle-tools/bycycle/main/doc/img/cycledf_2.png" src="https://raw.githubusercontent.com/bycycle-tools/bycycle/main/doc/img/cycledf_2.png" />
 <p>Columns include:</p>
 <ul class="simple">
 <li><p><strong>sample_peak</strong>: the sample of the signal at which the peak of this cycle occurs</p></li>
@@ -290,15 +318,16 @@ and the <a class="reference external" href="https://bycycle-tools.github.io/bycy
 For example, we may be interested in the distribution of rise-decay symmetry values in a resting state recording, shown below.</p>
 </section>
 <section id="burst-detection-results">
-<h3>Burst Detection Results<a class="headerlink" href="#burst-detection-results" title="Permalink to this heading">¶</a></h3>
-<img alt="https://github.com/bycycle-tools/bycycle/raw/main/doc/img/bursts_detected.png" src="https://github.com/bycycle-tools/bycycle/raw/main/doc/img/bursts_detected.png" />
+<h3>Burst Detection Results<a class="headerlink" href="#burst-detection-results" title="Link to this heading">¶</a></h3>
+<img alt="https://raw.githubusercontent.com/bycycle-tools/bycycle/main/doc/img/bursts_detected.png" src="https://raw.githubusercontent.com/bycycle-tools/bycycle/main/doc/img/bursts_detected.png" />
 </section>
 </section>
 <section id="funding">
-<h2>Funding<a class="headerlink" href="#funding" title="Permalink to this heading">¶</a></h2>
+<h2>Funding<a class="headerlink" href="#funding" title="Link to this heading">¶</a></h2>
 <p>Supported by NIH award R01 GM134363 from the
 <a class="reference external" href="https://www.nigms.nih.gov/">NIGMS</a>.</p>
-<a class="reference internal image-reference" href="https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png"><img alt="https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png" src="https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png"><img alt="https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png" src="https://www.nih.gov/sites/all/themes/nih/images/nih-logo-color.png" style="width: 400px;" />
+</a>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -317,8 +346,8 @@ For example, we may be interested in the distribution of rise-decay symmetry val
       
     </p>
     <p>
-        &copy; Copyright 2018-2023, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
+        &copy; Copyright 2018-2025, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br/>
     </p>
   </div>
 </footer>

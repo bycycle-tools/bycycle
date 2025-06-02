@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bycycle.cyclepoints.extrema &#8212; bycycle 1.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
+    <title>bycycle.cyclepoints.extrema &#8212; bycycle 1.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../../_static/documentation_options.js?v=84a24d03"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=a56c686a"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -55,7 +55,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           bycycle</a>
-        <span class="navbar-text navbar-version pull-left"><b>1.1.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>1.2.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -70,7 +70,7 @@
             
   <li class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
-    v1.1.0
+    v1.2.0
     <span class="caret"></span>
   </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -103,23 +103,36 @@
 
 <div class="container">
   <div class="row">
-    <div class="body col-md-12 content" role="main">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<form action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
       
   <h1>Source code for bycycle.cyclepoints.extrema</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Find extrema for individual cycles.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">neurodsp.filt</span> <span class="kn">import</span> <span class="n">filter_signal</span>
-<span class="kn">from</span> <span class="nn">neurodsp.filt.fir</span> <span class="kn">import</span> <span class="n">compute_filter_length</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.filt</span><span class="w"> </span><span class="kn">import</span> <span class="n">filter_signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neurodsp.filt.fir</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_filter_length</span>
 
-<span class="kn">from</span> <span class="nn">bycycle.utils.checks</span> <span class="kn">import</span> <span class="n">check_param_range</span>
-<span class="kn">from</span> <span class="nn">bycycle.cyclepoints.zerox</span> <span class="kn">import</span> <span class="n">find_flank_zerox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bycycle.utils.checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_param_range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bycycle.cyclepoints.zerox</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_flank_zerox</span>
 
 <span class="c1">###################################################################################################</span>
 <span class="c1">###################################################################################################</span>
 
-<div class="viewcode-block" id="find_extrema"><a class="viewcode-back" href="../../../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema">[docs]</a><span class="k">def</span> <span class="nf">find_extrema</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">first_extrema</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="find_extrema">
+<a class="viewcode-back" href="../../../generated/bycycle.cyclepoints.find_extrema.html#bycycle.cyclepoints.find_extrema">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_extrema</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f_range</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">first_extrema</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span>
                  <span class="n">filter_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pass_type</span><span class="o">=</span><span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Identify peaks and troughs in a time series.</span>
 
@@ -173,6 +186,8 @@
     <span class="c1"># Set default filtering parameters</span>
     <span class="k">if</span> <span class="n">filter_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">filter_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># If not defined, set default filter length (ndsp defaults to n_cycles of 3)</span>
+        <span class="n">filter_kwargs</span><span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
 
     <span class="c1"># Get the original signal and filter lengths</span>
     <span class="n">sig_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
@@ -183,7 +198,7 @@
 
         <span class="n">filt_len</span> <span class="o">=</span> <span class="n">compute_filter_length</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">pass_type</span><span class="p">,</span> <span class="n">f_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">f_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                                          <span class="n">n_seconds</span><span class="o">=</span><span class="n">filter_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_seconds&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                         <span class="n">n_cycles</span><span class="o">=</span><span class="n">filter_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+                                         <span class="n">n_cycles</span><span class="o">=</span><span class="n">filter_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
         <span class="c1"># Pad the signal</span>
         <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">filt_len</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">)</span>
@@ -260,6 +275,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Parameter &quot;first_extrema&quot; is invalid&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">troughs</span></div>
+
 </pre></div>
 
     </div>
@@ -273,8 +289,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018-2023, VoytekLab.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
+        &copy; Copyright 2018-2025, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br/>
     </p>
   </div>
 </footer>

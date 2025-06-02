@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Computation times &#8212; bycycle 1.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="_static/documentation_options.js?v=84a24d03"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=a56c686a"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172123592-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-172123592-1');
+</script>
+
+
+  </head><body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          bycycle</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.2.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="api.html">API</a></li>
+                <li><a href="glossary.html">Glossary</a></li>
+                <li><a href="auto_tutorials/index.html">Tutorial</a></li>
+                <li><a href="auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/bycycle-tools/bycycle">GitHub</a></li>
+            
+            
+  <li class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown" style="margin-left: 10px">
+    v1.2.0
+    <span class="caret"></span>
+  </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li><a href="https://bycycle-tools.github.io/bycycle/index.html">v1.0.0(stable)</a></li>
+      <li><a href="https://bycycle-tools.github.io/bycycle/v0.1.3/index.html">v0.1.3</a></li>
+    </ul>
+  </li>
+
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Computation times</a></li>
+</ul>
+
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <section id="computation-times">
+<span id="sphx-glr-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Link to this heading">¶</a></h1>
+<p><strong>00:09.329</strong> total execution time for 8 files <strong>from all galleries</strong>:</p>
+<div class="docutils container">
+<style scoped>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+</style>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" class="init">
+$(document).ready( function () {
+    $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+} );
+</script><table class="table table-striped sg-datatable docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Example</p></th>
+<th class="head"><p>Time</p></th>
+<th class="head"><p>Mem (MB)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_tutorials/plot_5_3D_sigs.html#sphx-glr-auto-tutorials-plot-5-3d-sigs-py"><span class="std std-ref">5. Running Bycycle on 3D Arrays</span></a> (<code class="docutils literal notranslate"><span class="pre">../tutorials/plot_5_3D_sigs.py</span></code>)</p></td>
+<td><p>00:01.941</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/plot_3_pac_feature_distributions.html#sphx-glr-auto-examples-plot-3-pac-feature-distributions-py"><span class="std std-ref">3. PAC Cycle Feature Distributions</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_3_pac_feature_distributions.py</span></code>)</p></td>
+<td><p>00:01.667</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_tutorials/plot_3_bycycle_resting_state.html#sphx-glr-auto-tutorials-plot-3-bycycle-resting-state-py"><span class="std std-ref">3. Cycle-by-cycle analysis of resting state data</span></a> (<code class="docutils literal notranslate"><span class="pre">../tutorials/plot_3_bycycle_resting_state.py</span></code>)</p></td>
+<td><p>00:01.636</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_tutorials/plot_2_bycycle_algorithm.html#sphx-glr-auto-tutorials-plot-2-bycycle-algorithm-py"><span class="std std-ref">2. Cycle-by-cycle algorithm</span></a> (<code class="docutils literal notranslate"><span class="pre">../tutorials/plot_2_bycycle_algorithm.py</span></code>)</p></td>
+<td><p>00:01.322</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/plot_2_mne_feature_distributions.html#sphx-glr-auto-examples-plot-2-mne-feature-distributions-py"><span class="std std-ref">2. MNE Interface Cycle Feature Distributions</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_2_mne_feature_distributions.py</span></code>)</p></td>
+<td><p>00:01.183</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/plot_1_theta_feature_distributions.html#sphx-glr-auto-examples-plot-1-theta-feature-distributions-py"><span class="std std-ref">1. Theta oscillation cycle feature distributions</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/plot_1_theta_feature_distributions.py</span></code>)</p></td>
+<td><p>00:01.045</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_tutorials/plot_1_bycycle_philosophy.html#sphx-glr-auto-tutorials-plot-1-bycycle-philosophy-py"><span class="std std-ref">1. Cycle-by-cycle philosophy</span></a> (<code class="docutils literal notranslate"><span class="pre">../tutorials/plot_1_bycycle_philosophy.py</span></code>)</p></td>
+<td><p>00:00.332</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_tutorials/plot_4_2D_sigs.html#sphx-glr-auto-tutorials-plot-4-2d-sigs-py"><span class="std std-ref">4. Running Bycycle on 2D Arrays</span></a> (<code class="docutils literal notranslate"><span class="pre">../tutorials/plot_4_2D_sigs.py</span></code>)</p></td>
+<td><p>00:00.202</p></td>
+<td><p>0.0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2025, VoytekLab.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.2.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
