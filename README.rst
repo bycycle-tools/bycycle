@@ -1,4 +1,3 @@
-========================================================
 bycycle - cycle-by-cycle analysis of neural oscillations
 ========================================================
 
@@ -98,17 +97,9 @@ To install the latest stable release, you can use pip:
 
     $ pip install bycycle
 
-ByCycle can also be installed with conda, from the conda-forge channel:
-
-.. code-block:: shell
-
-    $ conda install -c conda-forge bycycle
-
 **Development Version**
 
 To get the latest, development version, you can get the code using git:
-
-.. code-block:: shell
 
     $ git clone https://github.com/bycycle-tools/bycycle
 
