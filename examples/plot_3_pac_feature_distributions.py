@@ -1,5 +1,5 @@
 """
-4. PAC Cycle Feature Distributions
+3. PAC Cycle Feature Distributions
 ==================================
 
 Compute bycycle features for simulated phase-amplitude coupled (PAC) data.

@@ -1,4 +1,4 @@
-"""Tests for burst.cycle."""
+"""Tests for bycycle.burst.cycle."""
 
 import itertools
 

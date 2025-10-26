@@ -1,5 +1,5 @@
 """
-3. MNE Interface Cycle Feature Distributions
+2. MNE Interface Cycle Feature Distributions
 ============================================
 
 Compute bycycle feature distributions using MNE objects.

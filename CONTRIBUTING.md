@@ -20,7 +20,8 @@ On this page, you can find information on:
 
 ## Reporting a problem
 
-To report an issue with the code, please submit it to our [issue tracker](https://github.com/bycycle-tools/bycycle/issues).
+To report an issue with the code, please submit it to our
+[issue tracker](https://github.com/bycycle-tools/bycycle/issues).
 
 In doing so, please try to include the following:
 
@@ -49,32 +50,30 @@ If you have a new idea you would like to suggest or contribute, please do the fo
 If you are interested in getting involved and helping with the project, a great place to start is to visit the
 [issues](https://github.com/bycycle-tools/bycycle/issues) or
 [development](https://github.com/bycycle-tools/Development) page
-and see if there is anything you would be interested in helping with. If so, join the conversation, and project developers can help get you started.
+and see if there is anything you would be interested in helping with.
+If so, join the conversation, and project developers can help get you started.
 
 ## Scope
 
 All contributions must be within the scope of the module.
 
-`bycycle` is a module for analyzing neural oscillations in the time domain, in particular in a cycle-by-cycle approach. This includes characterizing waveform shape and doing burst detection, as well as functionality and utilities to visualize and work with method outputs.
+`bycycle` is a module for analyzing neural oscillations in the time domain, in particular in a cycle-by-cycle approach. This includes characterizing waveform shape and doing burst detection, as well as functionality and utilities to visualize and work with method outputs. Procedures and utilities that do not deal with operating upon time series or bycycle outputs directly will most likely be considered out of scope, and won't be added into ByCycle.
 
-Procedures and utilities that do not deal with operating upon time series or bycycle outputs directly will most likely be considered out of scope, and won't be added into ByCycle.
-
-Note that `bycycle` depends upon the [neurodsp](https://github.com/neurodsp-tools/neurodsp/), and some more general functionality, such as spectral estimations or simulations, may be a better fit in that module.
+Note that `bycycle` depends upon the [neurodsp](https://github.com/neurodsp-tools/neurodsp/) module, and some more general functionality, such as spectral estimations or simulations, may be a better fit for that module.
 
 ## Making a Contribution
 
-If there is a feature you would like to add, or an issue you saw that you think you can help with, you are ready to make a submission to the project!
+If there is a feature you would like to add, or an issue you saw that you think you can help with, you are ready to make a submission to the project! If you are working on a feature, please indicate so in the relevant issue, so that we can keep track of who is working on what.
 
-If you are working on a feature, please indicate so in the relevant issue, so that we can keep track of who is working on what.
+All contributions are managed through Github.
+If you are ready to start working on a contribution, you should follow the Github
+[guidelines for contributing to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project), which include forking the repository, making your suggested changes to the code, and then opening a pull request (PR) to suggest the code to the project.
 
-Once you're ready to start working on your contribution, do the following:
+Once you open a PR, developers will review the code. Please make sure to check and follow the
+[project conventions](#project-conventions) so that all new or updated code follows the guidelines.
 
-1. [Fork this repository](https://help.github.com/articles/fork-a-repo/), which makes your own version of this project you can edit
-2. [Make your changes](https://guides.github.com/activities/forking/#making-changes), updating or adding code to add the desired functionality
-3. [Check the project conventions](#project-conventions), and make sure all new or updated code follows the guidelines
-4. [Submit a pull request](https://help.github.com/articles/proposing-changes-to-a-project-with-pull-requests/), to start the process of merging the new code to the main branch
-
-If it's your first time contributing to open source software, check out this free resource on [how to contribute to an open-source project on GitHub](https://app.egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github).
+If it's your first time contributing to open source software, check out this free resource on
+[how to contribute to open-source projects on GitHub](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github).
 
 ## Project Conventions
 
@@ -121,9 +120,7 @@ All code contributed to the module should follow these conventions:
     * Any new functionality should be added and described in the tutorials and/or examples
         * If a new approach is added, a new tutorial or example may be appropriate
     * To build and check the documentation locally:
-        * Install the requirements for the docsite (`pip install -r requirements-doc.txt`)
+        * Install the requirements for the docsite (`pip install -r requirements-docs.txt`)
         * Move to the `bycycle/doc` directory (`cd doc`)
         * Run `make html` to create a local copy of the documentation website
         * The documentation can then be opened in a web browser by opening the file `bycycle/doc/_build/html/index.html`
-
-For more guidelines on how to write well formated and organized code, check out the [Python API Checklist](http://python.apichecklist.com).

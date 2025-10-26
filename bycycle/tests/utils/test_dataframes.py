@@ -1,8 +1,8 @@
-"""Tests for utils.dataframe."""
-
-from copy import deepcopy
+"""Tests for bycycle.utils.dataframe."""
 
 import pytest
+
+from copy import deepcopy
 
 import numpy as np
 import pandas as pd

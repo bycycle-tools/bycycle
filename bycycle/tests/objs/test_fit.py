@@ -1,4 +1,4 @@
-"""Test functions for the Bycycle class."""
+"""Tests functions for the Bycycle class - bycycle.objs.fit."""
 
 from inspect import ismethod
 
@@ -7,8 +7,9 @@ import pytest
 import pandas as pd
 import numpy as np
 
-from bycycle.objs.fit import Bycycle, BycycleGroup, BycycleBase
 from bycycle.tests.tutils import plot_test
+
+from bycycle.objs.fit import Bycycle, BycycleGroup, BycycleBase
 
 ###################################################################################################
 ###################################################################################################

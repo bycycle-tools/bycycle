@@ -1,10 +1,12 @@
-"""Test functions to compute features across epoched data."""
+"""Tests for computing features across epoched data - bycycle.group.features."""
+
+import pytest
 
 from itertools import product
+
 import numpy as np
 import pandas as pd
 
-import pytest
 from bycycle.group.features import compute_features_2d, compute_features_3d
 
 ###################################################################################################
