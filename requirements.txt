@@ -1,5 +1,5 @@
 numpy >= 1.18.5
 scipy >=  1.4.1
-pandas >= 0.25.3
+pandas >= 0.25.3, < 3.0.0
 matplotlib >= 3.0.3
 neurodsp >= 2.2.1
