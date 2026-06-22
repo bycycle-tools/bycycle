@@ -24,3 +24,8 @@ doc/sg_execution_times.rst
 dist/
 *.egg-info/
 build/
+
+# Created by MacOS X
+.DS_Store
+
+# Workflow Files Created by Kenton
